@@ -1088,15 +1088,10 @@
 */
 
 
-apstag.fetchBids({
-                slots: sasList
-            }, function(bids) {
-            googletag.cmd.push(function() {
-                console.log("Serving Prebid");
-                //apstag.setDisplayBids();
+		googletag.cmd.push(function() {
+                console.log("ad manager call");
                 googletag.pubads().refresh();    
                  });
-            });
 
 
 		
