@@ -109,7 +109,15 @@
                 </script>
 		    
 		 
-		<!-- <script id="onetrust-run" data-nscript="beforeInteractive">function OptanonWrapper() { }</script> -->
+			<!--
+			<script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b/OtAutoBlock.js" type="text/javascript" defer="" data-nscript="beforeInteractive"></script>
+-->
+ 
+<script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b/otSDKStub.js" data-document-language="true" type="text/javascript" data-domain-script="65b60f59-7417-4967-865d-889d81e1122b" defer="" data-nscript="beforeInteractive"></script>
+
+
+
+		 <script id="onetrust-run" data-nscript="beforeInteractive">function OptanonWrapper() { }</script> 
 		 
 		 
 		 <script id="google-tag-manager" data-nscript="beforeInteractive">  
@@ -124,25 +132,22 @@
                 }        
                 loadGoogleDoubleClick();
                 
-		    /* disabled not necessary for test  
+		   
                 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
                     j.classList.add('optanon-category-C0002-C0004');j.src=
                     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
                     })(window,document,'script','dataLayer','GTM-P57V4K7');
-		 end disabled */
-
                 </script>
                 
                 
                 <link rel="preload" href="https://www.abola.pt/_next/static/css/83047816dca6db3e.css" as="style"/><link rel="stylesheet" href="https://www.abola.pt/_next/static/css/83047816dca6db3e.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="https://www.abola.pt/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script>
 		     
-				<!--
-		    <script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b/OtAutoBlock.js" type="text/javascript" defer="" data-nscript="beforeInteractive"></script>
-		    <script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b/otSDKStub.js" data-document-language="true" type="text/javascript" data-domain-script="65b60f59-7417-4967-865d-889d81e1122b" defer="" data-nscript="beforeInteractive"></script>
-                
-                   
+		
+		  
+               
+                <!--  
                 <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js" type="text/javascript" async="" defer="" data-nscript="beforeInteractive"></script>
              <script src="https://cdn.jwplayer.com/libraries/TLqqgR2l.js" defer="" data-nscript="beforeInteractive"></script>
           <script src="https://ads.vidoomy.com/abola_20953.js" class="optanon-category-C0002" type="text/javascript" async="" defer="" data-nscript="beforeInteractive"></script> 
@@ -153,7 +158,8 @@
              <script src="/_next/static/chunks/8416-4bb0bfdd8b145df5.js" defer=""></script>
              <script src="/_next/static/chunks/pages/%5B%5B...path%5D%5D-f6279377dc6b982c.js" defer=""></script>
              <script src="/_next/static/UgBl9jY2VN7BIWj_16AwF/_buildManifest.js" defer=""></script>
-             <script src="/_next/static/UgBl9jY2VN7BIWj_16AwF/_ssgManifest.js" defer=""></script>-->
+             <script src="/_next/static/UgBl9jY2VN7BIWj_16AwF/_ssgManifest.js" defer=""></script>
+			-->
 
 
              <script src="https://www.abola.pt/_next/static/chunks/webpack-931c6f6da93a4113.js" defer=""></script>
@@ -1071,7 +1077,7 @@
             }
 
             
-            /*
+            
             apstag.init({
                 pubID: '7046d657-31ef-4394-964e-805033a84142',
                 adServer: 'googletag',
@@ -1088,14 +1094,14 @@
                 googletag.pubads().refresh();    
                 // });
             });
-*/
 
 
+/*
 		googletag.cmd.push(function() {
                 console.log("ad manager call");
                 googletag.pubads().refresh();    
                  });
-
+*/
 
 		
         });
