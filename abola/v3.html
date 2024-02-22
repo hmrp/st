@@ -4138,6 +4138,43 @@
 
 
 
+
+<style>
+	/* css concept - deployment of AD elements 
+	any .pub element with display:none is not loaded
+	dont need to use class "pubDesktop" or "pubMobile" if the element is shown in same position in every device 
+	 */ 
+	@media only screen and (min-width: 1px) {
+		  .pubDesktop {display:none;}
+		  .pubMobile {display:block;}
+		}
+		@media only screen and (min-width: 728px) {
+		  .pubDesktop {display:block}
+		  .pubMobile {display:none}
+		}
+	
+		/* this will signal an ad element with a text refering to it as "pub" - will be nececessary some minor changes to reposition it accordingly */ 
+		.pub.txt:before  {
+		  content: "PUB";
+		  display: block;
+		  color: #8a8a8a;
+		  text-align:right;
+		  font-size:10px;
+		}
+	/* replacement for sticky masthead inside articles js to it should be inserted @ event slotRenderEnded*/
+	.sticky {
+	  position: sticky;
+	  top: 50px;
+	  z-index: 100;
+	}
+		/*anchor and open auction intro ad zindex */ ins[id^="gpt_unit_/417417404"] {z-index:1000!important}
+		/*force reposition anchor ad close button so it doesnt appear over onetrust cookie button */ .grippy-host {-webkit-transform: matrix(-1, 0, 0, 1, 0, 0); -moz-transform: matrix(-1, 0, 0, 1, 0, 0); -o-transform: matrix(-1, 0, 0, 1, 0, 0); transform: matrix(-1, 0, 0, 1, 0, 0);}
+		  </style>
+
+
+
+
+
 <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 
  <!-- <script async src="prebid.js"></script> -->
