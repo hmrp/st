@@ -4094,7 +4094,7 @@
 				</section>
 				<div class="banner-centered">
 					<div class="adSlot" id="pubAutofoco"></div>
-					<div class="pub vert pubMobile  mrec bid"></div>
+					<div class="pub horz bid"></div>
 				</div>
 			</div>
 		</div>
@@ -4276,7 +4276,7 @@ window.pub.aBola = function () {
 
                         if (className == "oop") {
                               items[i].id = "oop";
-                              pub.oop = googletag.defineOutOfPageSlot("/417417404/OOP/" /*+ dfpSection*/, "oop").setCollapseEmptyDiv(true, true).setTargeting("end", ["intro"]).addService(googletag.pubads());
+                              pub.oop = googletag.defineOutOfPageSlot("/417417404/OOP" /*+ dfpSection*/, "oop").setCollapseEmptyDiv(true, true).setTargeting("end", ["intro"]).addService(googletag.pubads());
                         }
                         if (className == "horz") {
                               slotDimensions = [[1150, 250], [970, 250], [970, 90], [728, 90], [468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [234,60], [216,36], [120,20], [1,1], "fluid"];
@@ -4284,9 +4284,9 @@ window.pub.aBola = function () {
 
                               if (targeting.includes("leaderboard")) {
                                     hbSizesMapping.pop();
-                                    pub.horz[i] = googletag.defineSlot("/417417404/HORZ/" /*+ dfpSection*/, slotDimensions.splice(0, 3), "horz"+contador).defineSizeMapping(horzTabletSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+                                    pub.horz[i] = googletag.defineSlot("/417417404/HORZ" /*+ dfpSection*/, slotDimensions.splice(0, 3), "horz"+contador).defineSizeMapping(horzTabletSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
                               } else {
-                                    pub.horz[i] = googletag.defineSlot("/417417404/HORZ/" /*+ dfpSection*/, slotDimensions, "horz"+contador).defineSizeMapping(horzSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+                                    pub.horz[i] = googletag.defineSlot("/417417404/HORZ" /*+ dfpSection*/, slotDimensions, "horz"+contador).defineSizeMapping(horzSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
                               }
                         }
                         if (className == "vert") {
@@ -4295,9 +4295,9 @@ window.pub.aBola = function () {
 
                               if (targeting.includes("mrec")) {
                                     hbSizesMapping[1].sizes.pop();
-                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/", slotDimensions.splice(0, 1), "vert"+contador).defineSizeMapping(vertMrecSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
+                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT", slotDimensions.splice(0, 1), "vert"+contador).defineSizeMapping(vertMrecSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
                               } else {
-                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/", slotDimensions, "vert"+contador).defineSizeMapping(vertSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
+                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT", slotDimensions, "vert"+contador).defineSizeMapping(vertSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
                               }
                         }
 
@@ -4313,7 +4313,7 @@ window.pub.aBola = function () {
       units("vert", 0);
 	  
                   if (window.innerWidth < 2500) {
-                        pub.anchorSlot =  googletag.defineOutOfPageSlot("/417417404/HORZ/"+ dfpSection, googletag.enums.OutOfPageFormat.BOTTOM_ANCHOR);
+                        pub.anchorSlot =  googletag.defineOutOfPageSlot("/417417404/HORZ"+ dfpSection, googletag.enums.OutOfPageFormat.BOTTOM_ANCHOR);
                               if (pub.anchorSlot) {
                                     pub.anchorSlot
                                     .setTargeting("end", "anchor")
@@ -4322,7 +4322,7 @@ window.pub.aBola = function () {
                         }
 
 
-                        pub.gamInterstitial =  googletag.defineOutOfPageSlot("/417417404/OOP/", googletag.enums.OutOfPageFormat.INTERSTITIAL);
+                        pub.gamInterstitial =  googletag.defineOutOfPageSlot("/417417404/OOP", googletag.enums.OutOfPageFormat.INTERSTITIAL);
                               if (pub.gamInterstitial) {
                                     pub.gamInterstitial
                                     .setTargeting("pos", "gaminterstitial")
