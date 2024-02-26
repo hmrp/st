@@ -172,10 +172,10 @@ window.pub.aBola = function () {
       if (pbjs.initAdserverSet) return;
       pbjs.initAdserverSet = true;
       googletag.cmd.push(function () {
-            apstag.setDisplayBids();
             pbjs.que.push(function () {
                   pbjs.setTargetingForGPTAsync();
                   pbjs.getAdserverTargeting(); 
+                  apstag.setDisplayBids();
                   googletag.pubads().refresh();
             });
       });
@@ -239,7 +239,7 @@ var amzSetAdUnit = {
       };
       pub.bid.push(pbSetAdUnit);
       pub.amzbid.push(amzSetAdUnit);
-      console.dir("pub.amzbid   " + pub.amzbid);
+      pub.amzbid;
       }
 
       googletag.cmd.push(function () {
