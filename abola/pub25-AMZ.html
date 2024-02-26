@@ -1,0 +1,477 @@
+<head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <!-- prebid with appNexus / Rubicon / Openx / Recommended Modules / Advanced Size Mapping / google Ad Manager Video Support integrated --> 
+
+<style>
+/* css concept - deployment of AD elements 
+any .pub element with display:none is not loaded
+dont need to use class "pubDesktop" or "pubMobile" if the element is shown in same position in every device 
+ */ 
+@media only screen and (min-width: 1px) {
+      .pubDesktop {display:none;}
+      .pubMobile {display:block;}
+    }
+    @media only screen and (min-width: 728px) {
+      .pubDesktop {display:block}
+      .pubMobile {display:none}
+    }
+
+    /* this will signal an ad element with a text refering to it as "pub" - will be nececessary some minor changes to reposition it accordingly */ 
+    .pub.txt:before  {
+      content: "PUB";
+      display: block;
+      color: #8a8a8a;
+      text-align:right;
+      font-size:10px;
+    }
+/* replacement for sticky masthead inside articles js to it should be inserted @ event slotRenderEnded*/
+.sticky {
+  position: sticky;
+  top: 50px;
+  z-index: 100;
+}
+    /*anchor and open auction intro ad zindex */ ins[id^="gpt_unit_/417417404"] {z-index:1000!important}
+    /*force reposition anchor ad close button so it doesnt appear over onetrust cookie button */ .grippy-host {-webkit-transform: matrix(-1, 0, 0, 1, 0, 0); -moz-transform: matrix(-1, 0, 0, 1, 0, 0); -o-transform: matrix(-1, 0, 0, 1, 0, 0); transform: matrix(-1, 0, 0, 1, 0, 0);}
+      </style>
+</head>
+
+
+
+
+
+
+
+<!--<div class="oop" style="position:fixed; top:0px; left:0; width:1px; height:1px; z-index:80000;"></div>
+
+<div class="pub horz leaderboard bid"></div>
+
+<div class="pub vert mrec bid"></div>
+<div class="pub horz bid"></div>
+<div class="pub vert bid"></div>
+<div class="pub horz bid"></div>
+<div class="pub vert bid"></div>
+
+ -->
+<div class="pub vert mrec bid"></div>
+<div class="pub vert pubMobile"></div>
+<div class="pub vert pubMobile  mrec bid"></div>
+<div class="pub vert bid"></div>
+<div class="pub horz pubMobile leaderboard bid"></div>
+<div class="pub horz pubMobile bid"></div>
+<div class="pub horz pubMobile leaderboard bid"></div>
+
+<div class="pub vert mrec bid autorefresh"></div>
+
+
+
+
+<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+<script>
+      /*amazon*/
+      !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
+</script>
+<script async src="prebid8.33.0.js"></script> 
+
+<script>
+var oneTrustConsentData = { gdprApplies: true, consentData: "CONSENT_DATA" }; // should be replaced with the actual integration code provided by OneTrust.  - dont have enough information
+
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+var pub = {bid:[],amzbid:[],vert:[],horz:[],oop:[],wz:0,aRefresh:61600,PREBID_TIMEOUT:2555,FAILSAFE_TIMEOUT:5566,typeSection:[],subSeccao:[],adUnitArea:[],IdArtigo:[],fEnd:[encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])]};
+
+/* var related with aBola - integration needed */
+
+//type keyvalue
+adsPag =  ['hp']; // hp, article, results, discussion, gallery, video, section, newsletter;
+pub.typeSection = adsPag;
+//if possible can you change initial var adsPag to pub.typeSection?
+
+// article id
+adsCid = "0";
+pub.IdArtigo = adsCid;
+//if possible can you change initial var adsCid to pub.adsCid?
+
+
+//adsSec subseccao relacionado com os artigos
+// ['internacional']
+// ['nacional'];
+// ['home'];
+// ['futebol-de-praia'];
+adsSec = ['futebol-de-praia']; 
+pub.subSeccao = adsSec; 
+//if possible can you change initial var adsSec to pub.subSeccao?
+
+
+// AD Unit Categorization
+// adUnitArea name the category of the adunit ex: /417417404/VERT/MOTORES
+
+// abola.pt/noticias - noticias
+// abola.pt/mercado - mercado 
+// abola.pt - home
+// abola.pt/nacional - nacional
+// abola.pt/internacional - internacional
+// abola.pt/opinioes/ - opinioes
+// abola.pt/futebol/portugal-1651 - competicoes
+// abola.pt/modalidades - modalidades
+// abola.pt/motores - motores
+// abola.pt/mais-desporto - maisdesporto
+// abola.pt/estrelas - estrelas
+// abola.pt/miragens - miragens
+// abola.pt/a-bola-tv - abolatv
+pub.adUnitArea = ['HOME'];
+
+
+
+
+/* PREBID */
+var pbjs = pbjs || {};
+pbjs.que = pbjs.que || [];
+
+
+document.addEventListener('DOMContentLoaded', function() { // please evaluate if its really necessary to use this listener, or certify this script is only loaded after the DOM elements and CMP is loaded.
+
+
+apstag.init({
+      pubID: '7046d657-31ef-4394-964e-805033a84142',
+      adServer: 'googletag',
+      bidTimeout: pub.PREBID_TIMEOUT
+});
+
+
+window.pub.aBola = function () {
+      if (pbjs.initAdserverSet) return;
+      pbjs.initAdserverSet = true;
+      googletag.cmd.push(function () {
+            pbjs.que.push(function () {
+                  pbjs.setTargetingForGPTAsync();
+                  pbjs.getAdserverTargeting();
+                  apstag.setDisplayBids();
+                  googletag.pubads().refresh();
+            });
+      });
+}
+
+      
+
+
+// need to check CMP Integration with OneTrust please validate if this is the best way please
+//if (OneTrust && OneTrust.getActiveConsent()) {
+      function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
+console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea);
+
+        var amzSetAdUnit = {
+                slotID: targetID,
+                slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
+                sizes: sizesUsed
+     }
+
+      var pbSetAdUnit = {
+            code: targetID,
+            mediaTypes: {
+                  banner: {
+                        sizeConfig: hbSizesMapping,
+                        sizes: sizesUsed
+                  },
+            },
+            bids: [
+                  {
+                  bidder: "appnexus",
+                  params: {
+                        placementId: "13144370",
+                        customParams: customKeyValues ,
+                        },
+                  },
+          /*    {
+                  bidder: "rubicon",
+                  params: {
+                        accountId: "RUBICON_ACCOUNT_ID",
+                        siteId: "RUBICON_SITE_ID",
+                        zoneId: "RUBICON_ZONE_ID",
+                        customParams: customKeyValues,
+                        },
+                  },
+                {
+                  bidder: "openx",
+                  params: {
+                        unit: "OPENX_UNIT",
+                              customParams: {
+                                    customKeyValues,
+                              },
+                        },
+                  } */
+            ],
+      };
+      pub.bid.push(pbSetAdUnit);
+      pub.amzbid.push(amzSetAdUnit);
+      }
+
+      googletag.cmd.push(function () {
+
+      /* SPECIFY AD MANAGER CMP SETTINGS HERE
+      googletag.pubads().setPrivacySettings({
+      'limitedAds': true,  //  When set to true, it indicates that the user has opted for limited ad tracking or limited ad personalization.
+      'nonPersonalizedAds': true, //  When set to true, it indicates that the user has explicitly opted for non-personalized ads.
+      'forceGdprApplies': true, // When set to true, it indicates that GDPR applies to the user's consent status.
+      'restrictDataProcessing': true, // When set to true, it indicates that the user has requested to restrict data processing.
+      });
+      */
+
+      googletag.pubads().disableInitialLoad();
+      googletag.pubads().enableVideoAds();
+      googletag.pubads().enableSingleRequest();
+      googletag.pubads().enableAsyncRendering();
+      googletag.pubads().setCentering(true);
+      googletag.pubads().collapseEmptyDivs(true, true);
+      googletag.disablePublisherConsole();
+      googletag.pubads()
+            .setTargeting("end", pub.fEnd)
+            .setTargeting("id", pub.IdArtigo)
+            .setTargeting("category", pub.subSeccao)
+            .setTargeting("type", pub.typeSection);
+
+      var horzSizeMapping = googletag.sizeMapping().addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [300,50], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[728, 90], [468, 60], "fluid"]).addSize([1024, 200],[[970, 250], [970, 90],[840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).addSize([1150, 200],[[1150, 250], [970, 250], [840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).build(),
+      vertSizeMapping = googletag.sizeMapping().addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[300, 600], [300, 250], [200, 200], [1,1], "fluid"]).build(), horzTabletSizeMapping = googletag.sizeMapping().addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[728, 90], [468, 60], [1,1]]).build(), vertMrecSizeMapping = googletag.sizeMapping().addSize([0, 0], [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200], [1,1], "fluid"]).addSize([768, 200], [[300, 250], [250, 250], [200, 200], [1,1], "fluid"]).build(), targetCLASS = [["bid"], ["leaderboard"], ["mrec"], ["incontent"]];
+
+      function units(className, contador) {
+      var targetID, slotDimensions, hbSizesMapping,
+      items = document.getElementsByClassName(className);
+      for (var i = 0; i < items.length; i++) {
+                  if (window.getComputedStyle(items[i]).display != "none") {
+                  contador++;
+                  targetID = className + contador;                            
+                  items[i].id = targetID;
+
+                        function tgt() {
+                        var x = [];
+                        for (var i = 0; i < targetCLASS.length; i++) {
+                              if (document.getElementById(targetID).classList.contains(targetCLASS[i])) {
+                              x.push(targetCLASS[i]);
+                              }
+                        }
+                        return x.toString();
+                        };
+                        var targeting = tgt();
+
+                        if (className == "oop") {
+                              items[i].id = "oop";
+                              pub.oop = googletag.defineOutOfPageSlot("/417417404/OOP/" + pub.adUnitArea, "oop").setCollapseEmptyDiv(true, true).setTargeting("end", ["intro"]).addService(googletag.pubads());
+                        }
+                        if (className == "horz") {
+                              slotDimensions = [[1150, 250], [970, 250], [970, 90], [728, 90], [468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [234,60], [216,36], [120,20], [1,1], "fluid"];
+                              hbSizesMapping = [{ minViewPort: [1, 0], sizes: [[468, 60], [336, 320], [336, 280], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [250, 250], [200, 200], [234,60], [216,36], [120,20]] },{ minViewPort: [768, 0], sizes: [[728, 90],[468, 60]] },{ minViewPort: [1024, 0], sizes: [[1150, 250], [970, 250], [970, 90], [728, 90]]}];
+
+                              if (targeting.includes("leaderboard")) {
+                                    hbSizesMapping.pop();
+                                    pub.horz[i] = googletag.defineSlot("/417417404/HORZ/" + pub.adUnitArea, slotDimensions.splice(0, 3), "horz"+contador).defineSizeMapping(horzTabletSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+                              } else {
+                                    pub.horz[i] = googletag.defineSlot("/417417404/HORZ/" + pub.adUnitArea, slotDimensions, "horz"+contador).defineSizeMapping(horzSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+                              }
+                        }
+                        if (className == "vert") {
+                              slotDimensions = [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216,36], [120,20], [1,1], "fluid"];
+                              hbSizesMapping = [{minViewPort: [1, 0], sizes: [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200]]}, {minViewPort: [768, 0], sizes: [[300, 250],[300, 600]]}];
+
+                              if (targeting.includes("mrec")) {
+                                    hbSizesMapping[1].sizes.pop();
+                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/"+ pub.adUnitArea, slotDimensions.splice(0, 1), "vert"+contador).defineSizeMapping(vertMrecSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
+                              } else {
+                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/"+ pub.adUnitArea, slotDimensions, "vert"+contador).defineSizeMapping(vertSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
+                              }
+                        }
+
+                        if (targeting.includes("bid")) {
+                              slotDimensions.pop();
+                              pbConfig(targetID, slotDimensions, hbSizesMapping, { pos: targeting });
+                        }            
+                  }
+            }
+      };
+      units("oop", 0);
+      units("horz", 0);
+      units("vert", 0);
+
+
+/*
+                  if (window.innerWidth < 2500) {
+                        pub.anchorSlot =  googletag.defineOutOfPageSlot("/417417404/HORZ/"+ pub.adUnitArea, googletag.enums.OutOfPageFormat.BOTTOM_ANCHOR);
+                              if (pub.anchorSlot) {
+                                    pub.anchorSlot
+                                    .setTargeting("end", "anchor")
+                                    .setTargeting("pos", "anchor")
+                                    .addService(googletag.pubads());
+                        }
+
+
+                        pub.gamInterstitial =  googletag.defineOutOfPageSlot("/417417404/OOP/" + pub.adUnitArea, googletag.enums.OutOfPageFormat.INTERSTITIAL);
+                              if (pub.gamInterstitial) {
+                                    pub.gamInterstitial
+                                    .setTargeting("pos", "gaminterstitial")
+                                    .addService(googletag.pubads()).setConfig({
+                                          interstitial: {
+                                                triggers: {
+                                                      unhideWindow: true,
+                                                },
+                                          },
+                                    });
+                        }
+                  }
+*/
+
+
+            googletag.pubads().addEventListener("slotRequested", function (event) {
+                        var x = event.slot.getAdUnitPath();
+                        if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
+                              document.getElementById(event.slot.getSlotElementId()).classList.remove("txt", "\u2714");
+                        }
+                  });
+
+                  googletag.pubads().addEventListener("slotRenderEnded", function (event) {
+                        if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
+                        document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
+                        }
+                        //if (!event.isEmpty && event.slot == pub.anchorSlot) {}                  
+                  });          
+
+                  googletag.pubads().addEventListener("impressionViewable", function (event) {
+                        if (!event.isEmpty && event.slot != pub.oop) {
+                              document.getElementById(event.slot.getSlotElementId()).classList.add("\u2714");
+                              //if (event.slot.getTargeting("pos").indexOf("autorefresh") >-1 ) {
+                              if (document.getElementById(event.slot.getSlotElementId()).classList.contains('autorefresh')) {
+                              setTimeout(function(){
+                                    pbjs.que.push(function() {
+                                          pbjs.requestBids({
+                                                timeout: pub.PREBID_TIMEOUT,
+                                                adUnitCodes: [event.slot.getSlotElementId()],
+                                                bidsBackHandler: function() {
+                                                      pbjs.setTargetingForGPTAsync([event.slot.getSlotElementId()]);
+                                                      pbjs.getAdserverTargeting([event.slot.getSlotElementId()]);   
+                                                      console.log("bidsBackHandler");
+                                                }
+                                          });
+                                          googletag.pubads().refresh([event.slot], {changeCorrelator: true});
+
+                                    });
+                              }, pub.aRefresh);
+                              }
+                        }
+                  });
+
+      googletag.pubads().enableLazyLoad({
+            fetchMarginPercent: 100,
+            renderMarginPercent: 70,
+            mobileScaling: 1.3
+      });
+      googletag.enableServices();
+
+      if(window.googletag && googletag.pubadsReady) {
+            console.log("headerbidding request");
+            pbjs.que.push(function () {
+            var priceConfig = {
+                  "buckets" : [{
+                        "precision": 2,
+                        "max" : 5,
+                        "increment" : 0.01
+                        },
+                        {
+                        "max" : 8,
+                        "increment" : 0.05
+                        },
+                        {
+                        "max" : 40,
+                        "increment" : 0.5 
+                  }]
+            };
+
+            pbjs.setConfig({
+                  /* verificar */ 
+                  /*
+                  sendBidsControl: {
+                  bidLimit: 2
+                  },
+                  */
+                  debug: false,
+                  enableSendAllBids: false,
+                  bidderTimeout: pub.PREBID_TIMEOUT,
+                  priceGranularity: priceConfig,
+                  pageUrl: window.location.hostname,
+                  performanceMetrics: false,
+
+                  // CMP INTEGRATION needed - please check https://docs.prebid.org/dev-docs/cmp-best-practices.html */
+                  /* not sure about this settings, you need to check OneTrust Integration 
+                        consentManagement: {
+                              cmpApi: 'ot',
+                              timeout: 8000,
+                              additionalConsent: '1~1' // Additional consent information as per TCF
+                              allowAuctionWithoutConsent: false, // Set to true if you want to allow auctions without user consent
+                              // Adjust the consent settings based on user interaction with your CMP
+                              // For example, if the user declines GDPR consent, set limitedAds to true
+                        // limitedAds: true,
+                              gdpr: {
+                              applies: oneTrustConsentData.gdprApplies,
+                              consentString: oneTrustConsentData.consentData // Set the consent string obtained from your CMP here
+                              }
+                        },
+                        usp: {
+                        timeout: 100 // US Privacy timeout 100ms
+                  }
+                  */
+
+            // Other global configurations...
+            //  timeoutBuffer: 400, // 400
+            //  ttlBuffer: 10,  // TTL buffer in seconds 
+                  minBidCacheTTL: 190,  // minimum time (in seconds) that bids should be kept in cache
+                  eventHistoryTTL: 80, // maximum time (in seconds) that events should be kept in memory
+                  maxNestedIframes: 5,   // default is 10
+                  /*auctionOptions: {
+                              suppressStaleRender: true
+                        },
+                  */
+                  cpmRoundingFunction: Math.round      
+            });
+                  
+            pbjs.addAdUnits(pub.bid);
+            apstag.fetchBids({slots:pub.amzbid});
+
+                  pbjs.requestBids({
+                        bidsBackHandler: pub.aBola,
+                  });
+            
+            });
+      }
+      }); /* end gpt */ 
+      setTimeout(function() {
+      window.pub.aBola();
+      window.pub.r = function () {
+            googletag.cmd.push(function () {
+                  pbjs.que.push(function () { 
+                        pbjs.removeAdUnit(); 
+                        pbjs.setTargetingForGPTAsync(); 
+                        apstag.setDisplayBids();
+                        googletag.pubads().refresh();
+                  });
+            });
+      };
+      window.pub.cr = function () {
+            var x = window.innerWidth;
+            if (x <= 767 && pub.wz !== 1) {
+                  pub.wz = 1;
+                  pub.r();
+            }
+      if (x >= 768 && x <= 1023 && pub.wz !== 2) {
+                  pub.wz = 2;
+                  pub.r();
+            }
+      if (x >= 1024 && pub.wz !== 3) {
+                  pub.wz = 3;
+                  pub.r();
+            }
+      }
+      window.addEventListener("resize", function () {
+            clearTimeout(this.id);
+            this.id = setTimeout(pub.cr, 4000);
+      });    
+      }, pub.FAILSAFE_TIMEOUT);
+/* one trust*///  } 
+});
+</script>
