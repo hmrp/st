@@ -187,6 +187,7 @@ window.pub.aBola = function () {
 // need to check CMP Integration with OneTrust please validate if this is the best way please
 //if (OneTrust && OneTrust.getActiveConsent()) {
       function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
+console.log("targetID   " + targetID);
 
      var amzSetAdUnit = {
                 slotID: targetID,
@@ -233,7 +234,7 @@ window.pub.aBola = function () {
       };
       pub.bid.push(pbSetAdUnit);
       pub.amzbid.push(amzSetAdUnit);
-      console.log("amazon   " + amzSetAdUnit);
+      console.log("pub.amzbid   " + pub.amzbid);
       }
 
       googletag.cmd.push(function () {
@@ -304,9 +305,9 @@ window.pub.aBola = function () {
 
                               if (targeting.includes("mrec")) {
                                     hbSizesMapping[1].sizes.pop();
-                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/", slotDimensions.splice(0, 1), "vert"+contador).defineSizeMapping(vertMrecSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
+                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/"+ pub.adUnitArea, slotDimensions.splice(0, 1), "vert"+contador).defineSizeMapping(vertMrecSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
                               } else {
-                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/", slotDimensions, "vert"+contador).defineSizeMapping(vertSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
+                                    pub.vert[i] = googletag.defineSlot("/417417404/VERT/"+ pub.adUnitArea, slotDimensions, "vert"+contador).defineSizeMapping(vertSizeMapping).setTargeting("pos", ["pos"+contador, targeting]).addService(googletag.pubads());
                               }
                         }
 
