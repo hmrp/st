@@ -172,10 +172,10 @@ window.pub.aBola = function () {
       if (pbjs.initAdserverSet) return;
       pbjs.initAdserverSet = true;
       googletag.cmd.push(function () {
+            apstag.setDisplayBids();
             pbjs.que.push(function () {
                   pbjs.setTargetingForGPTAsync();
                   pbjs.getAdserverTargeting(); 
-                  apstag.setDisplayBids();
                   googletag.pubads().refresh();
             });
       });
@@ -187,20 +187,21 @@ window.pub.aBola = function () {
 // need to check CMP Integration with OneTrust please validate if this is the best way please
 //if (OneTrust && OneTrust.getActiveConsent()) {
       function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
-console.log("targetID   " + targetID);
+console.log("slotName   " + targetID.replace(/\d+/g, '')+pub.adUnitArea);
 /*
      var amzSetAdUnit = {
                 slotID: targetID,
-                slotName: '417417404/'+targetID,
+                slotName: '417417404/'+targetID(retirar o numero aqui)+'/'+pub.adUnitArea,
                 sizes: sizesUsed
      }
 */
 
-var amzSetAdUnit = {
+    var amzSetAdUnit = {
                 slotID: "vert1",
-                slotName: '417417404/vert',
+                slotName: '417417404'+targetID.replace(/\d+/g, '')+pub.adUnitArea, 
                 sizes: sizesUsed
      }
+
       var pbSetAdUnit = {
             code: targetID,
             mediaTypes: {
@@ -239,7 +240,6 @@ var amzSetAdUnit = {
       };
       pub.bid.push(pbSetAdUnit);
       pub.amzbid.push(amzSetAdUnit);
-      pub.amzbid;
       }
 
       googletag.cmd.push(function () {
@@ -467,6 +467,7 @@ var amzSetAdUnit = {
             });
                   
             pbjs.addAdUnits(pub.bid);
+            apstag.fetchBids(pub.amzbid);
 
                   pbjs.requestBids({
                         bidsBackHandler: pub.aBola,
