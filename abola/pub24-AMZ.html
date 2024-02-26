@@ -467,7 +467,7 @@ console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitA
             });
                   
             pbjs.addAdUnits(pub.bid);
-            apstag.fetchBids(pub.amzbid);
+            apstag.fetchBids({slots:pub.amzbid});
 
                   pbjs.requestBids({
                         bidsBackHandler: pub.aBola,
