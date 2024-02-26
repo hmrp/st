@@ -3,6 +3,18 @@
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <!-- prebid with appNexus / Rubicon / Openx / Recommended Modules / Advanced Size Mapping / google Ad Manager Video Support integrated --> 
 
+      <script
+        src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+        type="text/javascript"
+        charset="UTF-8">
+</script>
+<script type="text/javascript">
+        function OptanonWrapper() { }
+</script>
+
+
+
+
 <style>
 /* css concept - deployment of AD elements 
 any .pub element with display:none is not loaded
@@ -231,7 +243,7 @@ console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitA
             .setTargeting("category", pub.subSeccao)
             .setTargeting("type", pub.typeSection);
 
-      var horzSizeMapping = googletag.sizeMapping().addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [300,50], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[728, 90], [468, 60], "fluid"]).addSize([1024, 200],[[970, 250], [970, 90],[840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).addSize([1150, 200],[[1150, 250], [970, 250], [840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).build(),
+      var horzSizeMapping = googletag.sizeMapping().addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[728, 90], [468, 60], "fluid"]).addSize([1024, 200],[[970, 250], [970, 90],[840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).addSize([1150, 200],[[1150, 250], [970, 250], [840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).build(),
       vertSizeMapping = googletag.sizeMapping().addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[300, 600], [300, 250], [200, 200], [1,1], "fluid"]).build(), horzTabletSizeMapping = googletag.sizeMapping().addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[728, 90], [468, 60], [1,1]]).build(), vertMrecSizeMapping = googletag.sizeMapping().addSize([0, 0], [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200], [1,1], "fluid"]).addSize([768, 200], [[300, 250], [250, 250], [200, 200], [1,1], "fluid"]).build(), targetCLASS = [["bid"], ["leaderboard"], ["mrec"], ["incontent"]];
 
       function units(className, contador) {
