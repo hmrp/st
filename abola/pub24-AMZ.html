@@ -143,10 +143,10 @@ window.pub.aBola = function () {
       if (pbjs.initAdserverSet) return;
       pbjs.initAdserverSet = true;
       googletag.cmd.push(function () {
-            apstag.setDisplayBids();
             pbjs.que.push(function () {
                   pbjs.setTargetingForGPTAsync();
-                  pbjs.getAdserverTargeting(); 
+                  pbjs.getAdserverTargeting();
+                  apstag.setDisplayBids();
                   googletag.pubads().refresh();
             });
       });
@@ -159,15 +159,8 @@ window.pub.aBola = function () {
 //if (OneTrust && OneTrust.getActiveConsent()) {
       function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
 console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea);
-/*
-     var amzSetAdUnit = {
-                slotID: targetID,
-                slotName: '417417404/'+targetID(retirar o numero aqui)+'/'+pub.adUnitArea,
-                sizes: sizesUsed
-     }
-*/
 
-    var amzSetAdUnit = {
+        var amzSetAdUnit = {
                 slotID: targetID,
                 slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
                 sizes: sizesUsed
@@ -454,6 +447,7 @@ console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitA
                   pbjs.que.push(function () { 
                         pbjs.removeAdUnit(); 
                         pbjs.setTargetingForGPTAsync(); 
+                        apstag.setDisplayBids();
                         googletag.pubads().refresh();
                   });
             });
