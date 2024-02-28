@@ -451,11 +451,9 @@ window.pub.aBola = function () {
                   
             pbjs.addAdUnits(pub.bid);
 
-            apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){ console.log(bids);  });
+            // rever se corre aqui ou na chamada final pub.aBola
 
-
-
-
+            apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){console.log(pub.amzbid); console.log(bids);  });
             pbjs.requestBids({bidsBackHandler: pub.aBola});
             
             });
