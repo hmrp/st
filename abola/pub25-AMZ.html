@@ -65,8 +65,7 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 <div class="pub horz bid"></div>
 <div class="pub vert bid"></div>
 
- -->
- 
+
 <div class="pub vert mrec bid"></div>
 <div class="pub vert pubMobile"></div>
 <div class="pub vert pubMobile  mrec bid"></div>
@@ -77,7 +76,10 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 
 <div class="pub vert mrec bid autorefresh"></div>
 
+ -->
 
+ 
+ <div class="pub vert mrec bid autorefresh"></div>
 
 
 <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
@@ -455,7 +457,6 @@ window.pub.aBola = function () {
 
             apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){console.log(pub.amzbid); console.log(bids);  });
             pbjs.requestBids({bidsBackHandler: pub.aBola});
-            
             });
       }
       }); /* end gpt */ 
