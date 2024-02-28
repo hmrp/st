@@ -149,7 +149,10 @@ document.addEventListener('DOMContentLoaded', function() { // please evaluate if
 apstag.init({
       pubID: '7046d657-31ef-4394-964e-805033a84142',
       adServer: 'googletag',
-      bidTimeout: pub.PREBID_TIMEOUT
+      bidTimeout: pub.PREBID_TIMEOUT,
+      gdpr: {
+      cmpTimeout: "200"
+      }
 });
 
 
@@ -174,11 +177,11 @@ window.pub.aBola = function () {
       function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
       //console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea);
 
-        var amzSetAdUnit = {
+      var amzSetAdUnit = {
                 slotID: targetID,
                 slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
                 sizes: sizesUsed
-     }
+      }
 
       var pbSetAdUnit = {
             code: targetID,
@@ -446,7 +449,11 @@ window.pub.aBola = function () {
                   
             pbjs.addAdUnits(pub.bid);
 
-            apstag.fetchBids({slots:pub.amzbid});
+            apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){ console.log(bids);  });
+
+
+
+
             pbjs.requestBids({bidsBackHandler: pub.aBola});
             
             });
