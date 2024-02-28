@@ -88,7 +88,8 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 <script async src="prebid8.33.0.js"></script> 
 
 <script>
-var oneTrustConsentData = { gdprApplies: true, consentData: "CONSENT_DATA" }; // should be replaced with the actual integration code provided by OneTrust.  - dont have enough information
+//var oneTrustConsentData = { gdprApplies: true, consentData: "CONSENT_DATA" }; 
+// should be replaced with the actual integration code provided by OneTrust.  - dont have enough information
 
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
@@ -151,7 +152,7 @@ apstag.init({
       adServer: 'googletag',
       bidTimeout: pub.PREBID_TIMEOUT,
       gdpr: {
-      cmpTimeout: "200"
+      cmpTimeout: "300"
       }
 });
 
@@ -180,7 +181,7 @@ window.pub.aBola = function () {
       var amzSetAdUnit = {
                 slotID: targetID,
                 slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
-                sizes: sizesUsed
+                sizes: [[300,250], [300,600]]
       }
 
       var pbSetAdUnit = {
@@ -225,13 +226,14 @@ window.pub.aBola = function () {
 
       googletag.cmd.push(function () {
 
-      /* SPECIFY AD MANAGER CMP SETTINGS HERE   */
+      /* SPECIFY AD MANAGER CMP SETTINGS HERE   
       googletag.pubads().setPrivacySettings({
       'limitedAds': false,  //  When set to true, it indicates that the user has opted for limited ad tracking or limited ad personalization.
       'nonPersonalizedAds': false, //  When set to true, it indicates that the user has explicitly opted for non-personalized ads.
       'forceGdprApplies': false, // When set to true, it indicates that GDPR applies to the user's consent status.
       'restrictDataProcessing': false, // When set to true, it indicates that the user has requested to restrict data processing.
       });
+      */
    
 
       googletag.pubads().disableInitialLoad();
