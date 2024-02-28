@@ -132,9 +132,11 @@ pub.subSeccao = adsSec;
 // abola.pt/estrelas - estrelas
 // abola.pt/miragens - miragens
 // abola.pt/a-bola-tv - abolatv
-pub.adUnitArea = ['HOME'];
 
 
+//pub.adUnitArea = ['HOME'];
+
+pub.adUnitArea = '';
 
 
 /* PREBID */
@@ -175,12 +177,11 @@ window.pub.aBola = function () {
 //if (OneTrust && OneTrust.getActiveConsent()) {
       function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
       //console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea);
-
       var amzSetAdUnit = {
                 slotID: targetID,
-               // slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
-                  slotName: '/417417404/VERT/'+pub.adUnitArea, 
-                sizes: sizesUsed
+                slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
+                sizes: sizesUsed,
+                slotParams: customKeyValues
       }
 
       var pbSetAdUnit = {
