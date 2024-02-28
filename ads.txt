@@ -1,0 +1,132 @@
+#28022024
+OWNERDOMAIN=abola.pt
+
+#BOLA
+google.com, pub-4179229551923760, DIRECT, f08c47fec0942fa0
+google.com, pub-8167067246684810, DIRECT, f08c47fec0942fa0
+
+pubmatic.com, 159855, DIRECT, 5d62403b186f2ace
+Media.net, 8CU1T4G67 , DIRECT
+
+
+#VIDOOMY
+vidoomy.com, 63490, DIRECT
+adform.com, 2742, RESELLER
+pubmatic.com, 156498, RESELLER, 5d62403b186f2ace
+freewheel.tv, 872257, RESELLER
+freewheel.tv, 894193, RESELLER
+openx.com, 540804929, RESELLER, 6a698e2ec38604c6
+lkqd.net, 430, RESELLER, 59c49fa9598a0117
+lkqd.com, 430, RESELLER, 59c49fa9598a0117
+spotxchange.com, 218443, RESELLER, 7842df1d2fe2db34
+spotx.tv, 218443, RESELLER, 7842df1d2fe2db34
+indexexchange.com, 192311, RESELLER
+tremorhub.com, 4cywq-a04wk, RESELLER, 1a4e959a1b50034a
+rubiconproject.com, 24386, RESELLER, 0bfd66d529a55807
+google.com, pub-2831120411392012, RESELLER, f08c47fec0942fa0
+
+#SAPO
+smartadserver.com, 1510, DIRECT
+google.com, pub-4939634212290203, DIRECT, f08c47fec0942fa0
+appnexus.com, 9795, DIRECT
+
+#SMART
+smartadserver.com, 4511-OB, RESELLER, 060d053dcf45cbf3
+smartadserver.com, 4511, DIRECT, 060d053dcf45cbf3
+pubmatic.com, 156439, RESELLER, 5d62403b186f2ace
+pubmatic.com, 154037, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 16114, RESELLER, 0bfd66d529a55807
+openx.com, 537149888, RESELLER, 6a698e2ec38604c6
+appnexus.com, 3703, RESELLER, f5ab79cb980f11d1
+loopme.com, 5679, RESELLER, 6c8d5f95897a5a3b
+xad.com, 958, RESELLER, 81cbf0a75a5e0e9a
+video.unrulymedia.com, 2564526802, RESELLER
+smaato.com, 1100044045, RESELLER, 07bcf65f187117b4
+pubnative.net, 1006576, RESELLER, d641df8625486a7b
+verve.com, 15503, RESELLER, 0c8f5958fc2d6270
+adyoulike.com, b4bf4fdd9b0b915f746f6747ff432bde, RESELLER
+axonix.com, 57264, RESELLER
+admanmedia.com, 43, RESELLER
+sharethrough.com, OAW69Fon, RESELLER, d53b998a7bd4ecd2
+smartadserver.com, 4016, DIRECT, 060d053dcf45cbf3 #Global
+smartadserver.com, 4012, DIRECT, 060d053dcf45cbf3 #EUR
+smartadserver.com, 4071, DIRECT, 060d053dcf45cbf3 #USD
+smartadserver.com, 4073, DIRECT, 060d053dcf45cbf3 #BRL
+smartadserver.com, 4074, DIRECT, 060d053dcf45cbf3 #news-equativ-mexico
+
+#GroupM
+appnexus.com, 2964, RESELLER
+appnexus.com, 7167, RESELLER
+
+
+#AMAZON
+aps.amazon.com,7046d657-31ef-4394-964e-805033a84142,DIRECT
+pubmatic.com,160006,RESELLER,5d62403b186f2ace
+pubmatic.com,160096,RESELLER,5d62403b186f2ace
+rubiconproject.com,18020,RESELLER,0bfd66d529a55807
+indexexchange.com,192410,RESELLER,50b1c356f2c5c8fc
+pubmatic.com,157150,RESELLER,5d62403b186f2ace
+openx.com,540191398,RESELLER,6a698e2ec38604c6
+appnexus.com,1908,RESELLER,f5ab79cb980f11d1
+smaato.com,1100044650,RESELLER,07bcf65f187117b4
+ad-generation.jp,12474,RESELLER,7f4ea9029ac04e53
+districtm.io,100962,RESELLER,3fd707be9c4527c3
+yieldmo.com,2719019867620450718,RESELLER
+appnexus.com,3663,RESELLER,f5ab79cb980f11d1
+rhythmone.com,1654642120,RESELLER,a670c89d4a324e47
+yahoo.com,55029,RESELLER,e1a5b5b6e3255540
+gumgum.com,14141,RESELLER,ffdef49475d318a9
+admanmedia.com,726,RESELLER
+sharethrough.com,7144eb80,RESELLER,d53b998a7bd4ecd2
+emxdgt.com,2009,RESELLER,1e1d41537f7cad7f
+appnexus.com,1356,RESELLER,f5ab79cb980f11d1
+contextweb.com,562541,RESELLER,89ff185a4c4e857c
+smartadserver.com,4125,RESELLER,060d053dcf45cbf3
+themediagrid.com,JTQKMP,RESELLER,35d5010d7789b49d
+sovrn.com,375328,RESELLER,fafdf38b16bf6b2b
+lijit.com,375328,RESELLER,fafdf38b16bf6b2b
+beachfront.com,14804,RESELLER,e2541279e8e2ca4d
+improvedigital.com,2050,RESELLER
+mintegral.com,10043,RESELLER,0aeed750c80d6423
+sonobi.com,7f5fa520f8,RESELLER,d1a215d9eb5aee9e
+onetag.com,770a440e65869c2,RESELLER
+media.net,8CUZ1MK22,RESELLER
+risecodes.com,63832beef8189a00015cb6d3,RESELLER
+adyoulike.com,7463c359225e043c111036d7a29affa5,RESELLER
+minutemedia.com,01gya4708ddm,RESELLER
+mediago.io,045ac24b888bcf59a09731e7f0f2084f,RESELLER
+visiblemeasures.com,1052,RESELLER
+undertone.com,4205,RESELLER,d954590d0cb265b9
+admedia.com,AM1601,RESELLER
+kargo.com,8824,RESELLER
+
+
+# GameDistribution
+spotxchange.com, 153598, RESELLER, 7842df1d2fe2db34
+spotx.tv, 153598, RESELLER, 7842df1d2fe2db34
+google.com, pub-1313834454494130, RESELLER, f08c47fec0942fa0
+google.com, pub-2316275586951220, RESELLER, f08c47fec0942fa0
+improvedigital.com, 545, RESELLER
+aolcloud.net, 21410, RESELLER
+appnexus.com, 9994, DIRECT
+indexexchange.com, 188249, DIRECT
+pubmatic.com, 156946, DIRECT, 5d62403b186f2ace
+
+#TEADS
+#teads.tv, 22579, DIRECT, 15a9c44f6d26cbe1
+teads.tv, 27904, DIRECT, 15a9c44f6d26cbe1
+
+# SOVRN
+lijit.com, 420585, DIRECT, fafdf38b16bf6b2b #SOVRN
+lijit.com, 420585-eb, DIRECT, fafdf38b16bf6b2b #SOVRN
+openx.com, 538959099, RESELLER, 6a698e2ec38604c6
+pubmatic.com, 137711, RESELLER, 5d62403b186f2ace
+pubmatic.com, 156212, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 17960, RESELLER, 0bfd66d529a55807
+appnexus.com, 1019, RESELLER, f5ab79cb980f11d1
+
+
+
+#contacts
+#publicidadeagencias@abola.pt
+contact=https://www.abola.pt/Info/Publicidade
