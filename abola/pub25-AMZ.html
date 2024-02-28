@@ -160,8 +160,10 @@ window.pub.aBola = function () {
       if (pbjs.initAdserverSet) return;
       pbjs.initAdserverSet = true;
       googletag.cmd.push(function () {
+            pbjs.requestBids({bidsBackHandler: pub.aBola});
             apstag.setDisplayBids();
             pbjs.que.push(function () {
+                  apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){console.log(pub.amzbid); console.log(bids);  });
                   pbjs.setTargetingForGPTAsync();
                   pbjs.getAdserverTargeting();
                   googletag.pubads().refresh();
@@ -451,9 +453,11 @@ window.pub.aBola = function () {
             pbjs.addAdUnits(pub.bid);
 
             // rever se corre aqui ou na chamada final pub.aBola
-
+           
+            /* og here
             apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){console.log(pub.amzbid); console.log(bids);  });
             pbjs.requestBids({bidsBackHandler: pub.aBola});
+            */
             });
       }
       }); /* end gpt */ 
@@ -461,10 +465,12 @@ window.pub.aBola = function () {
       window.pub.aBola();
       window.pub.r = function () {
             googletag.cmd.push(function () {
+                  apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){console.log(pub.amzbid); console.log(bids);  });
+                  apstag.setDisplayBids();
                   pbjs.que.push(function () { 
                         pbjs.removeAdUnit(); 
+                        pbjs.requestBids({bidsBackHandler: pub.aBola});
                         pbjs.setTargetingForGPTAsync(); 
-                        apstag.setDisplayBids();
                         googletag.pubads().refresh();
                   });
             });
