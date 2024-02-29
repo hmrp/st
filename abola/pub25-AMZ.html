@@ -86,6 +86,17 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 <script async src="prebid8.33.0.js"></script> 
 
 <script>
+      
+__tcfapi('getTCData', 2, (tcData, success) => {
+if (success) {
+console.log('TC Data:', tcData);
+} else {
+console.error('Failed to get TC Data');
+}
+});
+
+
+
 //var oneTrustConsentData = { gdprApplies: true, consentData: "CONSENT_DATA" }; 
 // should be replaced with the actual integration code provided by OneTrust.  - dont have enough information
 
