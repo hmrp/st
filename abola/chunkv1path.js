@@ -816,7 +816,7 @@
 
 
         57331: function(a, e, t) {
-            (window.__NEXT_P = window.__NEXT_P || []).push(["/[[...path]]", function() {
+            (window.__NEXT_P = window.__NEXT_P || []).push(["https://hugopedroso.com/abola/chunkv1path.js", function() {
                 return t(90266)
             }])
         }
