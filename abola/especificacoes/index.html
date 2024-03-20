@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>A BOLA - Especificações | Abola.pt </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500;800&display=swap" rel="stylesheet">
+
+
+
+
+  <style>
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300,700);
+html {
+  display: flex;
+  scroll-behavior: smooth;
+}
+
+body {
+background:#fff;
+  width: 100%;
+  -webkit-text-size-adjust: 100%;
+  font-family: 'Open Sans', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+
+  width: 100%;
+  height: 100%;
+  min-width:100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+
+#fundo {
+ background-image: url(fundo3.png);
+  background-size: cover;
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-position: top center;
+    opacity:0.23;
+}
+
+#fundo:after {
+    position: absolute;
+    content:"";
+    height:100%;
+    width:100%;
+    top:0;
+    left:0;
+    background: linear-gradient(to bottom, rgba(255,0,0,0) 0%,rgb(0 0 0) 100%)
+}
+
+
+.blur {
+  filter: blur(15px);
+  -webkit-filter: blur(15px);
+}
+
+
+
+input {
+  -webkit-appearance: none;
+}
+
+*, *:after, *:before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+html, body {
+  min-height: 100%;
+}
+
+.card {
+  border-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1500px;
+  margin:150px auto;
+}
+.card__header {
+  flex-basis: 100%;
+  margin: 80px 20px 40px;
+}
+.card__header .description {
+  color: #777;
+  font-size: .8rem;
+  text-align: center;
+}
+.card__content {
+  flex-basis: 100%;
+  padding: 5px;
+  position: relative;
+}
+
+h1, h2, h3 {
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.req {
+  border: 0 none;
+  font-size: 1rem;
+  line-height: 2.5rem;
+  outline: none;
+  transition: all .1s linear;
+  width: 100%;
+  position: relative;
+}
+.req:focus {
+  outline: 0;
+  background: white;
+}
+
+.field {
+  margin-bottom: 40px;
+  position: relative;
+}
+.field.line {
+  border-bottom: 1px solid #eee;
+}
+
+.placeholder {
+  cursor: text;
+  position: absolute;
+  top: 10px;
+  color: #909090;
+  transform: translate3d(0, 0, 0);
+  transition: all 0.2s ease-in-out;
+}
+
+input {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 400;
+  background: rgba(255, 255, 255, 0.97);
+  color: #212121;
+  outline: 0;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  transition: all 0.2s ease-in-out;
+}
+input.ui-full + label, input:focus + label {
+  color: #f6ac05;
+  font-size: 12px;
+  transform: translate3d(0, -25px, 0);
+}
+
+label {
+  position: absolute;
+  color: #909090;
+  transform: translate3d(0, 0, 0);
+  transition: all 0.2s ease-in-out;
+}
+
+#choice option {
+  color: black;
+}
+
+.empty {
+  color: gray;
+}
+
+#choice {
+  font-family: 'Lato';
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 10px;
+  padding-right: 50px;
+  margin-top: 5px;
+  font-size: .9rem;
+}
+
+.dropdown-wrapper {
+  border: 1px solid #eee;
+  border-radius: 5px;
+  padding: 10px 5px;
+  position: relative;
+}
+.dropdown-wrapper:after {
+  font-family: 'FontAwesome';
+  content: "\f107";
+  color: #f6ac05;
+  position: absolute;
+  right: 10px;
+  top: 12px;
+}
+.dropdown-wrapper.outline {
+  border: 1px solid rgba(63, 184, 175, 0.5);
+  box-shadow: 0 0 10px rgba(63, 184, 175, 0.2);
+}
+
+select {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background: none;
+  border: 0 none;
+  font-size: .8em;
+  outline: 0;
+}
+
+.right {
+  float: right;
+}
+
+.inline {
+  display: inline-block;
+}
+
+#btn {
+  background-color: #fff;
+  border: 1px solid #f6ac05;
+  color: #f6ac05;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-top: 20px;
+  padding: 20px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+#btn:hover {
+  background-color: #f6ac05;
+  color: #fff;
+}
+#btn:active {
+  background-color: #180303;
+}
+#btn[disabled] {
+  background-color: #fff !important;
+  color: #f6ac05 !important;
+  opacity: .3;
+  cursor: not-allowed;
+}
+
+a {
+  color: #7e7e7e;
+}
+a:hover {
+  color: #000;
+}
+
+a:focus {
+  color: #000;
+}
+
+
+.download {color:#bf1313;}
+
+.ui-full:invalid + label {
+  color: red;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 5px;
+  display: none;
+  padding: 30px 50px 30px 90px;
+  margin-bottom: 30px;
+  position: relative;
+}
+.modal.show {
+  -webkit-animation: grow 1s 1;
+          animation: grow 1s 1;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+}
+.modal.shrink {
+  -webkit-animation: shrink 1.5s 1;
+          animation: shrink 1.5s 1;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+}
+.modal:before {
+  color: #f6ac05;
+  content: "\f00c";
+  font-family: 'FontAwesome';
+  font-size: 40px;
+  position: absolute;
+  left: 25px;
+  top: 50%;
+  margin-top: -25px;
+}
+.modal h2 {
+  color: #f6ac05;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+.modal p {
+  font-size: .9rem;
+  line-height: 1.5rem;
+}
+
+@-webkit-keyframes grow {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scaleX(0) scaleY(0);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(0deg) scaleX(1.1) scaleY(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scaleX(1) scaleY(1);
+  }
+}
+
+@keyframes grow {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scaleX(0) scaleY(0);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(0deg) scaleX(1.1) scaleY(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scaleX(1) scaleY(1);
+  }
+}
+@-webkit-keyframes shrink {
+  0% {
+    opacity: 1;
+    transform: rotate(0deg) scaleX(1) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(0deg) scaleX(0) scaleY(0);
+  }
+}
+@keyframes shrink {
+  0% {
+    opacity: 1;
+    transform: rotate(0deg) scaleX(1) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(0deg) scaleX(0) scaleY(0);
+  }
+}
+@-webkit-keyframes fade {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@-webkit-keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.focus {
+  font-weight: bold;
+}
+
+#refer_pos {
+  display: inline-block;
+}
+
+.close-modal {
+  cursor: pointer;
+  float: right;
+  position: relative;
+}
+.close-modal:before {
+  color: #aaa;
+  content: "\f00d";
+  position: absolute;
+  right: -40px;
+  top: -20px;
+  padding: 10px;
+  font-family: 'FontAwesome';
+  transition: all 0.2s ease-in-out;
+}
+.close-modal:hover:before {
+  color: #919191;
+}
+
+.reset {
+  color: #777;
+  cursor: pointer;
+  font-size: .8rem;
+  margin: 0 auto;
+  margin-top: 30px;
+  padding: 10px 20px;
+  text-align: center;
+  display: table;
+  transition: all 0.2 ease-in-out;
+}
+.reset:hover {
+  color: #5e5e5e;
+}
+
+.refer-card {
+  margin: 0 auto;
+  margin-bottom: 100px;
+
+  width:100%;
+  height:100%;
+  position:fixed;
+  top: 0;
+
+  display: none;
+  transition: all 0.6s ease-in-out;
+}
+
+
+.refer-card.fade {
+  display: block;
+ 
+  -webkit-animation: drop .3s 1;
+          animation: drop .3s 1;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+          overflow: auto;
+          z-index: 999999;
+}
+
+@-webkit-keyframes drop {
+  0% {
+    transform: translateY(-70px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes drop {
+  0% {
+    transform: translateY(-70px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+li {
+  list-style: none;
+}
+
+.positions {
+  display: table;
+  background:#fdfdfd;
+  margin: 100px auto;
+  width: 475px;
+  transition: all 0.3s ease-in-out;
+  -webkit-animation: fade .3s 1;
+          animation: fade .3s 1;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+          visibility:visible;
+}
+.positions.fadeOut {
+  visibility:hidden;
+  -webkit-animation: fadeOut .4s 1;
+          animation: fadeOut .4s 1;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+}
+.positions ul {
+  background-color: #f7f7f7;
+  border-radius: 5px;
+  position: relative;
+}
+.positions .pos-card {
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  padding: 25px;
+  flex-basis: 100%;
+  margin: auto;
+  transition: all 0.4s ease-in-out;
+  scroll-margin: 100px;
+  scroll-snap-type: y proximity;
+  
+}
+
+/* WHAT */
+.positions .pos-card:active {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.positions .pos-card:hover .formato {
+color:#b90000;
+}
+
+
+
+.positions .pos-card:hover .exemploimg {
+ opacity:1;
+ filter: saturate(1);
+}
+
+.positions .pos-card:hover .formato.new:after {
+  background-color:#000;
+}
+
+
+.exemploimg {
+  transition: all 0.4s ease-in-out;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  max-width: 100%;
+  height:auto;
+    border: 10px solid #ffffff;
+    margin: 10px 0px 10px;
+    opacity:0.6;
+    filter: saturate(0);
+
+}
+
+.positions .pos-card:hover {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+
+.positions .pos-card:last-child {
+  border-bottom: 0 none;
+  border-bottom:1px ridge rgb(63 184 175 / 14%);
+}
+.positions .content {
+  position: relative;
+}
+.positions .formato {
+  font-size:1.4rem;
+  font-weight:bold;
+  color:#733939;
+}
+.positions .formato.new:after {
+  content: "Novo";
+  padding: 4px 6px;
+  font-size: .6rem;
+  margin-left: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #fff;
+  background-color: #7e7e7e;
+  border-radius: 3px;
+  top:-4px;
+  position: relative;
+}
+.positions .dept {
+  color: #777;
+  font-size: 1.1rem;
+  line-height:1.5rem;
+}
+
+
+
+ .positions .refer {
+  font-size: 12px;
+    right: 0;
+    display: table;
+    bottom: 0;
+    margin: auto;
+    color: #777;
+    position: relative;
+    padding: 15px 184px;
+    border-radius: 1px;
+    border: 1px solid #ddd;
+    text-transform: uppercase;
+    margin: 0 0 5px 0;
+}
+
+
+.positions .refer:hover {
+  background-color: #f8f8f8;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.positions .desc {
+  display: none;
+  color: #555;
+  font-size: 1.1rem;
+  transition: all 0.2s ease-in-out;
+  text-align: justify;
+}
+.positions .desc.reveal {
+  display: block;
+  -webkit-animation: fade .5s 1;
+          animation: fade .5s 1;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+  padding-top: 30px;
+  visibility: visible;
+}
+.positions .desc li {
+  list-style: disc;
+  margin-bottom: 0.5rem;
+    line-height: 1.5rem;
+    margin:5px 65px 15px 20px;
+}
+.positions .desc li:last-child {
+  margin-bottom: 0;
+}
+
+h2 {
+  padding:1rem;
+  color:#e3e3e3;
+  background:#000;
+  font-size:1.6rem;
+  text-indent: 15px;
+}
+
+
+.multid, .desktop, .tablet, .smartphone {
+background-repeat: no-repeat;
+background-size:cover;
+width: 24px;
+height: 24px;
+display: inline-block;
+bottom: -5px;
+position: relative;
+margin: 20px 10px 5px 0px;
+-webkit-print-color-adjust: exact !important; 
+    color-adjust: exact !important;             
+    print-color-adjust: exact !important;   
+    text-indent:-9999vw;
+}
+
+
+.multid {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAjklEQVR4nO2V0QnAIAwF37fbuKodqXaXdIoUQWgphGpNECQH+ZPkME8EHOcmAEgATgCsXFR7lxkim8HgdxUJEaqHIvSJj5sQ4VpWfPZnF4CvACohPBqeY7YMITeWuYCEC7CvAEJGSOkz+h3CpPz1dguEKkGzBHqRGq0nwLNXwLMFehkVHCY3DN/HxzircAFeyOy/GurZ/AAAAABJRU5ErkJggg==")
+}
+
+.desktop {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAi0lEQVR4nO2WSwqAMAxEHygeSu/n557WSyhEhChVd4IRZB7MJovO0KZpQQiogAGYAHtZCejd86APML6qywMkL9YB7dBkO3FgrihufqYA6AhQE6JraBpEaBTHcZu8yQvbUxn1HI95sfvgQ9LmASoPse/Emxrd/PQle0LpC858ROEBlggze6j/BBD/ZgUPVc+hUW5ZuwAAAABJRU5ErkJggg==")
+}
+
+.tablet {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAh0lEQVR4nO2XSwqAMAxE38pD6f383NN6jYgQQVwZGkVlBmbXJEPa5gMvRQNMwAJYJQswus/LGBMCnzlEBBQ3aqlHd8jEZZgzC2F/JgHoCtAjRN/QVIhQKc6DmpGpHfPXgcSSz31PwG3+ihtsI3XWWD5HjIYbFpM+IqBxEXsmajh78NBqJvAUVi2bs71A8Ht6AAAAAElFTkSuQmCC")
+}
+
+.smartphone {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnklEQVR4nO2W/QmDMBBH3wo6g+7SDqp2jkoXaTfQAU4CVyihNVKuWOT34P4IJrmH+ToQokwNDMAEWCEm75vGhHHZkDiPJBHG7JM23n68SXj3b83LnwjDPJ6cM4mU/LTSP1yghARMS4A2ITqG6CIyAjFdxfzpY3QDxj0FRuC6p8AnwgXmrCRbo/1FSTZ8UZT2kQK1T7i1LO+AKlJAHJsFdsqOTjHg96AAAAAASUVORK5CYII=")
+}
+
+h3 {
+  font-size:0.8rem;
+  padding: 1rem 0px 5px 0px;
+}
+
+
+
+.video-container {
+position: relative;
+padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+#video {
+position: relative;
+width: 100%;
+height: 100%;
+}
+
+
+#return {
+  width: 89px;
+    height: 25px;
+    position: relative;
+    z-index: 66999;
+    left: 0;
+    right: 0;
+    color: #fdbe06;
+    cursor: pointer;
+    background: #0e0d0d;
+    padding: 2px;
+}
+
+
+.close {
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  position: relative;
+  margin: -22px 0 0 65px;
+}
+.close:before, .close:after {
+  content: "";
+  width: 16px;
+  border: 2px solid #c11b1b;
+  position: absolute;
+  top: 11px;
+  border-radius: 15px;
+}
+.close:before {
+  transform: rotate(45deg);
+  right: 2px;
+}
+.close:after {
+  transform: rotate(-45deg);
+  left: 2px;
+}
+
+
+.fixed-nav-bar { 
+  position: fixed; top: 0; left: 0; z-index: 9999; width: 100%;  background-color: #fff; 
+
+  margin: 16px auto 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-top: 3px solid #e20613;
+    border-bottom: 3px solid #e20613;
+    height: 59px;
+
+  }
+
+
+  .fixed-nav-bar:before {
+    content: "";
+    position: absolute;
+    top: -33px;
+    width: 100%;
+    background: #fff;
+    height: 10px;
+    padding-top: 30px;
+}
+
+.refer {   user-select: none;
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;}
+
+
+@media (hover: none) {
+  .positions .refer {
+    opacity: 1;
+  }
+}
+
+ @media (orientation: landscape) and (max-height: 600px) {
+    .card {
+    margin: 0px auto;
+  }
+  .fixed-nav-bar {position:relative;}
+}
+
+@media print {
+  #fundo {display:none;}
+  .fixed-nav-bar{position:relative;}
+  .pos-card {break-inside: avoid;}
+}
+
+
+@media (orientation: portrait) and (max-width: 460px) {
+  h3 {  font-size:1.1rem;}
+  .positions .desc {font-size:1.3rem;}
+}
+
+@media (min-width: 1500px) {
+  #fundo {background-size:contain !important;}
+}
+
+
+.copiaTXT {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAA0CAMAAAD/uJueAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAW5QTFRFAAAAMjIyCgoKAAAAEBAQJSUlZmZmVFRUEBAQAwMDAAAABwcHEhISLCwsVlZWCgoKDw8PQ0NDMjIyDQ0NAAAAEhISDAwMFBQUPDw8CgoKCQkJNzc3GBgYCAgIISEhJCQkFhYWEBAQEBAQDw8PFBQUMjIyKSkpCAgIHx8fLi4uAQEBLCwsNDQ0BQUFAQEBBgYGCQkJCgoKCAgIAwMDOTk5ExMTBAQEEBAQMDAwc3NzfHx8cHBwRUVFHR0dGRkZSEhIDQ0NEhIScnJyEhISDg4OICAgBwcHtbW1FhYWISEhGRkZHx8fKioqLy8vBQUFCgoKKioqRUVFICAgIyMjX19fDAwMvb29FRUVERERIiIiDg4OEBAQLS0txsbGCwsLDw8PIiIiERERERERQ0NDvr6+tLS0YmJiFRUVGRkZXV1dTExMCAgIDAwMNTU1BwcHAQEBBwcHPT09MzMzGRkZEhISAQEBAAAAEhISHBwcOzs7wmDB+gAAAHp0Uk5TABUzMzMlBhDA///ury8U09EeQYCAl+OMGc3gOGz7XUyp6//zvEhg/2Zv/1038/3fz8/Z/Syy+5ciEBAQGnikFPe5AsnnNIUDoECgQGBI9+9QCExDBogEoP9A8cckBNPgMJzANQUGI6KQDB/r50ft/ug8Jn7FzMzMhiI0dYe0AAABDklEQVR4nO3UR1PCQByG8VVUyIsFEHtBA7bYUOwtgApYUcHee+9i+faOp5DN5M/sTWbyHN+d32H3sIxZ5UsFhTZdRcUlOYTdIUGX5Cwto0l5BQy53LTxVHp1VVUDNUJXY6y2DvUNgqYRTc1mZ76WVjk7f6Dtb25HR6eJ6FIMF5e6SdLTi77+4IBWcDAE5xBFhjEyOjY+oTU5NR3CjEqQMCL8+0dnMTdPEAWxOL8lIC8QBPAatkXISxaxyH8ky+JkZTW5JkjWN1JpQWKegs0tftvGzi5B9rB/wE2HRzg+IcgpcHZ+kTVcXl0DN7cEubs3/vl4UAnB2OPTMy9eXknB2Nv7R+ZTK/P1/ZNDWOVxv/90Rln5lVK1AAAAAElFTkSuQmCC);
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    background-size: cover;
+    cursor: pointer;
+    left: 400px;
+    position: absolute;
+    border: 1px solid #fff;
+    margin: 0px 0px 0px 10px;
+    opacity:0.8;
+    
+}
+
+.copiaTXT:hover {
+  background-color:#e1e1e1;
+  opacity:1;
+}
+
+.copiaTXT:active {
+  background-color:#00f500;
+  opacity:1;
+}
+
+
+.copiaTXT:focus .copiaTXT::after  {
+  outline: 2px solid black;
+}
+
+
+.copiaTXT:active.copiaTXT::after {
+  content: "TEXTO COPIADO";
+    font-style: italic;
+    color: #333;
+    
+    font-size: 10px;
+    position: absolute;
+    bottom: -2px;
+    left: -50px;
+    width: 60px;
+    text-align: left;
+    visibility: visible;
+}
+
+.copiaTXT:focus-visible  .copiaTXT::after {
+visibility: visible;
+}
+
+
+
+
+
+
+
+
+.exemploimg:hover {
+  opacity:1;
+  filter: saturate(1);
+}
+
+#notasgerais {height:350px; background:linear-gradient(to bottom, rgba(255,0,0,0) 95%,rgb(0 0 0) 100%)}
+#notasgerais li {
+  margin: 13px 15px 15px;
+}
+</style>
+</head>
+
+
+
+
+
+
+
+
+
+<body>
+<nav class="fixed-nav-bar"> <a href="https://www.abola.pt" target="_blank"><img src="https://www.abola.pt/images/logoabola.png" border="0" style="position: absolute; margin: 0 auto; left: 0; right: 0; width: 300px; height: auto;"></a></nav>
+
+<div id="fundo"></div>
+
+<div class="container positions">
+ 
+  <h2>ESPECIFICAÇÕES</h2>
+  <ul>
+    <a  rel="noopener" href="#billboard" target="_self">
+      <li class="pos-card" id="billboard">
+        <div class="content">
+          <button class="copiaTXT" title="COPIAR TEXTO"></button>
+          <div class="formato">BILLBOARD</div>
+          <div title="DESKTOP"  class="desktop">DESKTOP</div>
+  
+          <div class="dept">1150 x 250px (L x A) @ 72 DPI - RGB</div>
+          <div class="dept">970 x 250px (L x A) @ 72 DPI - RGB</div>
+          <div title="DESKTOP"  class="desktop">DESKTOP ou </div><div title="TABLET" class="tablet">TABLET</div>
+          <div class="dept">728 x 90px (L x A) @ 72 DPI - RGB</div>
+          <div title="SMARTPHONE" class="smartphone">SMARTPHONE</div>
+  
+          <div class="dept">320 x 100px (L x A) @ 72 DPI - RGB</div>
+          <div class="dept">300 x 100px (L x A) @ 72 DPI - RGB</div>
+          <img class="exemploimg" src="exbillboard.PNG" width="425" height="495" border="0" >
+
+  
+          
+          <object><a rel="noopener" href="#ex_billboard" target="_self" class="refer">Exemplo</a></object>
+        </div>
+        <ul class="desc"> 
+  
+          <h3>FORMATOS</h3>
+          <li> .JPG / .GIF / .PNG / .MP4 (h.264) / HTML5 / TAG EXTERNA</li>
+          <h3>TAMANHO MÁXIMO</h3>
+         <li>120KB (+950KB Vídeo)</li>
+         <h3>VÍDEO / ÁUDIO</h3>
+         <li>Vídeo é opcional</li>
+         <li>Vídeo não deve iniciar com áudio. Apenas perante interação do utilizador sob um botão devidamente assinalado</li>
+         <li>Botões de áudio e de reprodução, poderão ser automaticamente gerados quando servidos directamente no nosso sistema</li>
+          <li>Possibilidade de billboard vídeo só em desktop</li>
+          <h3>NOTAS</h3>
+          <li>Necessário apenas o envio de uma das dimensões por dispositivo</li>
+          <li>Programmatic Guaranteed ✔</li>
+          <li>Preferred Deal ✔</li>
+  
+        </ul>
+      </li>
+    </a> 
+
+    
+    <a rel="noopener" href="#cubo" target="_self"> 
+      <li class="pos-card" id="cubo">
+    
+        <div class="content">
+          <button class="copiaTXT" title="COPIAR TEXTO"></button>
+          <div class="formato new">CUBO INTERATIVO</div>
+          <div title="multidispositivos"  class="multid"></div>
+          <div class="dept">300 x 300px (L x A) @ 72 DPI - RGB</div>
+          <img class="exemploimg" src="excubo.png" width="425" height="495" border="0" >
+          <object><a rel="noopener" href="#ex_cubo" target="_self" class="refer">Exemplo</a></object>
+        </div>
+        <ul class="desc">
+          <h3>FORMATOS</h3>
+          <li> .JPG / .PNG</li>
+          <h3>TAMANHO MÁXIMO</h3>
+         <li>~80KB CADA - 480KB TOTAL</li>
+          <h3>NOTAS</h3>
+          <li>Possiblidade de incorporar até 6 imagens diferentes</li>
+          <li>Cada imagem pode ter um endereço de reencaminhamento diferente</li>
+          <li>Programmatic Guaranteed ✔</li>
+        </ul>
+      </li>
+    </a>
+
+
+
+    <a  rel="noopener" href="#halfpage" target="_self">
+      <li class="pos-card"  id="halfpage">
+        <div class="content">
+          <button class="copiaTXT" title="COPIAR TEXTO"></button>
+          <div class="formato">HALFPAGE</div>
+          <div class="dept"><div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div>  300 x 600px (L x A) @ 72 DPI - RGB</div>
+          <img class="exemploimg" src="exhalfpage.png" width="425" height="495" border="0" >
+
+          <object><a rel="noopener" href="#ex_halfpage" target="_self" class="refer">Exemplo</a></object>
+        </div>
+        <ul class="desc"> 
+          <h3>FORMATOS</h3>
+          <li> .JPG / .GIF / .PNG / .MP4 (h.264) / HTML5 / TAG EXTERNA</li>
+          <h3>TAMANHO MÁXIMO</h3>
+         <li>80KB (+950KB Vídeo)</li>
+         <h3>VÍDEO / ÁUDIO</h3>
+         <li>Vídeo é opcional</li>
+         <li>Vídeo não deve iniciar com áudio. Apenas perante interação do utilizador sob um botão devidamente assinalado</li>
+         <li>Botões de áudio e de reprodução, poderão ser automaticamente gerados quando servidos directamente no nosso sistema</li>
+          <li>Necessário uma imagem de backup 300x600px em banners com vídeo</li>
+          <h3>NOTAS</h3>
+          <li>Programmatic Guaranteed ✔</li>
+          <li>Preferred Deal ✔</li>
+        </ul>
+      </li>
+    </a>
+  
+    <a  rel="noopener" href="#incontentgaleria" target="_self">
+      <li class="pos-card" id="incontentgaleria">
+        <div class="content">
+          <button class="copiaTXT" title="COPIAR TEXTO"></button>
+          <div class="formato new">INCONTENT GALERIA</div>
+          <div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div>
+          <div class="dept">300 x 300px (L x A) @ 72 DPI - RGB</div>
+          <img class="exemploimg" src="exincontentgaleria.png" width="425" height="495" border="0" >
+          <object><a rel="noopener" href="#ex_incontentgaleria" target="_self" class="refer">Exemplo</a></object>
+        </div>
+        <ul class="desc">
+          <h3>FORMATOS</h3>
+          <li> .JPG / .PNG</li>
+          <h3>TAMANHO MÁXIMO</h3>
+         <li>~80KB CADA - 480KB TOTAL</li>
+          <h3>NOTAS</h3>
+          <li>Possiblidade de incorporar de 3 a 8 imagens diferentes</li>
+          <li>Cada imagem pode ter um endereço de reencaminhamento diferente</li>
+          <li>Programmatic Guaranteed ✔</li>
+        </ul>
+      </li>
+    </a>
+  
+    <a  rel="noopener" href="#incontentanim" target="_self">
+      <li class="pos-card" id="incontentanimation">
+        <div class="content">
+          <button class="copiaTXT" title="COPIAR TEXTO"></button>
+          <div class="formato new">INCONTENT ANIMATION</div>
+          <div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div>
+          <div class="dept">1920x1080px (L x A)</div>
+          <div class="dept">1280x720px (L x A)</div>
+          <div class="dept">640×480px (L x A)</div>
+
+          <img class="exemploimg" src="exincontentanim.png" width="425" height="495" border="0" >
+          <object><a rel="noopener" href="#ex_incontentanim" target="_self" class="refer">Exemplo</a></object>
+        </div>
+        <ul class="desc">
+          <h3>FORMATOS</h3>
+          <li> .MP4 (h.264)</li>
+          <h3>TAMANHO MÁXIMO</h3>
+         <li>950KB</li>
+         <h3>ÁUDIO</h3>
+          <li>MP3 ou AAC</li>
+          <h3>VÍDEO</h3>
+          <li>Maximo 300frames</li>
+          <li>25FPS ou 30FPS</li>
+          <h3>NOTAS</h3>
+          <li>Necessário apenas o envio de uma das dimensões por dispositivo</li>
+          <li>Programmatic Guaranteed ✔</li>
+        </ul>
+      </li>
+    </a>
+
+
+    <a  rel="noopener" href="#incontentvideo" target="_self">
+      <li class="pos-card" id="incontentvideo">
+        <div class="content">
+          <button class="copiaTXT" title="COPIAR TEXTO"></button>
+          <div class="formato new">INCONTENT VÍDEO</div>
+          <div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div>
+          <div class="dept">1920x1080px (L x A)</div>
+          <div class="dept">1280x720px (L x A)</div>
+          <div class="dept">640×480px (L x A)</div>
+
+          <img class="exemploimg" src="exincontentvideo.png" width="425" height="495" border="0" >
+          <object><a rel="noopener" href="#ex_incontentvideo" target="_self" class="refer">Exemplo</a></object>
+        </div>
+        <ul class="desc">
+          <h3>FORMATOS</h3>
+          <li> .MP4 (h.264) / TAG VAST / TAG VPAID</li>
+          <h3>TAMANHO MÁXIMO</h3>
+         <li>19MB</li>
+         <h3>ÁUDIO</h3>
+          <li>MP3 ou AAC</li>
+          <h3>VÍDEO</h3>
+          <li>Recomendamos envio com resolução mais elevada até 1080p (1920x1080px)</li>
+          <li>25FPS ou 30FPS</li>
+          <h3>NOTAS</h3>
+          <li>Necessário apenas o envio de uma das dimensões por dispositivo</li>
+          <li>Programmatic Guaranteed ✔</li>
+          <li>Preferred Deal ✔</li>
+        </ul>
+      </li>
+    </a>
+  
+
+    <a  rel="noopener" href="#intro" target="_self">
+      <li class="pos-card" id="intro">
+        <div class="content">
+          <button class="copiaTXT" title="COPIAR TEXTO"></button>
+          <div class="formato new">INTRO</div>
+          <div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO - </div>
+          <div class="dept">800 x 600px (L x A) @ 72 DPI - RGB</div>
+          <div class="dept">768 x 1024px (L x A) @ 72 DPI - RGB</div>
+          <img class="exemploimg" src="exintro.png" width="425" height="495" border="0" >
+          <object><a rel="noopener" href="#ex_intro" target="_self" class="refer">Exemplo</a></object>
+          </div>
+        <ul class="desc">
+          <h3>FORMATOS</h3>
+          <li> .JPG / .GIF / .PNG / .MP4 (h.264) / HTML5 / TAG EXTERNA</li>
+          <h3>TAMANHO MÁXIMO</h3>
+         <li>~120KB cada - 240KB total</li>
+         <h3>VÍDEO / ÁUDIO</h3>
+         <li>Vídeo é opcional</li>
+         <li>Vídeo não deve iniciar com áudio. Apenas perante interação do utilizador sob um botão devidamente assinalado</li>
+         <li>Botões de áudio e de reprodução, poderão ser automaticamente gerados quando servidos directamente no nosso sistema</li>
+          <li>Criatividade servida por tag externa terá que seguir as especificações e replicar o conteudo utilizado do formato intro (header com logo do site A BOLA e botão de avançar)</li>
+          <h3>NOTAS</h3>
+          <li>É necessário envio de materiais com ambas as dimensões</li>
+          <li>Formato HTML5 deverá ser responsive</li>
+          <li>Periodo máximo de visualização de 12"</li>
+          <li>Programmatic Guaranteed ✔</li>
+          <li>Preferred Deal ✔</li>
+        </ul>
+      </li>
+    </a>
+  
+
+    <a rel="noopener" href="#mrec" target="_self">
+    <li class="pos-card" id="mrec">
+      <div class="content">
+        <button class="copiaTXT" title="COPIAR TEXTO"></button>
+        <div class="formato">MREC</div>
+        <div class="dept"><div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div> 300 x 250px (L x A) @ 72 DPI - RGB </div>
+        <img class="exemploimg" src="exmrec.png" width="425" height="495" border="0" >
+        <object><a rel="noopener" href="#ex_mrec" target="_self" class="refer">Exemplo</a></object>
+      </div>
+      
+        <ul class="desc">
+       <h3>FORMATOS</h3>
+        <li> .JPG / .GIF / .PNG / .MP4 (h.264) / HTML5 / TAG EXTERNA</li>
+       <h3>TAMANHO MÁXIMO</h3>
+        <li>80KB (950KB Vídeo)</li>
+        <h3>VÍDEO / ÁUDIO</h3>
+        <li>Vídeo é opcional</li>
+        <li>Vídeo não deve iniciar com áudio. Apenas perante interação do utilizador sob um botão devidamente assinalado</li>
+        <li>Botões de áudio e de reprodução, poderão ser automaticamente gerados quando servidos directamente no nosso sistema</li>
+        <li>Necessário uma imagem de backup 300x250px em banners com vídeo</li>
+        <h3>NOTAS</h3>
+        <li>Programmatic Guaranteed ✔</li>
+        <li>Preferred Deal ✔</li>
+      </ul>
+    </li>
+  </a>
+
+
+  <a rel="noopener" href="#opendoor" target="_self"> 
+    <li class="pos-card" id="opendoor">
+      <div class="content">
+        <button class="copiaTXT" title="COPIAR TEXTO"></button>
+        <div class="formato new">OPEN DOOR</div>
+        <div title="multidispositivos"  class="multid"></div>
+        <div class="dept">1024 x 1024px (L x A) @ 72 DPI - RGB</div>
+        <img class="exemploimg" src="exopendoor.png" width="425" height="495" border="0" >
+        <object><a rel="noopener" href="#ex_opendoor" target="_self" class="refer">Exemplo</a></object>
+      </div>
+      <ul class="desc">
+        <h3>FORMATOS</h3>
+        <li> .JPG / .GIF / .PNG / .MP4 (h.264) <object><a class="download" rel="noopener" href="twinad.zip" target="_self">TEMPLATE OPEN DOOR A BOLA</a></object></li>
+        <h3>TAMANHO MÁXIMO</h3>
+       <li>IMAGEM 800KB / VÍDEO 1MB</li>
+       <h3>VÍDEO / ÁUDIO</h3>
+       <li>Vídeo é opcional</li>
+       <li>Vídeo não deve iniciar com áudio. Apenas perante interação do utilizador sob um botão devidamente assinalado</li>
+       <li>Botões de áudio e de reprodução, poderão ser automaticamente gerados quando servidos directamente no nosso sistema</li>
+        <h3>NOTAS</h3>
+        <li>Devem seguir as indicações de acordo com o exemplo do template</li>
+        <li>Não é necessario seguir as margens do exemplo se não houver vídeo associado</li>
+        <li>Periodo máximo de visualização de 12"</li>
+        <li>Programmatic Guaranteed ✔</li>
+      </ul>
+    </li>
+  </a>
+  
+  <a rel="noopener" href="#parallax" target="_self"> 
+    <li class="pos-card" id="parallax">
+      <div class="content">
+        <button class="copiaTXT" title="COPIAR TEXTO"></button>
+        <div class="formato new">PARALLAX</div>
+        <div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div>
+        <div class="dept">720 x 1280px (L x A) @ 72 DPI - RGB</div>
+        <div class="dept">1280 x 720px (L x A) @ 72 DPI - RGB</div>
+        <div class="dept">1280 x 720px (L x A) @ 144 DPI - RGB (opcional)</div>
+        <img class="exemploimg" src="exparallax.png" width="425" height="495" border="0" >
+        <object><a rel="noopener" href="#ex_parallax" target="_self" class="refer">Exemplo</a></object>
+      </div>
+      <ul class="desc">
+        <h3>FORMATOS</h3>
+        <li> .JPG / .GIF / .PNG / .MP4 (h.264)</li>
+        <h3>TAMANHO MÁXIMO</h3>
+       <li>~120KB cada / 2MB total (com vídeo)</li>
+       <h3>VÍDEO / ÁUDIO</h3>
+       <li>Vídeo é opcional</li>
+       <li>Vídeo não deve iniciar com áudio. Apenas perante interação do utilizador sob um botão devidamente assinalado</li>
+       <li>Botões de áudio e de reprodução, poderão ser automaticamente gerados quando servidos directamente no nosso sistema</li>
+        <li>Tempo de duração máximo de 30"</li>
+        <li>Criatividade servida por tag externa terá que replicar as especificações e replicar o conteudo utilizado do formato intro (header com logo do site e botão de avançar)</li>
+        <h3>NOTAS</h3>
+        <li>Terão que ser enviados materiais com as dimensões de 720px e 1280px</li>
+        <li>Programmatic Guaranteed ✔</li>
+      </ul>
+    </li>
+  </a>
+
+
+
+
+  <a  rel="noopener" href="#preroll" target="_self">
+    <li class="pos-card" id="preroll">
+      <div class="content">
+        <button class="copiaTXT" title="COPIAR TEXTO"></button>
+        <div class="formato">PRE-ROLL / MID-ROLL / POST-ROLL</div>
+        <div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div>
+        <div class="dept">1920x1080px (L x A)</div>
+        <div class="dept">1280x720px (L x A)</div>
+        <div class="dept">640×480px (L x A)</div>
+        <img class="exemploimg" src="expreroll.png" width="425" height="495" border="0" >
+        <object><a rel="noopener" href="#ex_preroll" target="_self" class="refer">Exemplo</a></object>
+      </div>
+      <ul class="desc">
+        <h3>FORMATOS</h3>
+        <li> .MP4 (h.264) / TAG VAST / TAG VPAID</li>
+        <h3>TAMANHO MÁXIMO</h3>
+       <li>19MB</li>
+        <h3>ÁUDIO</h3>
+        <li>MP3 ou AAC</li>
+        <h3>VÍDEO</h3>
+        <li>Recomendamos envio com resolução mais elevada até 1080p (1920x1080px)</li>
+        <li>25FPS ou 30FPS</li>
+        <h3>NOTAS</h3>
+        <li>Necessário apenas o envio de uma das dimensões por dispositivo</li>
+        <li>Programmatic Guaranteed ✔</li>
+        <li>Preferred Deal ✔</li>
+      </ul>
+    </li>
+  </a>
+
+
+
+<a rel="noopener" href="#twinad" target="_self"> 
+  <li class="pos-card" id="twinad">
+
+    <div class="content">
+      <button class="copiaTXT" title="COPIAR TEXTO"></button>
+      <div class="formato new">TWIN AD</div>
+      <div title="MULTIDISPOSITIVO"  class="multid">MULTIDISPOSITIVO -</div>
+      <div class="dept">Responsive - até 1150 x 90px (L x A) </div>
+
+      <img class="exemploimg" src="extwinad.png" width="425" height="495" border="0" >
+      <object><a rel="noopener" href="#ex_twinad" target="_self" class="refer">Exemplo</a></object>
+    </div>
+    <ul class="desc">
+      <h3>FORMATOS</h3>
+      <li> HTML5 - <object><a class="download" rel="noopener" href="twinad.zip" target="_self">TEMPLATE TWIN AD A BOLA</a></object></li>
+      <h3>TAMANHO MÁXIMO</h3>
+      <li>240KB</li>
+      <h3>NOTAS</h3>
+      <li>Devem seguir as indicações de acordo com o nosso template</li>
+      <li>Programmatic Guaranteed ✔</li>
+    </ul>
+  </li>
+</a>
+
+
+
+
+ 
+
+</ul>
+<h2>NOTAS GERAIS</h2>
+<ul id="notasgerais">
+<li>Todas as chamadas terão que ser feitas em HTTPS </li>
+<li>Materiais devem ser enviados com 2 dias úteis de antecedência para validação e testes </li>
+<li>Não utilizar animações com clarões que que possam desencadear uma má experiência para utilizadores fotossensíveis </li>
+<li style="position: absolute;margin: 60px 0px 0px 230px;">Andre.Domingues&#64;ABola&#46;pt</li>
+<li><img style="margin:50px 0" src="https://www.abola.pt/images/marcas.png"></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div class="container refer-card">
+
+
+  
+  <div class="sign-up card">
+
+    <div class="card__content">
+      <div class="referral" > 
+
+        <div id="return">
+          FECHAR
+          <div title="Fechar - regressar às especificações" class="close"></div>
+        </div>
+
+
+<div class="video-container">
+        <video id="video" poster=""  muted autoplay controls>
+          <source src="" type="video/mp4" preload="auto">                
+        </video>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+var videourl, hash;
+var pos = document.querySelectorAll('.pos-card');
+var refer = document.querySelectorAll('.refer');
+var return1 = document.getElementById("return");
+var video = document.getElementById('video');
+
+
+
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+
+  function requestFullscreen(element) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+  }
+
+
+  if (isMobileDevice()) {
+    video.addEventListener('playing', () => {
+      requestFullscreen(video);
+    });
+  }
+
+
+  if (isMobileDevice()) {
+    video.addEventListener('ended', () => {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    });
+  }
+
+
+
+pos.forEach(function(parent) {
+  parent.addEventListener('click', function(e) {
+    if (e.target.closest('.refer')) {
+
+      document.getElementsByClassName("positions")[0].classList.add('fadeOut');
+      document.getElementsByClassName("refer-card")[0].classList.add('fade');
+      document.getElementById("fundo").classList.add('blur');
+        if (videourl != e.target.parentNode.parentNode.parentNode.id) {
+        videourl = e.target.parentNode.parentNode.parentNode.id;
+        video.setAttribute('poster',videourl+'.jpg');
+        video.src = videourl+".mp4";
+        }
+        video.play();
+      } else {
+        if(window.getSelection().toString().length <= 0) {
+          var desc = parent.querySelector('.desc');
+          desc.classList.toggle('reveal');
+        }
+    };
+  });
+});
+
+
+
+return1.addEventListener('click', function() {
+  video.pause();
+  var hash = window.location.hash.substring(1); 
+    if (hash.startsWith('ex_')) {
+      var hash = hash.slice(3);
+      location.href = "index.html#"+hash;
+    } 
+  document.getElementsByClassName("positions")[0].classList.remove('fadeOut');
+  document.getElementsByClassName("refer-card")[0].classList.remove('fade');
+  document.getElementById("fundo").classList.remove('blur');
+  document.getElementById(hash).scrollIntoView();
+});
+
+
+if(window.location.hash) {
+      var hash = window.location.hash.substring(1); 
+      location.href = "index.html#"+hash;
+     if (hash.startsWith('ex_')) {
+      document.getElementsByClassName("positions")[0].classList.add('fadeOut');
+      document.getElementsByClassName("refer-card")[0].classList.add('fade');
+      document.getElementById("fundo").classList.add('blur');
+
+      video.setAttribute('poster',hash.slice(3)+'.jpg');
+      video.src = hash.slice(3)+".mp4";  
+      video.play();  
+    } else { 
+      document.getElementById(hash).click();
+    }
+   }
+
+
+   const copiaTXTs = document.querySelectorAll('.copiaTXT');
+
+copiaTXTs.forEach((button) => {
+    button.addEventListener('click', function (e) {
+        event.stopPropagation();
+        const posCard = this.closest('.pos-card');
+        if (posCard) {
+            const clonedPosCard = posCard.cloneNode(true);
+            const copiaTXTToRemove = clonedPosCard.querySelector('.copiaTXT');
+            if (copiaTXTToRemove) {
+                copiaTXTToRemove.remove();
+            }
+
+            const referLink = clonedPosCard.querySelector('.refer');
+            if (referLink) {
+                referLink.textContent = '';
+            }
+
+            // Retrieve content from element with id 'notasgerais'
+            const notasGeraisElement = document.getElementById('notasgerais');
+            if (notasGeraisElement) {
+                const notasGeraisContent = notasGeraisElement.innerHTML; // Use innerHTML to preserve the HTML structure
+                // Append 'notasgerais' content to clonedPosCard
+                clonedPosCard.innerHTML += '<br>' + notasGeraisContent;
+            }
+
+            const textToCopy = clonedPosCard.innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+        }
+    });
+});
+
+</script>
+</body>
+</html>
+
+
