@@ -4,10 +4,10 @@
       
 <!-- OneTrust Cookies Consent Notice start for abola.pt -->
 
-<!--
+<
 <script type="text/javascript" src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b-test/OtAutoBlock.js" ></script>
 <script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b-test/otSDKStub.js" data-document-language="true" type="text/javascript" charset="UTF-8" data-domain-script="65b60f59-7417-4967-865d-889d81e1122b-test" ></script>
--->
+
 <script type="text/javascript">
 function OptanonWrapper() { }
 </script>
@@ -104,12 +104,12 @@ var pub = {bid:[],amzbid:[],vert:[],horz:[],oop:[],wz:0,aRefresh:61600,PREBID_TI
 /* var related with aBola - integration needed */
 
 //type keyvalue
-adsPag =  ['hp']; // hp, article, results, discussion, gallery, video, section, newsletter;
+adsPag =  ['hp']; // adsPag variable that is working at the moment in abola.pt - hp, article, results, discussion, gallery, video, section, newsletter;
 pub.typeSection = adsPag;
 //if possible can you change initial var adsPag to pub.typeSection?
 
 // article id
-adsCid = "0";
+adsCid = "0";  // adsCid variable that is working at the moment in abola.pt
 pub.IdArtigo = adsCid;
 //if possible can you change initial var adsCid to pub.adsCid?
 
@@ -119,7 +119,7 @@ pub.IdArtigo = adsCid;
 // ['nacional'];
 // ['home'];
 // ['futebol-de-praia'];
-adsSec = ['futebol-de-praia']; 
+adsSec = ['futebol-de-praia']; // adsSec variable that is working at the moment in abola.pt
 pub.subSeccao = adsSec; 
 //if possible can you change initial var adsSec to pub.subSeccao?
 
@@ -179,7 +179,8 @@ window.pub.aBola = function () {
 // need to check CMP Integration with OneTrust please validate if this is the best way please
 //if (OneTrust && OneTrust.getActiveConsent()) {
       function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
-      //console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea);
+      console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea);
+      
       var amzSetAdUnit = {
                 slotID: targetID,
                 slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
@@ -237,7 +238,7 @@ window.pub.aBola = function () {
 
                         if (className == "oop") {
                               items[i].id = "oop";
-                              pub.oop = googletag.defineOutOfPageSlot("/417417404/OOP/" + pub.adUnitArea, "oop").setCollapseEmptyDiv(true, true).setTargeting("end", ["intro"]).addService(googletag.pubads());
+                              pub.oop = googletag.defineOutOfPageSlot("/417417404/OOP/" + pub.adUnitArea, "oop").setCollapseEmptyDiv(true, true).addService(googletag.pubads());
                         }
                         if (className == "horz") {
                               slotDimensions = [[1150, 250], [970, 250], [970, 90], [728, 90], [468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [234,60], [216,36], [120,20], [1,1], "fluid"];
@@ -322,19 +323,17 @@ window.pub.aBola = function () {
       googletag.enableServices();
 
       if(window.googletag && googletag.pubadsReady) {
-            console.log("google ready");
+            console.log("google api ready");
             window.pub.aBola();
       }
       }); /* end gpt */ 
 
 
       //setTimeout(function() {
-      
       window.pub.r = function () {
-            console.log("errrr refresh resize");
+            console.log("resize new request");
+            window.pub.aBola();
       };
-
-
 
       window.pub.cr = function () {
             var x = window.innerWidth;
