@@ -157,10 +157,11 @@ apstag.init({
 
 
 window.pub.aBola = function () {
-
+      console.log("yieldLoveAdUnit "+ yieldLoveAdUnit);
+      
       yieldlove_cmd.push(function () {
                  // YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);
-                 console.log("yieldLoveAdUnit "+ yieldLoveAdUnit);
+                 
                  YLHH.bidder.startAuction(yieldLoveAdUnit);
       });      
 
