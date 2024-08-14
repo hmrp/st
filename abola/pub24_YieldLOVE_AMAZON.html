@@ -173,16 +173,16 @@ window.pub.aBola = function () {
                  YLHH.bidder.startAuction(pub.yieldlovebid);
       });      
 
-      // this was the code I had to make the amazon and prebid requests
-            /* googletag.cmd.push(function () {
-            console.log("amazon");
+      // this was the code I had to make the amazon and prebid requests and the general push of ads, ill leave refresh to display the ads at the moment
+             googletag.cmd.push(function () {
+            /*console.log("amazon");
             apstag.setDisplayBids();
             apstag.fetchBids({slots:pub.amzbid, timeout: 800}, function(bids){
                   console.log(pub.amzbid);
             });
-            
+            */
             googletag.pubads().refresh();
-      }); */
+      }); 
 
 }
 
