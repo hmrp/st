@@ -83,13 +83,13 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 <script src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
 <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 <script>
-/*amazon*/
+/*amazon apstag*/
 !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
 </script>
 
 <!--
 <script async src="prebid8.33.0.js"></script> 
-removed all the code based on prebid
+removed most of the code based on prebid
 -->
 
 
@@ -140,17 +140,10 @@ pub.subSeccao = adsSec;
 // abola.pt/estrelas - estrelas
 // abola.pt/miragens - miragens
 // abola.pt/a-bola-tv - abolatv
-
-
 pub.adUnitArea = ['HOME'];
 
 
-
-
-
 document.addEventListener('DOMContentLoaded', function() { // please evaluate if its really necessary to use this listener, or certify this script is only loaded after the DOM elements and CMP is loaded.
-
-
 apstag.init({
       pubID: '7046d657-31ef-4394-964e-805033a84142',
       adServer: 'googletag',
@@ -162,11 +155,22 @@ apstag.init({
 
 
 window.pub.aBola = function () {
+      console.log("chamou publicidade");
+      yieldlove_cmd.push(function () {
+                  console.log("yield love");
+                  YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);
+      });      
+
       googletag.cmd.push(function () {
+            console.log("amazon");
             apstag.setDisplayBids();
-            apstag.fetchBids({slots:pub.amzbid, timeout: 800}, function(bids){console.log(pub.amzbid); console.log(bids);  });
+            apstag.fetchBids({slots:pub.amzbid, timeout: 800}, function(bids){
+                  console.log(pub.amzbid);
+                  console.log(bids);
+            });
             googletag.pubads().refresh();
       });
+
 }
 
       
@@ -185,8 +189,9 @@ window.pub.aBola = function () {
       pub.amzbid.push(amzSetAdUnit);
       }
 
+
       googletag.cmd.push(function () {
-      /* SPECIFY AD MANAGER CMP SETTINGS HERE   
+      /* CAN SPECIFY AD MANAGER CMP SETTINGS HERE   
       googletag.pubads().setPrivacySettings({
       'limitedAds': false,  //  When set to true, it indicates that the user has opted for limited ad tracking or limited ad personalization.
       'nonPersonalizedAds': false, //  When set to true, it indicates that the user has explicitly opted for non-personalized ads.
@@ -318,24 +323,19 @@ window.pub.aBola = function () {
 
       if(window.googletag && googletag.pubadsReady) {
             console.log("google ready");
-            // rever se corre aqui ou na chamada final pub.aBola
-            /* og here
-            apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){console.log(pub.amzbid); console.log(bids);  });
-            pbjs.requestBids({bidsBackHandler: pub.aBola});
-            */
+            window.pub.aBola();
       }
       }); /* end gpt */ 
 
 
-      setTimeout(function() {
-      window.pub.aBola();
+      //setTimeout(function() {
+      
       window.pub.r = function () {
-            googletag.cmd.push(function () {
-                  apstag.fetchBids({slots:pub.amzbid, timeout: 500}, function(bids){console.log(pub.amzbid); console.log(bids);  });
-                  apstag.setDisplayBids();
-                  googletag.pubads().refresh();
-            });
+            console.log("errrr refresh resize");
       };
+
+
+
       window.pub.cr = function () {
             var x = window.innerWidth;
             if (x <= 767 && pub.wz !== 1) {
@@ -355,7 +355,7 @@ window.pub.aBola = function () {
             clearTimeout(this.id);
             this.id = setTimeout(pub.cr, 3000);
       });    
-      }, pub.FAILSAFE_TIMEOUT);
+    //  }, pub.FAILSAFE_TIMEOUT);
 /* one trust*///  } 
 });
 </script>
