@@ -73,9 +73,9 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
  -->
 
 
-<div class="pub vert mrec bid"></div>
-<div class="pub vert pubMobile mrec bid"></div>
-<div class="pub horz leaderboard bid"></div>
+<div class="pub vert mrec"></div>
+<div class="pub vert pubMobile mrec"></div>
+<div class="pub horz leaderboard "></div>
 
 
 
@@ -152,12 +152,6 @@ apstag.init({
       cmpTimeout: "300"
       }
 });
-
-
-
-
-    googletag.cmd.push(function() { googletag.display('div-gpt-ad-1723649008648-0'); });
-
 
 
 
@@ -286,10 +280,10 @@ window.pub.aBola = function () {
                               }
                         }
 
-                        if (targeting.includes("bid")) {
+                     /*   if (targeting.includes("bid")) {
                               slotDimensions.pop();
                               pbConfig(targetID, slotDimensions, hbSizesMapping, { pos: targeting });
-                        }            
+                        }            */
                   }
             }
       };
