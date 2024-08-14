@@ -157,12 +157,10 @@ apstag.init({
 
 
 window.pub.aBola = function () {
-      console.log("yieldLoveAdUnit "+ yieldLoveAdUnit);
-      
+      console.log("yieldLoveAdUnit "+ pub.yieldLoveAdUnit);
       yieldlove_cmd.push(function () {
-                 // YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);
-                 
-                 YLHH.bidder.startAuction(yieldLoveAdUnit);
+                 // YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);  
+                 YLHH.bidder.startAuction(pub.yieldLoveAdUnit);
       });      
 
       // this was the code I had to make the amazon and prebid requests
@@ -190,7 +188,7 @@ window.pub.aBola = function () {
                   slotID: targetID,
                   slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
                   sizes: sizesUsed,
-                  //slotParams: customKeyValues
+                  slotParams: customKeyValues
             }
             pub.yieldlovebid.push(yieldLoveAdUnit);
 
