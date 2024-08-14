@@ -76,6 +76,14 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 <div class="pub vert mrec bid"></div>
 <div class="pub vert pubMobile mrec bid"></div>
 <div class="pub horz leaderboard bid"></div>
+<div class="pub horz bid"></div>
+<div class="pub vert bid"></div>
+<div class="pub horz bid autorefresh"></div>
+<div class="pub vert bid"></div>
+<div class="pub horz bid"></div>
+<div class="pub vert pubMobile"></div>
+<div class="pub horz pubMobile leaderboard bid autorefresh"></div>
+
 
 
 
@@ -157,7 +165,9 @@ apstag.init({
 
 
 window.pub.aBola = function () {
-      console.log("yieldLoveAdUnit "+ pub.yieldlovebid);
+      console.log("pub.yieldlovebid");
+      console.dir(pub.yieldlovebid);
+
       yieldlove_cmd.push(function () {
                  // YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);  
                  YLHH.bidder.startAuction(pub.yieldlovebid);
