@@ -4,7 +4,7 @@
       
 <!-- OneTrust Cookies Consent Notice start for abola.pt -->
 
-<
+
 <script type="text/javascript" src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b-test/OtAutoBlock.js" ></script>
 <script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b-test/otSDKStub.js" data-document-language="true" type="text/javascript" charset="UTF-8" data-domain-script="65b60f59-7417-4967-865d-889d81e1122b-test" ></script>
 
@@ -55,8 +55,8 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 
 
 
-<!--<div class="oop" style="position:fixed; top:0px; left:0; width:1px; height:1px; z-index:80000;"></div>
-
+<div class="oop" style="position:fixed; top:0px; left:0; width:1px; height:1px; z-index:80000;"></div>
+<!--
 <div class="pub horz leaderboard bid"></div>
 
 <div class="pub vert mrec bid"></div>
@@ -99,7 +99,7 @@ removed most of the code based on prebid
 
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
-var pub = {bid:[],amzbid:[],vert:[],horz:[],oop:[],wz:0,aRefresh:61600,PREBID_TIMEOUT:2555,FAILSAFE_TIMEOUT:5566,typeSection:[],subSeccao:[],adUnitArea:[],IdArtigo:[],fEnd:[encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])]};
+var pub = {bid:[],yieldlovebid:[],amzbid:[],vert:[],horz:[],oop:[],wz:0,aRefresh:61600,PREBID_TIMEOUT:2555,FAILSAFE_TIMEOUT:5566,typeSection:[],subSeccao:[],adUnitArea:[],IdArtigo:[],fEnd:[encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])]};
 
 /* var related with aBola - integration needed */
 
@@ -154,22 +154,32 @@ apstag.init({
 });
 
 
+
+
+    googletag.cmd.push(function() { googletag.display('div-gpt-ad-1723649008648-0'); });
+
+
+
+
+
 window.pub.aBola = function () {
-      console.log("chamou publicidade");
+
       yieldlove_cmd.push(function () {
                   console.log("yield love");
-                  YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);
+                 // YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);
+                 YLHH.bidder.startAuction(yieldLoveAdUnit);
       });      
 
-      googletag.cmd.push(function () {
+      // this was the code I had to make the amazon and prebid requests
+            /* googletag.cmd.push(function () {
             console.log("amazon");
             apstag.setDisplayBids();
             apstag.fetchBids({slots:pub.amzbid, timeout: 800}, function(bids){
                   console.log(pub.amzbid);
-                  console.log(bids);
             });
+            
             googletag.pubads().refresh();
-      });
+      }); */
 
 }
 
@@ -181,13 +191,26 @@ window.pub.aBola = function () {
       function pbConfig(targetID, sizesUsed, hbSizesMapping, customKeyValues) {
       console.log('slotName   417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea);
       
-      var amzSetAdUnit = {
-                slotID: targetID,
-                slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
-                sizes: sizesUsed,
-                slotParams: customKeyValues
-      }
-      pub.amzbid.push(amzSetAdUnit);
+      var yieldLoveAdUnit = {
+                  slotID: targetID,
+                  slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
+                  sizes: sizesUsed,
+                  //slotParams: customKeyValues
+            }
+            pub.yieldlovebid.push(yieldLoveAdUnit);
+
+
+
+            // this was the code I had to make the amazon requests
+            /*
+            var amzSetAdUnit = {
+                  slotID: targetID,
+                  slotName: '/417417404/'+targetID.replace(/\d+/g, '')+'/'+pub.adUnitArea, 
+                  sizes: sizesUsed,
+                  slotParams: customKeyValues
+            }
+            pub.amzbid.push(amzSetAdUnit);
+            */
       }
 
 
