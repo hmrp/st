@@ -224,32 +224,32 @@ pub.adUnitArea = ['HOME'];
 
 if (pub.abtst === 'A') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 30,
+        fetchMarginPercent: 50,
         renderMarginPercent: 30,
         mobileScaling: 1
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'A' - fetchMarginPercent: 30  renderMarginPercent: 30 mobileScaling: 1";
+    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'A' - fetchMarginPercent: 50  renderMarginPercent: 30 mobileScaling: 1";
 } else if (pub.abtst === 'B') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 100,
-        renderMarginPercent: 100,
+        fetchMarginPercent: 70,
+        renderMarginPercent: 50,
         mobileScaling: 1.5
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'B' - fetchMarginPercent: 100  renderMarginPercent: 100 mobileScaling: 1.5";
+    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'B' - fetchMarginPercent: 70  renderMarginPercent: 50 mobileScaling: 1.5";
 } else if (pub.abtst === 'C') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 150,
-        renderMarginPercent: 150,
+        fetchMarginPercent: 100,
+        renderMarginPercent: 80,
         mobileScaling: 2
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'C' - fetchMarginPercent: 150  renderMarginPercent: 150 mobileScaling: 2";
+    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'C' - fetchMarginPercent: 100  renderMarginPercent: 80 mobileScaling: 2";
 } else if (pub.abtst === 'D') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 250,
-        renderMarginPercent: 250,
+        fetchMarginPercent: 150,
+        renderMarginPercent: 100,
         mobileScaling: 2
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'D' - fetchMarginPercent: 250  renderMarginPercent: 250 mobileScaling: 2";
+    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'D' - fetchMarginPercent: 150  renderMarginPercent: 100 mobileScaling: 2";
 } 
 
 document.addEventListener('DOMContentLoaded', function() { // please evaluate if its really necessary to use this listener, or certify this script is only loaded after the DOM elements and CMP is loaded.
