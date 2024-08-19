@@ -70,6 +70,14 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
             border-radius: 5px;
             z-index: 1000;
         }
+
+        .pub::before {
+            content: var(--position-before-content);
+            display: block;
+            margin-bottom: 10px;
+            color: #000;
+            font-size: 12px;
+        }
       </style>
 </head>
 
@@ -410,7 +418,15 @@ window.pub.aBola = function () {
                   googletag.pubads().addEventListener("slotRenderEnded", function (event) {
                         if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
                         document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
-                        alert(event.slot.getSlotElementId() + " element rendered"); 
+
+                        /* remove this only to debug ab test positioning */
+                        element = document.getElementById(event.slot.getSlotElementId());
+                        var rect = element.getBoundingClientRect();
+                        var positionFromTop = rect.top + window.scrollY;
+
+                        element.style.setProperty('--position-before-content', `'loaded from ${positionFromTop}px'`);
+
+                        //alert(event.slot.getSlotElementId() + " element rendered"); 
                         }
                   });          
 
