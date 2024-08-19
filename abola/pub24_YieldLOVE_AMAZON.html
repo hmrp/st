@@ -107,7 +107,7 @@ removed most of the code based on prebid
 
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
-var pub = {bid:[],yieldlovebid:[],amzbid:[],vert:[],horz:[],oop:[],wz:0,aRefresh:61600,PREBID_TIMEOUT:2555,FAILSAFE_TIMEOUT:5566,typeSection:[],subSeccao:[],adUnitArea:[],IdArtigo:[],fEnd:[encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])]};
+var pub = {bid:[],yieldlovebid:[],amzbid:[],vert:[],horz:[],oop:[],wz:0,aRefresh:61600,PREBID_TIMEOUT:2555,FAILSAFE_TIMEOUT:5566,typeSection:[],subSeccao:[],adUnitArea:[],IdArtigo:[],fEnd:[encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])],lazyLoadSettings:'A', abtst: (['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)])};
 
 /* var related with aBola - integration needed */
 
@@ -151,6 +151,36 @@ pub.subSeccao = adsSec;
 pub.adUnitArea = ['HOME'];
 
 
+if (pub.abtst === 'A') {
+    pub.lazyLoadSettings = {
+        fetchMarginPercent: 100,
+        renderMarginPercent: 50,
+        mobileScaling: 1
+    };
+    console.log("A");
+} else if (pub.abtst === 'B') {
+    pub.lazyLoadSettings = {
+        fetchMarginPercent: 130,
+        renderMarginPercent: 70,
+        mobileScaling: 1.3
+    };
+    console.log("B");
+} else if (pub.abtst === 'C') {
+    pub.lazyLoadSettings = {
+        fetchMarginPercent: 160,
+        renderMarginPercent: 100,
+        mobileScaling: 1.6
+    };
+    console.log("C");
+} else if (pub.abtst === 'D') {
+    pub.lazyLoadSettings = {
+        fetchMarginPercent: 180,
+        renderMarginPercent: 130,
+        mobileScaling: 2
+    };
+    console.log("D");
+} 
+
 document.addEventListener('DOMContentLoaded', function() { // please evaluate if its really necessary to use this listener, or certify this script is only loaded after the DOM elements and CMP is loaded.
 apstag.init({
       pubID: '7046d657-31ef-4394-964e-805033a84142',
@@ -160,8 +190,6 @@ apstag.init({
       cmpTimeout: "300"
       }
 });
-
-
 
 
 window.pub.aBola = function () {
@@ -237,7 +265,8 @@ window.pub.aBola = function () {
             .setTargeting("end", pub.fEnd)
             .setTargeting("id", pub.IdArtigo)
             .setTargeting("category", pub.subSeccao)
-            .setTargeting("type", pub.typeSection);
+            .setTargeting("type", pub.typeSection)
+            .setTargeting("abtst", pub.abtst);
 
       var horzSizeMapping = googletag.sizeMapping().addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[728, 90], [468, 60], "fluid"]).addSize([1024, 200],[[970, 250], [970, 90],[840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).addSize([1150, 200],[[1150, 250], [970, 250], [840, 250], [800, 250], [728, 90], [468, 60], [1,1], "fluid"]).build(),
       vertSizeMapping = googletag.sizeMapping().addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[300, 600], [300, 250], [200, 200], [1,1], "fluid"]).build(), horzTabletSizeMapping = googletag.sizeMapping().addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216,36], [120,20], [1,1], "fluid"]).addSize([768, 200], [[728, 90], [468, 60], [1,1]]).build(), vertMrecSizeMapping = googletag.sizeMapping().addSize([0, 0], [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200], [1,1], "fluid"]).addSize([768, 200], [[300, 250], [250, 250], [200, 200], [1,1], "fluid"]).build(), targetCLASS = [["bid"], ["leaderboard"], ["mrec"], ["incontent"]];
@@ -341,11 +370,7 @@ window.pub.aBola = function () {
                         }
                   });
 
-      googletag.pubads().enableLazyLoad({
-            fetchMarginPercent: 100,
-            renderMarginPercent: 70,
-            mobileScaling: 1.3
-      });
+      googletag.pubads().enableLazyLoad(pub.abtst);
       googletag.enableServices();
 
       if(window.googletag && googletag.pubadsReady) {
