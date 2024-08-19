@@ -191,21 +191,21 @@ if (pub.abtst === 'A') {
         renderMarginPercent: 150,
         mobileScaling: 1.5
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED B  fetchMarginPercent: 150  renderMarginPercent: 150 mobileScaling: 1.5";
+    document.getElementById("justforTEST").innerHTML = "TEST CALLED B - fetchMarginPercent: 150  renderMarginPercent: 150 mobileScaling: 1.5";
 } else if (pub.abtst === 'C') {
     pub.lazyLoadSettings = {
         fetchMarginPercent: 200,
         renderMarginPercent: 200,
         mobileScaling: 1.6
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED C fetchMarginPercent: 250  renderMarginPercent: 250 mobileScaling: 2";
+    document.getElementById("justforTEST").innerHTML = "TEST CALLED C - fetchMarginPercent: 250  renderMarginPercent: 250 mobileScaling: 2";
 } else if (pub.abtst === 'D') {
     pub.lazyLoadSettings = {
         fetchMarginPercent: 250,
         renderMarginPercent: 250,
         mobileScaling: 2
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED D fetchMarginPercent: 250  renderMarginPercent: 250 mobileScaling: 2";
+    document.getElementById("justforTEST").innerHTML = "TEST CALLED D - fetchMarginPercent: 250  renderMarginPercent: 250 mobileScaling: 2";
 } 
 
 document.addEventListener('DOMContentLoaded', function() { // please evaluate if its really necessary to use this listener, or certify this script is only loaded after the DOM elements and CMP is loaded.
@@ -366,7 +366,7 @@ window.pub.aBola = function () {
                   googletag.pubads().addEventListener("slotRenderEnded", function (event) {
                         if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
                         document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
-                        alert(event.slot.getSlotElementId()) + " element rendered"); 
+                        alert(event.slot.getSlotElementId() + " element rendered"); 
                         }
                   });          
 
