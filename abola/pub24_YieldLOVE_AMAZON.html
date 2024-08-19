@@ -366,7 +366,7 @@ window.pub.aBola = function () {
                   googletag.pubads().addEventListener("slotRenderEnded", function (event) {
                         if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
                         document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
-                        alert(document.getElementById(event.slot.getSlotElementId()) + " element rendered"); 
+                        alert(event.slot.getSlotElementId()) + " element rendered"); 
                         }
                   });          
 
