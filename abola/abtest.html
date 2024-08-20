@@ -235,15 +235,15 @@ pub.adUnitArea = ['HOME'];
 
 if (pub.abtst === 'A') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 50,
-        renderMarginPercent: 30,
+        fetchMarginPercent: 10,
+        renderMarginPercent: 1,
         mobileScaling: 1
     };
     document.getElementById("justforTEST").innerHTML = "TEST CALLED 'A' - fetchMarginPercent: 50  renderMarginPercent: 30 mobileScaling: 1";
 } else if (pub.abtst === 'B') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 70,
-        renderMarginPercent: 50,
+        fetchMarginPercent: 20,
+        renderMarginPercent: 20,
         mobileScaling: 1.5
     };
     document.getElementById("justforTEST").innerHTML = "TEST CALLED 'B' - fetchMarginPercent: 70  renderMarginPercent: 50 mobileScaling: 1.5";
@@ -422,14 +422,8 @@ window.pub.aBola = function () {
                         if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
                         document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
 
-                        /* remove this only to debug ab test positioning */
-                        /*element = document.getElementById(event.slot.getSlotElementId());
-                        var rect = element.getBoundingClientRect();
-                        var positionFromTop = rect.top + window.scrollY;
-                        */
-                        
-                        document.getElementById("elementos").innerHTML += ("<p>" + document.getElementById(event.slot.getSlotElementId()) + " displayed at " + window.scrollY + "px</p>");
-                        var y = document.createTextNode ("<p>" + document.getElementById(event.slot.getSlotElementId()) + " displayed at " + window.scrollY + "px</p>");
+                        document.getElementById("elementos").innerHTML += ("<p> displayed at " + window.scrollY + "px</p>");
+                        var x = document.createTextNode ("displayed at " + window.scrollY  + "px");
                         document.getElementById(event.slot.getSlotElementId()).appendChild(x);
                         }
                   });          
