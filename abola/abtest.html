@@ -440,9 +440,10 @@ window.pub.aBola = function () {
                   googletag.pubads().addEventListener("slotRenderEnded", function (event) {
                         if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
                         document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
-console.log(event.slot.getSlotElementId());
-                        document.getElementById("elementos").innerHTML += ("<p> displayed at " + window.scrollY + "px</p>");
-                        var x = document.createTextNode ("displayed at " + event.slot.getSlotElementId()[0] + " " + window.scrollY  + "px");
+
+
+                        document.getElementById("elementos").innerHTML += ("<p> displayed at " + event.slot.getSlotElementId() + " "+ window.scrollY + "px</p>");
+                        var x = document.createTextNode ("displayed at " + event.slot.getSlotElementId()+ " " + window.scrollY  + "px");
                         document.getElementById(event.slot.getSlotElementId()).appendChild(x);
                         }
                   });          
@@ -453,8 +454,6 @@ console.log(event.slot.getSlotElementId());
                               //if (event.slot.getTargeting("pos").indexOf("autorefresh") >-1 ) {
                               if (document.getElementById(event.slot.getSlotElementId()).classList.contains('autorefresh')) {
                               setTimeout(function(){
-
-                                alert("autorefresh");
                                   /*
                                     pbjs.que.push(function() {
                                           pbjs.requestBids({
