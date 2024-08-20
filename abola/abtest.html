@@ -99,11 +99,12 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
  -->
 
 
- 
+
  
 <div class="scroller">
-      <p id="justforTEST">Total Height: 0px</p>
+      <p id="justforTEST"></p>
       <p id="scrollPosition">Scroll Position: 0px</p>
+      <p id="elementos"></p>
   </div>
 
 <script>
@@ -422,12 +423,19 @@ window.pub.aBola = function () {
                         document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
 
                         /* remove this only to debug ab test positioning */
-                        element = document.getElementById(event.slot.getSlotElementId());
+                        /*element = document.getElementById(event.slot.getSlotElementId());
                         var rect = element.getBoundingClientRect();
                         var positionFromTop = rect.top + window.scrollY;
+                        */
                         
-                        console.log("ok");
-                        element.parentNode.textContent = "loaded from  " + positionFromTop + "px";
+                        document.getElementById(event.slot.getSlotElementId()).parentNode.textContent = "loaded from  " + window.scrollY + "px";
+                        
+
+
+                        var y = document.createTextNode("displayed at " + window.scrollY);
+                        document.getElementById("elementos").appendChild(y);
+
+
                         //alert(event.slot.getSlotElementId() + " element rendered"); 
                         }
                   });          
