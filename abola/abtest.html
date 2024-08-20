@@ -110,8 +110,8 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 <script>
       /* not necessary, just useful for this test */
       function updateScrollPosition() {
-        const scrollTop = window.scrollY; 
-        document.getElementById('scrollPosition').textContent = `Scroll Position: ${scrollTop}px`;
+        const scrollTop = Math.floor(window.scrollY); 
+        document.getElementById('scrollPosition').textContent = 'Scroll Position:' +scrollTop +'px';
     }
 
     window.addEventListener('scroll', updateScrollPosition);
