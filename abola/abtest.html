@@ -428,13 +428,10 @@ window.pub.aBola = function () {
                         var positionFromTop = rect.top + window.scrollY;
                         */
                         
-                        document.getElementById(event.slot.getSlotElementId()).parentNode.textContent = "loaded from  " + window.scrollY + "px";
-                        
-
-
+                       var x = document.createTextNode("displayed at  " + window.scrollY + "px");
                         var y = document.createTextNode("displayed at " + window.scrollY);
                         document.getElementById("elementos").appendChild(y);
-
+                        document.getElementById(event.slot.getSlotElementId()).appendChild(x);
 
                         //alert(event.slot.getSlotElementId() + " element rendered"); 
                         }
