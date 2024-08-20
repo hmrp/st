@@ -438,10 +438,12 @@ window.pub.aBola = function () {
       units("vert", 0);
 
             googletag.pubads().addEventListener("slotRequested", function (event) {
-                        var x = event.slot.getAdUnitPath();
                         if ((!event.isEmpty && event.slot.getAdUnitPath().indexOf("/HORZ") > 4) || (!event.isEmpty && event.slot.getAdUnitPath().indexOf("/VERT") > 4)) {
                               document.getElementById(event.slot.getSlotElementId()).classList.remove("txt", "\u2714");
                         }
+
+                        document.getElementById("elementos").innerHTML += ("<p> requested at "+ window.scrollY + "px " + event.slot.getSlotElementId() + "</p>");
+                        
                   });
 
                   googletag.pubads().addEventListener("slotRenderEnded", function (event) {
