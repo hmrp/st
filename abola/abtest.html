@@ -256,14 +256,10 @@ pub.adUnitArea = ['HOME'];
 
 if (pub.abtst === 'A') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 10,
-        renderMarginPercent: 0.1,
+        fetchMarginPercent: 1,
+        renderMarginPercent: 1,
         mobileScaling: 1
     };
-
-    
-
-
 
     document.getElementById("justforTEST").innerHTML = "<pre><code>TEST CALLED 'A' " + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
 } else if (pub.abtst === 'B') {
@@ -272,21 +268,21 @@ if (pub.abtst === 'A') {
         renderMarginPercent: 10,
         mobileScaling: 1.5
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'B'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
+    document.getElementById("justforTEST").innerHTML = "<pre><code>TEST CALLED 'B'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
 } else if (pub.abtst === 'C') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 100,
-        renderMarginPercent: 50,
-        mobileScaling: 2
+        fetchMarginPercent: 0,
+        renderMarginPercent: 0,
+        mobileScaling: 0
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'C'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
+    document.getElementById("justforTEST").innerHTML = "<pre><code>TEST CALLED 'C'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
 } else if (pub.abtst === 'D') {
     pub.lazyLoadSettings = {
         fetchMarginPercent: 150,
         renderMarginPercent: 100,
         mobileScaling: 2
     };
-    document.getElementById("justforTEST").innerHTML = "TEST CALLED 'D'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
+    document.getElementById("justforTEST").innerHTML = "<pre><code>TEST CALLED 'D'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
 } 
 
 document.addEventListener('DOMContentLoaded', function() { // please evaluate if its really necessary to use this listener, or certify this script is only loaded after the DOM elements and CMP is loaded.
@@ -482,7 +478,7 @@ window.pub.aBola = function () {
                         }
                   });
 
-      googletag.pubads().enableLazyLoad(pub.abtst);
+      googletag.pubads().enableLazyLoad(pub.lazyLoadSettings);
       googletag.enableServices();
 
       if(window.googletag && googletag.pubadsReady) {
