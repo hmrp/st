@@ -449,8 +449,8 @@ window.pub.aBola = function () {
                         document.getElementById(event.slot.getSlotElementId()).classList.add("txt");
 
 
-                        document.getElementById("elementos").innerHTML += ("<p> displayed at " + event.slot.getSlotElementId() + " "+ window.scrollY + "px</p>");
-                        var x = document.createTextNode ("displayed at " + event.slot.getSlotElementId()+ " " + window.scrollY  + "px");
+                        document.getElementById("elementos").innerHTML += ("<p> displayed at "+ window.scrollY + "px " + event.slot.getSlotElementId() + "</p>");
+                        var x = document.createTextNode ("displayed at " + window.scrollY + "px " + event.slot.getSlotElementId());
                         document.getElementById(event.slot.getSlotElementId()).appendChild(x);
                         }
                   });          
