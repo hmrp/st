@@ -121,9 +121,13 @@ dont need to use class "pubDesktop" or "pubMobile" if the element is shown in sa
 </script>
 
 
+<h1 style="    height: 300px;
+position: relative;
+display: block;
+background: #686868;
+width: 100%; color:#fff;"> AB TEST</h1>
 
-
-<div style="height:300px position:relative;">
+<div>
     <div class="pub horz bid"></div>
     </div>
     
@@ -256,24 +260,24 @@ pub.adUnitArea = ['HOME'];
 
 if (pub.abtst === 'A') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 1,
-        renderMarginPercent: 1,
+        fetchMarginPercent: 10,
+        renderMarginPercent: 5,
         mobileScaling: 1
     };
 
     document.getElementById("justforTEST").innerHTML = "<pre><code>TEST CALLED 'A' " + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
 } else if (pub.abtst === 'B') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 20,
-        renderMarginPercent: 10,
+        fetchMarginPercent: 50,
+        renderMarginPercent: 30,
         mobileScaling: 1.5
     };
     document.getElementById("justforTEST").innerHTML = "<pre><code>TEST CALLED 'B'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
 } else if (pub.abtst === 'C') {
     pub.lazyLoadSettings = {
-        fetchMarginPercent: 0,
-        renderMarginPercent: 0,
-        mobileScaling: 0
+        fetchMarginPercent: 100,
+        renderMarginPercent: 50,
+        mobileScaling: 2
     };
     document.getElementById("justforTEST").innerHTML = "<pre><code>TEST CALLED 'C'"  + JSON.stringify(pub.lazyLoadSettings, null, "\t").replaceAll("],\n\t\"", "],\n\n\t\"") + "</code></pre>";
 } else if (pub.abtst === 'D') {
