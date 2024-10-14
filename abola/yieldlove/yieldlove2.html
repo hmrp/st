@@ -185,6 +185,11 @@ window.pub.aBola = function () {
   console.log(adSlotID);
 
 
+  googletag.cmd.push(function() {
+      googletag.display('vert1');
+    });
+
+
 
       yieldlove_cmd.push(function () {
                  // YLHH.bidder.startAuction('/417417404/MastHead_HomePage', undefined);  
@@ -203,7 +208,9 @@ window.pub.aBola = function () {
                   console.log(pub.amzbid);
             });
             */
-            googletag.pubads().refresh();
+
+
+           // googletag.pubads().refresh();
       }); 
 
 }
@@ -358,7 +365,7 @@ window.pub.aBola = function () {
                                           googletag.pubads().refresh([event.slot], {changeCorrelator: true});
 
                                     });*/
-                                    googletag.pubads().refresh([event.slot], {changeCorrelator: true});
+                                    //googletag.pubads().refresh([event.slot], {changeCorrelator: true});
                               }, pub.aRefresh);
                               }
                         }
