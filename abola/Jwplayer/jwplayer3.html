@@ -1,0 +1,99 @@
+<!--
+<script src="https://cdn.jwplayer.com/libraries/TLqqgR2l.js" defer=""></script>
+-->
+
+
+<script src="jwplayer-8.36.3/jwplayer.js"></script>
+<script>jwplayer.key="Tvd7XSNs2YtwAVSOhYyjblMnAWOolBZ8m974F4PFagXBG9ar"</script>
+
+
+
+'https://cdn.jwplayer.com/v2/playlists/Ai6aW8IA';
+
+https://cdn.jwplayer.com/v2/playlists/CmMrv9n5?related_media_id=x3R2LnrB
+
+
+
+
+https://cdn.jwplayer.com/videos/BPvs16DA-mCyuYUlQ.mp4"
+exemplo
+{"jwPlayerId":"Ai6aW8IA"}
+jwPlayerId
+
+
+
+https://cdn.jwplayer.com/v2/playlists/CmMrv9n5?
+<div id="myElement"></div>
+
+<script>
+    jwplayer("myElement").setup({ 
+      //file: "Escritorio.mp4",
+      "playlist": "https://cdn.jwplayer.com/v2/playlists/CmMrv9n5?related_media_id=Ai6aW8IA",
+      //autoplayadsmuted: true,
+      //autostart: true,
+      /*
+      autostart: true,
+      pipIcon: false,
+      allowFullscreen : false,
+      mute: false,
+      
+      "autoPause": {
+      "viewability": true,
+      "pauseAds": false
+      }
+      */
+
+      /*
+      "playlist": [{
+            //"file": "https://api.jwplayer.com/v2/sites/vsL7u16Y/media/o0pNKQVo"
+           "file": "Escritorio.mp4" 
+        }]
+      */
+
+
+      "advertising": {
+    "client": "googima",
+    "adscheduleid": "Az87bY12",
+    "schedule": [
+      {
+        "offset": "pre",
+        "tag": "https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/video&description_url=[placeholder]&tfcd=0&npa=0&sz=1x1%7C300x1%7C300x250%7C640x360%7C640x360%7C640x480&max_ad_duration=5000&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&correlator="
+      },
+       {
+        "offset": "00:00:0:0001",
+        "tag": "https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/PRE-ROLL_Miragens&description_url=[placeholder]&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&correlator="
+      },
+      {
+        "offset": "50%",
+        "tag": "https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/MIDROLL_Videos&description_url=[placeholder]&tfcd=0&npa=0&sz=640x360%7C640x480&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&correlator="
+      },
+      {
+        "offset": "post",
+        "tag": "https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/postrollabola&description_url=[placeholder]&tfcd=0&npa=0&sz=400x300%7C640x480&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&correlator="
+      }
+      ]}
+
+
+    }).setConfig({
+      "repeat": true,
+      "autostart": true,
+      "mute": false,
+      "volume": 10
+      });
+
+   
+
+   
+jwplayer().on('beforePlay', () => {
+      console.log("before play");
+      if (event.playReason === "autostart") {
+        console.log("before play Video started with autoplay");
+
+       // jwplayer("myElement").setMute();
+        jwplayer("myElement").setVolume(10);
+        console.log("Volume set to 10");
+    }
+});
+
+
+</script>
