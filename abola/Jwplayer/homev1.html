@@ -117,15 +117,15 @@
 <!-- new  -->
 <script src="https://cdn.jwplayer.com/v2/sites/vsL7u16Y/placements/embed.js"></script>
 
-<div style="background:rebeccapurple; display: block; position: fixed; bottom: 5px; right: 5px; width: 401px; height: 225px; border: none; overflow: hidden; z-index:2147483645;">
+<div class="jw-floating-dismissible" style="background:rebeccapurple; display: block; position: fixed; bottom: 5px; right: 5px; width: 401px; height: 225px; border: none; overflow: hidden; z-index:2147483645;">
   <div
     id="testThree"
     data-jw-placement-id="Kd4uVnAZ"
-    data-jw-video_id="wbVZxlGL">
+    data-jw-video_id="wbVZxlGL" class="jw-floating-dismissible">
   </div>
 </div>
 
-
+<!--
 <div style="background:rebeccapurple; display: block; position: fixed; bottom: 5px; right: 5px; width: 401px; height: 225px; border: none; overflow: hidden; z-index:2147483645;">
   <div
     id="testOne"
@@ -134,11 +134,35 @@
   
   </div>
 </div>
+-->
 
 <!-- /new  -->
 
 
+<!--
+  <div id="player"></div>
+  <script>
+      // Initialize the JW Player
+      const player = jwplayer("player").setup({
+          file: "https://path-to-your-video.mp4", // Replace with your video file URL
+          autostart: true, // Enable autostart
+          volume: 50, // Default volume
+          width: "640",
+          height: "360"
+      });
 
+      // Listen for the 'firstFrame' event
+      player.on("firstFrame", function() {
+          // Check if autostart is enabled
+          if (player.getConfig().autostart) {
+              // Set the volume to 10 if autostart is enabled
+              player.setVolume(10);
+              console.log("Autostart detected, volume set to 10 on first frame.");
+          }
+      });
+  </script>
+
+-->
 
                 
                 
