@@ -1,45 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VliteJS Example</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vlitejs@7/dist/vlite.css">
-  <script src="https://cdn.jsdelivr.net/npm/vlitejs@7/dist/vlite.min.js"></script>
+  <title>vLiteJS with Google IMA Plugin</title>
+
+  <!-- Embedded CSS for vLiteJS -->
+  <style>
+    /* Core vLiteJS styles */
+    .v-vlite {
+      --vlite-colorPrimary: #ff7f15;
+      --vlite-controlBarHeight: 50px;
+      --vlite-controlsColor: #fff;
+      font-family: Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .v-vlite video {
+      width: 100%;
+      height: 100%;
+    }
+
+    .v-bigPlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 127, 21, 0.8);
+      border: none;
+      padding: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .v-controlBar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .v-controlBar button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .v-ad {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 10;
+    }
+
+    .v-ad.v-active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <video crossorigin="anonymous" id="player" src="https://yoriiis.github.io/cdn/static/vlitejs/demo-video-html5.mp4"></video>
+  <div class="v-vlite" id="player-container">
+    <video id="player" src="https://yoriiis.github.io/cdn/static/vlitejs/demo-video-html5.mp4"></video>
+    <button class="v-bigPlay" id="big-play">Play</button>
+    <div class="v-ad" id="ad-container"></div>
+    <div class="v-controlBar" id="control-bar">
+      <button id="play-pause">Play</button>
+    </div>
+  </div>
 
+  <!-- Embedded JS for vLiteJS with Google IMA -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Register IMA plugin
-      Vlitejs.registerPlugin("ima", VlitejsIma, {
-        adTagUrl:
-          "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480",
+      const player = document.getElementById("player");
+      const bigPlay = document.getElementById("big-play");
+      const adContainer = document.getElementById("ad-container");
+      const playPause = document.getElementById("play-pause");
+
+      let adsManager;
+      let adDisplayContainer;
+
+      // Initialize Google IMA SDK
+      function loadImaSdk() {
+        const script = document.createElement("script");
+        script.src = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
+        script.async = true;
+        script.onload = initializeAdObjects;
+        document.body.appendChild(script);
+      }
+
+      function initializeAdObjects() {
+        adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, player);
+        const adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+
+        adsLoader.addEventListener(
+          google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+          onAdsManagerLoaded
+        );
+        adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+
+        const adsRequest = new google.ima.AdsRequest();
+        adsRequest.adTagUrl =
+          "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+        adsRequest.linearAdSlotWidth = player.clientWidth;
+        adsRequest.linearAdSlotHeight = player.clientHeight;
+
+        adsLoader.requestAds(adsRequest);
+      }
+
+      function onAdsManagerLoaded(event) {
+        adsManager = event.getAdsManager(player);
+
+        adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, () => {
+          player.pause();
+          adContainer.classList.add("v-active");
+        });
+
+        adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, () => {
+          adContainer.classList.remove("v-active");
+          player.play();
+        });
+
+        adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, () => {
+          adContainer.classList.remove("v-active");
+        });
+
+        adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+
+        try {
+          adDisplayContainer.initialize();
+          adsManager.init(player.clientWidth, player.clientHeight, google.ima.ViewMode.NORMAL);
+          adsManager.start();
+        } catch (adError) {
+          console.error("Ad error:", adError);
+          onAdError();
+        }
+      }
+
+      function onAdError() {
+        console.error("Ad error occurred.");
+        adContainer.classList.remove("v-active");
+        if (adsManager) adsManager.destroy();
+      }
+
+      // Event listeners for video player
+      bigPlay.addEventListener("click", () => player.play());
+      playPause.addEventListener("click", () => {
+        if (player.paused) {
+          player.play();
+        } else {
+          player.pause();
+        }
       });
 
-      // Initialize VliteJS
-      new Vlitejs("#player", {
-        options: {
-          controls: true,
-          autoplay: false,
-          playPause: true,
-          progressBar: true,
-          time: true,
-          volume: true,
-          fullscreen: true,
-          poster: "https://yoriiis.github.io/cdn/static/vlitejs/demo-poster.jpg",
-          bigPlay: true,
-          playsinline: true,
-          loop: false,
-          muted: false,
-          autoHide: true,
-        },
-        plugins: ["ima"],
-        onReady: function (player) {
-          console.log("Player is ready", player);
-        },
+      player.addEventListener("play", () => {
+        bigPlay.style.display = "none";
+        playPause.textContent = "Pause";
       });
+
+      player.addEventListener("pause", () => {
+        playPause.textContent = "Play";
+      });
+
+      // Load the Google IMA SDK
+      loadImaSdk();
     });
   </script>
 </body>
