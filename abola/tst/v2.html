@@ -1,0 +1,54 @@
+<head>
+    <title>is there a way to have several placements with "wch7r32F being loaded on the same page?</title>
+    <style>.video {width:300px; height:300px;}</style>
+</head>
+<!--
+<script src="jwplayer-8.36.4/jwplayer.js"></script>
+<script>jwplayer.key="Tvd7XSNs2YtwAVSOhYyjblMnAWOolBZ8m974F4PFagXBG9ar"</script>
+-->
+<!-- 
+The first video request in a page should be based on a strategy rule, since there is no way to call several times the same strategy rule on a single page, right?
+
+<script>
+    const jwDataStore = window.jwDataStore || { custom: {} };
+    jwDataStore.custom.wch7r32F = { ad_tag: "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinearvpaid2js&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=", media_id: "o0pNKQVo" };
+    window.jwDataStore = jwDataStore;
+</script>
+
+<script src="https://cdn.jwplayer.com/v2/sites/vsL7u16Y/placements/embed.js" defer=""></script>
+<div  id="placementRequest" data-jw-placement-id="wch7r32F" data-jw-media_id="vp0AmaB7"></div>
+-->
+
+
+<script src="https://cdn.jwplayer.com/v2/sites/vsL7u16Y/placements/embed.js" defer=""></script>
+
+
+
+is there a way to have several video player requests, loading same strategy rule like id="wch7r32F"
+each with a different media id associated?
+
+
+<p>#player-1 should request mediaid="o0pNKQVo"</p>
+<div  id="player-1" class="video">
+<!-- <script src="https://cdn.jwplayer.com/v2/sites/vsL7u16Y/placements/wch7r32F/embed.js?divId=player-1&mediaid=o0pNKQVo"></script>-->
+    <div data-jw-placement-id="wch7r32F" data-jw-media_id="o0pNKQVo"></div> 
+</div>
+
+<p>#player-2 should request mediaid="h7AkbbkC"</p>
+<div  id="player-2" class="video">
+    <div data-jw-placement-id="wch7r32F" data-jw-media_id="h7AkbbkC"></div> 
+</div>
+<!-- <script src="https://cdn.jwplayer.com/v2/sites/vsL7u16Y/placements/wch7r32F/embed.js?divId=player-2&mediaid=h7AkbbkC"></script>-->
+
+
+<p>#player-3 should request mediaid="qEe803Ht"</p>
+<div  id="player-3" class="video">
+    <div data-jw-placement-id="wch7r32F" data-jw-media_id="qEe803Ht"></div> 
+</div>
+<!-- <script src="https://cdn.jwplayer.com/v2/sites/vsL7u16Y/placements/wch7r32F/embed.js?divId=player-3&mediaid=qEe803Ht"></script>-->
+
+
+<p>Tried with embed.js?divID= and data-jw-media_id attr</p>
+<p>divID i can request several players, but don't know how to force a specific media id to be loadedd</p>
+<p>data-jw-media_id can only load one player at a time, but can request any media id</p>
+
