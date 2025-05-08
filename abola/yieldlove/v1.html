@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>SRA + Yieldlove Dual Auction</title>
+
+
+    <script>
+      yieldlove_prevent_autostart = true;
+      var yieldlove_cmd = yieldlove_cmd || [];
+    </script>
+
+  
+    <script src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
+
+    <script async
+            src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
+            crossorigin="anonymous">
+    </script>
+    <script>
+      window.googletag = window.googletag || { cmd: [] };
+
+      googletag.cmd.push(function() {
+        const slots = [
+          googletag.defineSlot("/6355419/Travel/Europe",[728,90],"slot-1").addService(googletag.pubads()),
+          googletag.defineSlot("/6355419/Travel/Europe",[728,90],"slot-2").addService(googletag.pubads()),
+          googletag.defineSlot("/6355419/Travel/Europe",[300,250],"slot-3").addService(googletag.pubads()),
+          googletag.defineSlot("/6355419/Travel/Europe",[300,250],"slot-4").addService(googletag.pubads()),
+          googletag.defineSlot("/6355419/Travel/Europe",[300,250],"slot-5").addService(googletag.pubads())
+        ];
+
+        googletag.pubads().disableInitialLoad();
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+
+        console.log("▶ Auction 1 starting now");
+        YLHH.bidder.startAuction(
+          '/6355419/Travel/Europe',
+          { adUnits: ['slot-1','slot-2'] },
+          function() {
+            console.log("✔ Auction 1 done → refreshing slots 1 & 2");
+            googletag.pubads().refresh([ slots[0], slots[1] ]);
+          }
+        );
+
+        setTimeout(function() {
+          console.log("▶ Auction 2 starting after 5s");
+          YLHH.bidder.startAuction(
+            '/6355419/Travel/Europe',
+            { adUnits: ['slot-3','slot-4','slot-5'] },
+            function() {
+              console.log("✔ Auction 2 done → refreshing slots 3, 4 & 5");
+              googletag.pubads().refresh([ slots[2], slots[3], slots[4] ]);
+            }
+          );
+        }, 5000);
+      });
+    </script>
+
+    <style>
+      .ad-slot { border: 1px solid #ccc; margin: 5px; }
+      .row { display: flex; justify-content: center; flex-wrap: wrap; }
+    </style>
+  </head>
+
+  <body>
+    <div class="row"><p>SRA request #1</p></div>
+    <div class="row">
+      <div id="slot-1" class="ad-slot" style="width:728px; height:90px;"></div>
+      <div id="slot-2" class="ad-slot" style="width:728px; height:90px;"></div>
+    </div>
+
+    <div class="row"><p>SRA request #2 in <span id="seconds">5</span> seconds…</p></div>
+    <div class="row">
+      <div id="slot-3" class="ad-slot" style="width:300px; height:250px;"></div>
+      <div id="slot-4" class="ad-slot" style="width:300px; height:250px;"></div>
+      <div id="slot-5" class="ad-slot" style="width:300px; height:250px;"></div>
+    </div>
+
+    <script>
+
+      (function countdown(sec){
+        if (sec < 0) return;
+        document.getElementById("seconds").textContent = sec;
+        setTimeout(() => countdown(sec-1), 1000);
+      })(5);
+    </script>
+  </body>
+</html>
