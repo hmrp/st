@@ -1,0 +1,189 @@
+<style>
+  p {
+    height: 300px;
+    position: relative;
+    display: block;
+  }
+  .pub {
+    min-height: 250px;
+  }
+</style>
+
+<!-- HTML Ad Slots -->
+<div class="pub oop"></div>
+<div class="pub horz"></div>
+<p>go ninja go</p>
+<div class="pub horz"></div>
+<p>go ninja go</p>
+<div class="pub horz"></div>
+<p>go ninja go</p>
+<div class="pub vert"></div>
+<p>go ninja go</p>
+<div class="pub horz"></div>
+<p style="height:900px">go ninja go</p>
+<div class="pub vert"></div>
+
+<!-- <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script> -->
+
+<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous" async></script>
+
+
+
+<script>
+  window.googletag = window.googletag || { cmd: [] };
+
+  let oopSlot = null;
+  const adSlots = [];
+  const slotDimensions = {
+    horz: [[1150, 250], [970, 250], [970, 90], [728, 90], [468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [234, 60], [216, 36], [120, 20], [1, 1], 'fluid'],
+    vert: [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1], 'fluid']
+  };
+
+  function getSlotName(el) {
+    if (el.classList.contains('horz')) return 'horz';
+    if (el.classList.contains('vert')) return 'vert';
+    if (el.classList.contains('oop')) return 'oop';
+    return null;
+  }
+
+  googletag.cmd.push(function () {
+    const slotIndexCounters = { horz: 0, vert: 0 };
+
+    const horzSizeMapping = googletag.sizeMapping()
+      .addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216, 36], [120, 20], [1, 1], 'fluid'])
+      .addSize([768, 200], [[728, 90], [468, 60], 'fluid'])
+      .addSize([1024, 200], [[970, 250], [970, 90], [840, 250], [800, 250], [728, 90], [468, 60], [1, 1], 'fluid'])
+      .addSize([1150, 200], [[1150, 250], [970, 250], [840, 250], [800, 250], [728, 90], [468, 60], [1, 1], 'fluid'])
+      .build();
+
+    const vertSizeMapping = googletag.sizeMapping()
+      .addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1], 'fluid'])
+      .addSize([768, 200], [[300, 600], [300, 250], [200, 200], [1, 1], 'fluid'])
+      .build();
+
+    function defineSlot(el, slotName, slotId) {
+      el.id = slotId;
+      const mapping = slotName === 'horz' ? horzSizeMapping
+                    : slotName === 'vert' ? vertSizeMapping
+                    : null;
+
+      if (!mapping || !slotDimensions[slotName]) return;
+
+      
+      googletag.defineSlot(`/417417404/${slotName}`, slotDimensions[slotName], slotId)
+        .defineSizeMapping(mapping)
+        .addService(googletag.pubads())
+        .setTargeting("pos", parseInt(el.dataset.pos));
+
+      adSlots.push(slotId);
+    }
+
+  function lazyLoadAds(lazyElements) {
+  const fetchDistance = Math.max(600, Math.floor(window.innerHeight * 0.85));
+  const pubObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        if (!el.dataset.loaded) {
+          el.dataset.loaded = "true";
+          const slotName = el.dataset.slotType;
+          const slotId = slotName + el.dataset.pos;
+          defineSlot(el, slotName, slotId);
+          googletag.display(slotId);
+          pubObserver.unobserve(el);
+        }
+      }
+    });
+  }, { rootMargin: fetchDistance + 'px 0px' }); 
+
+  lazyElements.forEach(el => pubObserver.observe(el));
+}
+
+    const lazyElements = [];
+    let firstHorzHandled = false;
+    let firstVertHandled = false;
+
+    document.querySelectorAll('.pub').forEach(el => {
+      const slotName = getSlotName(el);
+      if (!slotName) return;
+
+      if (slotIndexCounters[slotName] === undefined) {
+        slotIndexCounters[slotName] = 0;
+      }
+
+      const pos = ++slotIndexCounters[slotName];
+      el.dataset.pos = pos;
+      el.dataset.slotType = slotName;
+
+      if (slotName === 'oop') {
+        el.id = "oop";
+        oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
+          .setCollapseEmptyDiv(true, true)
+          .addService(googletag.pubads());
+        return;
+      }
+
+      if (slotName === 'horz' && !firstHorzHandled) {
+        firstHorzHandled = true;
+        defineSlot(el, slotName, slotName);
+      } else if (slotName === 'vert' && !firstVertHandled) {
+        firstVertHandled = true;
+        defineSlot(el, slotName, slotName);
+      } else {
+        lazyElements.push(el);
+      }
+    });
+
+    const pubads = googletag.pubads();
+    pubads.setTargeting("assinante", "nao");
+    pubads.setTargeting("end", "pos");
+    pubads.setTargeting("noticiatag", "opiniao");
+    pubads.setTargeting("id", "2023121613015767596");
+    pubads.setTargeting("category", "internacional");
+    pubads.setTargeting("type", "article");
+
+    pubads.enableSingleRequest();
+    googletag.enableServices();
+
+    // Display first horz/vert immediately
+    ['horz', 'vert'].forEach(name => {
+      const el = document.getElementById(name);
+      if (el) googletag.display(el.id);
+    });
+
+    lazyLoadAds(lazyElements);
+
+    // If OOP is empty, show fallback interstitial
+    googletag.pubads().addEventListener('slotRenderEnded', function (event) {
+      if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
+        const gamInterstitial = googletag.defineOutOfPageSlot("/417417404/oop", googletag.enums.OutOfPageFormat.INTERSTITIAL);
+        if (gamInterstitial) {
+          gamInterstitial
+            .setTargeting("pos", "gaminterstitial")
+            .addService(googletag.pubads())
+            .setConfig({
+              interstitial: {
+                triggers: { unhideWindow: true },
+              },
+            });
+          googletag.display(gamInterstitial);
+        }
+      }
+    });
+
+    // Viewability logic with optional refresh
+    googletag.pubads().addEventListener("impressionViewable", function (event) {
+      if (!event.isEmpty && event.slot !== oopSlot) {
+        const el = document.getElementById(event.slot.getSlotElementId());
+        if (el) el.classList.add("\u2714");
+
+        const targeting = event.slot.getTargeting("pos");
+        if (targeting.includes("autorefresh")) {
+          setTimeout(() => {
+            googletag.pubads().refresh([event.slot], { changeCorrelator: true });
+          }, 60600);
+        }
+      }
+    });
+  });
+</script>

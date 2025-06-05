@@ -1,0 +1,278 @@
+<style>
+  p {
+    height: 300px;
+    position: relative;
+    display: block;
+  }
+  .pub {
+    min-height: 250px;
+  }
+
+   .horz {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 250px;
+  min-height:250px
+}
+
+.vert {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+  min-height:600px
+}
+
+
+@media only screen and (min-width: 1px) {
+      .pubDesktop {display:none;}
+      .pubMobile {display:block;}
+    }
+    @media only screen and (min-width: 768px) {
+      .pubDesktop {display:block}
+      .pubMobile {display:none}
+    }
+
+
+.sticky {position: absolute;
+  top: calc(100vh + 250px);
+  background: red;
+  height: 10px;
+left: 0;width: 100%;z-index: 9999;background: red;display: block; height: 1px;
+}
+
+
+</style>
+<!-- HTML Ad Slots -->
+<div class="pub oop"></div>
+<div class=" sticky" style=""></div>
+<div class="pub horz pubDesktop"></div>
+<p>go ninja go</p>
+<div class="pub horz pubDesktop"></div>
+<p>go ninja go</p>
+<div class="pub horz leaderboard pubDesktop"></div>
+<p>go ninja go</p>
+<div class="pub vert"></div>
+<p>go ninja go</p>
+<div class="pub horz pubDesktop"></div>
+<p>go ninja go</p>
+<p style="height:900px">go ninja go</p>
+<div class="pub vert"></div>
+
+<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous" async></script>
+
+<script>
+  window.googletag = window.googletag || { cmd: [] };
+
+  let oopSlot = null;
+  const adSlots = [];
+  const slotDimensions = {
+    horz: [[1150, 250], [970, 250], [970, 90], [728, 90], [468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [234, 60], [216, 36], [120, 20], [1, 1]],
+    vert: [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1]]
+  };
+
+
+  window.addEventListener("DOMContentLoaded", () => {
+  function getSlotName(el) {
+    if (el.classList.contains('oop')) return 'oop';
+    if (el.classList.contains('horz')) return 'horz';
+    if (el.classList.contains('vert')) return 'vert';
+    if (el.classList.contains('sticky')) return 'sticky';
+    return null;
+  }
+
+  googletag.cmd.push(function () {
+    const slotIndexCounters = { horz: 0, vert: 0 };
+
+    function buildSizeMapping(el, slotName) {
+      const isMrec = el.classList.contains("mrec");
+      const isLeaderboard = el.classList.contains("leaderboard");
+
+      if (slotName === "vert" && isMrec) {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200], [1,1], "fluid"])
+          .addSize([768, 200], [[300, 250], [250, 250], [200, 200], [1,1]])
+          .build();
+      }
+
+      if (slotName === "horz" && isLeaderboard) {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216, 36], [120, 20], [1, 1]])
+          .addSize([768, 200], [[728, 90], [468, 60]])
+          .addSize([1024, 200], [[728, 90], [468, 60], [1, 1]])
+          .build();
+      }
+
+      if (slotName === "horz") {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216, 36], [120, 20], [1, 1], "fluid"])
+          .addSize([768, 200], [[728, 90], [468, 60], "fluid"])
+          .addSize([1024, 200], [[970, 250], [970, 90], [840, 250], [800, 250], [728, 90], [468, 60], [1, 1], "fluid"])
+          .addSize([1150, 200], [[1150, 250], [970, 250], [840, 250], [800, 250], [728, 90], [468, 60], [1, 1], "fluid"])
+          .build();
+      }
+
+      if (slotName === "vert") {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1], "fluid"])
+          .addSize([768, 200], [[300, 600], [300, 250], [200, 200], [1, 1], "fluid"])
+          .build();
+      }
+
+      return null;
+    }
+
+    function defineSlot(el, slotName, slotId) {
+      el.id = slotId;
+      const mapping = buildSizeMapping(el, slotName);
+      if (!mapping || !slotDimensions[slotName]) return;
+
+      googletag.defineSlot('/417417404/'+slotName, slotDimensions[slotName], slotId)
+        .defineSizeMapping(mapping)
+        .addService(googletag.pubads())
+        .setTargeting("pos", parseInt(el.dataset.pos));
+
+      adSlots.push(slotId);
+    }
+
+    function lazyLoadAds(lazyElements) {
+      const fetchDistance = Math.max(600, Math.floor(window.innerHeight * 0.85));
+      const pubObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            if (!el.dataset.loaded) {
+              el.dataset.loaded = "true";
+              const slotName = el.dataset.slotType;
+              const slotId = slotName + el.dataset.pos;
+              defineSlot(el, slotName, slotId);
+              googletag.display(slotId);
+              pubObserver.unobserve(el);
+            }
+          }
+        });
+      }, { rootMargin: fetchDistance + 'px 0px' });
+
+      lazyElements.forEach(el => pubObserver.observe(el));
+    }
+
+    const lazyElements = [];
+    let firstHorzHandled = false;
+    let firstVertHandled = false;
+
+const pubElements = Array.from(document.getElementsByClassName('pub'));
+pubElements.forEach(el => {
+  const slotName = getSlotName(el);
+  if (!slotName) return;
+
+  if (slotIndexCounters[slotName] === undefined) {
+    slotIndexCounters[slotName] = 0;
+  }
+
+  const pos = ++slotIndexCounters[slotName];
+  el.dataset.pos = pos;
+  el.dataset.slotType = slotName;
+
+  if (slotName === 'oop') {
+    el.id = "oop";
+    oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
+      .setCollapseEmptyDiv(true, true)
+      .addService(googletag.pubads());
+    return;
+  }
+
+    if (slotName === 'sticky') {
+    el.id = "sticky";
+    stickySlot = googletag.defineOutOfPageSlot("/417417404/sticky", "sticky")
+      .setCollapseEmptyDiv(true, true)
+      .addService(googletag.pubads());
+    return;
+  }
+
+  if (pos === 1 && window.getComputedStyle(el).display !== "none") {
+    defineSlot(el, slotName, slotName);
+  } else {
+    lazyElements.push(el);
+  }
+}); 
+
+
+const pubads = googletag.pubads();
+pubads.setTargeting("assinante", "nao");
+pubads.setTargeting("end", "pos");
+pubads.setTargeting("noticiatag", "opiniao");
+pubads.setTargeting("id", "2023121613015767596");
+pubads.setTargeting("category", "internacional");
+pubads.setTargeting("type", "article");
+
+pubads.enableSingleRequest();
+googletag.enableServices();
+
+
+    ['horz', 'vert'].forEach(name => {
+      const el = document.getElementById(name);
+      if (el) googletag.display(el.id);
+    });
+
+    lazyLoadAds(lazyElements);
+
+    googletag.pubads().addEventListener('slotRenderEnded', function (event) {
+      if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
+        const gamInterstitial = googletag.defineOutOfPageSlot("/417417404/oop", googletag.enums.OutOfPageFormat.INTERSTITIAL);
+        if (gamInterstitial) {
+          gamInterstitial
+            .setTargeting("pos", "gaminterstitial")
+            .addService(googletag.pubads())
+            .setConfig({
+              interstitial: {
+                triggers: { unhideWindow: true },
+              },
+            });
+          googletag.display(gamInterstitial);
+        }
+      }
+
+if (event.slot.getSlotElementId() === 'sticky') {
+  const sticky = document.getElementById('sticky');
+  if (!event.isEmpty && sticky) {
+    
+    sticky.style.position = 'sticky';
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '5px';
+    closeButton.style.left = '5px';
+    closeButton.style.zIndex = '10000';
+    closeButton.style.background = '#000';
+    closeButton.style.color = '#fff';
+    closeButton.style.border = 'none';
+    closeButton.style.padding = '5px 8px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.style.fontSize = '16px';
+
+    sticky.style.position = 'relative';
+    sticky.appendChild(closeButton);
+
+    closeButton.addEventListener('click', () => {
+      googletag.destroySlots([event.slot]);
+      sticky.remove();
+          });
+        }
+      }
+    });
+
+    googletag.pubads().addEventListener("impressionViewable", function (event) {
+      if (!event.isEmpty && event.slot !== oopSlot) {
+        const el = document.getElementById(event.slot.getSlotElementId());
+        if (el) el.classList.add("\u2714");
+
+        const targeting = event.slot.getTargeting("pos");
+        if (targeting.includes("autorefresh")) {
+          setTimeout(() => {
+            googletag.pubads().refresh([event.slot], { changeCorrelator: true });
+          }, 60600);
+        }
+      }
+    });
+  });
+  
+  });
+</script>
