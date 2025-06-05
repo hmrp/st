@@ -1,3 +1,7 @@
+<head>
+  <meta charset="UTF-8">
+</head>
+
 <style>
   p {
     height: 300px;
@@ -31,18 +35,18 @@
     }
 
 
-.sticky {position: absolute;
-  top: calc(100vh + 250px);
+.pub.sticky {position: absolute;
+  top: calc(500vh + 250px);
   background: red;
   height: 10px;
-left: 0;width: 100%;z-index: 9999;background: red;display: block; height: 1px;
+left: 0;width: 100%;z-index: 9999;display: block; min-height: 100px;
 }
 
 
 </style>
 
 <div class="pub oop"></div>
-<div class=" sticky" style=""></div>
+<div class=" pub sticky" style=""></div>
 <div class="pub horz pubDesktop"></div>
 <p>Until recently, the prevailing view assumed lorem ipsum was born as a nonsense text. “It’s not Latin, though it looks like it, and it actually says nothing,” Before & After magazine answered a curious reader, “Its ‘words’ loosely approximate the frequency with which letters occur in English, which is why at a glance it looks pretty real.”
 
@@ -218,7 +222,8 @@ pubElements.forEach(el => {
 
     if (slotName === 'sticky') {
     el.id = "sticky";
-    stickySlot = googletag.defineOutOfPageSlot("/417417404/sticky", "sticky")
+    //stickySlot = googletag.defineOutOfPageSlot("/417417404/sticky", "sticky")
+    stickySlot = googletag.defineSlot('/417417404/sticky', [[970, 90], [750, 100], [1, 1], [1000, 100], [320, 100], [980, 90], [300, 100], [300, 50], [360, 50], [320, 50], [360, 100], [728, 90]], 'sticky')
       .setCollapseEmptyDiv(true, true)
       .addService(googletag.pubads());
     return;
@@ -234,9 +239,12 @@ pubElements.forEach(el => {
 
 const pubads = googletag.pubads();
 pubads.setTargeting("end", "pos");
+pubads.setTargeting("pos", "autorefresh");
 pubads.setTargeting("id", "2023121613015767596");
 pubads.setTargeting("category", "internacional");
 pubads.setTargeting("type", "article");
+//pubads.disableInitialLoad();
+pubads.setCentering(true);
 
 pubads.enableSingleRequest();
 googletag.enableServices();
@@ -268,14 +276,11 @@ googletag.enableServices();
 if (event.slot.getSlotElementId() === 'sticky') {
   const sticky = document.getElementById('sticky');
   if (!event.isEmpty && sticky) {
-    
-    sticky.style.position = 'sticky';
-
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
     closeButton.style.position = 'absolute';
     closeButton.style.top = '5px';
-    closeButton.style.left = '5px';
+    closeButton.style.right = '5px';
     closeButton.style.zIndex = '10000';
     closeButton.style.background = '#000';
     closeButton.style.color = '#fff';
@@ -284,7 +289,13 @@ if (event.slot.getSlotElementId() === 'sticky') {
     closeButton.style.cursor = 'pointer';
     closeButton.style.fontSize = '16px';
 
-    sticky.style.position = 'relative';
+    sticky.style.position = 'fixed';
+    sticky.style.left = '0';
+    sticky.style.bottom = '0';
+    sticky.style.width = '100%';
+    sticky.style.top = 'auto';
+
+
     sticky.appendChild(closeButton);
 
     closeButton.addEventListener('click', () => {
@@ -301,13 +312,14 @@ if (event.slot.getSlotElementId() === 'sticky') {
         if (el) el.classList.add("\u2714");
 
         const targeting = event.slot.getTargeting("pos");
-        if (targeting.includes("autorefresh")) {
+       if (event.slot.getTargeting("pos").indexOf("autorefresh") >-1 ) {
           setTimeout(() => {
             googletag.pubads().refresh([event.slot], { changeCorrelator: true });
           }, 60600);
         }
       }
     });
+
   });
   
   });
