@@ -1,0 +1,355 @@
+<head>
+  <meta charset="UTF-8">
+</head>
+<style>
+  p {
+    height: 300px;
+    position: relative;
+    display: block;
+  }
+  .pub {
+    min-height: 250px;
+  }
+
+  .MastHead_NNH {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 250px;
+  }
+
+  .CentroJogos {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
+
+  @media only screen and (min-width: 1px) {
+    .pubDesktop {display:none;}
+    .pubMobile {display:block;}
+  }
+  @media only screen and (min-width: 768px) {
+    .pubDesktop {display:block}
+    .pubMobile {display:none}
+  }
+
+  .pub.Billboard_Comentarios_Noticias {
+    position: absolute;
+    top: calc(200vh + 250px);
+    left: 0;
+    right:0;
+    margin:0 auto;
+    z-index: 9999;
+    display: inline-table;
+    overflow: hidden;
+    background: transparent;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: none;
+    margin: 0 auto;
+    overflow: visible;
+  }
+
+  .pub.Billboard_Comentarios_Noticias>button {
+    position: absolute;
+    top: -35px;
+    right: 0;
+    z-index: 10001;
+  }
+</style>
+
+<div class="pub oop"></div>
+<div class="pub Billboard_Comentarios_Noticias"></div>
+<div class="pub MastHead_NNH pubDesktop"></div>
+<p></p>
+<div class="pub MastHead_NNH pubDesktop"></div>
+<p></p>
+<div class="pub MastHead_NNH leaderboard pubDesktop"></div>
+<p></p>
+
+<p></p>
+<div class="pub MastHead_NNH pubDesktop"></div>
+<p></p>
+<p style="height:900px"></p>
+
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+
+<p></p>
+<div class="pub CentroJogos"></div>
+<div class="pub CentroJogos"></div>
+<p></p>
+<p></p>
+
+
+
+<script>
+yieldlove_prevent_autostart = false; // for testing
+var yieldlove_cmd = yieldlove_cmd || [];
+</script>
+<script src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
+<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" async></script>
+
+<script>
+window.googletag = window.googletag || { cmd: [] };
+
+let oopSlot = null;
+const adSlots = [];
+const slotDimensions = {
+  MastHead_NNH: [[1150, 250], [970, 250], [970, 90], [728, 90], [468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [234, 60], [216, 36], [120, 20], [1, 1]],
+  CentroJogos: [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1]],
+  Billboard_Comentarios_Noticias: [[970, 90], [750, 100], [728, 90], [320, 100], [300, 100], [300, 50], [360, 50], [320, 50], [360, 100], [1, 1]]
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  function getSlotName(el) {
+    if (el.classList.contains('oop')) return 'oop';
+    if (el.classList.contains('MastHead_NNH')) return 'MastHead_NNH';
+    if (el.classList.contains('CentroJogos')) return 'CentroJogos';
+    if (el.classList.contains('Billboard_Comentarios_Noticias')) return 'Billboard_Comentarios_Noticias';
+    return null;
+  }
+
+  googletag.cmd.push(function () {
+    const slotIndexCounters = { MastHead_NNH: 0, CentroJogos: 0, Billboard_Comentarios_Noticias: 0 };
+    const slotObjs = {}; // Map slotId -> slot object for refresh
+
+    function buildSizeMapping(el, slotName) {
+      const isMrec = el.classList.contains("mrec");
+      const isLeaderboard = el.classList.contains("leaderboard");
+
+      if (slotName === "CentroJogos" && isMrec) {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200], [1,1], "fluid"])
+          .addSize([768, 200], [[300, 250], [250, 250], [200, 200], [1,1]])
+          .build();
+      }
+
+      if (slotName === "MastHead_NNH" && isLeaderboard) {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216, 36], [120, 20], [1, 1]])
+          .addSize([768, 200], [[728, 90], [468, 60]])
+          .addSize([1024, 200], [[728, 90], [468, 60], [1, 1]])
+          .build();
+      }
+
+      if (slotName === "MastHead_NNH") {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[320, 100], [300, 120], [320, 50], [300, 100], [300, 50], [216, 36], [120, 20], [1, 1], "fluid"])
+          .addSize([768, 200], [[728, 90], [468, 60], "fluid"])
+          .addSize([1024, 200], [[970, 250], [970, 90], [840, 250], [800, 250], [728, 90], [468, 60], [1, 1], "fluid"])
+          .addSize([1150, 200], [[1150, 250], [970, 250], [840, 250], [800, 250], [728, 90], [468, 60], [1, 1], "fluid"])
+          .build();
+      }
+
+      if (slotName === "CentroJogos") {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1], "fluid"])
+          .addSize([768, 200], [[300, 600], [300, 250], [200, 200], [1, 1], "fluid"])
+          .build();
+      }
+
+      if (slotName === "Billboard_Comentarios_Noticias") {
+        return googletag.sizeMapping()
+          .addSize([0, 0], [[320, 100], [300, 50], [320, 50], [1, 1]])
+          .addSize([768, 200], [[970, 90], [750, 100], [728, 90], [1, 1]])
+          .build();
+      }
+      return null;
+    }
+
+    // defineSlot returns slotObj for use in refresh
+    function defineSlot(el, slotName, slotId) {
+      el.id = slotId;
+      const mapping = buildSizeMapping(el, slotName);
+      if (!mapping || !slotDimensions[slotName]) return null;
+
+      const slotObj = googletag.defineSlot('/417417404/'+slotName, slotDimensions[slotName], slotId)
+        .defineSizeMapping(mapping)
+        .addService(googletag.pubads())
+        .setTargeting("pos", [parseInt(el.dataset.pos)]);
+      slotObjs[slotId] = slotObj;
+      adSlots.push(slotId);
+      return slotObj;
+    }
+
+    function lazyLoadAds(lazyElements) {
+      const fetchDistance = Math.max(600, Math.floor(window.innerHeight * 0.85));
+      const pubObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            if (!el.dataset.loaded) {
+              el.dataset.loaded = "true";
+              const slotName = el.dataset.slotType;
+              const slotId = slotName + el.dataset.pos;
+              const slotObj = defineSlot(el, slotName, slotId);
+              googletag.display(slotId);
+              if (slotObj) {
+                yieldlove_cmd.push(function () {
+                  YLHH.bidder.startAuction(slotObj.getAdUnitPath());
+                  /*
+                  YLHH.bidder.startAuction(slotObj.getAdUnitPath(), function () {
+                    googletag.pubads().refresh([slotObj]);
+                  });*/
+                });
+              }
+              pubObserver.unobserve(el);
+            }
+          }
+        });
+      }, { rootMargin: fetchDistance + 'px 0px' });
+
+      lazyElements.forEach(el => pubObserver.observe(el));
+    }
+
+    const lazyElements = [];
+    let firstMastHead_NNHSlotObj = null, firstCentroJogosSlotObj = null;
+
+    const pubElements = Array.from(document.getElementsByClassName('pub'));
+    pubElements.forEach(el => {
+      const slotName = getSlotName(el);
+      if (!slotName) return;
+
+      if (slotIndexCounters[slotName] === undefined) {
+        slotIndexCounters[slotName] = 0;
+      }
+
+      const pos = ++slotIndexCounters[slotName];
+      el.dataset.pos = pos;
+      el.dataset.slotType = slotName;
+
+      if (slotName === 'oop') {
+        el.id = "oop";
+        oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
+          .setCollapseEmptyDiv(true, true)
+          .addService(googletag.pubads());
+        slotObjs['oop'] = oopSlot;
+        return;
+      }
+
+      // First MastHead_NNH/CentroJogos are handled together
+      if ((slotName === 'MastHead_NNH' || slotName === 'CentroJogos') && pos === 1 && window.getComputedStyle(el).display !== "none" ) {
+        const slotObj = defineSlot(el, slotName, slotName);
+        googletag.display(slotName);
+        if (slotName === 'MastHead_NNH') firstMastHead_NNHSlotObj = slotObj;
+        if (slotName === 'CentroJogos') firstCentroJogosSlotObj = slotObj;
+      } else {
+        lazyElements.push(el); 
+      }
+    });
+
+    // GPT pubads config
+    const pubads = googletag.pubads();
+    //pubads.setTargeting("end", "pos");
+    pubads.setTargeting("id", "2023121613015767596");
+    pubads.setTargeting("category", "internacional");
+    pubads.setTargeting("type", "article");
+    pubads.disableInitialLoad();
+    pubads.setCentering(true);
+    pubads.enableVideoAds();
+    pubads.enableSingleRequest();
+    googletag.enableServices();
+
+    // SRA for first slots - use Yieldlove callback
+    const sraFirstSlots = [];
+    if (firstMastHead_NNHSlotObj) sraFirstSlots.push(firstMastHead_NNHSlotObj);
+    if (firstCentroJogosSlotObj) sraFirstSlots.push(firstCentroJogosSlotObj);
+    if (sraFirstSlots.length > 0) {
+      yieldlove_cmd.push(function () {
+        YLHH.bidder.startAuction(
+          sraFirstSlots.map(slot => slot.getAdUnitPath())
+         /* function () {
+            googletag.pubads().refresh(sraFirstSlots);
+          }*/
+        );
+      });
+    }
+
+    // Lazyload rest
+    lazyLoadAds(lazyElements);
+
+    if (oopSlot) {
+      googletag.display('oop');
+      yieldlove_cmd.push(function () {
+        YLHH.bidder.startAuction(oopSlot.getAdUnitPath(), function () {
+          googletag.pubads().refresh([oopSlot]);
+        });
+      });
+    }
+
+    const adAutoRefresh = ['5509178085', '5657491894', '4612136041', '5476480550'];
+
+    googletag.pubads().addEventListener('slotRenderEnded', function (event) {
+      if (adAutoRefresh.includes(String(event.adCentroJogosiserId))) {
+        const el = document.getElementById(event.slot.getSlotElementId());
+        if (el) {
+          el.dataset.autorefresh = "true";
+        }
+      }
+
+      // Handle interstitial fallback if OOP is empty
+      if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
+        const gamInterstitial = googletag.defineOutOfPageSlot("/417417404/oop", googletag.enums.OutOfPageFormat.INTERSTITIAL);
+        if (gamInterstitial) {
+          gamInterstitial
+            .setTargeting("pos", "gaminterstitial")
+            .addService(googletag.pubads())
+            .setConfig({
+              interstitial: {
+                triggers: { unhideWindow: true },
+              },
+            });
+          googletag.display(gamInterstitial);
+          yieldlove_cmd.push(function () {
+            YLHH.bidder.startAuction(gamInterstitial.getAdUnitPath(), function () {
+              googletag.pubads().refresh([gamInterstitial]);
+            });
+          });
+        }
+      }
+
+      if (event.slot.getSlotElementId() === 'Billboard_Comentarios_Noticias1') {
+        const Billboard_Comentarios_Noticias = document.getElementById('Billboard_Comentarios_Noticias1');
+        if (!event.isEmpty && Billboard_Comentarios_Noticias) {
+          const closeButton = document.createElement('button');
+          closeButton.textContent = '×';
+          closeButton.style.zIndex = '10000';
+          closeButton.style.background = '#000';
+          closeButton.style.color = '#fff';
+          closeButton.style.border = 'none';
+          closeButton.style.padding = '5px 8px';
+          closeButton.style.cursor = 'pointer';
+          closeButton.style.fontSize = '16px';
+
+          Billboard_Comentarios_Noticias.style.position = 'fixed';
+          Billboard_Comentarios_Noticias.style.bottom = '0';
+          Billboard_Comentarios_Noticias.style.top = 'auto';
+          Billboard_Comentarios_Noticias.appendChild(closeButton);
+
+          closeButton.addEventListener('click', () => {
+            googletag.destroySlots([event.slot]);
+            Billboard_Comentarios_Noticias.remove();
+          });
+        }
+      }
+    });
+
+    googletag.pubads().addEventListener("impressionViewable", function (event) {
+      if (!event.isEmpty && event.slot != oopSlot) {
+        const el = document.getElementById(event.slot.getSlotElementId());
+        el.classList.add("\u2714");
+        if (el.dataset.autorefresh === "true") {
+          setTimeout(function(){
+            delete el.dataset.autorefresh;
+            googletag.pubads().refresh([event.slot], {changeCorrelator: true});
+          }, 10000);
+        }
+      }
+    });
+  });
+});
+</script>

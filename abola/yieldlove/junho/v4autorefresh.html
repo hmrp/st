@@ -1,10 +1,13 @@
+<head>
+  <meta charset="UTF-8">
+</head>
+
 <style>
   p {
     height: 300px;
     position: relative;
     display: block;
   }
-
   .pub {
     min-height: 250px;
   }
@@ -12,38 +15,60 @@
   .horz {
     content-visibility: auto;
     contain-intrinsic-size: auto 250px;
-    min-height: 250px;
+   /* min-height:250px */
   }
 
   .vert {
     content-visibility: auto;
     contain-intrinsic-size: auto 600px;
-    min-height: 600px;
+   /* min-height:600px*/
   }
 
   @media only screen and (min-width: 1px) {
-    .pubDesktop { display: none; }
-    .pubMobile { display: block; }
+    .pubDesktop {display:none;}
+    .pubMobile {display:block;}
   }
-
   @media only screen and (min-width: 768px) {
-    .pubDesktop { display: block; }
-    .pubMobile { display: none; }
+    .pubDesktop {display:block}
+    .pubMobile {display:none}
   }
 
-  .sticky {
+
+
+
+  .pub.sticky {
     position: absolute;
-    top: calc(100vh + 250px);
-    background: red;
-    height: 1px;
+    top: calc(200vh + 250px);
     left: 0;
-    width: 100%;
+    right:0;
+    margin:0 auto;
     z-index: 9999;
-    display: block;
+    display: inline-table;
+    overflow: hidden;
+    background: transparent;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: none;
+    margin: 0 auto;
+    overflow: visible;
   }
+
+  .pub.sticky>button {
+    position: absolute;
+  top: -35px;
+  right: 0;
+  z-index: 10001;
+  }
+
+
+
+
+
+
+
 </style>
 
-<!-- HTML Ad Slots -->
 <div class="pub oop"></div>
 <div class="pub sticky"></div>
 <div class="pub horz pubDesktop"></div>
@@ -55,16 +80,11 @@
 <div class="pub vert"></div>
 <p></p>
 <div class="pub horz pubDesktop"></div>
+<p></p>
 <p style="height:900px"></p>
 <div class="pub vert"></div>
 
-<script>
-  yieldlove_prevent_autostart = true;
-  var yieldlove_cmd = yieldlove_cmd || [];
-</script>
-
-<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous" async></script>
-<script src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
+<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" async></script>
 
 <script>
   window.googletag = window.googletag || { cmd: [] };
@@ -73,7 +93,8 @@
   const adSlots = [];
   const slotDimensions = {
     horz: [[1150, 250], [970, 250], [970, 90], [728, 90], [468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 50], [234, 60], [216, 36], [120, 20], [1, 1]],
-    vert: [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1]]
+    vert: [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [216, 36], [120, 20], [1, 1]],
+    sticky: [[970, 90], [750, 100], [728, 90], [320, 100], [300, 100], [300, 50], [360, 50], [320, 50], [360, 100], [1, 1]]
   };
 
   window.addEventListener("DOMContentLoaded", () => {
@@ -86,7 +107,7 @@
     }
 
     googletag.cmd.push(function () {
-      const slotIndexCounters = { horz: 0, vert: 0 };
+      const slotIndexCounters = { horz: 0, vert: 0, sticky: 0 };
 
       function buildSizeMapping(el, slotName) {
         const isMrec = el.classList.contains("mrec");
@@ -94,8 +115,8 @@
 
         if (slotName === "vert" && isMrec) {
           return googletag.sizeMapping()
-            .addSize([0, 0], [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200], [1, 1], "fluid"])
-            .addSize([768, 200], [[300, 250], [250, 250], [200, 200], [1, 1]])
+            .addSize([0, 0], [[300, 250], [300, 600], [336, 320], [336, 280], [250, 250], [200, 200], [1,1], "fluid"])
+            .addSize([768, 200], [[300, 250], [250, 250], [200, 200], [1,1]])
             .build();
         }
 
@@ -123,6 +144,17 @@
             .build();
         }
 
+
+
+        if (slotName === "sticky") {
+          return googletag.sizeMapping()
+            .addSize([0, 0], [[320, 100], [300, 50], [320, 50], [1, 1]])
+            .addSize([768, 200], [[970, 90], [750, 100], [728, 90], [1, 1]])
+            .build();
+        }
+
+
+
         return null;
       }
 
@@ -131,24 +163,13 @@
         const mapping = buildSizeMapping(el, slotName);
         if (!mapping || !slotDimensions[slotName]) return;
 
-        const slot = googletag.defineSlot('/417417404/' + slotName, slotDimensions[slotName], slotId)
+        googletag.defineSlot('/417417404/'+slotName, slotDimensions[slotName], slotId)
           .defineSizeMapping(mapping)
           .addService(googletag.pubads())
-          .setTargeting("pos", parseInt(el.dataset.pos));
+          .setTargeting("pos", [parseInt(el.dataset.pos)]);
 
         adSlots.push(slotId);
-
-        // Yieldlove integration
-        yieldlove_cmd.push(function () {
-          YLHH.utils.lazyLoad(slotName, function () {
-            YLHH.bidder.startAuction('/417417404/' + slotName, undefined);
-          });
-        });
       }
-
-
-
-      
 
       function lazyLoadAds(lazyElements) {
         const fetchDistance = Math.max(600, Math.floor(window.innerHeight * 0.85));
@@ -172,51 +193,45 @@
       }
 
       const lazyElements = [];
+      let firstHorzHandled = false;
+      let firstVertHandled = false;
 
       const pubElements = Array.from(document.getElementsByClassName('pub'));
-      pubElements.forEach(el => {
-        const slotName = getSlotName(el);
-        if (!slotName) return;
+pubElements.forEach(el => {
+  const slotName = getSlotName(el);
+  if (!slotName) return;
 
-        if (slotIndexCounters[slotName] === undefined) {
-          slotIndexCounters[slotName] = 0;
-        }
+  if (slotIndexCounters[slotName] === undefined) {
+    slotIndexCounters[slotName] = 0;
+  }
 
-        const pos = ++slotIndexCounters[slotName];
-        el.dataset.pos = pos;
-        el.dataset.slotType = slotName;
+  const pos = ++slotIndexCounters[slotName];
+  el.dataset.pos = pos;
+  el.dataset.slotType = slotName;
 
-        if (slotName === 'oop') {
-          el.id = "oop";
-          oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
-            .setCollapseEmptyDiv(true, true)
-            .addService(googletag.pubads());
-          return;
-        }
+  if (slotName === 'oop') {
+    el.id = "oop";
+    oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
+      .setCollapseEmptyDiv(true, true)
+      .addService(googletag.pubads());
+    return;
+  }
 
-        if (slotName === 'sticky') {
-          el.id = "sticky";
-          googletag.defineOutOfPageSlot("/417417404/sticky", "sticky")
-            .setCollapseEmptyDiv(true, true)
-            .addService(googletag.pubads());
-          return;
-        }
-
-        if (pos === 1 && window.getComputedStyle(el).display !== "none") {
-          defineSlot(el, slotName, slotName);
+      if ((slotName === 'horz' || slotName === 'vert') && pos === 1 && window.getComputedStyle(el).display !== "none" ) {
+        defineSlot(el, slotName, slotName);
         } else {
-          lazyElements.push(el);
-        }
+         lazyElements.push(el); 
+       }
       });
-
       const pubads = googletag.pubads();
-      pubads.setTargeting("assinante", "nao");
       pubads.setTargeting("end", "pos");
-      pubads.setTargeting("noticiatag", "opiniao");
       pubads.setTargeting("id", "2023121613015767596");
       pubads.setTargeting("category", "internacional");
       pubads.setTargeting("type", "article");
-
+      //pubads.disableInitialLoad();
+      pubads.getTargeting("pos");
+      pubads.setCentering(true);
+      pubads.enableVideoAds();
       pubads.enableSingleRequest();
       googletag.enableServices();
 
@@ -227,60 +242,77 @@
 
       lazyLoadAds(lazyElements);
 
-      googletag.pubads().addEventListener('slotRenderEnded', function (event) {
-        const id = event.slot.getSlotElementId();
+/*
+5509178085 (marketing)   
+5657491894 (yieldlove)
+4612136041 (amazon)
+5476480550 (testes)
+*/
+      const adAutoRefresh = ['5509178085', '5657491894', '4612136041', '5476480550'];
 
-        if (id === 'oop' && event.isEmpty) {
-          const fallback = googletag.defineOutOfPageSlot("/417417404/oop", googletag.enums.OutOfPageFormat.INTERSTITIAL);
-          if (fallback) {
-            fallback
+
+      googletag.pubads().addEventListener('slotRenderEnded', function (event) {
+
+          if (adAutoRefresh.includes(String(event.advertiserId))) {
+            const el = document.getElementById(event.slot.getSlotElementId());
+            if (el) {
+              el.dataset.autorefresh = "true";
+            }
+          }
+
+        if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
+          const gamInterstitial = googletag.defineOutOfPageSlot("/417417404/oop", googletag.enums.OutOfPageFormat.INTERSTITIAL);
+          if (gamInterstitial) {
+            gamInterstitial
               .setTargeting("pos", "gaminterstitial")
               .addService(googletag.pubads())
-              .setConfig({ interstitial: { triggers: { unhideWindow: true } } });
-            googletag.display(fallback);
+              .setConfig({
+                interstitial: {
+                  triggers: { unhideWindow: true },
+                },
+              });
+            googletag.display(gamInterstitial);
           }
         }
 
-        if (id === 'sticky' && !event.isEmpty) {
-          const sticky = document.getElementById('sticky');
-          if (sticky) {
-            sticky.style.position = 'fixed';
-            sticky.style.bottom = '0';
-            sticky.style.height = '90px';
-            const closeButton = document.createElement('button');
-            closeButton.textContent = '×';
-            closeButton.style.position = 'absolute';
-            closeButton.style.top = '5px';
-            closeButton.style.left = '5px';
-            closeButton.style.zIndex = '10000';
-            closeButton.style.background = '#000';
-            closeButton.style.color = '#fff';
-            closeButton.style.border = 'none';
-            closeButton.style.padding = '5px 8px';
-            closeButton.style.cursor = 'pointer';
-            closeButton.style.fontSize = '16px';
-            sticky.appendChild(closeButton);
-            closeButton.addEventListener('click', () => {
-              googletag.destroySlots([event.slot]);
-              sticky.remove();
-            });
-          }
-        }
-      });
+          if (event.slot.getSlotElementId() === 'sticky1') {
+            const sticky = document.getElementById('sticky1');
+            if (!event.isEmpty && sticky) {
+              const closeButton = document.createElement('button');
+              closeButton.textContent = '×';
+              closeButton.style.zIndex = '10000';
+              closeButton.style.background = '#000';
+              closeButton.style.color = '#fff';
+              closeButton.style.border = 'none';
+              closeButton.style.padding = '5px 8px';
+              closeButton.style.cursor = 'pointer';
+              closeButton.style.fontSize = '16px';
 
-      googletag.pubads().addEventListener("impressionViewable", function (event) {
-        if (!event.isEmpty && event.slot !== oopSlot) {
-          const el = document.getElementById(event.slot.getSlotElementId());
-          if (el) el.classList.add("✓");
+              sticky.style.position = 'fixed';
+              sticky.style.bottom = '0';
+              sticky.style.top = 'auto';
+              sticky.appendChild(closeButton);
 
-          const targeting = event.slot.getTargeting("pos");
-          if (targeting.includes("autorefresh")) {
-            setTimeout(() => {
-              googletag.pubads().refresh([event.slot], { changeCorrelator: true });
-            }, 60600);
+              closeButton.addEventListener('click', () => {
+                googletag.destroySlots([event.slot]);
+                sticky.remove();
+                    });
+                  }
           }
-        }
-      });
+    });
+
+        googletag.pubads().addEventListener("impressionViewable", function (event) {
+          if (!event.isEmpty && event.slot != oopSlot) {
+              const el = document.getElementById(event.slot.getSlotElementId());
+              el.classList.add("\u2714");
+              if (el.dataset.autorefresh === "true") {
+                  setTimeout(function(){
+                      delete el.dataset.autorefresh;
+                      googletag.pubads().refresh([event.slot], {changeCorrelator: true});
+                  }, 10000);
+              }
+          }
+        });
     });
   });
 </script>
