@@ -95,7 +95,7 @@ window.addEventListener("DOMContentLoaded", () => {
   pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
   pub.KV = {};
 
-  // Process adsKeywords
+  
   if (typeof adsKeywords === "object" && adsKeywords !== null) {
     function adsKeywordsCheck(str) {
       if (typeof str !== 'string') return str;
@@ -117,7 +117,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // The key function for your slot type naming!
+
   function getSlotName(el) {
     if (el.classList.contains('oop')) return 'oop';
     if (el.classList.contains('horz') || el.classList.contains('MastHead_NNH') || el.classList.contains('leaderboard')) return 'MastHead_NNH';
@@ -130,7 +130,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 
-    // Only your main 3 slot types for brevity; add special-case size mappings as needed!
     function buildSizeMapping(el, slotName) {
       if (slotName === 'MastHead_NNH') {
         return googletag.sizeMapping()
@@ -173,11 +172,11 @@ window.addEventListener("DOMContentLoaded", () => {
       return slotObj;
     }
 
-    // Assign slotType and pos only to elements that match a slot type
+
     const adElements = Array.from(document.getElementsByClassName('ad'));
     adElements.forEach(el => {
       const slotName = getSlotName(el);
-      if (!slotName) return; // Only assign if valid
+      if (!slotName) return; 
       if (pub.slotPos[slotName] === undefined) {
         pub.slotPos[slotName] = 0;
       }
@@ -186,7 +185,7 @@ window.addEventListener("DOMContentLoaded", () => {
       el.dataset.slotType = slotName;
     });
 
-    // 1. Define and display OOP slot FIRST, always
+
     const oopEls = document.getElementsByClassName('oop');
     const oopEl = oopEls.length ? oopEls[0] : null;
     if (oopEl) {
@@ -208,9 +207,8 @@ window.addEventListener("DOMContentLoaded", () => {
             const slotName = el.dataset.slotType;
             const pos = el.dataset.pos;
             const slotId = (slotName && pos) ? slotName + pos : "unknown_slot";
-            // SKIP if not visible!
+
             if (window.getComputedStyle(el).display === "none") {
-              console.log(slotId, "SKIPPED (display:none)");
               adObserver.unobserve(el);
               return;
             }
@@ -272,7 +270,7 @@ window.addEventListener("DOMContentLoaded", () => {
           el.dataset.autorefresh = "true";
         }
       }
-      // Sticky close button
+
       if (event.slot.getSlotElementId() === 'sticky1') {
         const sticky = document.getElementById('sticky1');
         if (!event.isEmpty && sticky) {
