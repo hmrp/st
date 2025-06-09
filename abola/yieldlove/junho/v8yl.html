@@ -335,7 +335,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 el.dataset.loaded === "true"
                 && el.id
                 && el.id !== "oop"
-                && window.getComputedStyle(el).display !== "none" // << ONLY refresh visible!
+                && window.getComputedStyle(el).display !== "none" 
               );
 
             const slotsToRefresh = [];
