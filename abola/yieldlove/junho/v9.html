@@ -28,6 +28,7 @@
 <div class="ad oop"></div>
 <!-- <div class="ad sticky"></div> -->
 
+
 <div class="ad MastHead_NNH"></div>
 <p></p>
 <div class="ad MREC_NNH"></div>
@@ -74,7 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
   pub.oopSlot = null;
   pub.adSlots = [];
   pub.slotObjs = {};
-  pub.slotPos = { MastHead_NNH: 0, inline:0, MREC_NNH: 0, sticky: 0 };
+  pub.slotPos = { MastHead_NNH: 0, MREC_NNH: 0, sticky: 0, inline: 0, oop: 0 };
   pub.lazyFetchDistance = Math.max(500, Math.floor(window.innerHeight * 0.85));
   //pub.lazyFetchDistance = 0;
   pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
@@ -94,14 +95,13 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function getSlotName(el) {
-    if (el.classList.contains('oop')) return 'oop';
-    if (el.classList.contains('MastHead_NNH')) return 'MastHead_NNH';
-    if (el.classList.contains('MREC_NNH')) return 'MREC_NNH';
-    if (el.classList.contains('inline')) return 'inline';
-    if (el.classList.contains('sticky')) return 'sticky';
-    return null;
+function getSlotName(el) {
+  const validSlots = ['oop', 'MastHead_NNH', 'MREC_NNH', 'inline', 'sticky'];
+  for (const slot of validSlots) {
+    if (el.classList.contains(slot)) return slot;
   }
+  return null;
+}
 
   googletag.cmd.push(() => {
     pub.ads = googletag.pubads();
@@ -185,14 +185,16 @@ function buildSizeMapping(el, slotName) {
     }
 
   
-    const adElements = Array.from(document.getElementsByClassName('ad'));
+    const adElements = Array.from(document.getElementsByClassName('ad'))
+      .filter(el => {
+        const slot = getSlotName(el);
+        return slot !== null;
+      });
+
     adElements.forEach(el => {
       const slotName = getSlotName(el);
-      if (!slotName) return;
-      if (pub.slotPos[slotName] === undefined) {
-        pub.slotPos[slotName] = 0;
-      }
       const pos = ++pub.slotPos[slotName];
+      const slotId = slotName + pos;
       el.dataset.pos = pos;
       el.dataset.slotType = slotName;
     });
