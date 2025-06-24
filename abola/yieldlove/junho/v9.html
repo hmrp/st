@@ -266,6 +266,7 @@ function buildSizeMapping(el, slotName) {
       }
     });
 
+    
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -297,6 +298,51 @@ function buildSizeMapping(el, slotName) {
     });
 
   }); 
+
+
+    (function() {
+    function getBreakpointIndex(width) {
+      for (let i = pub.breakpoints.length - 1; i >= 0; i--) {
+        if (width >= pub.breakpoints[i]) return i;
+      }
+      return 0;
+    }
+    let currentBreakpoint = getBreakpointIndex(window.innerWidth);
+    let resizeTimeout = null;
+
+    window.addEventListener('resize', function() {
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const newBreakpoint = getBreakpointIndex(window.innerWidth);
+        if (newBreakpoint !== currentBreakpoint) {
+          currentBreakpoint = newBreakpoint;
+
+          const displayedEls = Array.from(document.getElementsByClassName('ad'))
+            .filter(el => el.dataset.loaded === "true" && el.id && el.id !== "oop");
+
+          const slotsToRefresh = [];
+          displayedEls.forEach(el => {
+            const slotObj = pub.ads.getSlots().find(slot => slot.getSlotElementId() === el.id);
+            if (!slotObj) return;
+            if (el.classList.contains('sticky')) {
+              googletag.destroySlots([slotObj]);
+              delete el.dataset.loaded;
+              el.remove();
+            } else {
+              slotsToRefresh.push(slotObj);
+            }
+          });
+          if (slotsToRefresh.length) {
+            pub.ads.clear();
+            pub.ads.refresh(slotsToRefresh, { changeCorrelator: true });
+          }
+        }
+        resizeTimeout = null;
+      }, pub.debounceDelay);
+    });
+  })();
+
+  
 }); 
 </script>
 
