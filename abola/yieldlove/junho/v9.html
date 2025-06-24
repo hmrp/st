@@ -70,11 +70,13 @@ window.addEventListener("DOMContentLoaded", () => {
   const pub = window.pub = window.pub || {};
   pub.breakpoints = [0, 640, 768, 1025, 1260];
   pub.debounceDelay = 800;
+  pub.impressionRefreshDelay = 15000;
   pub.oopSlot = null;
   pub.adSlots = [];
   pub.slotObjs = {};
-  pub.slotPos = { MastHead_NNH: 0, MREC_NNH: 0, sticky: 0 };
-  pub.lazyFetchDistance = 0;
+  pub.slotPos = { MastHead_NNH: 0, inline:0, MREC_NNH: 0, sticky: 0 };
+  pub.lazyFetchDistance = Math.max(500, Math.floor(window.innerHeight * 0.85));
+  //pub.lazyFetchDistance = 0;
   pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
   pub.KV = {};
   pub.aRefreshID = ['5509178085', '5657491894', '4612136041', '5476480550'];
@@ -96,6 +98,7 @@ window.addEventListener("DOMContentLoaded", () => {
     if (el.classList.contains('oop')) return 'oop';
     if (el.classList.contains('MastHead_NNH')) return 'MastHead_NNH';
     if (el.classList.contains('MREC_NNH')) return 'MREC_NNH';
+    if (el.classList.contains('inline')) return 'inline';
     if (el.classList.contains('sticky')) return 'sticky';
     return null;
   }
@@ -121,8 +124,9 @@ window.addEventListener("DOMContentLoaded", () => {
     googletag.enableServices();
 
     pub.slotDimensions = {
-      MastHead_NNH: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'],
-      MREC_NNH: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'],
+      MastHead_NNH: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
+      MREC_NNH: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
+      inline: [[300, 250],[336, 320],[336, 280],[250, 250],[200, 200],[640, 100],[468, 60],[460, 60],[320, 100],[320, 160],[300, 120],[320, 50],[300, 100],[300, 75],[300, 50],[234, 60],[216, 36],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'],
       sticky: [[970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]]
     };
 
@@ -130,9 +134,9 @@ window.addEventListener("DOMContentLoaded", () => {
 function buildSizeMapping(el, slotName) {
     if (slotName === 'MREC_NNH') {
       return googletag.sizeMapping()
-        .addSize([1025, 200], [[300, 600], [300, 250], [250, 250], [200, 200], [160, 600], [120, 600], [1, 1], 'fluid'])
-        .addSize([768, 200], [[300, 600], [300, 250], [250, 250], [200, 200], [1, 1], 'fluid'])
-        .addSize([640, 100], [[300, 600], [300, 250], [250, 250], [200, 200], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
+        .addSize([1025, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [160, 600], [120, 600], [1, 1], 'fluid'])
+        .addSize([768, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [1, 1], 'fluid'])
+        .addSize([640, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .build();
     }
@@ -146,7 +150,15 @@ function buildSizeMapping(el, slotName) {
         .addSize([0, 0], [[320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .build();
     }
-   
+
+    if (slotName === 'inline') {
+    return googletag.sizeMapping()
+      .addSize([768, 0], [[640, 100],[468, 60],[460, 60],[250, 250],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
+      .addSize([640, 0], [[468, 60],[460, 60],[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
+      .addSize([0, 0], [[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
+      .build();
+  }
+
     if (slotName === 'sticky') {
       return googletag.sizeMapping()
         .addSize([1025, 200], [[970, 90], [728, 90], [640, 100], [1, 1]])
@@ -195,10 +207,9 @@ function buildSizeMapping(el, slotName) {
         .addService(googletag.pubads());
       //googletag.display("oop");
       yieldlove_cmd.push(function () {
-        YLHH.bidder.startAuction(pub.oopSlot.getAdUnitPath());
+        //YLHH.bidder.startAuction(pub.oopSlot.getAdUnitPath());
       });
     }
-
 
       pub.ads.addEventListener("slotRequested", function(event) {
       const el = document.getElementById(event.slot.getSlotElementId());
@@ -260,13 +271,23 @@ function buildSizeMapping(el, slotName) {
     });
 
     pub.ads.addEventListener("impressionViewable", function (event) {
-      if (!event.isEmpty && event.slot !== pub.oopSlot) {
+      if (!event.isEmpty && event.slot != pub.oopSlot) {
         const el = document.getElementById(event.slot.getSlotElementId());
-        el.classList.add("✔");
+        el.classList.add("\u2714");
+        if (el.dataset.autorefresh === "true") {
+          setTimeout(function(){
+            delete el.dataset.autorefresh;
+            const slotObj = pub.ads.getSlots().find(slot => slot.getSlotElementId() === el.id);
+            if (slotObj) {
+              const adUnitPath = slotObj.getAdUnitPath();
+              yieldlove_cmd.push(() => {
+                YLHH.bidder.cloneUnit(adUnitPath, el.id, true);
+              });
+            }
+          }, pub.impressionRefreshDelay);
+        }
       }
     });
-
-    
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -293,10 +314,31 @@ function buildSizeMapping(el, slotName) {
       });
     }, { rootMargin: pub.lazyFetchDistance + "px 0px" });
 
-    adElements.forEach(el => {
-      if (el.dataset.slotType !== "oop") observer.observe(el);
-    });
+      adElements.forEach(el => {
+        if (el.dataset.slotType !== "oop") {
+          observer.observe(el);
 
+          const rect = el.getBoundingClientRect();
+          if (rect.top >= 0 && rect.top <= window.innerHeight) {
+            observer.unobserve(el); 
+            const slotType = el.dataset.slotType;
+            const pos = el.dataset.pos;
+            const slotId = slotType + pos;
+
+            if (!el.dataset.loaded) {
+              el.dataset.loaded = "true";
+              const slotObj = defineSlot(el, slotType, slotId);
+              googletag.display(slotId);
+              if (slotObj) {
+                const adUnitPath = slotObj.getAdUnitPath();
+                yieldlove_cmd.push(() => {
+                  YLHH.bidder.cloneUnit(adUnitPath, slotId, true);
+                });
+              }
+            }
+          }
+        }
+      });
   }); 
 
 
@@ -332,19 +374,23 @@ function buildSizeMapping(el, slotName) {
               slotsToRefresh.push(slotObj);
             }
           });
-          if (slotsToRefresh.length) {
-            pub.ads.clear();
-            pub.ads.refresh(slotsToRefresh, { changeCorrelator: true });
-          }
+            if (slotsToRefresh.length) {
+              slotsToRefresh.forEach(slotObj => {
+                const slotId      = slotObj.getSlotElementId();
+                const adUnitPath  = slotObj.getAdUnitPath();     
+
+                yieldlove_cmd.push(() => {
+                  YLHH.bidder.cloneUnit(adUnitPath, slotId, true);
+                });
+              });
+            }
         }
         resizeTimeout = null;
       }, pub.debounceDelay);
     });
   })();
 
-  
 }); 
 </script>
-
 </body>
 </html>
