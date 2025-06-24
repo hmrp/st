@@ -10,44 +10,34 @@
       display: block;
     }
 
-    .ad.MREC_NNH {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 600px;
-  min-height: 250px;
-}
-.ad.MastHead_NN {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 250px;
-  min-height: 250px;
-}
-
+    .ad.vert {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 600px;
+      min-height: 250px;
+    }
+    .ad.MastHead_NNH {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 250px;
+      min-height: 250px;
+    }
   </style>
 </head>
 <body>
-<!--
+
+
 <div class="ad oop"></div>
-<div class="ad sticky"></div>
--->
+<!-- <div class="ad sticky"></div> -->
+
+<div class="ad MastHead_NNH"></div>
 <p></p>
 <div class="ad MREC_NNH"></div>
-<div class="ad MREC_NNH"></div>
+<p></p>
 <div class="ad MREC_NNH"></div>
 <p></p>
-<div class="ad MastHead_NN"></div>
+<div class="ad MREC_NNH"></div>
 <p></p>
-<div class="ad MastHead_NN"></div>
-<p style="height:70vh; display:block;"></p>
-<div class="ad MastHead_NN"></div>
-<p style="height:70vh; display:block;"></p>
-<div class="ad MREC_NNH"></div>
-<p style="height:70vh; display:block;"></p>
-<div class="ad MastHead_NN"></div>
-<p style="height:70vh; display:block;"></p>
-<div class="ad MREC_NNH"></div>
-<p style="height:70vh; display:block;"></p>
-<div class="ad MREC_NNH"></div>
-<p style="height:70vh; display:block;"></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad MastHead_NNH"></div>
+
 
 <script>
 let adsKeywords = {
@@ -83,7 +73,7 @@ window.addEventListener("DOMContentLoaded", () => {
   pub.oopSlot = null;
   pub.adSlots = [];
   pub.slotObjs = {};
-  pub.slotPos = { MastHead_NN: 0, MREC_NNH: 0, sticky: 0 };
+  pub.slotPos = { MastHead_NNH: 0, MREC_NNH: 0, sticky: 0 };
   pub.lazyFetchDistance = 0;
   pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
   pub.KV = {};
@@ -104,7 +94,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function getSlotName(el) {
     if (el.classList.contains('oop')) return 'oop';
-    if (el.classList.contains('MastHead_NN') || el.classList.contains('leaderboard')) return 'MastHead_NN';
+    if (el.classList.contains('MastHead_NNH')) return 'MastHead_NNH';
     if (el.classList.contains('MREC_NNH')) return 'MREC_NNH';
     if (el.classList.contains('sticky')) return 'sticky';
     return null;
@@ -115,6 +105,7 @@ window.addEventListener("DOMContentLoaded", () => {
     pub.ads.disableInitialLoad();
 
     pub.ads.setTargeting("end", pub.fEnd);
+    //pub.ads.setTargeting("end", "pos");
     if (pub.KV.id) pub.ads.setTargeting("id", String(pub.KV.id));
     if (pub.KV.interests) {
       pub.ads.setTargeting("category", pub.KV.interests[0]);
@@ -130,51 +121,151 @@ window.addEventListener("DOMContentLoaded", () => {
     googletag.enableServices();
 
     pub.slotDimensions = {
-      MastHead_NN: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'],
+      MastHead_NNH: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'],
       MREC_NNH: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'],
       sticky: [[970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]]
     };
 
-    function buildSizeMapping(slotType) {
+
+function buildSizeMapping(el, slotName) {
+    if (slotName === 'MREC_NNH') {
       return googletag.sizeMapping()
-        .addSize([1260, 200], pub.slotDimensions[slotType])
-        .addSize([1025, 200], pub.slotDimensions[slotType])
-        .addSize([768, 200], pub.slotDimensions[slotType])
-        .addSize([640, 100], pub.slotDimensions[slotType])
-        .addSize([0, 0], pub.slotDimensions[slotType])
+        .addSize([1025, 200], [[300, 600], [300, 250], [250, 250], [200, 200], [160, 600], [120, 600], [1, 1], 'fluid'])
+        .addSize([768, 200], [[300, 600], [300, 250], [250, 250], [200, 200], [1, 1], 'fluid'])
+        .addSize([640, 100], [[300, 600], [300, 250], [250, 250], [200, 200], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
+        .addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .build();
     }
 
-    function defineSlot(el, slotType, slotId) {
+    if (slotName === 'MastHead_NNH') {
+      return googletag.sizeMapping()
+        .addSize([1260, 200], [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [1, 1], 'fluid'])
+        .addSize([1025, 200], [[970, 250], [970, 90], [728, 90], [640, 100], [1, 1], 'fluid'])
+        .addSize([768, 200], [[728, 90], [468, 60], [1, 1], 'fluid'])
+        .addSize([640, 100], [[468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
+        .addSize([0, 0], [[320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
+        .build();
+    }
+   
+    if (slotName === 'sticky') {
+      return googletag.sizeMapping()
+        .addSize([1025, 200], [[970, 90], [728, 90], [640, 100], [1, 1]])
+        .addSize([768, 200], [[728, 90], [468, 60], [1, 1]])
+        .addSize([640, 100], [[468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [120, 30], [120, 20], [1, 1]])
+        .addSize([0, 0], [[320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [120, 30], [120, 20], [1, 1]])
+        .build();
+    }
+      return null;
+    }
+
+   function defineSlot(el, slotName, slotId) {
       el.id = slotId;
-      const mapping = buildSizeMapping(slotType);
-      const slot = googletag.defineSlot('/417417404/' + slotType, pub.slotDimensions[slotType], slotId)
+      const mapping = buildSizeMapping(el, slotName);
+      if (!mapping || !pub.slotDimensions[slotName]) return null;
+
+      const slotObj = googletag.defineSlot('/417417404/'+slotName, pub.slotDimensions[slotName], slotId)
         .defineSizeMapping(mapping)
         .addService(pub.ads)
         .setTargeting("pos", [parseInt(el.dataset.pos)]);
-      pub.slotObjs[slotId] = slot;
+      pub.slotObjs[slotId] = slotObj;
       pub.adSlots.push(slotId);
-      return slot;
+      return slotObj;
     }
 
+  
     const adElements = Array.from(document.getElementsByClassName('ad'));
     adElements.forEach(el => {
-      const slotType = getSlotName(el);
-      if (!slotType) return;
-      if (pub.slotPos[slotType] === undefined) pub.slotPos[slotType] = 0;
-      const pos = ++pub.slotPos[slotType];
+      const slotName = getSlotName(el);
+      if (!slotName) return;
+      if (pub.slotPos[slotName] === undefined) {
+        pub.slotPos[slotName] = 0;
+      }
+      const pos = ++pub.slotPos[slotName];
       el.dataset.pos = pos;
-      el.dataset.slotType = slotType;
+      el.dataset.slotType = slotName;
     });
 
-    const oopEl = document.querySelector('.oop');
+
+    const oopEls = document.getElementsByClassName('oop');
+    const oopEl = oopEls.length ? oopEls[0] : null;
     if (oopEl) {
       oopEl.id = "oop";
       pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
         .setCollapseEmptyDiv(true, true)
-        .addService(pub.ads);
-      yieldlove_cmd.push(() => YLHH.bidder.startAuction(pub.oopSlot.getAdUnitPath()));
+        .addService(googletag.pubads());
+      //googletag.display("oop");
+      yieldlove_cmd.push(function () {
+        YLHH.bidder.startAuction(pub.oopSlot.getAdUnitPath());
+      });
     }
+
+
+      pub.ads.addEventListener("slotRequested", function(event) {
+      const el = document.getElementById(event.slot.getSlotElementId());
+      if (el && el.id !== "oop") {
+            el.classList.remove("\u2714");
+      }
+      });
+
+
+    pub.ads.addEventListener('slotRenderEnded', function (event) {
+      const el = document.getElementById(event.slot.getSlotElementId());
+
+      if (pub.aRefreshID.includes(String(event.advertiserId))) {
+        if (el && el.id !== "oop") {
+          el.dataset.autorefresh = "true";
+        }
+      }
+
+      if (event.slot.getSlotElementId() === 'sticky1') {
+        const sticky = document.getElementById('sticky1');
+        if (!event.isEmpty && sticky) {
+          const closeButton = document.createElement('button');
+          closeButton.textContent = '×';
+          closeButton.style.zIndex = '10000';
+          closeButton.style.background = '#000';
+          closeButton.style.color = '#fff';
+          closeButton.style.border = 'none';
+          closeButton.style.padding = '5px 8px';
+          closeButton.style.cursor = 'pointer';
+          closeButton.style.fontSize = '16px';
+          closeButton.setAttribute('aria-label', 'Close ad');
+
+          sticky.style.position = 'fixed';
+          sticky.style.bottom = '0';
+          sticky.style.top = 'auto';
+          sticky.appendChild(closeButton);
+
+          closeButton.addEventListener('click', () => {
+            googletag.destroySlots([event.slot]);
+            sticky.remove();
+          });
+        }
+      }
+
+      if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
+        const gamInterstitial = googletag.defineOutOfPageSlot("/417417404/oop", googletag.enums.OutOfPageFormat.INTERSTITIAL);
+        if (gamInterstitial) {
+          gamInterstitial
+            .setTargeting("pos", "gaminterstitial")
+            .addService(pub.ads)
+            .setConfig({
+              interstitial: {
+                triggers: { unhideWindow: true },
+              },
+            });
+          googletag.display(gamInterstitial);
+        }
+      }
+    });
+
+    pub.ads.addEventListener("impressionViewable", function (event) {
+      if (!event.isEmpty && event.slot !== pub.oopSlot) {
+        const el = document.getElementById(event.slot.getSlotElementId());
+        el.classList.add("✔");
+      }
+    });
+
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -204,8 +295,9 @@ window.addEventListener("DOMContentLoaded", () => {
     adElements.forEach(el => {
       if (el.dataset.slotType !== "oop") observer.observe(el);
     });
-  });
-});
+
+  }); 
+}); 
 </script>
 
 </body>
