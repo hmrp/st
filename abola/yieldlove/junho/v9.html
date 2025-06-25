@@ -75,7 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
   pub.oopSlot = null;
   pub.adSlots = [];
   pub.slotObjs = {};
-  pub.slotPos = { MastHead_NNH: 0, MREC_NNH: 0, sticky: 0, inline: 0, oop: 0 };
+  pub.slotPos = { MastHead_NNH: 0, MREC_NNH: 0, sticky: 0, mrec_inread_noticias: 0, oop: 0 };
   pub.lazyFetchDistance = Math.max(500, Math.floor(window.innerHeight * 0.85));
   //pub.lazyFetchDistance = 0;
   pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
@@ -96,7 +96,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
 function getSlotName(el) {
-  const validSlots = ['oop', 'MastHead_NNH', 'MREC_NNH', 'inline', 'sticky'];
+  const validSlots = ['oop', 'MastHead_NNH', 'MREC_NNH', 'mrec_inread_noticias', 'sticky'];
   for (const slot of validSlots) {
     if (el.classList.contains(slot)) return slot;
   }
@@ -126,12 +126,13 @@ function getSlotName(el) {
     pub.slotDimensions = {
       MastHead_NNH: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
       MREC_NNH: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
-      inline: [[300, 250],[336, 320],[336, 280],[250, 250],[200, 200],[640, 100],[468, 60],[460, 60],[320, 100],[320, 160],[300, 120],[320, 50],[300, 100],[300, 75],[300, 50],[234, 60],[216, 36],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'],
+      mrec_inread_noticias: [[300, 250],[336, 320],[336, 280],[250, 250],[200, 200],[640, 100],[468, 60],[460, 60],[320, 100],[320, 160],[300, 120],[320, 50],[300, 100],[300, 75],[300, 50],[234, 60],[216, 36],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'],
       sticky: [[970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]]
     };
 
 
 function buildSizeMapping(el, slotName) {
+  /* im using in this example "MREC_NNH" because its currently mapped with YL but delivery adunit should be "vert" */
     if (slotName === 'MREC_NNH') {
       return googletag.sizeMapping()
         .addSize([1025, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [160, 600], [120, 600], [1, 1], 'fluid'])
@@ -140,7 +141,7 @@ function buildSizeMapping(el, slotName) {
         .addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .build();
     }
-
+/* im using in this example "MastHead_NNH" because its currently mapped with YL but delivery adunit should be "horz" */
     if (slotName === 'MastHead_NNH') {
       return googletag.sizeMapping()
         .addSize([1260, 200], [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [1, 1], 'fluid'])
@@ -151,7 +152,8 @@ function buildSizeMapping(el, slotName) {
         .build();
     }
 
-    if (slotName === 'inline') {
+/* im using in this example "" because its currently mapped with YL but delivery adunit should be "horz" */
+    if (slotName === 'mrec_inread_noticias') {
     return googletag.sizeMapping()
       .addSize([768, 0], [[640, 100],[468, 60],[460, 60],[250, 250],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
       .addSize([640, 0], [[468, 60],[460, 60],[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
@@ -159,7 +161,7 @@ function buildSizeMapping(el, slotName) {
       .build();
   }
 
-    if (slotName === 'sticky') {
+      if (slotName === 'sticky') {
       return googletag.sizeMapping()
         .addSize([1025, 200], [[970, 90], [728, 90], [640, 100], [1, 1]])
         .addSize([768, 200], [[728, 90], [468, 60], [1, 1]])
