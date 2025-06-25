@@ -278,6 +278,7 @@ function buildSizeMapping(el, slotName) {
       if (!event.isEmpty && event.slot != pub.oopSlot) {
         const el = document.getElementById(event.slot.getSlotElementId());
         el.classList.add("\u2714");
+/*
         if (el.dataset.autorefresh === "true") {
           setTimeout(function(){
             delete el.dataset.autorefresh;
@@ -289,6 +290,8 @@ function buildSizeMapping(el, slotName) {
               });
             }
           }, pub.impressionRefreshDelay);
+*/
+
         }
       }
     });
