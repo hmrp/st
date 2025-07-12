@@ -1099,13 +1099,7 @@
                                                             </div>
                                                                             <div class="flex flex-row items-center gap-x-4 px-5 py-6">
                                 <div class="grid w-full grid-cols-2 gap-4">
-                                                                           
-                                    
-                                    
-
-                                    
-                                    
-                                    <a
+                                                                            <a
                                             class="font-open-sans text-base font-bold leading-6 text-neutral-900 transition hover:text-primary-500"
                                             href="https://pt-production.cube-sports.net/ultimas-noticias"
                                         >
@@ -3900,15 +3894,43 @@
                                         <div
         class="flex items-center justify-center sm:hidden"
             >
+        <div id='Billboard-mobile'>
+    <script>
+        window.waitForCmd = async (interval = 50) => new Promise(resolve => {
+            let timer = setInterval(function() {
+                if (window.googletag && window.googletag.cmd && window.YLHH && window.YLHH.utils &&
+                    window.YLHH.utils.lazyLoad && window.defineAndPush) {
+                    clearTimeout(timer);
+                    resolve();
+                }
+            }, interval);
+        });
+    </script>
+    <link rel="modulepreload" href="https://d1k4ckb4rudsoo.cloudfront.net/8b9a450f-1a27-4368-a90d-ea4ab7dad19a/theme/pt/assets/ads-DGRkDS2Z.js" /><script type="module" src="https://d1k4ckb4rudsoo.cloudfront.net/8b9a450f-1a27-4368-a90d-ea4ab7dad19a/theme/pt/assets/ads-DGRkDS2Z.js" data-navigate-track="reload"></script>    <script>
+        window.waitForCmd().then(() => {
+            window.defineAndPush('Billboard', 'mobile');
 
-            <div class="ad MastHead_NNH Billboard_HP" data-slot-name="Billboard"></div>
-
-
+            YLHH.utils.lazyLoad('Billboard-mobile', function() {
+                YLHH.bidder.startAuction('/417417404/Billboard', undefined);
+            });
+        });
+    </script>
+</div>
     </div>
     <div
-        class="mx-auto hidden justify-center sm:flex" >
+        class="mx-auto hidden justify-center sm:flex"
+            >
+        <div id='Billboard_HP-desktop'>
+        <script>
+        window.waitForCmd().then(() => {
+            window.defineAndPush('Billboard_HP', 'desktop');
 
-        <div class="ad MastHead_NNH" data-slot-name="Billboard_HP"></div>
+            YLHH.utils.lazyLoad('Billboard_HP-desktop', function() {
+                YLHH.bidder.startAuction('/417417404/Billboard_HP', undefined);
+            });
+        });
+    </script>
+</div>
     </div>
 
                         
@@ -4684,20 +4706,32 @@
                                                     <div
         class="flex items-center justify-center sm:hidden"
             >
+        <div id='P1-mobile'>
+        <script>
+        window.waitForCmd().then(() => {
+            window.defineAndPush('P1', 'mobile');
 
-
-       <div class="ad MREC_NNH "></div>
-
-
-
-
+            YLHH.utils.lazyLoad('P1-mobile', function() {
+                YLHH.bidder.startAuction('/417417404/P1', undefined);
+            });
+        });
+    </script>
+</div>
     </div>
     <div
         class="mx-auto hidden justify-center sm:flex"
             >
+        <div id='Billboard-desktop'>
+        <script>
+        window.waitForCmd().then(() => {
+            window.defineAndPush('Billboard', 'desktop');
 
-            <div class="ad MastHead_NNH "></div>
-
+            YLHH.utils.lazyLoad('Billboard-desktop', function() {
+                YLHH.bidder.startAuction('/417417404/Billboard', undefined);
+            });
+        });
+    </script>
+</div>
     </div>
 
             
@@ -6667,10 +6701,17 @@
                                         <div
         class="flex items-center justify-center sm:hidden"
             >
+        <div id='P2-mobile'>
+        <script>
+        window.waitForCmd().then(() => {
+            window.defineAndPush('P2', 'mobile');
 
-<div class="ad MREC_NNH"></div>
-
-
+            YLHH.utils.lazyLoad('P2-mobile', function() {
+                YLHH.bidder.startAuction('/417417404/P2', undefined);
+            });
+        });
+    </script>
+</div>
     </div>
     <div
         class="mx-auto hidden justify-center sm:flex"
@@ -7777,16 +7818,74 @@
     </div>
 </footer>
 
+                    <div id='Sticky'>
+        <script>
+        window.waitForCmd().then(() => {
+            window.googletag.cmd.push(() => {
+                window.googletag
+                    .defineSlot(
+                        '/417417404/Sticky',
+                        [
+                            [1000, 100],
+                            [980, 90],
+                            [970, 90],
+                            [750, 100],
+                            [728, 90],
+                            [360, 100],
+                            [360, 50],
+                            [320, 100],
+                            [300, 100],
+                            [320, 50],
+                            [300, 50],
+                            [1, 1]
+                        ],
+                        'Sticky',
+                    )
+                    .addService(googletag.pubads());
 
+                window.googletag.display('Sticky');
+            });
+
+            window.yieldlove_cmd.push(() => {
+                YLHH.utils.lazyLoad('Sticky', function() {
+                    YLHH.bidder.startAuction('/417417404/Sticky', undefined);
+                });
+            });
+        });
+    </script>
+</div>
+            <div
+    id='Interstitial'
+    style='position:fixed; left:0; top:0; z-index:2147483645; width:1px; height:1px;'
+>
+        <script>
+        window.waitForCmd().then(() => {
+            window.googletag.cmd.push(() => {
+                window.googletag
+                    .defineOutOfPageSlot('/417417404/Interstitial', 'Interstitial')
+                    .addService(window.googletag.pubads());
+
+                window.googletag.display('Interstitial');
+            });
+
+            window.yieldlove_cmd.push(() => {
+                YLHH.utils.lazyLoad('Interstitial', () => {
+                    YLHH.bidder.startAuction('/417417404/Interstitial', undefined);
+                });
+            });
+        });
+    </script>
+</div>
             </div>
 
-    
-            <!--
+    <!--
     <script data-navigate-once="true">window.livewireScriptConfig = {"csrf":"Gat5EcFOxgjgmrbEc8Rj6Y28xZtI7NFwos27XyWZ","uri":"\/livewire\/update","progressBar":"","nonce":""};</script>
--->
-
-
-    <link rel="modulepreload" href="https://d1k4ckb4rudsoo.cloudfront.net/8b9a450f-1a27-4368-a90d-ea4ab7dad19a/theme/pt/assets/app-C6Up945k.js" /><script type="module" src="https://d1k4ckb4rudsoo.cloudfront.net/8b9a450f-1a27-4368-a90d-ea4ab7dad19a/theme/pt/assets/app-C6Up945k.js" data-navigate-track="reload"></script>                <script
+    <link rel="modulepreload" href="https://d1k4ckb4rudsoo.cloudfront.net/8b9a450f-1a27-4368-a90d-ea4ab7dad19a/theme/pt/assets/app-C6Up945k.js" /><script type="module" src="https://d1k4ckb4rudsoo.cloudfront.net/8b9a450f-1a27-4368-a90d-ea4ab7dad19a/theme/pt/assets/app-C6Up945k.js" data-navigate-track="reload"></script>     
+    -->
+    
+    
+    
+    <script
             type="module"
             async
             crossorigin
@@ -8361,298 +8460,15 @@
     "pageType": "home"
 }    </script>
 
-    <!--                 
-<script
+                        <script
                 type="text/javascript"
                 async
                 src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"
             ></script>
-            <script
+                                                                            <script
                     type="text/javascript"
                                         src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"                     crossorigin="anonymous"                     async="true"                 ></script>
                         <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"95cec2dd7fe0693b","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.6.2","token":"4788d94a1c7346b7bbd9babfa3bd866d"}' crossorigin="anonymous"></script>
-
--->
-
-
-<script>
-yieldlove_prevent_autostart = true;
-var yieldlove_cmd = yieldlove_cmd || [];
-</script>
-<script src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
-<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" async></script>
-
-<script>
-window.googletag = window.googletag || { cmd: [] };
-window.addEventListener("DOMContentLoaded", () => {
-  const pub = window.pub = window.pub || {};
-  pub.oopSlot = null;
-  pub.adSlots = [];
-  pub.slotObjs = {};
-  pub.slotPos = {MastHead_NNH: 0, MREC_NNH: 0, Sticky: 0, mrec_inread_noticias: 0, oop: 0 };
-  pub.BP = [0, 640, 768, 1025, 1260];
-  pub.BPDelay = 800;
-  pub.fetchDistance = Math.max(500, Math.floor(window.innerHeight * 0.85));
-pub.stickyFetchDistance = Math.max(300, Math.floor(window.innerHeight * 1.5)) +'px';
-  pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
-  pub.KV = {};
-
-  if (typeof adsKeywords === "object" && adsKeywords !== null) {
-    function formatKeyword(str) {
-      if (typeof str !== 'string') return str;
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[«»"'=!+*~^()\[\]<>,;#&]/g, "")
-        .replace(/\s+/g, "-")
-        .toLowerCase();
-    }
-    Object.entries(adsKeywords).forEach(([key, value]) => {
-      pub.KV[key] = Array.isArray(value) ? value.map(formatKeyword) : formatKeyword(value);
-    });
-  }
-
-const oopEl = document.createElement("div");
-oopEl.className = "ad oop";
-oopEl.id = "oop";
-oopEl.style.cssText = "position:fixed;left:0;top:0;z-index:2147483645;width:1px;height:1px;";
-document.body.prepend(oopEl);
-
-/*
-const stickyEl = document.createElement('div');
-stickyEl.className = 'ad Sticky';
-stickyEl.style.cssText = 'position:absolute; height:1px; width:1px; background:red; top:' + pub.stickyFetchDistance;
-document.body.appendChild(stickyEl);
-*/
-
-function getSlotName(el) {
-  const validSlots = ['MastHead_NNH', 'MREC_NNH', 'mrec_inread_noticias', 'Sticky'];
-  for (const slot of validSlots) {
-    if (el.classList.contains(slot)) return slot;
-  }
-  return null;
-}
-
-googletag.cmd.push(() => {
-    pub.ads = googletag.pubads();
-    pub.ads.setTargeting("end", pub.fEnd);
-    if (pub.KV.id) pub.ads.setTargeting("id", String(pub.KV.id));
-    if (pub.KV.interests) {pub.ads.setTargeting("category", pub.KV.interests[0]);if (pub.KV.interests.length > 1){pub.ads.setTargeting("kw", pub.KV.interests.slice(1));}}
-    if (pub.KV.pageType) pub.ads.setTargeting("type", pub.KV.pageType);
-    pub.ads.setCentering(true);
-    pub.ads.enableVideoAds();
-    pub.ads.enableSingleRequest();
-    pub.ads.disableInitialLoad();
-    pub.slotDimensions = {
-      MastHead_NNH: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
-      MREC_NNH: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
-      mrec_inread_noticias: [[300, 250],[336, 320],[336, 280],[250, 250],[200, 200],[640, 100],[468, 60],[460, 60],[320, 100],[320, 160],[300, 120],[320, 50],[300, 100],[300, 75],[300, 50],[234, 60],[216, 36],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'],
-      Sticky: [[970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]]
-    };
-     pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop").setCollapseEmptyDiv(true, true).addService(googletag.pubads());
-     
-
-
-     function buildSizeMapping(el, slotName) {
-  /* im using in this example "MREC_NNH" because its currently mapped with YL but delivery adunit should be "vert" */
-    if (slotName === 'MREC_NNH') {
-      return googletag.sizeMapping()
-        .addSize([pub.BP[3], 0], [[300, 600], [300, 250], [250, 250], [200, 200], [160, 600], [120, 600], [1, 1], 'fluid'])
-        .addSize([pub.BP[2], 0], [[300, 600], [300, 250], [250, 250], [200, 200], [1, 1], 'fluid'])
-        .addSize([pub.BP[1], 0], [[300, 600], [300, 250], [250, 250], [200, 200], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
-        .addSize([pub.BP[0], 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
-        .build();
-    }
-/* im using in this example "MastHead_NNH" because its currently mapped with YL but delivery adunit should be "horz" */
-    if (slotName === 'MastHead_NNH') {
-      return googletag.sizeMapping()
-        .addSize([pub.BP[4], 200], [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [1, 1], 'fluid'])
-        .addSize([pub.BP[3], 200], [[970, 250], [970, 90], [728, 90], [640, 100], [1, 1], 'fluid'])
-        .addSize([pub.BP[2], 200], [[728, 90], [468, 60], [1, 1], 'fluid'])
-        .addSize([pub.BP[1], 100], [[468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
-        .addSize([pub.BP[0], 0], [[320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
-        .build();
-    }
-
-/* im using in this example "mrec_inread_noticias" because its currently mapped with YL but delivery adunit should be "inline" */
-    if (slotName === 'mrec_inread_noticias') {
-    return googletag.sizeMapping()
-      .addSize([pub.BP[2], 0], [[640, 100],[468, 60],[460, 60],[250, 250],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
-      .addSize([pub.BP[1], 0], [[468, 60],[460, 60],[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
-      .addSize([pub.BP[0], 0], [[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
-      .build();
-  }
-
-      if (slotName === 'Sticky') {
-      return googletag.sizeMapping()
-        .addSize([pub.BP[3], 0], [[970, 90], [728, 90], [640, 100], [1, 1]])
-        .addSize([pub.BP[2], 0], [[728, 90], [468, 60], [1, 1]])
-        .addSize([pub.BP[1], 0], [[468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [120, 30], [120, 20], [1, 1]])
-        .addSize([pub.BP[0], 0], [[320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [120, 30], [120, 20], [1, 1]])
-        .build();
-    }
-      return null;
-    }
-
-   function defineSlot(el, slotName, slotId) {
-      el.id = slotId;
-      const mapping = buildSizeMapping(el, slotName);
-      if (!mapping || !pub.slotDimensions[slotName]) return null;
-      const slotObj = googletag.defineSlot('/417417404/'+slotName, pub.slotDimensions[slotName], slotId)
-        .defineSizeMapping(mapping)
-        .addService(pub.ads)
-        .setTargeting("pos", [parseInt(el.dataset.pos)]);
-      pub.slotObjs[slotId] = slotObj;
-      pub.adSlots.push(slotId);
-      return slotObj;
-    }
-
-   const adElements = Array.from(document.getElementsByClassName('ad'))
-      .filter(el => {
-        const slot = getSlotName(el);
-        return slot !== null;
-      });
-
-    adElements.forEach(el => {
-      const slotName = getSlotName(el);
-      const pos = ++pub.slotPos[slotName];
-      const slotId = slotName + pos;
-      el.dataset.pos = pos;
-      el.dataset.slotType = slotName;
-      el.id = slotId; 
-    });
-
-   pub.ads.addEventListener("slotRequested", function(event) {
-      const el = document.getElementById(event.slot.getSlotElementId());
-      if (el && el.id !== "oop") {el.classList.remove("\u2714"); }
-      });
-
-    pub.ads.addEventListener('slotRenderEnded', function (event) {
-      const el = document.getElementById(event.slot.getSlotElementId());
-
-
-      if (event.slot.getSlotElementId() === 'Sticky1') {
-        const sticky = document.getElementById('Sticky1');
-      if (!event.isEmpty && sticky) {
-            if (!document.getElementById('stickyAD')) {
-                  const style = document.createElement('style');
-                  style.id = 'stickyAD';
-                  style.textContent ='@keyframes stickyUP {from { transform: translateY(100%); opacity: 0; }to { transform: translateY(0); opacity: 1; }}.sticky-slide-in {animation: stickyUP 0.4s ease-out forwards;}';
-                  document.head.appendChild(style);
-            }
-                  sticky.style.cssText = 'position: fixed; bottom: 0; top: auto; left: 0; width: 100%; z-index: 2147483644; display: flex; justify-content: center; pointer-events: none;';
-                  sticky.classList.add('sticky-slide-in');
-                  const adContainer = sticky.firstElementChild;
-                  adContainer.style.cssText += 'pointer-events: auto; position: relative;';
-                  const closeButtonAd = document.createElement('div');
-                  closeButtonAd.textContent = '×';
-                  closeButtonAd.style.cssText =
-                  'position: absolute; top: -45px; right: 0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; color: #fff; background: rgba(34, 34, 34, 0.9); border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, .3); cursor: pointer; user-select: none; z-index: 10000; font-family: sans-serif;';
-                  const pubLabel = document.createElement('div');
-                  pubLabel.textContent = 'PUB';
-                  pubLabel.style.cssText =
-                  'position: absolute; bottom: 1px; left: 7px; font-size: 7px; color: #fff; background: rgba(0, 0, 0, 0.7); padding: 1px 4px; border-radius: 3px; font-family: sans-serif; pointer-events: none;';
-                  closeButtonAd.appendChild(pubLabel);
-                  adContainer.appendChild(closeButtonAd);
-                  closeButtonAd.addEventListener('click', () => {
-                  googletag.destroySlots([event.slot]);
-                  sticky.remove();
-            });
-            }
-      }
-
-      if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
-        const gamInterstitial = googletag.defineOutOfPageSlot("/417417404/oop", googletag.enums.OutOfPageFormat.INTERSTITIAL);
-        if (gamInterstitial) {
-          gamInterstitial
-            .setTargeting("pos", "gaminterstitial")
-            .addService(pub.ads)
-            .setConfig({
-              interstitial: {
-                triggers: { unhideWindow: true },
-              },
-            });
-          googletag.display(gamInterstitial);
-        }
-      }
-    });
-
-
-
-    pub.ads.addEventListener("impressionViewable", function (event) {
-      if (!event.isEmpty && event.slot != pub.oopSlot) {
-        const el = document.getElementById(event.slot.getSlotElementId());
-        el.classList.add("\u2714");
-      }
-    });
-
-    const adLoader = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const el = entry.target;
-          const slotType = el.dataset.slotType;
-          const pos = el.dataset.pos;
-          const slotId = slotType + pos;
-            if (!el.dataset.loaded && window.getComputedStyle(el).display !== 'none') {
-            el.dataset.loaded = "true";
-            const slotObj = defineSlot(el, slotType, slotId);
-            googletag.display(slotId);
-                  if (slotObj) {
-                        yieldlove_cmd.push(() => {
-                              YLHH.bidder.cloneUnit(slotObj.getAdUnitPath(), slotId, true);
-                        });
-                  }
-            }
-          adLoader.unobserve(el);
-        }
-      });
-    }, { rootMargin: pub.fetchDistance + "px 0px" });
-      adElements.forEach(el => {adLoader.observe(el)});
-      googletag.enableServices();
-      googletag.pubads().refresh([pub.oopSlot]);
-  }); 
-
-
-function breakPoint(width) {
-  for (let i = pub.BP.length - 1; i >= 0; i--) {
-    if (width >= pub.BP[i]) return i;
-  }
-  return 0;
-}
-let currentBreakpoint = breakPoint(window.innerWidth);
-let adSizeTimeout = null;
-window.addEventListener('resize', function () {
-  if (adSizeTimeout) clearTimeout(adSizeTimeout);
-  adSizeTimeout = setTimeout(() => {
-    const newBreakpoint = breakPoint(window.innerWidth);
-    if (newBreakpoint !== currentBreakpoint) {
-      currentBreakpoint = newBreakpoint;
-      const reloadPos = [];
-      const renewAdEls = Array.from(document.getElementsByClassName('ad'))
-        .filter(el =>
-          el.dataset.loaded === "true" &&
-          el.id &&
-          el.id !== "oop" &&
-          window.getComputedStyle(el).display !== "none"
-        );
-      renewAdEls.forEach(el => {
-        const slotObj = pub.ads.getSlots().find(slot => slot.getSlotElementId() === el.id);
-        if (slotObj) {
-          reloadPos.push(slotObj);
-        }
-      });
-      if (reloadPos.length > 0) {
-            console.log("resized REFREHS");
-        googletag.pubads().clear(reloadPos);
-        googletag.pubads().refresh(reloadPos);
-      }
-    }
-    adSizeTimeout = null;
-  }, pub.BPDelay);
-});
-}); 
-</script>
-
-
-
-                        </body>
+</body>
 
 </html>

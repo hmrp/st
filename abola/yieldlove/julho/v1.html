@@ -10,12 +10,16 @@
       display: block;
     }
 
+    .ad.mobileOnly 
+
+
+    
     .ad.vert {
       content-visibility: auto;
       contain-intrinsic-size: auto 600px;
       min-height: 250px;
     }
-    .ad.MastHead_NNH {
+    .ad.horz {
       content-visibility: auto;
       contain-intrinsic-size: auto 250px;
       min-height: 250px;
@@ -26,29 +30,35 @@
 
 <!--
 <div class="ad oop" style="position: fixed; left: 0px; top: 0px; z-index: 2147483645; width: 1px; height: 1px;"></div>
--->
 <div class="ad sticky"></div> 
+-->
+
+<div class="ad horz"></div>
+<div class="ad vert"></div>
+<div class="ad inline"></div>
 
 
-<div class="ad MastHead_NNH"></div>
+<div class="ad horz"></div>
+
+
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 <p></p>
-<div class="ad MastHead_NNH"></div>
+<div class="ad horz"></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad vert"></div>
 
 
 
@@ -88,7 +98,7 @@ window.addEventListener("DOMContentLoaded", () => {
   pub.oopSlot = null;
   pub.adSlots = [];
   pub.slotObjs = {};
-  pub.slotPos = { MastHead_NNH: 0, MREC_NNH: 0, sticky: 0, mrec_inread_noticias: 0, oop: 0 };
+  pub.slotPos = { horz: 0, vert: 0, sticky: 0, inline: 0, oop: 0 };
   pub.lazyFetchDistance = Math.max(500, Math.floor(window.innerHeight * 0.85));
   //pub.lazyFetchDistance = 0;
   pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
@@ -109,7 +119,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
 function getSlotName(el) {
-  const validSlots = ['oop', 'MastHead_NNH', 'MREC_NNH', 'mrec_inread_noticias', 'Sticky'];
+  const validSlots = ['oop', 'horz', 'vert', 'inline', 'Sticky'];
   for (const slot of validSlots) {
     if (el.classList.contains(slot)) return slot;
   }
@@ -131,53 +141,62 @@ function getSlotName(el) {
     }
     if (pub.KV.pageType) pub.ads.setTargeting("type", pub.KV.pageType);
 
-    pub.ads.setCentering(true);
-    pub.ads.enableVideoAds();
-    pub.ads.enableSingleRequest();
-    googletag.enableServices();
+const oopEl = document.createElement("div");
+oopEl.className = "ad oop";
+oopEl.id = "oop";
+oopEl.style.cssText = "position: fixed; left: 0px; top: 0px; z-index: 2147483645; width: 1px; height: 1px;";
+document.body.prepend(oopEl);
+pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
+  .setCollapseEmptyDiv(true, true)
+  .addService(pub.ads);
+
+  googletag.display(oop);
+/*yieldlove_cmd.push(function () {
+   YLHH.bidder.startAuction(pub.oopSlot.getAdUnitPath());
+});
+*/
+
 
     pub.slotDimensions = {
-      MastHead_NNH: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
-      MREC_NNH: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
-      mrec_inread_noticias: [[300, 250],[336, 320],[336, 280],[250, 250],[200, 200],[640, 100],[468, 60],[460, 60],[320, 100],[320, 160],[300, 120],[320, 50],[300, 100],[300, 75],[300, 50],[234, 60],[216, 36],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'],
+      horz: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
+      vert: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
+      inline: [[1000, 100], [750, 200], [1000, 100],[300, 250],[336, 320],[336, 280],[250, 250],[200, 200],[640, 100],[468, 60],[460, 60],[320, 100],[320, 160],[300, 120],[320, 50],[300, 100],[300, 75],[300, 50],[234, 60],[216, 36],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'],
       sticky: [[970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]]
     };
 
 
+
 function buildSizeMapping(el, slotName) {
-  /* im using in this example "MREC_NNH" because its currently mapped with YL but delivery adunit should be "vert" */
-    if (slotName === 'MREC_NNH') {
+    if (slotName === 'vert') {
       return googletag.sizeMapping()
-        .addSize([1025, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [160, 600], [120, 600], [1, 1], 'fluid'])
-        .addSize([768, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [1, 1], 'fluid'])
+        .addSize([1025, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [160, 600], [120, 600], [1, 1]])
+        .addSize([768, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [1, 1]])
         .addSize([640, 0], [[300, 600], [300, 250], [250, 250], [200, 200], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .addSize([0, 0], [[300, 600], [300, 250], [336, 320], [336, 280], [250, 250], [200, 200], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .build();
     }
-/* im using in this example "MastHead_NNH" because its currently mapped with YL but delivery adunit should be "horz" */
-    if (slotName === 'MastHead_NNH') {
+    if (slotName === 'horz') {
       return googletag.sizeMapping()
-        .addSize([1260, 200], [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [1, 1], 'fluid'])
-        .addSize([1025, 200], [[970, 250], [970, 90], [728, 90], [640, 100], [1, 1], 'fluid'])
-        .addSize([768, 200], [[728, 90], [468, 60], [1, 1], 'fluid'])
+        .addSize([1260, 200], [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [1, 1]])
+        .addSize([1025, 200], [[970, 250], [970, 90], [728, 90], [640, 100], [1, 1]])
+        .addSize([768, 200], [[728, 90], [468, 60], [1, 1]])
         .addSize([640, 100], [[468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .addSize([0, 0], [[320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1], 'fluid'])
         .build();
     }
 
-/* im using in this example "mrec_inread_noticias" because its currently mapped with YL but delivery adunit should be "inline" */
-    if (slotName === 'mrec_inread_noticias') {
-    return googletag.sizeMapping()
-      .addSize([768, 0], [[640, 100],[468, 60],[460, 60],[250, 250],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
-      .addSize([640, 0], [[468, 60],[460, 60],[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
-      .addSize([0, 0], [[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
-      .build();
+    if (slotName === 'inline') {
+      return googletag.sizeMapping()
+        .addSize([768, 0], [[640, 100],[468, 60],[460, 60],[250, 250],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
+        .addSize([640, 0], [[468, 60],[460, 60],[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
+        .addSize([0, 0], [[320, 160],[320, 100],[320, 50],[300, 250],[300, 120],[300, 100],[300, 75],[300, 50],[250, 250],[234, 60],[216, 36],[200, 200],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'])
+        .build();
   }
 
       if (slotName === 'sticky') {
       return googletag.sizeMapping()
-        .addSize([1025, 200], [[970, 90], [728, 90], [640, 100], [1, 1]])
-        .addSize([768, 200], [[728, 90], [468, 60], [1, 1]])
+        .addSize([1025, 200], [[1000, 100], [750, 200], [1000, 100],[970, 90], [728, 90], [640, 100], [1, 1]])
+        .addSize([768, 200], [[728, 90], [640, 100], [468, 60], [460, 60], [1, 1]])
         .addSize([640, 100], [[468, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [120, 30], [120, 20], [1, 1]])
         .addSize([0, 0], [[320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [120, 30], [120, 20], [1, 1]])
         .build();
@@ -215,17 +234,6 @@ function buildSizeMapping(el, slotName) {
     });
 
 
-const oopEl = document.createElement("div");
-oopEl.className = "ad oop";
-oopEl.id = "oop";
-oopEl.style.cssText = "position: fixed; left: 0px; top: 0px; z-index: 2147483645; width: 1px; height: 1px;";
-document.body.prepend(oopEl);
-pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
-  .setCollapseEmptyDiv(true, true)
-  .addService(pub.ads);
-yieldlove_cmd.push(function () {
-   YLHH.bidder.startAuction(pub.oopSlot.getAdUnitPath());
-});
 
 
       pub.ads.addEventListener("slotRequested", function(event) {
@@ -303,8 +311,6 @@ yieldlove_cmd.push(function () {
               });
             }
           }, pub.impressionRefreshDelay);
-
-
         }*/
       }
     });
@@ -359,63 +365,55 @@ yieldlove_cmd.push(function () {
           }
         }
       });
+    pub.ads.setCentering(true);
+    pub.ads.enableVideoAds();
+    pub.ads.enableSingleRequest();
+    googletag.enableServices();
   }); 
 
 
     (function() {
-    function getBreakpointIndex(width) {
-      for (let i = pub.breakpoints.length - 1; i >= 0; i--) {
-        if (width >= pub.breakpoints[i]) return i;
+      function getBreakpointIndex(width) {
+        for (let i = pub.breakpoints.length - 1; i >= 0; i--) {
+          if (width >= pub.breakpoints[i]) return i;
+        }
+        return 0;
       }
-      return 0;
-    }
-    let currentBreakpoint = getBreakpointIndex(window.innerWidth);
-    let resizeTimeout = null;
+      let currentBreakpoint = getBreakpointIndex(window.innerWidth);
+      let resizeTimeout = null;
+      window.addEventListener('resize', function () {
+        if (resizeTimeout) clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          const newBreakpoint = getBreakpointIndex(window.innerWidth);
+          if (newBreakpoint !== currentBreakpoint) {
+            currentBreakpoint = newBreakpoint;
+            console.log("Breakpoint changed");
 
-    window.addEventListener('resize', function() {
-      if (resizeTimeout) clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const newBreakpoint = getBreakpointIndex(window.innerWidth);
-        if (newBreakpoint !== currentBreakpoint) {
-          currentBreakpoint = newBreakpoint;
+            const slotsToRefresh = [];
 
-          const displayedEls = Array.from(document.getElementsByClassName('ad'))
-            .filter(el => el.dataset.loaded === "true" && el.id && el.id !== "oop");
+            const displayedEls = Array.from(document.getElementsByClassName('ad')).filter(el =>
+              el.dataset.loaded === "true" &&
+              el.id &&
+              el.id !== "oop" &&
+              window.getComputedStyle(el).display !== "none"
+            );
 
-          const slotsToRefresh = [];
-          displayedEls.forEach(el => {
-            const slotObj = pub.ads.getSlots().find(slot => slot.getSlotElementId() === el.id);
-            if (!slotObj) return;
-/*
-            if (el.classList.contains('sticky')) {
-              googletag.destroySlots([slotObj]);
-              delete el.dataset.loaded;
-              el.remove();
-            } else {
-              slotsToRefresh.push(slotObj);
-            }*/
-           slotsToRefresh.push(slotObj);
-          });
-
-            
-
+            displayedEls.forEach(el => {
+              const slotObj = pub.ads.getSlots().find(slot => slot.getSlotElementId() === el.id);
+              if (slotObj) {
+                slotsToRefresh.push(slotObj);
+              }
+            });
 
             if (slotsToRefresh.length) {
-              slotsToRefresh.forEach(slotObj => {
-                const slotId      = slotObj.getSlotElementId();
-                const adUnitPath  = slotObj.getAdUnitPath();     
-
-                yieldlove_cmd.push(() => {
-                  YLHH.bidder.cloneUnit(adUnitPath, slotId, true);
-                });
-              });
+              pub.ads.clear(); 
+              pub.ads.refresh(slotsToRefresh, { changeCorrelator: true }); 
             }
-        }
-        resizeTimeout = null;
-      }, pub.debounceDelay);
-    });
-  })();
-
+          }
+          resizeTimeout = null;
+        }, pub.debounceDelay);
+      });
+    })();
 }); 
 </script>
 </body>

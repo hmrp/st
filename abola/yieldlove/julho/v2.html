@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,23 +22,29 @@
       contain-intrinsic-size: auto 250px;
       min-height: 250px;
     }
+
+    .desktop {display:none}
   </style>
 </head>
 <body>
 
+
+
 <!--
+   
+
 <div class="ad sticky"></div> 
 -->
 
-<div class="ad MastHead_NNH"></div>
+<div class="ad MastHead_NNH "></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad MREC_NNH "></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad MREC_NNH "></div>
 <p></p>
-<div class="ad MREC_NNH"></div>
+<div class="ad MREC_NNH  "></div>
 <p></p>
-<div class="ad MastHead_NNH"></div>
+<div class="ad MastHead_NNH "></div>
 <p></p>
 <div class="ad MREC_NNH"></div>
 <p></p>
@@ -80,7 +87,7 @@ var yieldlove_cmd = yieldlove_cmd || [];
 window.googletag = window.googletag || { cmd: [] };
 
 const oopEl = document.createElement("div");
-oopEl.className = "ad oop";
+oopEl.className = "oop";
 oopEl.id = "oop";
 oopEl.style.cssText = "position:fixed;left:0;top:0;z-index:2147483645;width:1px;height:1px;";
 document.body.prepend(oopEl);
@@ -124,7 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
 function getSlotName(el) {
-  const validSlots = ['oop', 'MastHead_NNH', 'MREC_NNH', 'mrec_inread_noticias', 'Sticky'];
+  const validSlots = ['MastHead_NNH', 'MREC_NNH', 'mrec_inread_noticias', 'Sticky'];
   for (const slot of validSlots) {
     if (el.classList.contains(slot)) return slot;
   }
@@ -133,33 +140,23 @@ function getSlotName(el) {
 
   googletag.cmd.push(() => {
     pub.ads = googletag.pubads();
-    pub.ads.disableInitialLoad();
-
     pub.ads.setTargeting("end", pub.fEnd);
-    //pub.ads.setTargeting("end", "pos");
     if (pub.KV.id) pub.ads.setTargeting("id", String(pub.KV.id));
-    if (pub.KV.interests) {
-      pub.ads.setTargeting("category", pub.KV.interests[0]);
-      if (pub.KV.interests.length > 1) {
-        pub.ads.setTargeting("kw", pub.KV.interests.slice(1));
-      }
-    }
+    if (pub.KV.interests) {pub.ads.setTargeting("category", pub.KV.interests[0]);if (pub.KV.interests.length > 1){pub.ads.setTargeting("kw", pub.KV.interests.slice(1));}}
     if (pub.KV.pageType) pub.ads.setTargeting("type", pub.KV.pageType);
-
     pub.ads.setCentering(true);
     pub.ads.enableVideoAds();
     pub.ads.enableSingleRequest();
-    googletag.enableServices();
-
+    pub.ads.disableInitialLoad();
     pub.slotDimensions = {
       MastHead_NNH: [[1260, 220], [1150, 250], [970, 250], [970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
       MREC_NNH: [[300, 600], [300, 250], [336, 320], [336, 280], [160, 600], [120, 600], [250, 250], [200, 200], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]],
       mrec_inread_noticias: [[300, 250],[336, 320],[336, 280],[250, 250],[200, 200],[640, 100],[468, 60],[460, 60],[320, 100],[320, 160],[300, 120],[320, 50],[300, 100],[300, 75],[300, 50],[234, 60],[216, 36],[125, 125],[120, 30],[120, 20],[1, 1],'fluid'],
       Sticky: [[970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [320, 100], [320, 160], [300, 120], [320, 50], [300, 100], [300, 75], [300, 50], [234, 60], [216, 36], [125, 125], [120, 30], [120, 20], [1, 1]]
     };
+     pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop").setCollapseEmptyDiv(true, true).addService(googletag.pubads());
 
-
-function buildSizeMapping(el, slotName) {
+     function buildSizeMapping(el, slotName) {
   /* im using in this example "MREC_NNH" because its currently mapped with YL but delivery adunit should be "vert" */
     if (slotName === 'MREC_NNH') {
       return googletag.sizeMapping()
@@ -201,6 +198,7 @@ function buildSizeMapping(el, slotName) {
       return null;
     }
 
+
    function defineSlot(el, slotName, slotId) {
       el.id = slotId;
       const mapping = buildSizeMapping(el, slotName);
@@ -230,16 +228,6 @@ function buildSizeMapping(el, slotName) {
       el.dataset.slotType = slotName;
     });
 
-
-
-pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
-  .setCollapseEmptyDiv(true, true)
-  .addService(pub.ads);
-
-  /*yieldlove_cmd.push(function () {
-   YLHH.bidder.startAuction(pub.oopSlot.getAdUnitPath());
-});
-*/
 
 
   function injectStickyAd() {
@@ -359,6 +347,7 @@ pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
       }
     });
 
+
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -367,7 +356,7 @@ pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
           const pos = el.dataset.pos;
           const slotId = slotType + pos;
 
-          if (!el.dataset.loaded) {
+          if (!el.dataset.loaded && window.getComputedStyle(el).display !== 'none') {
             el.dataset.loaded = "true";
             const slotObj = defineSlot(el, slotType, slotId);
             googletag.display(slotId);
@@ -378,18 +367,20 @@ pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
               });
             }
           }
-
           observer.unobserve(el);
         }
       });
     }, { rootMargin: pub.lazyFetchDistance + "px 0px" });
 
+    
       adElements.forEach(el => {
-        if (el.dataset.slotType !== "oop") {
+   
           observer.observe(el);
 
+
+          /*
           const rect = el.getBoundingClientRect();
-          if (rect.top >= 0 && rect.top <= window.innerHeight) {
+          if (rect.top >= 0 && rect.top <= window.innerHeight && window.getComputedStyle(el).display !== 'none') {
             observer.unobserve(el); 
             const slotType = el.dataset.slotType;
             const pos = el.dataset.pos;
@@ -407,11 +398,16 @@ pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
               }
             }
           }
-        }
+*/
+
+
+
+      
       });
+    googletag.enableServices();
   }); 
 
-
+/*
     (function() {
     function getBreakpointIndex(width) {
       for (let i = pub.breakpoints.length - 1; i >= 0; i--) {
@@ -436,14 +432,14 @@ pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
           displayedEls.forEach(el => {
             const slotObj = pub.ads.getSlots().find(slot => slot.getSlotElementId() === el.id);
             if (!slotObj) return;
-            /*
+            // check this 
             if (el.classList.contains('sticky')) {
               googletag.destroySlots([slotObj]);
               delete el.dataset.loaded;
               el.remove();
             } else {
               slotsToRefresh.push(slotObj);
-            }*/
+            }/// end check this
            slotsToRefresh.push(slotObj);
           });
 
@@ -464,9 +460,11 @@ pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
         resizeTimeout = null;
       }, pub.debounceDelay);
     });
-  })();
+  })(); */
 
 }); 
 </script>
 </body>
 </html>
+
+              if (window.googletag && googletag.apiReady && googletag.pubadsReady) { }
