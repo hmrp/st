@@ -9667,7 +9667,7 @@ document.addEventListener("DOMContentLoaded", () => {
   adElements.forEach(el => { pub.adLoader.observe(el); });
 } else {
   adElements.forEach(el => { loadAdSlot(el, false); });
-  googletag.pubads().refresh();
+
 }
 
 
@@ -9729,6 +9729,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop").setCollapseEmptyDiv(true, true).addService(pub.ads);
     googletag.enableServices();
     googletag.pubads().refresh([pub.oopSlot]);
+    googletag.pubads().refresh();
   });
 
   // --- Responsive resize logic, can stay outside ---
