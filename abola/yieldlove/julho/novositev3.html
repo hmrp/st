@@ -9447,7 +9447,6 @@ var yieldlove_cmd = yieldlove_cmd || [];
 window.googletag = window.googletag || { cmd: [] };
 
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Pub global setup ---
   const pub = window.pub = window.pub || {};
   pub.oopSlot = null;
   pub.dbTimeout = null;
@@ -9463,7 +9462,6 @@ document.addEventListener("DOMContentLoaded", () => {
   pub.fEnd = [encodeURI(window.location.href.match(/([^\?]*)\/*$/)[0])];
   pub.KV = {};
 
-  // --- Helper Functions ---
   function pubBreakPoint(width) {
     for (let i = pub.BP.length - 1; i >= 0; i--) {
       if (width >= pub.BP[i]) return i;
@@ -9566,6 +9564,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return null;
   }
+
   function defineSlot(el, slotName, slotId) {
     el.id = slotId;
     const mapping = buildSizeMapping(el, slotName);
@@ -9578,7 +9577,8 @@ document.addEventListener("DOMContentLoaded", () => {
     pub.adSlots.push(slotId);
     return slotObj;
   }
-  function loadAdSlot(el) {
+
+ function loadAdSlot(el, useYieldlove = true) {
     if (!el.dataset.loaded && pubDisplay(el)) {
       el.dataset.loaded = "true";
       const slotType = el.dataset.slotType;
@@ -9586,14 +9586,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const slotId = slotType + pos;
       const slotObj = defineSlot(el, slotType, slotId);
       googletag.display(slotId);
-      if (slotObj) {
-        yieldlove_cmd.push(() => {
-          YLHH.bidder.cloneUnit(slotObj.getAdUnitPath(), slotId, true);
-        });
-      }
+      if (slotObj && useYieldlove) {
+      yieldlove_cmd.push(() => {
+        YLHH.bidder.cloneUnit(slotObj.getAdUnitPath(), slotId, true);
+      });
     }
   }
-
+}
   // --- OOP slot DOM ---
   const oopEl = document.createElement("div");
   oopEl.className = "ad oop";
@@ -9657,18 +9656,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // -- IntersectionObserver or fallback --
     if ('IntersectionObserver' in window) {
-      pub.adLoader = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            loadAdSlot(entry.target);
-            pub.adLoader.unobserve(entry.target);
-          }
-        });
-      }, { rootMargin: pub.fetchDistance + "px 0px" });
-      adElements.forEach(el => { pub.adLoader.observe(el); });
-    } else {
-      adElements.forEach(el => { loadAdSlot(el); });
-    }
+  pub.adLoader = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        loadAdSlot(entry.target, true); // with Yieldlove
+        pub.adLoader.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: pub.fetchDistance + "px 0px" });
+  adElements.forEach(el => { pub.adLoader.observe(el); });
+} else {
+  adElements.forEach(el => { loadAdSlot(el, false); });
+}
+
+
 
     // -- Event Listeners --
     pub.ads.addEventListener("slotRequested", function(event) {
