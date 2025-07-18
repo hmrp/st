@@ -9716,22 +9716,22 @@ adElements.forEach(el => {
       }
     });
 
-if ('IntersectionObserver' in window) {
-  pub.adLoader = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        loadAdSlot(entry.target);
-        pub.adLoader.unobserve(entry.target);
-      }
-    });
-  }, { rootMargin: pub.fetchDistance + "px 0px" });
-  adElements.forEach(el => { pub.adLoader.observe(el); });
-} else {
-  // Fallback for old browsers: load all ads immediately
-  adElements.forEach(el => { loadAdSlot(el); });
-}
-googletag.enableServices();
-googletag.pubads().refresh([pub.oopSlot]);
+    if ('IntersectionObserver' in window) {
+    pub.adLoader = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            loadAdSlot(entry.target);
+            pub.adLoader.unobserve(entry.target);
+        }
+        });
+    }, { rootMargin: pub.fetchDistance + "px 0px" });
+    adElements.forEach(el => { pub.adLoader.observe(el); });
+    } else {
+    adElements.forEach(el => { loadAdSlot(el); });
+    }
+    googletag.enableServices();
+    googletag.pubads().refresh([pub.oopSlot]);
+  });
 
   window.addEventListener('resize', function () {
     if (pub.dbTimeout) clearTimeout(pub.dbTimeout);
