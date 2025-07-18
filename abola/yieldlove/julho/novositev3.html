@@ -9637,7 +9637,7 @@ document.addEventListener("DOMContentLoaded", () => {
       MastHead_NNH: [[970, 90], [728, 90], [640, 100], [468, 60], [460, 60], [360, 100], [360, 50], [320, 160], [300, 120], [320, 100], [320, 50], [300, 100], [300, 75], [300, 50], [1, 1]],
       mrec: [[300, 250], [250, 250], [200, 200], [1, 1], 'fluid']
     };
-    pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop").setCollapseEmptyDiv(true, true).addService(pub.ads);
+ 
 
     // -- Ad Elements --
     const adElements = Array.from(document.getElementsByClassName('ad'))
@@ -9667,6 +9667,7 @@ document.addEventListener("DOMContentLoaded", () => {
   adElements.forEach(el => { pub.adLoader.observe(el); });
 } else {
   adElements.forEach(el => { loadAdSlot(el, false); });
+  googletag.pubads().refresh();
 }
 
 
@@ -9725,6 +9726,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // -- Enable services and refresh OOP --
+    pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop").setCollapseEmptyDiv(true, true).addService(pub.ads);
     googletag.enableServices();
     googletag.pubads().refresh([pub.oopSlot]);
   });
