@@ -1,0 +1,79 @@
+<script>
+(function() {
+  // Reference to parent document
+  var parentDoc = window.parent.document;
+
+  // Build your ad markup
+  var adDiv = parentDoc.createElement('div');
+  adDiv.id = 'oop-pushdown-ad';
+  adDiv.style.position = 'relative';
+  adDiv.style.width = '100vw';
+  adDiv.style.zIndex = 99999;
+  adDiv.innerHTML = `
+    <div id="oop-pushdown-image-wrapper" style="width:100vw; max-width:100%; aspect-ratio:16/9; overflow:hidden; background:#c3e174;">
+      <img 
+        id="oop-pushdown-img"
+        src="%%FILE:WEBP1%%"
+        alt="Ad"
+        style="width:100%; height:100%; object-fit:cover; object-position:center; display:block;"
+      >
+      <button onclick="closeOopPushdownAd()" style="
+        position:absolute; top:16px; right:16px; z-index:10; background:#fff; border-radius:50%; border:none; width:32px; height:32px; cursor:pointer; font-size:18px;">×</button>
+    </div>
+  `;
+
+  // Insert as first element in <body>
+  var body = parentDoc.body;
+  body.insertBefore(adDiv, body.firstChild);
+
+  // Responsive adjustment logic
+  function adjustForViewport() {
+    var wrapper = parentDoc.getElementById('oop-pushdown-image-wrapper');
+    var img = parentDoc.getElementById('oop-pushdown-img');
+    if (!wrapper || !img) return;
+    if (window.innerWidth <= 700) {
+      wrapper.style.aspectRatio = '9/16';
+      img.src = "%%FILE:PNG1%%";
+    } else {
+      wrapper.style.aspectRatio = '16/9';
+      img.src = "%%FILE:WEBP1%%";
+    }
+    setTimeout(resizeIframeToAd, 100);
+  }
+
+  // Resize iframe (if needed)
+  function resizeIframeToAd() {
+    var ad = parentDoc.getElementById('oop-pushdown-ad');
+    var frame = parent.frameElement ? parent.frameElement : window.frameElement;
+    if (frame && ad) {
+      frame.style.height = ad.offsetHeight + 'px';
+      frame.style.width = '100%';
+    }
+  }
+
+  // Close button logic (remove ad and shrink iframe)
+  window.closeOopPushdownAd = function() {
+    var ad = parentDoc.getElementById('oop-pushdown-ad');
+    if (ad) ad.remove();
+    var frame = parent.frameElement ? parent.frameElement : window.frameElement;
+    if (frame) {
+      frame.style.height = '0px';
+      frame.style.width = '0px';
+    }
+  };
+
+  // Responsive handlers
+  window.addEventListener('resize', adjustForViewport);
+  window.addEventListener('DOMContentLoaded', function() {
+    adjustForViewport();
+    var img = parentDoc.getElementById('oop-pushdown-img');
+    if (img) img.onload = function() { setTimeout(resizeIframeToAd, 50); };
+  });
+
+  // Initial run
+  adjustForViewport();
+})();
+
+
+</script>
+<img src="%%VIEW_URL_UNESC%%" style="display:none">

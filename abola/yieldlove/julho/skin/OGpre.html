@@ -1,0 +1,40 @@
+<div id="skinad">
+      <style>
+        .homepage-container, .row, footer {position:relative; background-color: #fff;}
+        .row, footer{padding-left: 10px; padding-right: 10px;}
+        #destaques-hp {padding:0; margin-top: -90px}
+        .homepage {margin-top:0;}
+        .livematches-bar {margin-top:-15px;}
+        .livescore-bar-widget {margin-top:-9px;}
+        
+        .mainBody#corpo {margin-top:235px!important;}
+
+        #skinad {position:fixed;width:100%; height:95vh; left:0; right:0; margin:-228px auto;background-size:contain;background-repeat:no-repeat;z-index:0;background-image:url(%%FILE:JPG1%%)!important;background-position:top center; /*pointer-events: none;*/ cursor:pointer;}
+        
+        #skinad:hover{opacity:0.95}
+        
+        @media (min-height:1px) and (max-height:1300px) and (orientation:landscape){
+            #skinad {background-size:cover;}
+        }
+
+        @media (orientation:portrait){ 
+            background-image:url(%%FILE:JPG1%%)!important;
+        }
+      </style>
+
+     <a href="%%CLICK_URL_UNESC%%[%ClickthroughURL%]" target="_blank" rel="noopener" style="width:100%;height:100%; left:0; right:0; top:0; bottom:0; margin:0; padding:0; display:block; position:absolute;">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+</a>
+    </div>
+
+    <script>
+    if(!window.top.document.getElementById("skinad")){
+      var skinadpos = document.getElementById('skinad');
+      var skinoverframe = (parent.frameElement) ? parent.FrameElement : window.frameElement;
+      skinoverframe.parentNode.insertBefore(skinadpos, skinoverframe.nextSibling);
+      skinoverframe.parentNode.style.cssText ="position:relative; width:100%; heigth:200px; left:0; right:0;";
+      /*if(window.top.pub.oop.getAdUnitPath().split('/')[2] != "OOP" ) {skinoverframe.parentNode.parentNode.style.maxWidth = '100%'; skinoverframe.parentNode.parentNode.style.width = '100%';}
+*/
+    }
+</script>
+[%TagExterna%]

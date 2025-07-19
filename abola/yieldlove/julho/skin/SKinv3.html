@@ -1,0 +1,68 @@
+
+
+
+
+<script>
+console.log("skin");
+
+var thisFrame = window.frameElement;
+if (!thisFrame) throw new Error("Can't find frameElement");
+var parentNode = thisFrame.parentNode;
+var styleId = 'takeover-bg-style-fade';
+
+if (!parentNode.querySelector('#' + styleId)) {
+  parentNode.style.height = "220px";
+  var style = document.createElement('style');
+  style.type = 'text/css';
+  style.id = styleId;
+style.textContent = `
+  #takeover-home, #takeover-category {
+    position: relative;
+    overflow: hidden;
+  }
+  #takeover-home::before, #takeover-category::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url(%%FILE:WEBP1%%) center top / cover no-repeat, #0f0f23;
+    opacity: 0;
+    animation: bgfadein 0.7s forwards;
+    z-index: 0;
+    pointer-events: none;
+  }
+  @keyframes bgfadein {
+    to { opacity: 1; }
+  }
+  @media (orientation: portrait) {
+    #takeover-home::before, #takeover-category::before {
+      background-size: contain;
+    }
+  }
+  @media (min-width: 1025px) {
+    #takeover-home::before, #takeover-category::before {
+      background-size: 1920px 1080px !important; /* Fixed size */
+      background-position: center top !important;
+      background-repeat: no-repeat !important;
+    }
+  }
+`;
+  parentNode.appendChild(style);
+}
+
+console.log("skin end");
+</script>
+
+
+
+
+
+
+
+
+[%TagExterna%]
+
+
+
+
+
+takeover-home and takeover-category
