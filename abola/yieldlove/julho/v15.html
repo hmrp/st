@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pub.dbDelay = 700;
   pub.currentBP = pubBreakPoint(window.innerWidth);
   pub.fetchDistance = Math.max(500, Math.floor(window.innerHeight * 0.85));
+  pub.footerDistance = Math.max(400, Math.floor(window.innerHeight * 0.8))
   pub.setfooterstickyStorageCap = 'adfooterstickyCap';
   pub.footerstickyTimer = 10 * 60 * 1000;
   //pub.footerstickyWL= {'3389807013': true, '3483087791': true,'3556005506': true, '3558075999':true}; order testes incluido
@@ -244,9 +245,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById('footersticky-container');
 
         if (pub.footerstickyWL && event.campaignId && pub.footerstickyWL[event.campaignId]) {
-          console.log("reconheceu");
-          document.getElementById('footersticky-style').remove();
-          document.getElementById('footersticky-close').remove();
+         // document.getElementById('footersticky-style').remove();
+         // document.getElementById('footersticky-close').remove();
           container.style.cssText = "position:fixed;left:0;right:0;bottom:0;margin:0 auto;z-index:2147483645;width:1px;height:1px;";
         } else {
           setStickyCap();
@@ -255,50 +255,58 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
 
-      if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
-        googletag.pubads().clear([pub.oopSlot]);
-        googletag.destroySlots([pub.oopSlot]);
-            
-        if (setSticky()) {
-          if (!pub.stickyAdTriggerSet) {
-            pub.stickyAdTriggerSet = true;
-            const stickyTrigger = document.createElement('div');
-            stickyTrigger.id = 'stickyAdTrigger';
-            stickyTrigger.style.cssText = `
-              left: 0;
-              right:0;
-              margin:0 auto;
-              width: 1px;
-              height: 1px;
-              opacity: 0;
-              pointer-events: none;
-              z-index: -1;
-            `;
-         document.body.appendChild(stickyTrigger);
+ if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
+  googletag.pubads().clear([pub.oopSlot]);
+  googletag.destroySlots([pub.oopSlot]);
 
+  if (setSticky()) {
+    if (!pub.stickyAdTriggerSet) {
+      pub.stickyAdTriggerSet = true;
+      const stickyAdTrigger = document.createElement('div');
+      stickyAdTrigger.id = 'stickyAdTrigger';
+      stickyAdTrigger.style.cssText = `
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        z-index: -1;
+      `;
+      document.body.appendChild(stickyAdTrigger);
 
+      let stickyAdScrollTimeout = null;
 
-      const stickyAdIO = new IntersectionObserver(entries => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            stickyAdIO.disconnect();
+      function onScrollStickyTrigger() {
+        if (stickyAdScrollTimeout) clearTimeout(stickyAdScrollTimeout);
+        stickyAdScrollTimeout = setTimeout(() => {
+          if (window.scrollY >= pub.footerDistance) {
             stickyAd();
+            console.log('[StickyTrigger] Fired at scrollY ' +  pub.footerDistance);
+            window.removeEventListener('scroll', onScrollStickyTrigger);
+           /* const triggerEl = document.getElementById('stickyAdTrigger');
+            if (triggerEl) triggerEl.remove();*/
           }
-        }
-      }, {rootMargin: '-' + pub.fetchDistance + 'px 0px 0px 0px',threshold: 0});
-      stickyAdIO.observe(stickyTrigger);
+          stickyAdScrollTimeout = null;
+        }, pub.dbDelay);
+      }
+
+
+      window.addEventListener('scroll', onScrollStickyTrigger);
     }
   }
 
         const gamInterstitial = googletag.defineOutOfPageSlot("/417417404/Interstitial", googletag.enums.OutOfPageFormat.INTERSTITIAL);
         if (gamInterstitial) {
-          gamInterstitial
+            gamInterstitial
             .setTargeting("pos", "gaminterstitial")
             .addService(pub.ads)
             .setConfig({ interstitial: { triggers: { unhideWindow: true } } });
-          googletag.display(gamInterstitial);
+            googletag.display(gamInterstitial);
         }
-      }
+        }
+
       const eligibleSlotTypes = ['vert', 'horz', 'inline', 'mrec'];
       if (!event.isEmpty) {
         const el = document.getElementById(event.slot.getSlotElementId());
