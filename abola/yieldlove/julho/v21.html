@@ -1,6 +1,6 @@
 nao esquecer que ao minimizar o certo passa a \u2714 
 <meta charset="UTF-8">
-
+v2
 <div class="ad horz"></div>
 <p>1</p>
 <div class="ad vert ok "></div>
@@ -12,13 +12,13 @@ nao esquecer que ao minimizar o certo passa a \u2714
 <p>4</p>
 <p style="height:5000px; display:block; position:relative;">4</p>
 
-
+<!--
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MGBZMQ6Z');</script>
-
+-->
 
 
 <!--
@@ -28,6 +28,17 @@ function OptanonWrapper() { }
 </script>
 -->
 
+<!-- Google Tag Manager site abola -->
+
+
+<script>(function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.setAttributeNode(d.createAttribute('data-ot-ignore'));
+j.async = true;j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', 'GTM-MGBZMQ6Z');
+</script>
+<!-- End Google Tag Manager -->
+
+
 
 
 <script type="text/javascript" class="optanon-category-C0004"  async src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
@@ -36,9 +47,35 @@ function OptanonWrapper() { }
 
 
 <script>
+/*
+  function OnetrustAdsConsent(){
+    if(googletag.apiReady){
+        
+      
+        if(OptanonActiveGroups.match(/,C0004,/)){
+          console.log("setRequestNonPersonalizedAds(0)")
+            googletag.pubads().setRequestNonPersonalizedAds(0);
+           // googletag.pubads().refresh();
+           }
+        else{
+            googletag.pubads().setRequestNonPersonalizedAds(1);
+            //googletag.pubads().refresh();
+             console.log("setRequestNonPersonalizedAds(1)");
+        }
+    }
+    else{
+        OnetrustAdsConsent();
+    }   
+}
+*/
+
+
+
 yieldlove_prevent_autostart = true;
 var yieldlove_cmd = yieldlove_cmd || [];
 window.googletag = window.googletag || { cmd: [] };
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const pub = window.pub = window.pub || {};
@@ -356,7 +393,11 @@ if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
         el.classList.add("\u2714");
       }
     });
-    
+// look here
+   // OnetrustAdsConsent(); 
+
+
+
     googletag.enableServices();
     googletag.pubads().refresh([pub.oopSlot]);
   });
