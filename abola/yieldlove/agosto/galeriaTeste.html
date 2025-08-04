@@ -5249,85 +5249,92 @@ adElements.forEach(el => pub.adLoader.observe(el));
       .addService(pub.ads);
 
     pub.ads.addEventListener('slotRenderEnded', function (event) {
-      const slot = event.slot;
-      if (event.slot.getSlotElementId() === 'footersticky1' && !event.isEmpty) {
-      const container = document.getElementById('footersticky-container');
+        const slot = event.slot;
+        
+        if (
+            pub.KV.interests &&
+            pub.KV.interests[0] === 'noticia-patrocinada' &&
+            (event.slot.getSlotElementId() === 'footersticky1' || event.slot.getSlotElementId() === 'oop')
+        ) {
+            return;
+        }
 
-      if (
+        if (event.slot.getSlotElementId() === 'footersticky1' && !event.isEmpty) {
+            const container = document.getElementById('footersticky-container');
+            if (
             pub.footerstickyWL &&
             event.campaignId &&
             pub.footerstickyWL[event.campaignId] &&
             event.size &&
             event.size[0] === 1 &&
             event.size[1] === 1
-      ) {
-      const stickyDiv = document.getElementById('footersticky1');
-       if (stickyDiv) stickyDiv.classList.remove('txt');
-       if (container) container.remove();
-       const styleEl = document.getElementById('footersticky-style');
-       if (styleEl) styleEl.remove();
-       const closeEl = document.getElementById('footersticky-close');
-       if (closeEl) closeEl.remove();
-       return;
-      } else {
+            ) {
+            const stickyDiv = document.getElementById('footersticky1');
+            if (stickyDiv) stickyDiv.classList.remove('txt');
+            if (container) container.remove();
+            const styleEl = document.getElementById('footersticky-style');
+            if (styleEl) styleEl.remove();
+            const closeEl = document.getElementById('footersticky-close');
+            if (closeEl) closeEl.remove();
+            return;
+            } else {
             setStickyCap();
-                  if (container) {
-                        container.classList.add('footerstickyFX');
-                        document.getElementById('footersticky1').classList.add('txt');
-                  }
+            if (container) {
+                container.classList.add('footerstickyFX');
+                document.getElementById('footersticky1').classList.add('txt');
             }
-      }
-
-      if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
-        if (pub.KV.interests && pub.KV.interests[0] === 'noticia-patrocinada') {
-          return;
-        }
-        googletag.pubads().clear([pub.oopSlot]);
-        googletag.destroySlots([pub.oopSlot]);
-        if (setSticky()) {
-          if (!pub.stickyAdTriggerSet) {
-            pub.stickyAdTriggerSet = true;
-            let stickyAdScrollTimeout = null;
-            function onScrollStickyTrigger() {
-              if (stickyAdScrollTimeout) clearTimeout(stickyAdScrollTimeout);
-              stickyAdScrollTimeout = setTimeout(() => {
-                if (window.scrollY >= pub.footerDistance) {
-                  stickyAd();
-                  window.removeEventListener('scroll', onScrollStickyTrigger);
-                }
-                stickyAdScrollTimeout = null;
-              }, pub.dbDelay);
             }
-            window.addEventListener('scroll', onScrollStickyTrigger);
-          }
         }
-        const gamInterstitial = googletag.defineOutOfPageSlot(
-          "/417417404/Interstitial",
-          googletag.enums.OutOfPageFormat.INTERSTITIAL
-        );
-        if (gamInterstitial) {
-          gamInterstitial
-            .setTargeting("pos", "gaminterstitial")
-            .addService(pub.ads)
-            .setConfig({
-              interstitial: {
-                triggers: {
-                  unhideWindow: true
-                }
-              }
-            });
-          googletag.display(gamInterstitial);
-        }
-      }
 
-      const eligibleSlotTypes = ['vert', 'horz', 'inline', 'mrec'];
-      if (!event.isEmpty) {
-        const el = document.getElementById(event.slot.getSlotElementId());
-        if (el && eligibleSlotTypes.includes(el.dataset.slotType)) {
-          el.classList.add("txt");
+        if (event.slot.getSlotElementId() === 'oop' && event.isEmpty) {
+            googletag.pubads().clear([pub.oopSlot]);
+            googletag.destroySlots([pub.oopSlot]);
+
+            if (setSticky()) {
+            if (!pub.stickyAdTriggerSet) {
+                pub.stickyAdTriggerSet = true;
+                let stickyAdScrollTimeout = null;
+                function onScrollStickyTrigger() {
+                if (stickyAdScrollTimeout) clearTimeout(stickyAdScrollTimeout);
+                stickyAdScrollTimeout = setTimeout(() => {
+                    if (window.scrollY >= pub.footerDistance) {
+                    stickyAd();
+                    window.removeEventListener('scroll', onScrollStickyTrigger);
+                    }
+                    stickyAdScrollTimeout = null;
+                }, pub.dbDelay);
+                }
+                window.addEventListener('scroll', onScrollStickyTrigger);
+            }
+            }
+            const gamInterstitial = googletag.defineOutOfPageSlot(
+            "/417417404/Interstitial",
+            googletag.enums.OutOfPageFormat.INTERSTITIAL
+            );
+            if (gamInterstitial) {
+            gamInterstitial
+                .setTargeting("pos", "gaminterstitial")
+                .addService(pub.ads)
+                .setConfig({
+                interstitial: {
+                    triggers: {
+                    unhideWindow: true
+                    }
+                }
+                });
+            googletag.display(gamInterstitial);
+            }
         }
-      }
-    });
+
+        // Add "txt" class for eligible slots
+        const eligibleSlotTypes = ['vert', 'horz', 'inline', 'mrec'];
+        if (!event.isEmpty) {
+            const el = document.getElementById(event.slot.getSlotElementId());
+            if (el && eligibleSlotTypes.includes(el.dataset.slotType)) {
+            el.classList.add("txt");
+            }
+        }
+        });
 
     pub.ads.addEventListener("impressionViewable", function (event) {
       if (!event.isEmpty && event.slot != pub.oopSlot) {
