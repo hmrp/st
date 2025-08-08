@@ -1,10 +1,29 @@
-<div class="ad horz"></div>
-<div class="ad vert"></div>
-<div class="ad horz"></div>
 
-<p style="height:8000px; position:relative;"></p>
+          
+            <div
+    class="ad horz"
+    data-slot-name="Billboard"
+></div>
+   
 
-<script>
+
+
+</div>
+    
+
+<div
+        class="mx-auto hidden justify-center sm:flex"
+            >
+        <div
+    class="ad horz"
+    data-slot-name="Billboard_HP"
+></div>
+    </div>
+
+                                                
+      
+              
+        <script>
 let adsKeywords = {
   "pageType": ["livesdcore"],
   "interests": [
@@ -18,25 +37,24 @@ let adsKeywords = {
     "Ronaldo: «Se um selecionador que vai a uma final é contestado...»"
   ],
   "id": 2025060720203600106
-};
-</script>
+}; </script>
 
-<!-- OneTrust Cookies Consent Notice start for abola.pt  -->
-<script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b-test/otSDKStub.js" data-language="pt" type="text/javascript" charset="UTF-8" data-domain-script="65b60f59-7417-4967-865d-889d81e1122b-test" ></script>
-<script type="text/javascript">
-function OptanonWrapper() { }
-</script>
- <!-- OneTrust Cookies Consent Notice end for abola.pt -->
-
-
-<script type="text/javascript"  async src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
-<!-- <script type="text/javascript" class="optanon-category-C0004" src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" async="true"></script> -->
-
+<!--
+    <script src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
 <script
     src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
-    crossorigin="anonymous"
     async
 ></script>
+-->
+
+
+
+
+<script type="text/javascript" async src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
+<script    src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"  crossorigin="anonymous"   async ></script>
+
+
+
 
 
 
@@ -361,13 +379,13 @@ adElements.forEach(el => pub.adLoader.observe(el));
         el.classList.add("\u2714");
       }
     });
-  if (!isAdCategoryForbidden(pub)) {
+ /* if (!isAdCategoryForbidden(pub)) {
     pub.oopSlot = googletag.defineOutOfPageSlot("/417417404/oop", "oop")
     .setCollapseEmptyDiv(true, true)
     .addService(pub.ads);
-    }
+    }*/
     googletag.enableServices();
-    if (!isAdCategoryForbidden(pub)) {googletag.pubads().refresh([pub.oopSlot])}
+   // if (!isAdCategoryForbidden(pub)) {googletag.pubads().refresh([pub.oopSlot])}
   });
 
 /*  
@@ -507,6 +525,6 @@ style.textContent =  "#footersticky-container{transition:transform .5s cubic-bez
 </script>
 
 
+</body>
 
-
-
+</html>

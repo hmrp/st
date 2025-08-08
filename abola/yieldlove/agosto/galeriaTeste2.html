@@ -5302,9 +5302,11 @@ adElements.forEach(el => pub.adLoader.observe(el));
             if (styleEl) styleEl.remove();
             const closeEl = document.getElementById('footersticky-close');
             if (closeEl) closeEl.remove();
+            console.log("sticky whitelist");
             return;
             } else {
             setStickyCap();
+            console.log("sticky other request");
             if (container) {
                 container.classList.add('footerstickyFX');
                 document.getElementById('footersticky1').classList.add('txt');
