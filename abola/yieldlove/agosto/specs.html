@@ -1,0 +1,1006 @@
+ideia, em vez de ser filtro - usar o scroll e o menu ser fixo a medida que se faz scroll... boa
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cinematic Poster Wall — HTML + JS</title>
+  <style>
+    :root{
+      --bg: #fafafa; --panel:#fff; --ink:#111; --muted:#6b7280; --ring:rgba(0,0,0,.08);
+      --brand:#e11d48; --brand-2:#f59e0b; --chip:#f3f4f6;
+      --radius: 16px;
+
+      /* TV table sizing */
+      --timew: 120px;  /* width of Time column */
+      --colw: 110px;   /* width of each duration column */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:linear-gradient(180deg,#fff, #fafafa 40%, #f6f6f6);color:var(--ink)}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between}
+    h1{margin:0;font-size:24px}
+    .muted{color:var(--muted)}
+
+    /* toolbar */
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+    .tabs{display:flex;border-radius:999px;background:var(--chip);padding:4px}
+    .tabs button{appearance:none;border:0;background:transparent;padding:8px 14px;border-radius:999px;cursor:pointer;color:var(--ink);font-weight:600}
+    .tabs button.active{background:var(--panel);box-shadow:0 1px 0 var(--ring),0 2px 8px rgba(0,0,0,.06)}
+    .search{position:relative}
+    .search input{padding:10px 12px 10px 36px;border-radius:12px;border:1px solid var(--ring);background:var(--panel)}
+    .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.6}
+
+    /* posters grid */
+    .grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:18px}
+    @media(min-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(min-width:1200px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+    .card{background:transparent;border:0}
+    .poster{position:relative;aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 0 var(--ring),0 4px 20px rgba(0,0,0,.06)}
+    .poster .grad{position:absolute;inset:0}
+    .poster .vignetteTop{position:absolute;left:0;right:0;top:0;height:44px;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0))}
+    .poster .vignetteBottom{position:absolute;left:0;right:0;bottom:0;height:56px;background:linear-gradient(0deg,rgba(0,0,0,.12),rgba(0,0,0,0))}
+    .poster .label{position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.66);color:#fff;font-size:10px;padding:4px 8px;border-radius:999px}
+
+    .meta{padding:8px}
+    .title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700}
+    .badges{display:flex;gap:6px;flex-wrap:wrap}
+    .badge{font-size:11px;border-radius:999px;border:1px solid var(--ring);padding:4px 8px;background:#fff}
+    .badge.ghost{background:var(--chip)}
+    .peek{margin:6px 0 0 0;color:var(--muted);font-size:12px}
+    .actions{display:flex;gap:8px;margin-top:8px}
+    .btn{appearance:none;border:0;padding:8px 10px;border-radius:12px;background:#fff;border:1px solid var(--ring);cursor:pointer}
+    .btn.primary{background:var(--ink);color:#fff}
+    .btn.ghost{background:transparent}
+
+    /* paper grid overlay */
+    .grid-overlay{position:absolute;inset:0;display:grid}
+    .grid-overlay .cell{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.2)}
+    .grid-overlay .hot{background:rgba(239,68,68,.7)}
+
+    /* drawer */
+    .scrim{position:fixed;inset:0;background:rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .2s ease}
+    .scrim.show{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;top:0;right:-560px;width:100%;max-width:560px;height:100%;background:#fff;border-left:1px solid var(--ring);box-shadow:-8px 0 24px rgba(0,0,0,.08);transition:right .25s ease;display:flex;flex-direction:column}
+    .drawer.show{right:0}
+    .drawer header{padding:18px 18px 0 18px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .drawer .title-wrap{min-width:0}
+    .drawer .content{padding:18px;overflow:auto;display:flex;flex-direction:column;gap:16px}
+    .specs{border:1px solid var(--ring);border-radius:12px;padding:12px}
+    .specs dl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .specs dt{color:var(--muted);font-size:12px}
+    .specs dd{margin:0;font-weight:600}
+    .preview{border-radius:16px;overflow:hidden;border:1px solid var(--ring)}
+    .close-drawer{white-space:nowrap}
+
+    @media(max-width:680px){.drawer{max-width:100%;right:-100%}.drawer.show{right:0}}
+
+    footer{padding:32px 0;text-align:center;color:var(--muted);font-size:12px}
+    .imprensa-note{max-width:1200px;margin:6px auto 24px auto;padding:12px 16px;border:1px dashed var(--ring);background:#fff;border-radius:12px;color:var(--muted);font-size:12px}
+
+    /* TV panel (on-page) */
+    .tv-panel{
+      border:1px solid var(--ring);
+      background:var(--panel);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 1px 0 var(--ring),0 4px 20px rgba(0,0,0,.06)
+    }
+    .tv-panel h2{margin:0 0 4px 0;font-size:20px}
+    .tv-panel .muted{margin-bottom:8px}
+
+    /* Responsive tables + sticky first-col inside horizontal scroller */
+    .hscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .rate-table{
+      border-collapse:collapse;
+      font-size:13px;
+      table-layout:fixed;
+      font-variant-numeric: tabular-nums;
+    }
+    .rate-table th,.rate-table td{
+      padding:8px;border:1px solid var(--ring);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .rate-table thead th{position:sticky;top:0;background:#f8f8f8;z-index:3}
+    .rate-table .sticky-col{
+      position:sticky;left:0;background:#fff;z-index:4;font-weight:600;
+      width:var(--timew); min-width:var(--timew); max-width:var(--timew);
+      box-shadow: 1px 0 0 var(--ring);
+      text-align:left;
+    }
+    .rate-table thead th.sticky-col{z-index:5;background:#f8f8f8}
+    .rate-table .section-row th{padding:10px;background:#f3f4f6;text-align:left;border-left:0;border-right:0}
+    .rate-table .section-row .sticky-col{
+      background:#f3f4f6;
+      z-index:6;
+      box-shadow: 1px 0 0 var(--ring);
+    }
+    .rate-table td:not(.sticky-col), .rate-table th:not(.sticky-col){text-align:right}
+
+    @media (max-width:640px){
+      .rate-table{font-size:12px}
+      .rate-table th,.rate-table td{padding:6px}
+      .tv-panel h2{font-size:18px}
+    }
+
+    /* TV delivery specs */
+    .tv-delivery{
+      margin-top:12px;
+      border:1px solid var(--ring);
+      background:#fff;
+      border-radius:12px;
+      padding:12px;
+    }
+    .tv-delivery h3{
+      margin:0 0 8px 0;
+      font-size:16px;
+    }
+    .tv-delivery p{margin:0 0 10px 0}
+    .tv-delivery dl{
+      display:grid;
+      grid-template-columns:1fr 2fr;
+      gap:6px 12px;
+    }
+    .tv-delivery dt{
+      color:var(--muted);
+      font-size:12px;
+    }
+    .tv-delivery dd{
+      margin:0;
+      font-weight:600;
+    }
+    .tv-disclaimer{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    @media (max-width:640px){
+      .tv-delivery dl{grid-template-columns:1fr}
+      .tv-delivery dd{margin-bottom:6px}
+    }
+
+    /* Imprensa delivery specs (drawer) */
+    .imprensa-delivery{
+      border:1px solid var(--ring);
+      background:#fff;
+      border-radius:12px;
+      padding:12px;
+    }
+    .imprensa-delivery h3{
+      margin:0 0 8px 0;
+      font-size:16px;
+    }
+    .imprensa-delivery dl{
+      display:grid;
+      grid-template-columns:1fr 2fr;
+      gap:6px 12px;
+    }
+    .imprensa-delivery dt{
+      color:var(--muted);
+      font-size:12px;
+    }
+    .imprensa-delivery dd{
+      margin:0;
+      font-weight:600;
+    }
+    .imprensa-delivery .small-note{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+      white-space:pre-wrap;
+    }
+    @media (max-width:640px){
+      .imprensa-delivery dl{grid-template-columns:1fr}
+      .imprensa-delivery dd{margin-bottom:6px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Cinematic Poster Wall</h1>
+        <div class="muted">Explore ad formats by medium. Click a poster to view specs and a demo.</div>
+      </div>
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input id="search" placeholder="Search formats…"/>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="tabs" id="mediumTabs">
+        <button data-value="digital" class="active">Digital</button>
+        <button data-value="imprensa">Imprensa</button>
+        <button data-value="tv">TV</button>
+      </div>
+      <div class="tabs" id="digitalTypeTabs" style="display:none">
+        <button data-value="all" class="active">All</button>
+        <button data-value="display">Display</button>
+        <button data-value="rich-media">Rich Media</button>
+      </div>
+    </div>
+    <div class="tabs" id="imprensaTypeTabs" style="display:none">
+      <button data-value="all" class="active">All</button>
+      <button data-value="capa">Capa</button>
+      <button data-value="interior">Interior</button>
+      <button data-value="contracapa">Contracapa</button>
+    </div>
+
+    <main id="grid" class="grid"></main>
+    <section id="tvPanel" class="tv-panel" style="display:none"></section>
+    <div id="imprensaNotice" class="imprensa-note" style="display:none"></div>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer">
+    <header>
+      <div class="title-wrap">
+        <h2 id="drawerTitle" style="margin:0 0 6px 0">Title</h2>
+        <div class="muted" id="drawerTags">—</div>
+      </div>
+      <button id="closeDrawerBtn" class="btn close-drawer" aria-label="Close">Close</button>
+    </header>
+    <div class="content">
+      <section>
+        <div class="muted" style="font-size:12px;margin-bottom:6px">Preview (replace with real image/video)</div>
+        <div id="preview" class="preview"></div>
+      </section>
+      <section id="specSection" class="specs" style="display:none">
+        <dl id="specList"></dl>
+      </section>
+      <!-- Imprensa delivery specs will be injected here (above actions) -->
+      <section class="actions">
+        <button class="btn primary" id="downloadBtn">Download kit</button>
+        <button class="btn" id="copyBtn">Copy specs</button>
+        <button class="btn ghost" id="shareBtn">Share link</button>
+      </section>
+    </div>
+  </aside>
+
+  <footer>
+    Poster Wall prototype — swap placeholders with your real previews (WebP/PNG) and MP4 demos.
+  </footer>
+
+<script>
+// ---------------- Data ----------------
+const DIGITAL = [
+  { id:'interstitial', medium:'digital', subtype:'rich-media', name:'Interstitial (Intro)', summary:'Full-screen intro unit on entry.',
+    peek:'800×600 / 768×1024 • ≤254KB (img) • MP4 ≤1MB', gradient:['#ef4444','#f59e0b'],
+    specs:{ 'Dimensions':'800×600 px and 768×1024 px', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'254 KB (images), MP4 up to 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
+  },
+  { id:'billboard-xxl', medium:'digital', subtype:'display', name:'Billboard XXL', summary:'High-impact header canvas.',
+    peek:'Specs on request • ≤500KB', gradient:['#f59e0b','#e5e7eb'],
+    specs:{ 'Dimensions':'On request', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'500 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'HP 230 €' }
+  },
+  { id:'cube-spin', medium:'digital', subtype:'rich-media', name:'Cube Spin', summary:'Interactive 3D cube gallery.',
+    peek:'(300×300)×6 • ≤480KB • JPG/PNG', gradient:['#fb7185','#dc2626'],
+    specs:{ 'Dimensions':'(300×300 px) × 6 tiles', 'File types':'JPG / PNG', 'Max weight':'480 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS 170 €' }
+  },
+  { id:'ticker', medium:'digital', subtype:'display', name:'Ticker', summary:'Persistent news ticker band.',
+    peek:'728×90 (D) • 320×100 (M) • ≤120KB', gradient:['#e5e7eb','#f87171'],
+    specs:{ 'Dimensions':'728×90 (desktop), 320×100 (smartphone)', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS 190 €' }
+  },
+  { id:'moldura', medium:'digital', subtype:'display', name:'Moldura', summary:'Framed page skin variant.',
+    peek:'Framing unit • spec template', gradient:['#ef4444','#f3f4f6'],
+    specs:{ 'Dimensions':'Framing template', 'File types':'JPG / PNG / GIF', 'Max weight':'—', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Consult' }
+  },
+  { id:'takeover', medium:'digital', subtype:'rich-media', name:'Takeover', summary:'Billboard + Halfpage + MREC orchestration.',
+    peek:'HTML/IMG/MP4 • 50KB img • MP4 ≤1MB', gradient:['#b91c1c','#e5e7eb'],
+    specs:{ 'Dimensions':'Billboard + Halfpage + MREC', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'50 KB (images), MP4 up to 1 MB', 'Visible on':'desktop', 'CPM':'POA (24h takeover available)' }
+  },
+  { id:'mrec', medium:'digital', subtype:'display', name:'MREC', summary:'Standard 300×250 placement.',
+    peek:'300×250 • ≤75KB • MP4 ≤500KB', gradient:['#ef4444','#fbbf24'],
+    specs:{ 'Dimensions':'300×250 px', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'75 KB (images), MP4 up to 500 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 90 € · Canais 110 €' }
+  },
+  { id:'halfpage', medium:'digital', subtype:'display', name:'Halfpage', summary:'Tall 300×600 canvas.',
+    peek:'300×600 • ≤120KB • MP4 ≤1MB', gradient:['#f97316','#fecaca'],
+    specs:{ 'Dimensions':'300×600 px', 'File types':'HTML / JPG / PNG / MP4', 'Max weight':'120 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 110 € · Canais 130 €' }
+  },
+  { id:'leaderboard', medium:'digital', subtype:'display', name:'Leaderboard', summary:'728×90 horizontal banner.',
+    peek:'728×90 • ≤80KB • MP4 ≤1MB', gradient:['#fde68a','#fca5a5'],
+    specs:{ 'Dimensions':'728×90 px', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'80 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet', 'CPM':'ROS/HP 100 €' }
+  },
+  { id:'billboard', medium:'digital', subtype:'display', name:'Billboard', summary:'Hero banner across devices.',
+    peek:'1260×220 / 970×250 (D) · 728×90 (T) · 310×100 (M) • ≤200KB • MP4 ≤1MB', gradient:['#fca5a5','#fde68a'],
+    specs:{ 'Dimensions':'1260×220 px or 970×250 px (desktop); 728×90 px (tablet); 310×100 px (smartphone) — or external responsive tag', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'200 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 200 €' }
+  },
+  { id:'preroll', medium:'digital', subtype:'rich-media', name:'Pre-roll', summary:'In-player video ad before content.',
+    peek:'640×480 • MP4 • ≤10MB', gradient:['#111827','#6b7280'],
+    specs:{ 'Dimensions':'640×480 px', 'File types':'MP4', 'Max weight':'10 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
+  },
+  { id:'skyscraper', medium:'digital', subtype:'display', name:'Sky-scrapper', summary:'Vertical 120×600 banner (desktop/tablet).',
+    peek:'120×600 • ≤120KB', gradient:['#e5e7eb','#9ca3af'],
+    specs:{ 'Dimensions':'120×600 px', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Visible on':'desktop, tablet', 'CPM':'ROS/HP — € · Canais — €' }
+  },
+  { id:'incontent-video', medium:'digital', subtype:'rich-media', name:'In-content Video', summary:'Inline video inside article body.',
+    peek:'640×480 • MP4/WEBM • ≤950KB', gradient:['#f87171','#ef4444'],
+    specs:{ 'Dimensions':'640×480 px', 'File types':'MP4 / WEBM', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 160 € · CPV sob consulta' }
+  },
+  { id:'open-door', medium:'digital', subtype:'rich-media', name:'Open Door', summary:'Center reveal with perspective walls.',
+    peek:'768×1024 & 800×600 • ≤950KB', gradient:['#f43f5e','#fb7185'],
+    specs:{ 'Dimensions':'768×1024 px and 800×600 px', 'File types':'JPG / PNG / MP4', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 320 €' }
+  },
+  { id:'top-scroll', medium:'digital', subtype:'rich-media', name:'Top Scroll', summary:'Scroll-reactive top unit.',
+    peek:'Dims: variable (X×X) • ≤950KB', gradient:['#fecaca','#fef3c7'],
+    specs:{ 'Dimensions':'Variable (X × X)', 'File types':'JPG / PNG', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos — €' }
+  },
+  { id:'galeria', medium:'digital', subtype:'rich-media', name:'Galeria', summary:'Carousel gallery inside articles.',
+    peek:'300×300 • 6–12 slides • ≤250KB', gradient:['#fda4af','#fef08a'],
+    specs:{ 'Dimensions':'300×300 px', 'Slides':'Recommended 6 to 12', 'File types':'JPG / PNG', 'Max weight':'250 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 240 €' }
+  },
+  { id:'parallax', medium:'digital', subtype:'rich-media', name:'Parallax', summary:'Scroll-tied background motion.',
+    peek:'720×1280 • JPG/PNG/MP4 • ≤950KB', gradient:['#fecaca','#f87171'],
+    specs:{ 'Dimensions':'720×1280 px', 'File types':'JPG / PNG / MP4', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 260 €' }
+  }
+];
+
+const IMPRENSA = [
+  { id:'capa-modular', medium:'imprensa', imprensaType:'capa', name:'Capa — Modular', summary:'Preço por número de módulos (grelha 5×20 = 100).',
+    grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 cm • 5 col • 20 módulos/col',
+    specs:{ 'Mancha de impressão':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Módulos por página':100, 'Medida do módulo':'4,78 × 1,20 cm' },
+    pricing:{ type:'per_module', base:null }
+  },
+  { id:'capa-rodape', medium:'imprensa', imprensaType:'capa', name:'Capa — Rodapé', summary:'Faixa inferior em toda a largura.',
+    grid:{ cols:5, rows:2, hot:'bottom' }, peek:'Faixa • 5 col × 2 módulos',
+    specs:{ 'Mancha útil':'25,9 × 30,2 cm (faixa)', 'Colunas':5, 'Módulos por coluna':2, 'Preço':'€ 2 230,00' }, pricing:{ type:'fixed', amount:2230.00 } },
+  { id:'capa-rodatopo', medium:'imprensa', imprensaType:'capa', name:'Capa — Roda-topo', summary:'Faixa superior em toda a largura.',
+    grid:{ cols:5, rows:2, hot:'all' }, peek:'Topo • 5 col × 2 módulos',
+    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Preço':'€ 3 450,00' }, pricing:{ type:'fixed', amount:3450.00 } },
+  { id:'capa-orelha', medium:'imprensa', imprensaType:'capa', name:'Capa — Orelha', summary:'Bloco lateral superior.',
+    grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78 × 4,2 cm • 1 col',
+    specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Preço':'€ 1 990,00' }, pricing:{ type:'fixed', amount:1990.00 } },
+  { id:'capa-coluna', medium:'imprensa', imprensaType:'capa', name:'Capa — Coluna', summary:'Coluna vertical lateral.',
+    grid:{ cols:1, rows:20, hot:'right' }, peek:'30,2 × 4,78 cm • 1 col',
+    specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':1, 'Módulos por coluna':20, 'Preço':'€ 25 000,00' }, pricing:{ type:'fixed', amount:25000.00 } },
+  { id:'capa-takeover', medium:'imprensa', imprensaType:'capa', name:'Capa — Takeover', summary:'Faixa topo + coluna lateral.',
+    grid:{ cols:1, rows:20, hot:'all' }, peek:'2,7×25,9 + 30,2×4,78 (zona lateral)',
+    specs:{ 'Mancha útil':'2,7 × 25,9 + 30,2 × 4,78 cm (zona lateral)', 'Colunas':1, 'Módulos por coluna':20, 'Preço':'€ 37 500,00' }, pricing:{ type:'fixed', amount:37500.00 } },
+
+  { id:'interior-pagina', medium:'imprensa', imprensaType:'interior', name:'Página', summary:'5 colunas × 20 módulos — página inteira.',
+    grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 • 100 módulos',
+    specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100,
+      'Base DC Par':'€ 8 940,00', 'Sobretaxa DC Ímpar 15%':'€ 10 281,00', 'Sobretaxa AC Ímpar 30%':'€ 11 622,00', 'Sobretaxa AC Par 10%':'€ 9 834,00',
+      'Observações':'Localização obrigatória +50% · Idioma estrangeiro +50% · Produzida pelo jornal +50%'} },
+  { id:'interior-junior', medium:'imprensa', imprensaType:'interior', name:'Junior Page', summary:'4 colunas × 12 módulos.',
+    grid:{ cols:4, rows:12, hot:'bottom' }, peek:'Mancha 20,62×18 • 48 módulos',
+    specs:{ 'Mancha útil':'20,62 × 18 cm', 'Colunas':4, 'Módulos por coluna':12, 'Total de módulos':48,
+      'Base DC Par':'€ 4 967,00', 'Sobretaxa DC Ímpar 15%':'€ 5 712,05', 'Sobretaxa AC Ímpar 30%':'€ 6 457,60', 'Sobretaxa AC Par 10%':'€ 5 463,70' } },
+  { id:'interior-meia-h', medium:'imprensa', imprensaType:'interior', name:'1/2 Página (Horizontal)', summary:'5 colunas × 10 módulos.',
+    grid:{ cols:5, rows:10, hot:'bottom' }, peek:'Mancha 25,9×14,9 • 50 módulos',
+    specs:{ 'Mancha útil':'25,9 × 14,9 cm', 'Colunas':5, 'Módulos por coluna':10, 'Total de módulos':50,
+      'Base DC Par':'€ 4 386,00', 'Sobretaxa DC Ímpar 15%':'€ 5 043,90', 'Sobretaxa AC Ímpar 30%':'€ 5 701,80', 'Sobretaxa AC Par 10%':'€ 4 824,60' } },
+  { id:'interior-meia-v-2c', medium:'imprensa', imprensaType:'interior', name:'1/2 Página (Vertical — 2 col.)', summary:'2 colunas × 20 módulos.',
+    grid:{ cols:2, rows:20, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
+    specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':20, 'Total de módulos':40,
+      'Base DC Par':'€ 3 612,00', 'Sobretaxa DC Ímpar 15%':'€ 4 153,80', 'Sobretaxa AC Ímpar 30%':'€ 4 695,60', 'Sobretaxa AC Par 10%':'€ 3 973,20' } },
+  { id:'interior-meia-v-3c', medium:'imprensa', imprensaType:'interior', name:'1/2 Página (Vertical — 3 col.)', summary:'3 colunas × 20 módulos.',
+    grid:{ cols:3, rows:20, hot:'right' }, peek:'Mancha 15,34×30,2 • 60 módulos',
+    specs:{ 'Mancha útil':'15,34 × 30,2 cm', 'Colunas':3, 'Módulos por coluna':20, 'Total de módulos':60,
+      'Base DC Par':'€ 5 160,00', 'Sobretaxa DC Ímpar 15%':'€ 5 934,00', 'Sobretaxa AC Ímpar 30%':'€ 6 708,00', 'Sobretaxa AC Par 10%':'€ 5 676,00' } },
+  { id:'interior-um-quarto-h', medium:'imprensa', imprensaType:'interior', name:'1/4 Página (Horizontal)', summary:'5 colunas × 5 módulos.',
+    grid:{ cols:5, rows:5, hot:'bottom' }, peek:'Mancha 25,9×7,2 • 25 módulos',
+    specs:{ 'Mancha útil':'25,9 × 7,2 cm', 'Colunas':5, 'Módulos por coluna':5, 'Total de módulos':25,
+      'Base DC Par':'€ 3 000,00', 'Sobretaxa DC Ímpar 15%':'€ 3 450,00', 'Sobretaxa AC Ímpar 30%':'€ 3 900,00', 'Sobretaxa AC Par 10%':'€ 3 300,00' } },
+  { id:'interior-um-quarto-3c', medium:'imprensa', imprensaType:'interior', name:'1/4 Página (3 colunas)', summary:'3 colunas × 10 módulos.',
+    grid:{ cols:3, rows:10, hot:'all' }, peek:'Mancha 15,34×14,9 • 30 módulos',
+    specs:{ 'Mancha útil':'15,34 × 14,9 cm', 'Colunas':3, 'Módulos por coluna':10, 'Total de módulos':30,
+      'Base DC Par':'€ 2 773,50', 'Sobretaxa DC Ímpar 15%':'€ 3 189,53', 'Sobretaxa AC Ímpar 30%':'€ 3 605,55', 'Sobretaxa AC Par 10%':'€ 3 050,85' } },
+  { id:'interior-um-quarto-2c', medium:'imprensa', imprensaType:'interior', name:'1/4 Página (2 colunas)', summary:'2 colunas × 10 módulos.',
+    grid:{ cols:2, rows:10, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
+    specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':10, 'Total de módulos':40,
+      'Base DC Par':'€ 1 935,00', 'Sobretaxa DC Ímpar 15%':'€ 2 225,25', 'Sobretaxa AC Ímpar 30%':'€ 2 515,50', 'Sobretaxa AC Par 10%':'€ 2 128,50' } },
+  { id:'interior-um-oitavo', medium:'imprensa', imprensaType:'interior', name:'1/8 Página', summary:'2 colunas × 5 módulos.',
+    grid:{ cols:2, rows:5, hot:'bottom' }, peek:'Mancha 30,2×4,78 • 10 módulos',
+    specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':2, 'Módulos por coluna':5, 'Total de módulos':10,
+      'Base DC Par':'€ 1 354,50', 'Sobretaxa DC Ímpar 15%':'€ 1 557,68', 'Sobretaxa AC Ímpar 30%':'€ 1 760,85', 'Sobretaxa AC Par 10%':'€ 1 489,95' } },
+  { id:'interior-rodape-3mod', medium:'imprensa', imprensaType:'interior', name:'Rodapé — 3 módulos', summary:'Faixa com 3 módulos de altura.',
+    grid:{ cols:5, rows:3, hot:'bottom' }, peek:'Mancha 25,9×4,20 • 15 módulos',
+    specs:{ 'Mancha útil':'25,9 × 4,20 cm', 'Colunas':5, 'Módulos por coluna':3, 'Total de módulos':15,
+      'Base DC Par':'€ 2 325,40', 'Sobretaxa DC Ímpar 15%':'€ 2 674,21', 'Sobretaxa AC Ímpar 30%':'€ 3 023,02', 'Sobretaxa AC Par 10%':'€ 2 557,94' } },
+  { id:'interior-dupla-abertura', medium:'imprensa', imprensaType:'interior', name:'Página Dupla (Abertura)', summary:'Dupla página — abertura de caderno.',
+    grid:{ cols:10, rows:20, hot:'all' }, peek:'Mancha 53,5×30,2 • 200 módulos',
+    specs:{ 'Mancha útil':'53,5 × 30,2 cm', 'Colunas':10, 'Módulos por coluna':20, 'Total de módulos':200,
+      'AC':'€ 20 838,00', 'DC':'€ 19 025,00', 'Dupla abertura':'€ 30 000,00' } },
+  { id:'interior-dupla-horizontal-baixo', medium:'imprensa', imprensaType:'interior', name:'Página Dupla (Horizontal baixo)', summary:'Dupla — metade inferior.',
+    grid:{ cols:10, rows:10, hot:'bottom' }, peek:'Mancha 53,5×14,9 • 100 módulos',
+    specs:{ 'Mancha útil':'53,5 × 14,9 cm', 'Colunas':10, 'Módulos por coluna':10, 'Total de módulos':100,
+      'Base DC Par':'€ 9 515,00', 'Sobretaxa DC Ímpar 15%':'€ 10 942,25', 'Sobretaxa AC Ímpar 30%':'€ 12 369,50', 'Sobretaxa AC Par 10%':'€ 10 466,50' } },
+
+  { id:'contracapa-rodape', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Rodapé', summary:'Faixa inferior (5×2 módulos).',
+    grid:{ cols:5, rows:2, hot:'bottom' }, peek:'25,9×2,7 cm • 10 módulos',
+    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Preço':'€ 2 000,00' }, pricing:{ type:'fixed', amount:2000.00 } },
+  { id:'contracapa-rodatopo', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Roda-topo', summary:'Faixa superior (5×2 módulos).',
+    grid:{ cols:5, rows:2, hot:'all' }, peek:'25,9×2,7 cm • 10 módulos',
+    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Preço':'€ 3 000,00' }, pricing:{ type:'fixed', amount:3000.00 } },
+  { id:'contracapa-orelha', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Orelha', summary:'Bloco lateral superior (1×3 módulos).',
+    grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78×4,2 cm • 3 módulos',
+    specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Total de módulos':3, 'Preço':'€ 1 500,00' }, pricing:{ type:'fixed', amount:1500.00 } },
+  { id:'contracapa-pagina-inteira', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Página Inteira', summary:'5 colunas × 20 módulos — página completa.',
+    grid:{ cols:5, rows:20, hot:'all' }, peek:'25,9×30,2 cm • 100 módulos',
+    specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100, 'Preço':'€ 15 000,00' }, pricing:{ type:'fixed', amount:15000.00 } }
+];
+
+const TV = [
+  {
+    id: 'tv-ratecard',
+    medium: 'tv',
+    name: 'TV Ratecard',
+    summary: 'Preços por faixa horária e duração.',
+    durations: [5,10,15,20,25,30,35,40,45,50,55,60,90,120,180],
+    index: {5:0.4375,10:0.75,15:0.9375,20:1,25:1.325,30:1.59,35:2.0475,40:2.5,45:3,50:3.4,55:3.9,60:4.3,90:6.6,120:8.85,180:13.5},
+    dayparts: [
+      { name: 'Daytime',
+        slots: [
+          { time: '01:00–12:30', prices: {5:67.77,10:116.18,15:145.22,20:154.90,25:205.24,30:246.29,35:317.16,40:387.25,45:464.70,50:531.31,55:604.11,60:666.07,90:1022.34,120:1370.87,180:2091.15} },
+          { time: '12:30–15:30', prices: {5:98.93,10:169.59,15:211.99,20:226.12,25:299.61,30:359.53,35:462.98,40:565.30,45:678.36,50:775.59,55:881.87,60:972.32,90:1492.39,120:2001.16,180:3052.62} },
+          { time: '15:30–17:00', prices: {5:156.18,10:267.74,15:334.67,20:356.98,25:473.00,30:567.60,35:730.92,40:892.45,45:1070.94,50:1224.44,55:1392.22,60:1535.01,90:2356.07,120:3159.27,180:4819.23} },
+          { time: '17:00–18:00', prices: {5:173.71,10:297.79,15:372.23,20:397.05,25:526.09,30:631.31,35:812.96,40:992.63,45:1191.15,50:1361.88,55:1548.50,60:1707.32,90:2620.53,120:3513.89,180:5360.18} },
+          { time: '18:00–19:00', prices: {5:211.49,10:362.55,15:453.19,20:483.40,25:640.51,30:768.61,35:989.76,40:1208.50,45:1450.20,50:1658.06,55:1885.26,60:2078.62,90:3190.44,120:4278.09,180:6525.90} },
+          { time: '19:00–20:00', prices: {5:406.23,10:696.40,15:870.50,20:928.53,25:1230.30,30:1476.36,35:1901.17,40:2321.33,45:2785.59,50:3184.86,55:3621.27,60:3992.68,90:6128.30,120:8217.49,180:12535.16} }
+        ]},
+      { name: 'Prime Time',
+        slots: [
+          { time: '20:00–21:30', prices: {5:461.15,10:790.54,15:988.17,20:1054.05,25:1396.62,30:1675.94,35:2158.17,40:2635.13,45:3162.15,50:3615.39,55:4110.80,60:4532.42,90:6956.73,120:9328.34,180:14229.68} },
+          { time: '21:30–01:00', prices: {5:608.76,10:1043.59,15:1304.48,20:1391.45,25:1843.67,30:2212.41,35:2848.99,40:3478.63,45:4174.35,50:4772.67,55:5426.66,60:5983.24,90:9183.57,120:12314.33,180:18784.58} }
+        ]}
+    ]
+  }
+];
+
+// ---------------- State & DOM ----------------
+let state = { medium:'digital', digitalType:'all', imprensaType:'all', tvDuration:30, tvShowAll:false, query:'' };
+const $grid = document.getElementById('grid');
+const $mediumTabs = document.getElementById('mediumTabs');
+const $digitalTypeTabs = document.getElementById('digitalTypeTabs');
+const $imprensaTypeTabs = document.getElementById('imprensaTypeTabs');
+const $search = document.getElementById('search');
+const $scrim = document.getElementById('scrim');
+const $drawer = document.getElementById('drawer');
+const $drawerTitle = document.getElementById('drawerTitle');
+const $drawerTags = document.getElementById('drawerTags');
+const $preview = document.getElementById('preview');
+const $specList = document.getElementById('specList');
+const $specSection = document.getElementById('specSection');
+const $copyBtn = document.getElementById('copyBtn');
+const $shareBtn = document.getElementById('shareBtn');
+const $imprensaNotice = document.getElementById('imprensaNotice');
+const $tvPanel = document.getElementById('tvPanel');
+const $closeDrawerBtn = document.getElementById('closeDrawerBtn');
+
+// Media query: re-render TV when screen changes
+const mqMobile = window.matchMedia('(max-width: 640px)');
+mqMobile.addEventListener?.('change', ()=>{ if(state.medium==='tv') render(); });
+
+function setActiveTab($tabs, value){
+  [...$tabs.querySelectorAll('button')].forEach(b=>{
+    b.classList.toggle('active', b.dataset.value===value);
+  });
+}
+
+function updateHashTV(){
+  // tv/tv-ratecard[/<duration>[/all]]
+  let hash = 'tv/tv-ratecard';
+  if(state.tvDuration) hash += '/' + state.tvDuration;
+  if(state.tvShowAll) hash += '/all';
+  location.hash = hash;
+}
+
+$mediumTabs.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  state.medium = btn.dataset.value;
+  setActiveTab($mediumTabs, state.medium);
+
+  $digitalTypeTabs.style.display = state.medium==='digital' ? 'flex' : 'none';
+  $imprensaTypeTabs.style.display = state.medium==='imprensa' ? 'flex' : 'none';
+
+  if(state.medium==='tv'){
+    updateHashTV();
+  } else if(state.medium==='digital'){
+    location.hash = `digital/${state.digitalType}`;
+  } else {
+    location.hash = `imprensa/${state.imprensaType}`;
+  }
+  render();
+
+  setTimeout(()=>{
+    (state.medium==='tv' ? $tvPanel : $grid).scrollIntoView({behavior:'smooth', block:'start'});
+  }, 0);
+});
+
+$digitalTypeTabs.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  state.digitalType = btn.dataset.value;
+  setActiveTab($digitalTypeTabs, state.digitalType);
+  location.hash = `digital/${state.digitalType}`;
+  render();
+  setTimeout(()=>{ $grid.scrollIntoView({behavior:'smooth', block:'start'}); }, 0);
+});
+
+$imprensaTypeTabs.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  state.imprensaType = btn.dataset.value;
+  setActiveTab($imprensaTypeTabs, state.imprensaType);
+  location.hash = `imprensa/${state.imprensaType}`;
+  render();
+  setTimeout(()=>{ $grid.scrollIntoView({behavior:'smooth', block:'start'}); }, 0);
+});
+
+$search.addEventListener('input', ()=>{ state.query = $search.value.trim().toLowerCase(); render(); });
+$scrim.addEventListener('click', closeDrawer);
+$closeDrawerBtn.addEventListener('click', closeDrawer);
+window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
+
+function closeDrawer(){ $scrim.classList.remove('show'); $drawer.classList.remove('show'); }
+function gradStyle([a,b]){ return `background: linear-gradient(135deg, ${a}, ${b});`; }
+
+function buildPoster(item){
+  const card = document.createElement('article'); card.className='card';
+  const poster = document.createElement('div'); poster.className='poster';
+  const grad = document.createElement('div'); grad.className='grad'; grad.style=gradStyle(item.gradient || ['#e5e7eb','#fff']); poster.appendChild(grad);
+  const vigT = document.createElement('div'); vigT.className='vignetteTop'; poster.appendChild(vigT);
+  const vigB = document.createElement('div'); vigB.className='vignetteBottom'; poster.appendChild(vigB);
+
+  if(item.medium==='imprensa' && item.grid){
+    const overlay = document.createElement('div'); overlay.className='grid-overlay';
+    overlay.style.gridTemplateColumns = `repeat(${item.grid.cols}, 1fr)`;
+    overlay.style.gridTemplateRows = `repeat(${item.grid.rows}, 1fr)`;
+    const total = item.grid.cols * item.grid.rows;
+    for(let i=0;i<total;i++){
+      const cell = document.createElement('div'); cell.className='cell';
+      const col = (i % item.grid.cols) + 1;
+      const row = Math.floor(i / item.grid.cols) + 1;
+      const hot = item.grid.hot;
+      const hotColLeft = col <= Math.ceil(item.grid.cols/2);
+      const hotColRight = col > Math.floor(item.grid.cols/2);
+      const hotRowBottom = row > Math.floor(item.grid.rows/2);
+      const isHot = hot==='all' || (hot==='left' && hotColLeft) || (hot==='right' && hotColRight) || (hot==='bottom' && hotRowBottom);
+      if(isHot) cell.classList.add('hot');
+      overlay.appendChild(cell);
+    }
+    poster.appendChild(overlay);
+  }
+
+  const label = document.createElement('div'); label.className='label'; label.textContent=item.medium; poster.appendChild(label);
+
+  const meta = document.createElement('div'); meta.className='meta';
+  const title = document.createElement('div'); title.className='title';
+  title.innerHTML = `<span>${item.name}</span>`;
+  const badges = document.createElement('div'); badges.className='badges';
+  if(item.subtype){ const b=document.createElement('span'); b.className='badge'; b.textContent=item.subtype; badges.appendChild(b); }
+  const b2=document.createElement('span'); b2.className='badge ghost'; b2.textContent=item.medium; badges.appendChild(b2);
+  title.appendChild(badges);
+
+  const summary = document.createElement('div'); summary.className='muted'; summary.style.fontSize='13px'; summary.textContent=item.summary || '';
+  const peek = document.createElement('div'); peek.className='peek'; peek.textContent=item.peek || '';
+
+  const actions = document.createElement('div'); actions.className='actions';
+  const vBtn = document.createElement('button'); vBtn.className='btn'; vBtn.textContent='View specs';
+  const dBtn = document.createElement('button'); dBtn.className='btn ghost'; dBtn.textContent='Demo';
+  actions.append(vBtn,dBtn);
+
+  meta.append(title,summary,peek,actions);
+  card.append(poster, meta);
+
+  card.addEventListener('click', ()=> openDrawer(item));
+  return card;
+}
+
+function openDrawer(item){
+  // Do not open a TV drawer (TV lives on the page panel)
+  if(item.medium === 'tv'){ return; }
+
+  $drawerTitle.textContent = item.name;
+  $drawerTags.textContent = [item.subtype, item.medium].filter(Boolean).join(' · ');
+  $preview.innerHTML = '';
+
+  const wrap = document.createElement('div'); wrap.style.position='relative'; wrap.style.aspectRatio='4/3';
+  const bg = document.createElement('div'); bg.style.cssText = `height:100%; ${gradStyle(item.gradient||['#eee','#fff'])}`; wrap.appendChild(bg);
+  if(item.medium==='imprensa' && item.grid){
+    const overlay = document.createElement('div'); overlay.className='grid-overlay';
+    overlay.style.gridTemplateColumns = `repeat(${item.grid.cols}, 1fr)`;
+    overlay.style.gridTemplateRows = `repeat(${item.grid.rows}, 1fr)`;
+    const total = item.grid.cols * item.grid.rows;
+    for(let i=0;i<total;i++){
+      const cell = document.createElement('div'); cell.className='cell';
+      const col = (i % item.grid.cols) + 1;
+      const row = Math.floor(i / item.grid.cols) + 1;
+      const hot = item.grid.hot;
+      const hotColLeft = col <= Math.ceil(item.grid.cols/2);
+      const hotColRight = col > Math.floor(item.grid.cols/2);
+      const hotRowBottom = row > Math.floor(item.grid.rows/2);
+      const isHot = hot==='all' || (hot==='left' && hotColLeft) || (hot==='right' && hotColRight) || (hot==='bottom' && hotRowBottom);
+      if(isHot) cell.classList.add('hot');
+      overlay.appendChild(cell);
+    }
+    wrap.appendChild(overlay);
+  }
+  $preview.appendChild(wrap);
+
+  // Show base specs
+  $specSection.style.display='block';
+  $specList.innerHTML='';
+  Object.entries(item.specs||{ Note:'Specs coming soon' }).forEach(([k,v])=>{
+    const dt=document.createElement('dt'); dt.textContent=k; const dd=document.createElement('dd'); dd.textContent=String(v); $specList.append(dt,dd);
+  });
+
+  // Inject Imprensa delivery specs (only for imprensa)
+  const $actions = $drawer.querySelector('.actions');
+  const existingDelivery = $drawer.querySelector('.imprensa-delivery');
+  if(existingDelivery) existingDelivery.remove();
+  if(item.medium === 'imprensa'){
+    const delivery = document.createElement('section');
+    delivery.className = 'imprensa-delivery';
+    delivery.innerHTML = `
+      <h3>Entrega — Imprensa</h3>
+      <dl>
+        <dt>FORMATO / EXTENSÃO</dt>
+        <dd>PDF, EPS ou TIFF com 300 dpi em CMYK (quadricomia). Os textos devem ser convertidos em curvas.</dd>
+
+        <dt>Provas de cor</dt>
+        <dd>Para melhores resultados de impressão, os ficheiros devem ser acompanhados de provas de cor.</dd>
+
+        <dt>Texto (cores)</dt>
+        <dd>Os textos devem ser exclusivamente a preto (100%). As restantes cores CMY devem vir com 0%.</dd>
+
+        <dt>MANCHA DE IMPRESSÃO</dt>
+        <dd>259 × 302 mm</dd>
+
+        <dt>DIMENSÕES</dt>
+        <dd>5 colunas de largura; 20 módulos de altura; goteira de 5 mm.</dd>
+      </dl>
+    `;
+    $actions.parentNode.insertBefore(delivery, $actions);
+  }
+
+  // actions
+  $copyBtn.onclick = ()=>{
+    const lines = Object.entries(item.specs||{}).map(([k,v])=>`${k}: ${v}`);
+    const text = `${item.name} — ${[item.subtype,item.medium].filter(Boolean).join(' / ')}\n${lines.join('\n')}`;
+    navigator.clipboard.writeText(text).then(()=>{ $copyBtn.textContent='Copied ✓'; setTimeout(()=>($copyBtn.textContent='Copy specs'),1200); });
+  };
+  $shareBtn.onclick = ()=>{
+    // Deep link that opens this drawer on load/hashchange
+    const url = new URL(location.href);
+    if(item.medium==='digital'){
+      url.hash = `digital/${item.id}`;
+    } else if(item.medium==='imprensa'){
+      url.hash = `imprensa/${item.imprensaType||'all'}/${item.id}`;
+    } else {
+      url.hash = `${item.medium}/${item.id}`;
+    }
+    navigator.clipboard.writeText(url.toString()).then(()=>{
+      $shareBtn.textContent='Link copied ✓';
+      setTimeout(()=>($shareBtn.textContent='Share link'),1200);
+    });
+  };
+
+  $scrim.classList.add('show'); $drawer.classList.add('show');
+}
+
+/** TV matrix (single table so columns align perfectly, incl. INDEX)
+ *  Auto-scrolls horizontally to the selected duration column.
+ */
+function renderTVMatrix(item, targetEl){
+  const isCompact = window.matchMedia('(max-width: 640px)').matches && !state.tvShowAll;
+  const activeDur = state.tvDuration || item.durations[0];
+  const durationsToRender = isCompact ? [activeDur] : item.durations;
+
+  targetEl.innerHTML='';
+
+  // Duration selector chips + (mobile) toggle
+  const chipsBar = document.createElement('div');
+  chipsBar.style.display='flex';
+  chipsBar.style.flexWrap='wrap';
+  chipsBar.style.gap='6px';
+  chipsBar.style.marginBottom='10px';
+
+  item.durations.forEach(d=>{
+    const b=document.createElement('button');
+    b.className='btn';
+    b.textContent=`${d}”`;
+    if(state.tvDuration===d){ b.classList.add('primary'); }
+    b.onclick=()=>{
+      state.tvDuration = d;
+      renderTVMatrix(item, targetEl);
+      if(location.hash.startsWith('#tv/')) updateHashTV();
+    };
+    chipsBar.appendChild(b);
+  });
+
+  if (window.matchMedia('(max-width: 640px)').matches){
+    const toggle = document.createElement('button');
+    toggle.className = 'btn ghost';
+    toggle.style.marginLeft = '6px';
+    toggle.textContent = state.tvShowAll ? 'Show less' : 'Show all durations';
+    toggle.onclick = ()=>{
+      state.tvShowAll = !state.tvShowAll;
+      renderTVMatrix(item, targetEl);
+      updateHashTV();
+    };
+    chipsBar.appendChild(toggle);
+  }
+
+  targetEl.appendChild(chipsBar);
+
+  // Horizontal scroller with ONE table
+  const scroller = document.createElement('div');
+  scroller.className = 'hscroll';
+
+  const table=document.createElement('table');
+  table.className = 'rate-table';
+  table.style.minWidth = `calc(var(--timew) + var(--colw) * ${durationsToRender.length})`;
+
+  // Fixed column widths via colgroup
+  const colgroup = document.createElement('colgroup');
+  const colTime = document.createElement('col'); colTime.style.width = 'var(--timew)'; colgroup.appendChild(colTime);
+  durationsToRender.forEach(()=>{ const c=document.createElement('col'); c.style.width='var(--colw)'; colgroup.appendChild(c); });
+  table.appendChild(colgroup);
+
+  // Header
+  const thead=document.createElement('thead');
+  const htr=document.createElement('tr');
+
+  const thTime=document.createElement('th');
+  thTime.textContent='Time';
+  thTime.className='sticky-col';
+  htr.appendChild(thTime);
+
+  durationsToRender.forEach(d=>{
+    const th=document.createElement('th');
+    th.textContent=`${d}”`;
+    if(state.tvDuration===d){ th.style.background='#fff7ed'; }
+    htr.appendChild(th);
+  });
+  thead.appendChild(htr);
+  table.appendChild(thead);
+
+  const tbody=document.createElement('tbody');
+
+  // ----- Dayparts -----
+  item.dayparts.forEach(dp=>{
+    // Section header row: sticky label + filler
+    const secRow=document.createElement('tr');
+    secRow.className='section-row';
+
+    const secSticky=document.createElement('th');
+    secSticky.className='sticky-col';
+    secSticky.textContent=dp.name;
+    secRow.appendChild(secSticky);
+
+    const secFill=document.createElement('th');
+    secFill.colSpan = durationsToRender.length;
+    secFill.textContent = '';
+    secRow.appendChild(secFill);
+
+    tbody.appendChild(secRow);
+
+    // Data rows
+    dp.slots.forEach(row=>{
+      const tr=document.createElement('tr');
+      const tdTime=document.createElement('td');
+      tdTime.textContent=row.time;
+      tdTime.className='sticky-col';
+      tr.appendChild(tdTime);
+
+      durationsToRender.forEach(d=>{
+        const td=document.createElement('td');
+        const val=row.prices[d];
+        td.textContent = val!=null ? ('€ '+ val.toLocaleString('pt-PT')) : '—';
+        if(state.tvDuration===d) td.style.background='#fff7ed';
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+  });
+
+  // ----- INDEX -----
+  const idxSecRow=document.createElement('tr');
+  idxSecRow.className='section-row';
+
+  const idxSticky=document.createElement('th');
+  idxSticky.className='sticky-col';
+  idxSticky.textContent='INDEX';
+  idxSecRow.appendChild(idxSticky);
+
+  const idxFill=document.createElement('th');
+  idxFill.colSpan = durationsToRender.length;
+  idxSecRow.appendChild(idxFill);
+
+  tbody.appendChild(idxSecRow);
+
+  const idxRow=document.createElement('tr');
+  const idxLabel=document.createElement('td');
+  idxLabel.textContent='';
+  idxLabel.className='sticky-col';
+  idxRow.appendChild(idxLabel);
+
+  durationsToRender.forEach(d=>{
+    const td=document.createElement('td');
+    td.textContent= (item.index[d] ?? '—');
+    if(state.tvDuration===d) td.style.background='#fff7ed';
+    idxRow.appendChild(td);
+  });
+  tbody.appendChild(idxRow);
+
+  table.appendChild(tbody);
+  scroller.appendChild(table);
+  targetEl.appendChild(scroller);
+
+  // ---- Auto-scroll to the selected duration column (desktop & when all columns are shown) ----
+  requestAnimationFrame(()=>{
+    if(durationsToRender.length > 1){
+      const styles = getComputedStyle(document.documentElement);
+      const timew = parseFloat(styles.getPropertyValue('--timew')) || 120;
+      const colw  = parseFloat(styles.getPropertyValue('--colw'))  || 110;
+      const idx   = durationsToRender.indexOf(state.tvDuration);
+      if(idx >= 0){
+        const targetLeft   = timew + idx * colw;
+        const desiredLeft  = Math.max(0, targetLeft - (scroller.clientWidth - colw)/2);
+        scroller.scrollTo({left: desiredLeft, behavior:'smooth'});
+      }
+    }
+  });
+
+  const spec = document.createElement('section');
+  spec.className = 'tv-delivery';
+  spec.innerHTML = `
+    <dl>
+      <dt>FILE FORMAT</dt><dd>MXF (.mxf)</dd>
+      <dt>CODEC</dt><dd>Mpeg Video · XCam HD 35 · Version 2</dd>
+      <dt>BIT RATE</dt><dd>35 Mb/s</dd>
+      <dt>RESOLUTION</dt><dd>1920×1080 — 16:9</dd>
+      <dt>FRAME RATE</dt><dd>25.000 FPS</dd>
+      <dt>BIT DEPTH</dt><dd>8 bits</dd>
+      <dt>SCAN TYPE</dt><dd>Interlaced</dd>
+      <dt>SCAN ORDER</dt><dd>Top Field Order</dd>
+      <dt>COMPRESSION MODE</dt><dd>Lossy</dd>
+    </dl>
+    <p class="tv-disclaimer">Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza falha/defeito na entrega da criatividade.</p>
+    <p class="tv-disclaimer">A Vicra Comunicações Lda é a entidade responsável pela comercialização de publicidade no canal de televisão A BOLA TV.</p>
+    <p class="tv-disclaimer">A contratação de publicidade a difundir n' A BOLA TV deverá observar as disposições previstas nas presentes condições comerciais, bem como na legislação nacional e internacional aplicável</p>
+  `;
+  targetEl.appendChild(spec);
+}
+
+// On-page TV renderer
+function renderTVOutside(item){
+  $tvPanel.innerHTML = '';
+  const header=document.createElement('div');
+  header.innerHTML = `<h2>${item.name}</h2><div class="muted">${item.summary||''}</div>`;
+  $tvPanel.appendChild(header);
+  renderTVMatrix(item, $tvPanel);
+}
+
+function dataset(){
+  if(state.medium==='digital'){
+    const pool = DIGITAL.filter(i=> state.digitalType==='all' || i.subtype===state.digitalType);
+    if(!state.query) return pool; const q=state.query; return pool.filter(i=> (i.name+i.summary+i.peek).toLowerCase().includes(q));
+  }
+  if(state.medium==='imprensa'){
+    const poolAll = IMPRENSA;
+    const pool = state.imprensaType==='all' ? poolAll : IMPRENSA.filter(i=> i.imprensaType===state.imprensaType);
+    if(!state.query) return pool; const q=state.query; return pool.filter(i=> (i.name+i.summary+i.peek).toLowerCase().includes(q));
+  }
+  const pool = TV; if(!state.query) return pool; const q=state.query; return pool.filter(i=> (i.name+i.summary).toLowerCase().includes(q));
+}
+
+function render(){
+  // sub filter visibility
+  $digitalTypeTabs.style.display = state.medium==='digital'? 'flex':'none';
+  $imprensaTypeTabs.style.display = state.medium==='imprensa'? 'flex':'none';
+  setActiveTab($mediumTabs, state.medium);
+  setActiveTab($digitalTypeTabs, state.digitalType);
+  setActiveTab($imprensaTypeTabs, state.imprensaType);
+
+  if(state.medium==='tv'){
+    closeDrawer();
+    const items = dataset();
+    $grid.style.display='none';
+    if($imprensaNotice){ $imprensaNotice.style.display='none'; $imprensaNotice.textContent=''; }
+    $tvPanel.style.display='block';
+    if(items.length){ renderTVOutside(items[0]); } else { $tvPanel.textContent = 'Sem resultados para TV.'; }
+    return;
+  }
+
+  // Non-TV: normal grid flow
+  $tvPanel.style.display='none';
+  $grid.style.display='grid';
+
+  const items = dataset();
+  $grid.innerHTML='';
+  items.forEach(item=> $grid.appendChild(buildPoster(item)) );
+
+  // Imprensa global notice
+  if(state.medium==='imprensa'){
+    if($imprensaNotice){
+      $imprensaNotice.style.display='block';
+      $imprensaNotice.textContent = 'SOBRETAXA — Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%';
+    }
+  } else {
+    if($imprensaNotice){ $imprensaNotice.style.display='none'; $imprensaNotice.textContent=''; }
+  }
+}
+
+/* --------- Hash handling (deep links incl. opening the drawer) ---------- */
+function handleHash(){
+  const hash = location.hash.replace('#','');
+  if(!hash){ render(); return; }
+  const parts = hash.split('/').filter(Boolean);
+  const medium = parts[0];
+
+  if(medium === 'tv'){
+    state.medium = 'tv';
+    const dur = parseInt(parts[2] || parts[1], 10);
+    if(!isNaN(dur)) state.tvDuration = dur;
+    state.tvShowAll = parts.includes('all');
+    render();
+    setTimeout(()=>{ $tvPanel.scrollIntoView({behavior:'smooth', block:'start'}); }, 0);
+    return;
+  }
+
+  if(medium === 'digital'){
+    state.medium = 'digital';
+    const maybe = parts[1];
+    let item = null;
+
+    if(['all','display','rich-media'].includes(maybe)){
+      state.digitalType = maybe;
+      if(parts[2]) item = DIGITAL.find(i=> i.id === parts[2]);
+    }else{
+      item = DIGITAL.find(i=> i.id === maybe);
+      state.digitalType = item?.subtype ? item.subtype : 'all';
+    }
+
+    render();
+    if(item){ openDrawer(item); }
+    return;
+  }
+
+  if(medium === 'imprensa'){
+    state.medium = 'imprensa';
+    const maybe = parts[1];
+    let item = null;
+
+    if(['all','capa','interior','contracapa'].includes(maybe)){
+      state.imprensaType = maybe;
+      if(parts[2]) item = IMPRENSA.find(i=> i.id === parts[2]);
+    }else{
+      item = IMPRENSA.find(i=> i.id === maybe);
+      state.imprensaType = item?.imprensaType || 'all';
+    }
+
+    render();
+    if(item){ openDrawer(item); }
+    return;
+  }
+
+  // Fallback: try direct id
+  const any = [...DIGITAL, ...IMPRENSA].find(i=> i.id === medium);
+  if(any){
+    state.medium = any.medium;
+    if(any.medium==='digital'){ state.digitalType = any.subtype || 'all'; }
+    if(any.medium==='imprensa'){ state.imprensaType = any.imprensaType || 'all'; }
+    render();
+    openDrawer(any);
+  } else {
+    render();
+  }
+}
+
+window.addEventListener('hashchange', handleHash);
+
+// Init
+render();
+handleHash();
+
+</script>
+</body>
+</html>
