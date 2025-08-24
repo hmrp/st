@@ -6,23 +6,110 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cinematic Poster Wall — HTML + JS</title>
-  <style>
- :root{
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>:root{
   --bg:#fafafa;
   --panel:#fff;
   --ink:#111;
   --muted:#6b7280;
   --ring:rgba(0,0,0,.08);
-  --chip:#f3f4f6;
+
+  
+  /* Button system (Option C) */
+  --btn-bg:#f3f4f6;      /* default background */
+  --btn-fg:#3f3f3f;         /* default text */
+  --btn-border:rgba(0,0,0,.14);
+  --btn-hover:#e9eaee;   /* subtle hover */
+  --btn-active:#f6d809;  /* active background */
+  --btn-active-fg:#111;  /* active text */
+  --btn-active-border:#d7c800;
 
   --radius:16px;
+  --radius-btn:3px;      /* square-ish */
+
   --shadow:0 1px 0 var(--ring), 0 4px 20px rgba(0,0,0,.06);
 
-  /* z-index */
   --z-masthead:50;
   --z-section-head:5;
 }
 
+
+html, body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700; /* Bold */
+}
+strong, b {
+  font-weight: 600; /* Semi-bold */
+}
+
+
+/* ==== Global button reset (iOS/Android/Firefox-safe) ==== */
+button,
+[type="button"],
+[type="submit"],
+[type="reset"],
+[role="button"]{
+  -webkit-appearance:none;
+  appearance:none;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  padding:0;
+  margin:0;
+  font:inherit;
+  color:inherit;
+  line-height:inherit;
+  letter-spacing:inherit;
+  text-align:inherit;
+  text-transform:inherit;
+  box-shadow:none;
+  outline:none; /* focus-visible below */
+  -webkit-tap-highlight-color:transparent;
+  background-clip:padding-box;
+  cursor:pointer;
+}
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner{ border:0; padding:0; }
+button:disabled,
+[type="button"]:disabled,
+[type="submit"]:disabled,
+[type="reset"]:disabled{ cursor:not-allowed; opacity:.6; }
+
+/* Accessible focus ring */
+button:focus-visible,
+[type="button"]:focus-visible,
+[type="submit"]:focus-visible,
+[type="reset"]:focus-visible,
+[role="button"]:focus-visible,
+a.brand:focus-visible,
+.tabs button:focus-visible,
+.btn:focus-visible{
+  outline:2px solid rgba(246,216,9,.9);
+  outline-offset:2px;
+  border-radius:var(--radius-btn);
+}
+@media (max-width:680px){
+  button,
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  [role="button"]{
+    -webkit-appearance:none !important;
+    appearance:none !important;
+  }
+}
+
+/* ===== Global layout ===== */
+html { scroll-padding-top: var(--mastpad, 96px); }
+@media (max-width: 680px){
+  html { scroll-padding-top: var(--mastpad, 120px); }
+}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
@@ -32,43 +119,146 @@ body{
   color:var(--ink);
 }
 
-/* ===== Single sticky masthead ===== */
+/* ===== Sticky masthead (two stacked rows) ===== */
 .masthead{
   position:fixed; inset:0 0 auto 0; z-index:var(--z-masthead);
   background:rgba(255,255,255,.92);
   backdrop-filter:saturate(1.2) blur(8px);
   border-bottom:1px solid var(--ring);
   box-shadow:0 2px 12px rgba(0,0,0,.06);
-}
-.masthead-inner{
-  max-width:1200px; margin:0 auto; padding:10px 24px;
-  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:16px;
-}
-.mast-title{
-  margin:0; font-size:22px; line-height:1.2; white-space:nowrap;
+  background:#a80f1d; /* base tone behind both rows */
 }
 
-/* Tabs */
+/* Row 1 — Brand strip (full width) */
+.masthead > .brand{
+  display:block;
+  width:100%;
+  background:#e20613; /* brand red strip */
+  border:0;
+  text-decoration:none;
+}
+.brand-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:10px 24px 6px 24px; /* match masthead-inner sides */
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+}
+.brand-inner svg{ display:block; height:30px; width:auto; }
+
+/* Row 2 — Tabs container */
+.masthead-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:8px 24px 10px 24px; /* matches brand-inner */
+  display:grid;
+  grid-template-columns:auto 1fr;
+  align-items:center;
+  gap:16px;
+  background:#a80f1d;
+   transition: height .24s ease-out;  
+}
+
+/* ====== TABS (main & context) — light default, yellow active, square, compact ====== */
 .tabs{
-  display:flex; gap:6px; padding:4px;
-  border-radius:999px; background:var(--chip); border:1px solid var(--ring);
+  display:flex;
+  gap:6px;
+  padding:0;
+  background:transparent;
+  border:0;
 }
 .tabs button{
-  appearance:none; border:0; background:transparent;
-  padding:8px 14px; border-radius:999px; font-weight:700; cursor:pointer; white-space:nowrap;
+  border:1px solid var(--btn-border);
+  background:var(--btn-bg);
+  color:var(--btn-fg);
+  padding:6px 12px;               /* smaller */
+  border-radius:var(--radius-btn); /* square */
+  font-weight:600;
+  font-size:14px;                  /* smaller than logo scale */
+  line-height:1.2;
+  text-transform:capitalize;
+  white-space:nowrap;
+  transition:transform .02s ease, background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
+.tabs button:hover{ background:var(--btn-hover); }
+.tabs button:active{ transform:translateY(1px); }
 .tabs button.active{
-  background:#fff; box-shadow:0 1px 0 var(--ring), 0 2px 8px rgba(0,0,0,.06);
+  background:var(--btn-active);
+  color:var(--btn-active-fg);
+  border-color:var(--btn-active-border);
+  box-shadow:0 1px 0 var(--ring), 0 2px 10px rgba(0,0,0,.10);
 }
-.context-slot{display:flex; justify-content:flex-end}
 
-/* Spacer (JS usually recalculates height; set a safe default) */
+/* Context slot visibility *//* Context slot: fade open/close (no slide) */
+.context-slot{
+  display:flex;
+  justify-content:flex-end;
+
+  /* reserve space so layout doesn't jump when closed */
+  min-height:36px;
+
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .24s ease-out;
+}
+.context-slot.is-open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* Wrapper tweens height only */
+.context-wrap{
+  position:relative;
+  height:auto;                   /* will be set to px during animation */
+  transition:height .24s ease-out;
+  width:100%;
+  contain: layout style paint;   /* isolate layout & paint to reduce ripple */
+}
+
+/* Panes are stacked absolutely and only fade (no translate) */
+.context-pane{
+  position:absolute;
+  left:0; right:0; top:0;
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .24s ease-out;
+
+  /* Stabilize compositing to avoid sub-pixel wobble */
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.context-pane.is-live{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* Keep button vertical rhythm identical across sets */
+.tabs{ display:flex; align-items:center; gap:6px; }
+.tabs button{
+  line-height:1;     /* lock baseline */
+  padding:6px 12px;
+  font-size:14px;
+}
+
+/* Mobile tweak */
+@media (max-width:680px){
+  .context-slot{ min-height:32px; }
+  .tabs button{ padding:6px 10px; font-size:13px; }
+}
+
+/* Spacer gets updated by JS; keep a sensible default height */
 .header-spacer{height:96px}
 
 /* ===== Sections ===== */
 .section{max-width:1200px; margin:0 auto; padding:0 24px}
 .section + .section{margin-top:12px}
-
 .section-head{
   position:sticky; top:0; z-index:var(--z-section-head);
   background:linear-gradient(180deg,#fff,#fafafa);
@@ -77,7 +267,7 @@ body{
 }
 .section-head h2{margin:0; font-size:20px}
 
-/* ===== Cards grid (placeholder layout) ===== */
+/* grid */
 .grid{display:grid; gap:18px; grid-template-columns:repeat(1,minmax(0,1fr));}
 @media (min-width:700px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
 @media (min-width:1000px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr));} }
@@ -96,7 +286,7 @@ body{
 .tv-panel h2{margin:0 0 6px 0; font-size:20px}
 .tv-panel .muted{color:var(--muted)}
 
-/* Branded / Condições long text */
+/* Long text blocks */
 .doc{
   background:#fff; border:1px solid var(--ring); border-radius:12px;
   padding:16px; box-shadow:var(--shadow); color:#111; line-height:1.6;
@@ -108,8 +298,7 @@ body{
   color:var(--muted); font-size:12px; text-align:center;
 }
 
-
-/* ===== Card + Poster bits your JS generates ===== */
+/* ===== Cards generated by JS ===== */
 .card{background:transparent;border:0}
 .poster{
   position:relative; aspect-ratio:4/3; border-radius:var(--radius); overflow:hidden;
@@ -123,7 +312,7 @@ body{
 .meta{padding:8px; background:transparent}
 .title{display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:700}
 
-/* ===== Drawer + Scrim (z-index above masthead) ===== */
+/* ===== Drawer + Scrim ===== */
 .scrim{
   position:fixed; inset:0; background:rgba(0,0,0,.28);
   opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:9990;
@@ -150,28 +339,53 @@ body{
 .specs dt{color:var(--muted); font-size:12px}
 .specs dd{margin:0; font-weight:600}
 
-.actions{display:flex; gap:8px; margin-top:4px}
-.btn{appearance:none; border:1px solid var(--ring); background:#fff; padding:8px 10px; border-radius:12px; cursor:pointer}
-.btn.primary{background:var(--ink); color:#fff}
-.btn.ghost{background:transparent}
+/* ===== Generic .btn (TV chips etc.) — match tabs ===== */
+.btn{
+  border:1px solid var(--btn-border);
+  background:var(--btn-bg);
+  color:var(--btn-fg);
+  padding:6px 10px;               /* compact */
+  border-radius:var(--radius-btn);
+  font-weight:600;
+  font-size:14px;
+  line-height:1.2;
+  text-transform:capitalize;
+  transition:background-color .15s ease, color .15s ease, border-color .15s ease, transform .02s ease, box-shadow .15s ease;
+}
+.btn:hover{ background:var(--btn-hover); }
+.btn:active{ transform:translateY(1px); }
+.btn.primary{
+  background:var(--btn-active);
+  color:var(--btn-active-fg);
+  border-color:var(--btn-active-border);
+  box-shadow:0 1px 0 var(--ring), 0 2px 10px rgba(0,0,0,.10);
+}
+.btn.ghost{
+  background:transparent;
+  color:var(--ink);
+  border:1px dashed var(--btn-border);
+}
 .close-drawer{white-space:nowrap}
 
+/* ===== Responsive ===== */
 @media (max-width:680px){
-  .drawer{max-width:100%; right:-100%}
-  .drawer.show{right:0}
-  .specs dl{grid-template-columns:1fr}
+  .brand-inner{ padding:12px 16px 6px 16px; }
+  .brand-inner svg{ height:26px; }     /* logo remains dominant */
+
+  .masthead-inner{
+    grid-template-columns:1fr;
+    gap:8px;
+    padding:6px 16px 10px 16px;
+  }
+
+  .main-tabs, .context-tabs{
+    width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin;
+  }
+
+  /* slightly smaller on mobile */
+  .tabs button{ padding:6px 10px; font-size:13px; }
+  .btn{ padding:6px 8px; font-size:13px; }
 }
-
-
-
-/* ===== Responsive: stack title, main tabs, context tabs on mobile ===== */
-@media (max-width:680px){
-  .masthead-inner{grid-template-columns:1fr; gap:8px}
-  .mast-title{font-size:20px}
-  .main-tabs, .context-tabs{width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin}
-  .tabs button{padding:8px 12px}
-}
-
 
 /* ---- TV ratecard table + scroller ---- */
 .hscroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
@@ -202,120 +416,103 @@ body{
 
 
 
-.section .section-head { scroll-margin-top: 96px; }
-@media (max-width: 680px){
-  .section .section-head { scroll-margin-top: 120px; } /* if masthead is taller on mobile */
-}
-
-
   </style>
 </head>
-<body>
-  <!-- ===== Sticky Masthead (single header) ===== -->
-<div class="masthead" id="masthead">
-  <div class="masthead-inner">
-    <!-- Main category tabs -->
-    <nav class="tabs main-tabs" id="mainTabs" aria-label="Categorias">
-      <button data-medium="abola"    class="active">Abola</button>
-      <button data-medium="digital">Digital</button>
-      <button data-medium="imprensa">Imprensa</button>
-      <button data-medium="tv">TV</button>
-      <button data-medium="branded">Branded Content</button>
-    </nav>
-
-    <!-- Context (sub) tabs — your JS fills these per section -->
-    <div class="context-slot">
-      <nav class="tabs context-tabs" id="contextTabs" aria-label="Subcategoria"></nav>
-    </div>
-  </div>
-</div>
-
-<!-- Spacer so content starts below the fixed header -->
-<div class="header-spacer" id="headerSpacer"></div>
-
-<!-- ===== Sections (put your dynamic content inside each <main>) ===== -->
-
-<section id="sec-abola" class="section">
-  <div class="section-head">
-    <h2>Abola</h2>
-  </div>
-  <main id="gridAbola" class="grid"></main>
-</section>
-
-<section id="sec-digital" class="section">
-  <div class="section-head">
-    <h2>Digital</h2>
-  </div>
-  <main id="gridDigital" class="grid"></main>
-</section>
-
-<section id="sec-imprensa" class="section">
-  <div class="section-head">
-    <h2>Imprensa</h2>
-  </div>
-  <div id="imprensaNotice" class="imprensa-note"></div>
-  <main id="gridImprensa" class="grid"></main>
-</section>
-
-<section id="sec-tv" class="section">
-  <div class="section-head">
-    <h2>TV</h2>
-  </div>
-  <section id="tvPanel" class="tv-panel"></section>
-</section>
-
-<section id="sec-branded" class="section">
-  <div class="section-head">
-    <h2>Branded Content</h2>
-  </div>
-  <main id="gridBranded" class="grid"></main>
-</section>
-
-<!-- Not part of the menu; informational footer section -->
-<section id="sec-condicoes" class="section">
-  <div class="section-head">
-    <h2>Condições Gerais</h2>
-  </div>
-  <div id="condicoesBody" class="doc">
-    <!-- your static text / terms go here -->
-  </div>
-</section>
-
-<footer class="site-footer">
-  © Your Company — All rights reserved.
-</footer>
-
-
-<div class="scrim" id="scrim"></div>
-
-<aside class="drawer" id="drawer" aria-modal="true" role="dialog">
-  <header class="drawer-head">
-    <div class="title-wrap">
-      <h2 id="drawerTitle" class="drawer-title">Title</h2>
-      <div class="muted" id="drawerTags">—</div>
-    </div>
-    <button id="closeDrawerBtn" class="btn close-drawer" aria-label="Close">Close</button>
-  </header>
-
-  <div class="drawer-content">
-    <section>
-      <div class="muted" style="font-size:12px;margin-bottom:6px">
-        Preview (replace with real image/video)
+<body> <!-- Masthead -->
+  <div class="masthead" id="masthead">
+    <!-- Brand row (full width) -->
+    <a id="brandBtn" class="brand" href="#top" aria-label="Ir para o topo">
+      <div class="brand-inner">
+        <svg width="238" height="30" viewBox="0 0 238 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g clip-path="url(#clip0_7239_3186)">
+            <path d="M19.49 23.4532H0V28.9703H19.49V23.4532Z" fill="#FAFAFA"/>
+            <path d="M29.8917 1.02734H10.3555V6.54438H29.8917V1.02734Z" fill="#FAFAFA"/>
+            <path d="M48.4851 23.4531H24.2422V28.9702H48.4851V23.4531Z" fill="#FAFAFA"/>
+            <path d="M34.0416 18.1602H13.7031V20.4533H34.0416V18.1602Z" fill="#FAFAFA"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M26.9629 1.02734H18.6631L2.63281 28.9705H10.9308L26.9629 1.02734Z" fill="#FAFAFA"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M46.0283 28.9702H33.3741L17.3438 1.02702L29.9908 1.02344L46.0283 28.9702Z" fill="#FAFAFA"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M182.014 23.4642H171.209V6.54438H176.862V1.02734H153.52V6.54438H158.989V23.4642H153.52V28.9705H187.645V18.1602H182.014V23.4642Z" fill="#FAFAFA"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M102.457 12.6594H102.183C103.755 11.4672 104.689 9.56258 104.689 7.61139C104.689 4.05629 101.749 1.02747 98.1468 1.02747H66.5273V6.5445H72.1358V23.4536H66.5273V28.9707H102.453C107.035 28.9707 110.751 25.3225 110.751 20.8258C110.751 16.3291 107.037 12.6594 102.453 12.6594H102.457ZM83.2176 6.5445H92.4725C93.9311 6.5445 95.1852 7.75997 95.1852 9.25111C95.1852 10.7422 93.9311 11.913 92.4725 11.913H83.2176V6.5445ZM95.733 23.4304V23.4536H83.2176V18.0852H95.733C97.213 18.0852 98.4688 19.3006 98.4688 20.7918C98.4688 22.2829 97.2148 23.4304 95.733 23.4304Z" fill="#FAFAFA"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M135.184 0H130.254C120.141 0 111.918 5.96814 111.918 13.2162V16.7838C111.918 24.0319 120.141 30 130.254 30H135.184C145.297 30 153.52 24.0337 153.52 16.7838V13.2162C153.52 5.96814 145.297 0 135.184 0ZM138.986 21.5257C138.986 22.5013 138.039 23.4537 137.002 23.4537H128.434C127.399 23.4537 126.451 22.5013 126.451 21.5257V8.42592C126.451 7.36082 127.331 6.58393 128.169 6.58393H137.266C138.103 6.58393 138.984 7.36082 138.984 8.42592V21.5257H138.986Z" fill="#FAFAFA"/>
+            <path d="M209.002 23.4531H189.512V28.9702H209.002V23.4531Z" fill="#FAFAFA"/>
+            <path d="M219.403 1.02734H199.867V6.54438H219.403V1.02734Z" fill="#FAFAFA"/>
+            <path d="M238.001 23.4531H213.758V28.9702H238.001V23.4531Z" fill="#FAFAFA"/>
+            <path d="M223.553 18.1602H203.215V20.4533H223.553V18.1602Z" fill="#FAFAFA"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M216.475 1.02734H208.175L192.145 28.9705H200.443L216.475 1.02734Z" fill="#FAFAFA"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M235.54 28.9705H222.888L206.855 1.02734H219.51L235.54 28.9705Z" fill="#FAFAFA"/>
+          </g>
+          <defs><clipPath id="clip0_7239_3186"><rect width="238" height="30" fill="white"/></clipPath></defs>
+        </svg>
       </div>
-      <div id="preview" class="preview"></div>
-    </section>
+    </a>
 
-    <section id="specSection" class="specs" style="display:none">
-      <dl id="specList"></dl>
-    </section>
-
-    <section class="actions">
-      <button class="btn primary" id="downloadBtn" type="button">Download kit</button>
-      <button class="btn" id="copyBtn" type="button">Copy specs</button>
-      <button class="btn ghost" id="shareBtn" type="button">Share link</button>
-    </section>
+    <!-- Tabs + context below logo -->
+    <div class="masthead-inner">
+      <nav class="tabs main-tabs" id="mainTabs" aria-label="Categorias">
+        <button data-medium="digital">Digital</button>
+        <button data-medium="imprensa">Imprensa</button>
+        <button data-medium="tv">TV</button>
+        <button data-medium="branded">Branded</button>
+      </nav>
+      <div class="context-slot">
+        <nav class="tabs context-tabs" id="contextTabs" aria-label="Subcategoria"></nav>
+      </div>
+    </div>
   </div>
-</aside>
+
+  <div class="header-spacer" id="headerSpacer"></div>
+
+  <!-- Sections -->
+  <section id="sec-abola" class="section">
+    <div class="section-head" id="head-abola"><h2>Abola</h2></div>
+    <main id="gridAbola" class="grid"></main>
+  </section>
+
+  <section id="sec-digital" class="section">
+    <div class="section-head" id="head-digital"><h2>Digital</h2></div>
+    <main id="gridDigital" class="grid"></main>
+  </section>
+
+  <section id="sec-imprensa" class="section">
+    <div class="section-head" id="head-imprensa"><h2>Imprensa</h2></div>
+    <div id="imprensaNotice" class="imprensa-note"></div>
+    <main id="gridImprensa" class="grid"></main>
+  </section>
+
+  <section id="sec-tv" class="section">
+    <div class="section-head" id="head-tv"><h2>TV</h2></div>
+    <section id="tvPanel" class="tv-panel"></section>
+  </section>
+
+  <section id="sec-branded" class="section">
+    <div class="section-head" id="head-branded"><h2>Branded</h2></div>
+    <main id="gridBranded" class="grid"></main>
+  </section>
+
+  <section id="sec-condicoes" class="section">
+    <div class="section-head" id="head-condicoes"><h2>Condições Gerais</h2></div>
+    <div id="condicoesBody" class="doc"></div>
+  </section>
+
+  <footer class="site-footer">
+    © Your Company — All rights reserved.
+  </footer>
+
+  <!-- Drawer -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer">
+    <header class="drawer-head">
+      <div class="title-wrap">
+        <h2 id="drawerTitle" class="drawer-title">Title</h2>
+        <div class="muted" id="drawerTags">—</div>
+      </div>
+      <button id="closeDrawerBtn" class="btn close-drawer">Close</button>
+    </header>
+    <div class="drawer-content">
+      <section><div id="preview" class="preview"></div></section>
+      <section id="specSection" class="specs" style="display:none"><dl id="specList"></dl></section>
+    </div>
+  </aside>
 
 
 
@@ -536,6 +733,7 @@ const $masthead     = document.getElementById('masthead');
 const $headerSpacer = document.getElementById('headerSpacer');
 const $mainTabs     = document.getElementById('mainTabs');
 const $contextTabs  = document.getElementById('contextTabs');
+const $brandBtn = document.getElementById('brandBtn');
 
 // Sections
 const $secAbola    = document.getElementById('sec-abola');
@@ -567,8 +765,43 @@ const $closeDrawerBtn = document.getElementById('closeDrawerBtn');
 function mastHeight(){ return $masthead?.getBoundingClientRect().height || 0; }
 
 function syncHeaderSpacer(){
-  if ($headerSpacer) $headerSpacer.style.height = mastHeight() + 'px';
+  const h = $masthead?.getBoundingClientRect().height || 0;
+  if ($headerSpacer) $headerSpacer.style.height = h + 'px';
+  document.documentElement.style.setProperty('--mastpad', (h + 8) + 'px'); 
 }
+
+
+
+
+function scrollToHeadById(headId){
+  const head = document.getElementById(headId);
+  if(!head) return;
+
+  // Recalc mast sizes first (context tabs can change masthead height)
+  syncHeaderSpacer();
+
+  // Use the SECTION top (not the sticky head's rect) to avoid "early stop" going upwards
+  const section = head.closest('.section') || head;
+
+  // Prefer offsetTop (fast) and fall back to getBoundingClientRect if needed
+  let sectionTop = 0;
+  if (typeof section.offsetTop === 'number') {
+    sectionTop = section.offsetTop;
+  } else {
+    sectionTop = window.scrollY + section.getBoundingClientRect().top;
+  }
+
+  const pad = 8;
+  const y = Math.max(0, sectionTop - mastHeight() - pad);
+
+  // Lock the spy long enough for a smooth scroll regardless of distance
+  const dist = Math.abs(window.scrollY - y);
+  lockSpy(Math.min(2000, Math.max(900, dist * 0.9)));
+
+  window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
+
 window.addEventListener('resize', syncHeaderSpacer);
 if (window.ResizeObserver) new ResizeObserver(syncHeaderSpacer).observe($masthead || document.body);
 syncHeaderSpacer();
@@ -590,62 +823,144 @@ function lockSpy(ms = 900){
   spyUnlockTimer = setTimeout(()=>{ spyLocked = false; }, ms);
 }
 
-// Scroll to section-head element reliably, both upwards and downwards
-function scrollToSectionWithOffset(sectionEl){
-  if(!sectionEl) return;
-  const head = sectionEl.querySelector('.section-head') || sectionEl;
-  lockSpy(900); // prevent spy from interfering during programmatic scroll
-  head.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
 // ---------------- Submenu (context tabs) ----------------
-function buildSubmenu(medium){
-  if(!$contextTabs) return;
-  $contextTabs.innerHTML = '';
 
-  let options = [];
-  if(medium==='digital'){
-    options = [
-      {val:'all', label:'All'},
-      {val:'display', label:'Display'},
-      {val:'rich-media', label:'Rich Media'}
-    ];
-  }else if(medium==='imprensa'){
-    options = [
-      {val:'all', label:'All'},
-      {val:'capa', label:'Capa'},
-      {val:'interior', label:'Interior'},
-      {val:'contracapa', label:'Contracapa'}
-    ];
-  }else{
-    return; // no context tabs for abola/tv/branded/condicoes
+function buildSubmenu(medium){
+  // The slot that holds the context tabs
+  const slot = document.querySelector('.context-slot');
+  if (!slot) return;
+
+  // --- Ensure structure: .context-slot > .context-wrap > (.context-pane is-live) ---
+  let wrap = slot.querySelector('.context-wrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.className = 'context-wrap';
+
+    const livePane = document.createElement('div');
+    livePane.className = 'context-pane is-live';
+
+    // Move any existing #contextTabs into the initial live pane
+    const existingNav = document.getElementById('contextTabs');
+    if (existingNav) {
+      livePane.appendChild(existingNav);
+    } else {
+      const nav = document.createElement('nav');
+      nav.className = 'tabs context-tabs';
+      nav.id = 'contextTabs';
+      livePane.appendChild(nav);
+    }
+
+    wrap.appendChild(livePane);
+    slot.appendChild(wrap);
   }
 
-  options.forEach(opt=>{
+  const currentLive = wrap.querySelector('.context-pane.is-live');
+
+  // --- Build the options for the requested medium ---
+  let options = [];
+  if (medium === 'digital') {
+    options = [
+      { val: 'all',       label: 'All' },
+      { val: 'display',   label: 'Display' },
+      { val: 'rich-media',label: 'Rich Media' }
+    ];
+  } else if (medium === 'imprensa') {
+    options = [
+      { val: 'all',       label: 'All' },
+      { val: 'capa',      label: 'Capa' },
+      { val: 'interior',  label: 'Interior' },
+      { val: 'contracapa',label: 'Contracapa' }
+    ];
+  }
+
+  // --- If no submenu for this medium, close (fade out) the slot and stop ---
+  if (options.length === 0) {
+    slot.classList.remove('is-open'); // CSS handles fade-out
+    return;
+  }
+
+  // --- Build next pane off-DOM (starts hidden) ---
+  const nextPane = document.createElement('div');
+  nextPane.className = 'context-pane';
+
+  const nextNav = document.createElement('nav');
+  nextNav.className = 'tabs context-tabs';
+  nextNav.id = 'contextTabs'; // keep same id so other code keeps working
+
+  // Build buttons
+  for (const opt of options) {
     const btn = document.createElement('button');
     btn.textContent = opt.label;
     btn.setAttribute('data-sub', opt.val);
-    if((medium==='digital' && state.digitalType===opt.val) ||
-       (medium==='imprensa' && state.imprensaType===opt.val)){
-      btn.classList.add('active');
-    }
-    btn.onclick = ()=>{
-      if(medium==='digital'){
+
+    const isActive =
+      (medium === 'digital'  && state.digitalType   === opt.val) ||
+      (medium === 'imprensa' && state.imprensaType === opt.val);
+    if (isActive) btn.classList.add('active');
+
+    btn.onclick = () => {
+      if (medium === 'digital') {
         state.digitalType = opt.val;
         renderDigitalSection();
-        history.replaceState(null,'',`#digital/${opt.val}`);
-        scrollToSectionWithOffset($secDigital, 8);
-      }else{
+        history.replaceState(null, '', `#digital/${opt.val}`);
+        scrollToHeadById('head-digital');
+      } else {
         state.imprensaType = opt.val;
         renderImprensaSection();
-        history.replaceState(null,'',`#imprensa/${opt.val}`);
-        scrollToSectionWithOffset($secImprensa, 8);
+        history.replaceState(null, '', `#imprensa/${opt.val}`);
+        scrollToHeadById('head-imprensa');
       }
-      setActiveTab($contextTabs, opt.val, 'data-sub');
+      setActiveTab(nextNav, opt.val, 'data-sub');
     };
-    $contextTabs.appendChild(btn);
+
+    nextNav.appendChild(btn);
+  }
+
+  nextPane.appendChild(nextNav);
+  wrap.appendChild(nextPane); // add (still hidden) so we can measure
+
+  // --- Animate: height tween on wrapper + opacity cross-fade on panes ---
+
+  // Ensure slot is visible so fade is seen
+  slot.classList.add('is-open');
+
+  // Lock current height (FROM)
+  const fromH = wrap.scrollHeight;
+  wrap.style.height = fromH + 'px';
+
+  // Measure target height (TO) with the new pane present (absolute)
+  const toH = nextPane.scrollHeight;
+
+  // Next frame: start animation
+  requestAnimationFrame(() => {
+    // Height tween
+    wrap.style.height = toH + 'px';
+
+    // Cross-fade panes (opacity only → no vertical jitter)
+    nextPane.classList.add('is-live');
+    if (currentLive) currentLive.classList.remove('is-live');
+
+    // Cleanup after transition
+    const cleanup = () => {
+      // remove any non-live panes (the old one)
+      [...wrap.querySelectorAll('.context-pane')].forEach(p => {
+        if (!p.classList.contains('is-live')) p.remove();
+      });
+      // release explicit height
+      wrap.style.height = 'auto';
+      wrap.removeEventListener('transitionend', onEnd);
+    };
+
+    const onEnd = (e) => {
+      if (e.target === wrap && e.propertyName === 'height') cleanup();
+    };
+
+    wrap.addEventListener('transitionend', onEnd);
+    setTimeout(cleanup, 450); // safety in case transitionend is missed
   });
 }
+
 
 // ---------------- Drawer ----------------
 function closeDrawer(){
@@ -765,7 +1080,7 @@ function renderTVMatrix(item, targetEl){
       state.tvDuration = d;
       renderTVOutside(item);
       history.replaceState(null,'','#'+updateHashTV());
-      scrollToSectionWithOffset($secTV, 8);
+     scrollToHeadById('head-tv');
     };
     chipsBar.appendChild(b);
   });
@@ -779,7 +1094,7 @@ function renderTVMatrix(item, targetEl){
       state.tvShowAll = !state.tvShowAll;
       renderTVOutside(item);
       history.replaceState(null,'','#'+updateHashTV());
-      scrollToSectionWithOffset($secTV, 8);
+      scrollToHeadById('head-tv');
     };
     chipsBar.appendChild(toggle);
   }
@@ -858,80 +1173,122 @@ function renderAll(){
 }
 renderAll();
 
-// ---------------- Main tabs ----------------
-$mainTabs?.addEventListener('click', e=>{
-  const btn = e.target.closest('button'); if(!btn) return;
-  const target = btn.dataset.medium; if(!target) return;
 
-  state.medium = target;
-  setActiveTab($mainTabs, target);
-  buildSubmenu(target);
-
-  // Scroll to the section HEAD with offset, lock spy to avoid mid-stop
-  const sectionMap = { abola:$secAbola, digital:$secDigital, imprensa:$secImprensa, tv:$secTV, branded:$secBranded };
-  scrollToSectionWithOffset(sectionMap[target], 10);
-
-  if(target==='digital')        history.replaceState(null,'',`#digital/${state.digitalType}`);
-  else if(target==='imprensa')  history.replaceState(null,'',`#imprensa/${state.imprensaType}`);
-  else if(target==='tv')        history.replaceState(null,'',`#${updateHashTV()}`);
-  else                          history.replaceState(null,'',`#${target}`);
+$brandBtn?.addEventListener('click', () => {
+  state.medium = 'top';
+  setActiveTab($mainTabs, null);     // clear highlight from main tabs
+  buildSubmenu('top');             // no submenu
+  lockSpy(900);
+  scrollToHeadById('head-abola');
+  history.replaceState(null, '', '#top');
 });
 
-// ---------------- Scroll spy (watch .section-head only) ----------------
-let spy = null;
-function rebuildSpy(){
-  if(spy) { spy.disconnect(); spy = null; }
-  const topLine = mastHeight() + 8;
-  const bottomExclusion = Math.max(0, window.innerHeight - topLine - 1);
 
-  spy = new IntersectionObserver((entries)=>{
-    if (spyLocked) return;
+// ---------------- Main tabs ----------------
+$mainTabs?.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  const medium = btn.dataset.medium; if(!medium) return;
 
-    // choose the head with the highest visibility
-    const vis = entries.filter(en=> en.isIntersecting)
-                       .sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0];
-    if(!vis) return;
+  state.medium = medium;
+  setActiveTab($mainTabs, medium);
+  buildSubmenu(medium);
 
-    const head = vis.target;
-    const section = head.closest('.section');
-    if(!section) return;
-    const id = section.id;
-    let medium = '';
-    if(id==='sec-abola')    medium='abola';
-    if(id==='sec-digital')  medium='digital';
-    if(id==='sec-imprensa') medium='imprensa';
-    if(id==='sec-tv')       medium='tv';
-    if(id==='sec-branded')  medium='branded';
-    if(id==='sec-condicoes')medium='condicoes';
+const headMap = {
+  digital:'head-digital',
+  imprensa:'head-imprensa',
+  tv:'head-tv',
+  branded:'head-branded',
+  condicoes:'head-condicoes'
+};
 
-    if(medium && medium!=='condicoes' && state.medium !== medium){
+  scrollToHeadById(headMap[medium]);
+
+  if(medium==='digital')        history.replaceState(null,'',`#digital/${state.digitalType}`);
+  else if(medium==='imprensa')  history.replaceState(null,'',`#imprensa/${state.imprensaType}`);
+  else if(medium==='tv')        history.replaceState(null,'',`#tv/tv-ratecard/${state.tvDuration}${state.tvShowAll?'/all':''}`);
+  else                          history.replaceState(null,'',`#${medium}`);
+});// ---------------- Scroll spy (reference-line method; no flicker) ----------------
+const SECTION_TO_MEDIUM = {
+  'sec-abola':'abola',
+  'sec-digital':'digital',
+  'sec-imprensa':'imprensa',
+  'sec-tv':'tv',
+  'sec-branded':'branded',
+  'sec-condicoes':'condicoes'
+};
+
+const SECTIONS = Array.from(document.querySelectorAll('.section'));
+const COOLDOWN_MS = 200;     // tiny cooldown after we switch, to avoid double flips
+const REF_EXTRA   = 12;      // pixels below the masthead we place the reference line
+
+let spyCooldown = false;
+function cool(ms = COOLDOWN_MS){
+  spyCooldown = true;
+  setTimeout(()=> spyCooldown = false, ms);
+}
+
+function pickSectionByRefLine(){
+  // line sits just below the sticky masthead
+  const refY = (mastHeight() || 0) + REF_EXTRA;
+
+  // find the section whose body contains that line
+  let hit = null;
+  for(const sec of SECTIONS){
+    const r = sec.getBoundingClientRect();
+    // visible band below the masthead
+    if (r.top <= refY && r.bottom > refY){
+      hit = sec;
+      break;
+    }
+  }
+
+  // fallback: closest top to the ref line (in case at extremes)
+  if(!hit){
+    let best = null;
+    for(const sec of SECTIONS){
+      const d = Math.abs(sec.getBoundingClientRect().top - refY);
+      if(!best || d < best.d) best = { sec, d };
+    }
+    hit = best?.sec || null;
+  }
+  return hit;
+}
+
+let ticking = false;
+function onScrollSpy(){
+  if (spyLocked || spyCooldown || ticking) return;  // don’t fight programmatic scrolls
+  ticking = true;
+  requestAnimationFrame(()=>{
+    ticking = false;
+    const sec = pickSectionByRefLine();
+    if(!sec) return;
+
+    const medium = SECTION_TO_MEDIUM[sec.id];
+
+     if ((state.medium === 'top' || location.hash.startsWith('#top')) && medium === 'abola') {
+      return; // keep #top intact
+    }
+
+    
+    if (medium && medium !== 'condicoes' && state.medium !== medium){
       state.medium = medium;
       setActiveTab($mainTabs, medium);
+      buildSubmenu(medium); // reflect current section without scrolling
 
-      // Reset subfilters when entering a category (to avoid stale UI)
-      if(medium==='digital' && state.digitalType!=='all'){ state.digitalType='all'; renderDigitalSection(); }
-      if(medium==='imprensa' && state.imprensaType!=='all'){ state.imprensaType='all'; renderImprensaSection(); }
+      // keep URL in sync (don’t change filters here)
+      if (medium === 'digital')       history.replaceState(null,'',`#digital/${state.digitalType}`);
+      else if (medium === 'imprensa') history.replaceState(null,'',`#imprensa/${state.imprensaType}`);
+      else if (medium === 'tv')       history.replaceState(null,'',`#tv/tv-ratecard/${state.tvDuration}${state.tvShowAll?'/all':''}`);
+      else                            history.replaceState(null,'',`#${medium}`);
 
-      buildSubmenu(medium);
-
-      if(medium==='digital')        history.replaceState(null,'',`#digital/${state.digitalType}`);
-      else if(medium==='imprensa')  history.replaceState(null,'',`#imprensa/${state.imprensaType}`);
-      else if(medium==='tv')        history.replaceState(null,'',`#${updateHashTV()}`);
-      else                          history.replaceState(null,'',`#${medium}`);
+      cool(); // small cooldown to avoid immediate re-flips
     }
-  },{
-    // Treat “near the top” as active:
-    // exclude the header height from the top, and exclude everything below the fold line
-    rootMargin: `-${Math.round(topLine)}px 0px -${Math.round(bottomExclusion)}px 0px`,
-    threshold: [0, 0.05, 0.1, 0.25, 0.5, 0.75, 1]
   });
-
-  // Observe only the heads
-  document.querySelectorAll('.section .section-head').forEach(h=> spy.observe(h));
 }
-rebuildSpy();
-window.addEventListener('resize', rebuildSpy);
 
+window.addEventListener('scroll', onScrollSpy, { passive:true });
+window.addEventListener('resize', onScrollSpy);
+onScrollSpy(); // init once
 
 
 
@@ -954,7 +1311,7 @@ function handleHash(){
     buildSubmenu('tv'); // empty
     if (DATA.TV[0]) renderTVOutside(DATA.TV[0]);
     lockSpy(900);
-    scrollToSectionWithOffset($secTV, 8);
+    scrollToHeadById('head-tv');
     return;
   }
 
@@ -967,7 +1324,7 @@ function handleHash(){
     setActiveTab($contextTabs, state.digitalType, 'data-sub');
     renderDigitalSection();
     lockSpy(900);
-    scrollToSectionWithOffset($secDigital, 8);
+    scrollToHeadById('head-digital');
     return;
   }
 
@@ -980,19 +1337,31 @@ function handleHash(){
     setActiveTab($contextTabs, state.imprensaType, 'data-sub');
     renderImprensaSection();
     lockSpy(900);
-    scrollToSectionWithOffset($secImprensa, 8);
+    scrollToHeadById('head-imprensa');
     return;
   }
 
-  if(first==='abola' || first==='branded' || first==='condicoes'){
-    state.medium = first;
-    setActiveTab($mainTabs, first);
-    buildSubmenu(first);
-    const target = ({abola:$secAbola, branded:$secBranded, condicoes:$secTerms})[first];
-    lockSpy(900);
-    scrollToSectionWithOffset(target, 8);
-    return;
-  }
+  if(first==='top'){
+  state.medium = 'top';
+  setActiveTab($mainTabs, null);   // no main tab
+  buildSubmenu('top');
+  lockSpy(900);
+  scrollToHeadById('head-abola');
+  return;
+}
+
+
+if(first==='abola' || first==='branded' || first==='condicoes'){
+  state.medium = first;
+  setActiveTab($mainTabs, first);
+  buildSubmenu(first);
+
+  lockSpy(900);
+  if(first==='abola')       scrollToHeadById('head-abola');
+  else if(first==='branded')scrollToHeadById('head-branded');
+  else if(first==='condicoes')scrollToHeadById('head-condicoes');
+  return;
+}
 
   buildSubmenu(state.medium);
 }
