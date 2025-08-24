@@ -84,6 +84,161 @@ button:disabled,
 [type="submit"]:disabled,
 [type="reset"]:disabled{ cursor:not-allowed; opacity:.6; }
 
+
+/* =========================================================
+   HERO – HIGHLIGHTS (Imprensa / Social Media / A Bola TV)
+   ========================================================= */
+.hero-highlights{
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+@media (max-width: 980px){
+  .hero-highlights{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px){
+  .hero-highlights{ grid-template-columns: 1fr; }
+}
+
+.hl-card{
+  background:#fff;
+  color:#111;
+  border-radius: 16px;
+  border: 1px solid var(--ring);
+  box-shadow: var(--shadow);
+  padding: 16px 16px 14px 16px;
+}
+
+.hl-head{
+  display:flex; align-items:center; gap:10px;
+  padding-bottom:10px; margin-bottom:12px;
+  border-bottom: 2px solid #efefef;
+}
+.hl-icon{
+  width:34px; height:34px; display:inline-flex;
+  align-items:center; justify-content:center;
+  border-radius:10px;
+  background:#f6f6f6;
+}
+.hl-icon svg{ width:22px; height:22px; display:block; }
+.hl-title{
+  font-size:18px; font-weight:800; letter-spacing:.2px;
+}
+
+.hl-rows{ display:flex; flex-direction:column; gap:10px; }
+.hl-row{
+  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+}
+.hl-row .label{ color:#6b7280; font-weight:600; font-size:12px; text-transform:uppercase; }
+.hl-row .num{ font-weight:800; font-size:26px; line-height:1; }
+.hl-row .sub{ color:#374151; font-size:13px; }
+
+/* light pill list (e.g., “Followers”, “Average impressions”, etc.) */
+.hl-list{ display:flex; flex-direction:column; gap:8px; }
+.hl-pill{
+  display:flex; align-items:center; gap:8px;
+  background:#f7f7f7; border:1px solid var(--ring);
+  border-radius:12px; padding:8px 10px; font-size:13px;
+}
+.hl-pill .k{ font-weight:700; }
+
+/* =========================================================
+   HERO – AUDIENCE PANELS (Website & Mobile App | Social Media)
+   ========================================================= */
+.hero-audience-panels{
+  margin-top: 18px;
+}
+.aud-grid{
+  display:grid; gap: 18px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 980px){ .aud-grid{ grid-template-columns: 1fr; } }
+
+.aud-panel{
+  background: rgba(0,0,0,.72);
+  color:#fff;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.25);
+  padding: 18px 18px 16px 18px;
+  position: relative;
+}
+
+/* heading with small icon */
+.aud-head{
+  display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  font-size:22px; font-weight:800; letter-spacing:.3px;
+}
+.aud-head .ic{
+  width:34px; height:34px; display:inline-flex;
+  align-items:center; justify-content:center;
+  border-radius:10px; background:rgba(255,255,255,.1);
+}
+.aud-head svg{ width:20px; height:20px; display:block; }
+
+/* male/female split row (e.g., 27% / 73%) */
+.aud-split{
+  display:grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  margin: 6px 0 12px 0;
+}
+.split-box{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 14px;
+  padding: 12px 12px 10px 12px;
+  text-align:center;
+}
+.split-box .pct{ font-size:40px; font-weight:900; line-height:1; }
+.split-box .cap{ font-size:12px; text-transform:uppercase; opacity:.9; margin-top:4px; }
+
+/* “classe” / “idades” lines */
+.aud-lines{ display:flex; flex-direction:column; gap:12px; margin-top: 8px; }
+.aud-line{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  border-top:1px dashed rgba(255,255,255,.18);
+  padding-top:10px;
+}
+.aud-line .label{ font-weight:800; letter-spacing:.3px; text-transform:uppercase; }
+.aud-line .value{ opacity:.95; }
+
+/* big red % (e.g., 58%, 72%) */
+.big-pct{
+  font-size:56px; font-weight:900; color:#f44; /* red highlight */
+  color: var(--brand-red);
+  line-height:1; letter-spacing:.5px;
+}
+
+/* simple horizontal bar list for ages buckets */
+.bar-list{
+  list-style:none; margin:8px 0 0 0; padding:0; display:flex; flex-direction:column; gap:8px;
+}
+.bar-item{
+  display:grid; grid-template-columns: 56px 1fr auto; gap:8px; align-items:center;
+  font-variant-numeric: tabular-nums;
+}
+.bar-item .age{ opacity:.9; font-size:12px; }
+.bar{
+  position:relative; height:10px; border-radius:999px; overflow:hidden;
+  background: rgba(255,255,255,.14);
+}
+.bar::after{
+  content:""; position:absolute; inset:0 100% 0 0; border-radius:999px;
+  background: var(--brand-red);
+  transform: translateZ(0);
+  width: var(--w, 0%);
+}
+.bar-item .pct{ font-weight:700; font-size:12px; }
+
+/* mini legend / micro copy */
+.aud-foot{ margin-top:10px; font-size:12px; opacity:.8; }
+
+/* spacing harmony with the rest of the hero */
+.hero .hl-card,
+.hero .aud-panel{ backdrop-filter: saturate(1.1); }
+
+
+
 /* Accessible focus ring */
 button:focus-visible,
 [type="button"]:focus-visible,
@@ -564,7 +719,7 @@ body{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px; /* controla o espaço entre as duas linhas */
+  gap: 2px; /* controla o espaço entre as duas linhas */
 }
 
 .hero-title .main {
@@ -577,6 +732,7 @@ body{
   font-weight: 600;
   opacity: 0.9;
   margin-left: 4px; /* ligeiro recuo para colar no texto de cima */
+  color: #f6d809;
 }
 
 
@@ -718,41 +874,6 @@ body{
   <!-- HERO SECTION (ABOLA INTRO) -->
   <section id="sec-abola" class="section">
 
-
-    <!-- A-wedge mask (left side) -->
-<svg width="0" height="0" style="position:absolute">
-  <defs>
-    <!-- White = visible red; Black = transparent hole -->
-    <mask id="mask-hero-A-left" maskUnits="objectBoundingBox">
-      <!-- start fully hidden -->
-      <rect width="1" height="1" fill="black"/>
-
-      <!-- Left wedge (the big red panel). 
-           Adjust points to push the diagonal more/less into the page -->
-      <polygon fill="white"
-        points="
-          0,0      /* top-left */
-          0.52,0   /* move this to shove diagonal left/right */
-          0.78,1   /* where the diagonal meets bottom */
-          0,1      /* bottom-left */
-        "/>
-
-      <!-- A 'hole' — inner triangle (the A apex/void).
-           Nudge these 3 points to fine-tune the triangle position/size -->
-      <polygon fill="black"
-        points="
-          0.25,0.65  /* left base */
-          0.36,0.40  /* apex (higher = taller triangle) */
-          0.47,0.65  /* right base */
-        "/>
-
-      <!-- Crossbar hole -->
-      <rect x="0.18" y="0.58" width="0.46" height="0.07" fill="black"/>
-    </mask>
-  </defs>
-</svg>
-
-
     <header id="head-abola" class="hero" aria-label="A BOLA — introdução">
       <div class="hero-inner">
 
@@ -785,7 +906,7 @@ body{
 </div>
 
 <h1 class="hero-title">
-  <span class="main">Nº1 do Desporto em Portugal</span>
+  <span class="main">N.º 1 do Desporto em Portugal</span>
   <span class="sub">há mais de 80 anos</span>
 </h1>
 
@@ -795,11 +916,118 @@ body{
         </p>
 
         <div class="hero-metrics">
-          <div class="metric"><div class="num">42M</div><div class="label">Pageviews / mês</div></div>
-          <div class="metric"><div class="num">8.1M</div><div class="label">Utilizadores únicos / mês</div></div>
-          <div class="metric"><div class="num">6m 15s</div><div class="label">Tempo médio por sessão</div></div>
+          <div class="metric"><div class="num">105M</div><div class="label">Pageviews / mês</div></div>
+          <div class="metric"><div class="num">29M</div><div class="label">Visitas / mês</div></div>
+          <div class="metric"><div class="num">2M</div><div class="label">Utilizadores / mês</div></div>
+          <div class="metric"><div class="num">13m</div><div class="label">Tempo médio por sessão</div></div>
         </div>
 
+        <!-- ===========================
+     START: extra hero content
+     =========================== -->
+
+<!-- ===== HERO: triplo destaque (Imprensa / Social / TV) ===== -->
+<section class="hero-highlights" aria-label="Canais A BOLA">
+  <article class="hcard">
+    <div class="h-ico" aria-hidden="true">📰</div>
+    <h3>Imprensa</h3>
+    <p class="h-sub">Experiência / Credibilidade</p>
+    <ul class="h-list">
+      <li><strong>9,8%</strong> audiência</li>
+      <li><strong>800K</strong> readership</li>
+      <li><strong>22K</strong> circulação do jornal</li>
+    </ul>
+  </article>
+
+  <article class="hcard">
+    <div class="h-ico" aria-hidden="true">💬</div>
+    <h3>Social Media</h3>
+    <p class="h-sub">Sports / Interaction Fans</p>
+    <ul class="h-list">
+      <li><strong>1.2M</strong> Facebook</li>
+      <li><strong>213K</strong> Instagram</li>
+      <li><strong>244K</strong> TikTok</li>
+      <li><strong>210K</strong> X</li>
+      <li><strong>123K</strong> WhatsApp</li>
+      <li><strong>73K</strong> YouTube</li>
+    </ul>
+  </article>
+
+  <article class="hcard">
+    <div class="h-ico" aria-hidden="true">📺</div>
+    <h3>A BOLA TV</h3>
+    <p class="h-sub">Authenticity / Passion</p>
+    <ul class="h-list">
+      <li><strong>300K</strong> audiência</li>
+      <li><strong>24/7</strong> emissão</li>
+    </ul>
+  </article>
+</section>
+
+<!-- ===== HERO: painéis de audiência (Website/App e Social) ===== -->
+<section class="hero-audience-panels" aria-label="Perfil de audiência">
+  <!-- Website & Mobile App -->
+  <article class="apanel">
+    <header>
+      <h4>Website &amp; Mobile App</h4>
+      <p class="atag">Classe ABCD</p>
+    </header>
+
+    <div class="abig">
+      <div class="abig-num">27% <span>Mulheres</span></div>
+      <div class="abig-num">73% <span>Homens</span></div>
+    </div>
+
+    <p class="a-note">
+      <strong>Idades:</strong> <span class="a-emph">58%</span> 25–54 anos
+    </p>
+
+    <!-- Barras ilustrativas (altera --v para ajustar alturas) -->
+    <div class="abars">
+      <div style="--v:5"><span>18–24</span></div>
+      <div style="--v:15"><span>25–34</span></div>
+      <div style="--v:16"><span>35–44</span></div>
+      <div style="--v:10"><span>45–54</span></div>
+      <div style="--v:26"><span>55–64</span></div>
+      <div style="--v:28"><span>65+</span></div>
+    </div>
+  </article>
+
+  <!-- Social Media -->
+  <article class="apanel">
+    <header>
+      <h4>Social Media</h4>
+      <p class="atag">Classe ABCD</p>
+    </header>
+
+    <div class="abig">
+      <div class="abig-num">16% <span>Mulheres</span></div>
+      <div class="abig-num">84% <span>Homens</span></div>
+    </div>
+
+    <p class="a-note">
+      <strong>Idades:</strong> <span class="a-emph">72%</span> 18–44 anos
+    </p>
+
+    <div class="abars">
+      <div style="--v:4"><span>13–17</span></div>
+      <div style="--v:20"><span>18–24</span></div>
+      <div style="--v:31"><span>25–34</span></div>
+      <div style="--v:22"><span>35–44</span></div>
+      <div style="--v:12"><span>45–54</span></div>
+      <div style="--v:6"><span>55–64</span></div>
+      <div style="--v:6"><span>65+</span></div>
+    </div>
+  </article>
+</section>
+
+<!-- =========================
+     END: extra hero content
+     ========================= -->
+
+
+
+        <!--
         <div class="hero-social" aria-label="Audiências sociais">
           <div class="s-item"><span class="s-name">Facebook</span><span class="s-val">1.2M</span></div>
           <div class="s-item"><span class="s-name">Instagram</span><span class="s-val">980K</span></div>
@@ -816,7 +1044,7 @@ body{
             <strong>Classe</strong> · AB (38%) · C1 (34%) · C2 (20%) · DE (8%)
           </div>
         </div>
-
+-->
         <div class="hero-video-wrap" aria-label="Destaques em vídeo">
           <video src="intro-highlight.mp4" autoplay muted loop playsinline></video>
         </div>
@@ -900,8 +1128,8 @@ body{
   </section>
 
   <footer class="site-footer">
-    <a class="brand-contact" href="mailto:sales@abola.pt">sales@abola.pt</a>
-    © Your Company — All rights reserved.
+    
+    © — All rights reserved.
   </footer>
 
   <!-- Drawer -->
