@@ -422,19 +422,17 @@ body{
 }
 
 
-.context-slot{
-  display:flex; justify-content:flex-end;
-  min-height:calc(1.2 * var(--tab-fs) + var(--tab-pt) + var(--tab-pb));
-  opacity:0; pointer-events:none; transition:opacity .24s ease-out;
+/* when open */
+.context-slot.is-open {
+  max-height: 500px; /* set larger than your expected content height */
 }
-.context-slot.is-open{ opacity:1; pointer-events:auto; }
-.context-wrap{ position:relative; height:auto; transition:height .24s ease-out; width:100%; contain: layout style paint; }
-.context-pane{
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:flex-end; gap:6px;
-  opacity:0; pointer-events:none; transition:opacity .24s ease-out;
+
+/* open state */
+.context-wrap.is-open {
+  max-height: 1000px; /* bigger than the tallest content */
 }
-.context-pane.is-live{ opacity:1; pointer-events:auto; }
+
+
 
 .header-spacer{ height:96px }
 
@@ -449,6 +447,9 @@ body{
   margin:0;            /* no auto-centering */
   width:100%;          /* take full viewport width */
 }
+
+.context-slot{ display:none; justify-self:end; }
+.context-slot.is-open{ display:block; }
 
 /* ===== Sticky section headers (for other sections) ===== */
 .section-head{
@@ -1936,81 +1937,51 @@ window.addEventListener('keydown', (e) => {
 
 // ---------------- Submenu (context tabs) ----------------
 
+
 function buildSubmenu(medium){
-  // The slot that holds the context tabs
   const slot = document.querySelector('.context-slot');
-  if (!slot) return;
+  const nav  = document.getElementById('contextTabs');
+  if (!slot || !nav) return;
 
-  // --- Ensure structure: .context-slot > .context-wrap > (.context-pane is-live) ---
-  let wrap = slot.querySelector('.context-wrap');
-  if (!wrap) {
-    wrap = document.createElement('div');
-    wrap.className = 'context-wrap';
-
-    const livePane = document.createElement('div');
-    livePane.className = 'context-pane is-live';
-
-    // Move any existing #contextTabs into the initial live pane
-    const existingNav = document.getElementById('contextTabs');
-    if (existingNav) {
-      livePane.appendChild(existingNav);
-    } else {
-      const nav = document.createElement('nav');
-      nav.className = 'tabs context-tabs';
-      nav.id = 'contextTabs';
-      livePane.appendChild(nav);
-    }
-
-    wrap.appendChild(livePane);
-    slot.appendChild(wrap);
+  let options = [];
+  if (medium === 'digital'){
+    options = [
+      { val:'all',        label:'All' },
+      { val:'display',    label:'Display' },
+      { val:'rich-media', label:'Rich Media' }
+    ];
+  } else if (medium === 'print'){
+    options = [
+      { val:'all',        label:'All' },
+      { val:'capa',       label:'Front page' },
+      { val:'interior',   label:'inside page' },
+      { val:'contracapa', label:'back page' }
+    ];
   }
 
-  const currentLive = wrap.querySelector('.context-pane.is-live');
+  // show only if there are options (digital/print); otherwise hide
+  slot.classList.toggle('is-open', options.length > 0);
 
-  // --- Build the options for the requested medium ---
-  let options = [];
-  if (medium === 'digital') {
-    options = [
-      { val: 'all',       label: 'All' },
-      { val: 'display',   label: 'Display' },
-      { val: 'rich-media',label: 'Rich Media' }
-    ];
-} else if (medium === 'print') {
-  options = [
-    { val: 'all',        label: 'All' },
-    { val: 'capa',       label: 'Front page' },
-    { val: 'interior',   label: 'inside page' },
-    { val: 'contracapa', label: 'back page' }
-  ];
-}
-
-  // --- If no submenu for this medium, close (fade out) the slot and stop ---
-  if (options.length === 0) {
-    slot.classList.remove('is-open'); // CSS handles fade-out
+  // if hidden, no need to render anything
+  if (options.length === 0){
+    nav.innerHTML = '';
     return;
   }
 
-  // --- Build next pane off-DOM (starts hidden) ---
-  const nextPane = document.createElement('div');
-  nextPane.className = 'context-pane';
-
-  const nextNav = document.createElement('nav');
-  nextNav.className = 'tabs context-tabs';
-  nextNav.id = 'contextTabs'; // keep same id so other code keeps working
-
-  // Build buttons
-  for (const opt of options) {
+  // build buttons
+  nav.innerHTML = '';
+  for (const opt of options){
     const btn = document.createElement('button');
     btn.textContent = opt.label;
     btn.setAttribute('data-sub', opt.val);
 
-    const isActive =
-      (medium === 'digital'  && state.digitalType   === opt.val) ||
-      (medium === 'print' && state.subtype === opt.val);
-    if (isActive) btn.classList.add('active');
+    const active =
+      (medium === 'digital' && state.digitalType === opt.val) ||
+      (medium === 'print'   && state.subtype     === opt.val);
+    if (active) btn.classList.add('active');
 
     btn.onclick = () => {
-      if (medium === 'digital') {
+      if (medium === 'digital'){
         state.digitalType = opt.val;
         renderDigitalSection();
         history.replaceState(null, '', `#digital/${opt.val}`);
@@ -2021,55 +1992,17 @@ function buildSubmenu(medium){
         history.replaceState(null, '', `#print/${opt.val}`);
         scrollToHeadById('head-print');
       }
-      setActiveTab(nextNav, opt.val, 'data-sub');
+      // update active visual
+      [...nav.querySelectorAll('button')].forEach(b =>
+        b.classList.toggle('active', b === btn)
+      );
     };
 
-    nextNav.appendChild(btn);
+    nav.appendChild(btn);
   }
-
-  nextPane.appendChild(nextNav);
-  wrap.appendChild(nextPane); // add (still hidden) so we can measure
-
-  // --- Animate: height tween on wrapper + opacity cross-fade on panes ---
-
-  // Ensure slot is visible so fade is seen
-  slot.classList.add('is-open');
-
-  // Lock current height (FROM)
-  const fromH = wrap.scrollHeight;
-  wrap.style.height = fromH + 'px';
-
-  // Measure target height (TO) with the new pane present (absolute)
-  const toH = nextPane.scrollHeight;
-
-  // Next frame: start animation
-  requestAnimationFrame(() => {
-    // Height tween
-    wrap.style.height = toH + 'px';
-
-    // Cross-fade panes (opacity only → no vertical jitter)
-    nextPane.classList.add('is-live');
-    if (currentLive) currentLive.classList.remove('is-live');
-
-    // Cleanup after transition
-    const cleanup = () => {
-      // remove any non-live panes (the old one)
-      [...wrap.querySelectorAll('.context-pane')].forEach(p => {
-        if (!p.classList.contains('is-live')) p.remove();
-      });
-      // release explicit height
-      wrap.style.height = 'auto';
-      wrap.removeEventListener('transitionend', onEnd);
-    };
-
-    const onEnd = (e) => {
-      if (e.target === wrap && e.propertyName === 'height') cleanup();
-    };
-
-    wrap.addEventListener('transitionend', onEnd);
-    setTimeout(cleanup, 450); // safety in case transitionend is missed
-  });
 }
+
+
 
 // --- Scroll lock helpers (preserve page position) ---
 let __lockY = 0;
