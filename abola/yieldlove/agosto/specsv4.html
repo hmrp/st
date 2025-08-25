@@ -45,6 +45,8 @@
   --tab-ul:8px;
 }
 
+
+
 /* Typography */
 html, body { font-family: 'Open Sans', sans-serif; }
 h1, h2, h3, h4, h5, h6{ font-weight:800; }
@@ -642,23 +644,50 @@ body.no-scroll{
 
 /* ---- TV ratecard table + scroller ---- */
 .hscroll{ overflow-x:auto; -webkit-overflow-scrolling:touch }
+@supports (-webkit-touch-callout: none) {
+  .hscroll{ -webkit-overflow-scrolling: auto; }
+}
+
+
 .rate-table{
-  border-collapse:collapse;
+  border-collapse: separate;   /* <-- change from collapse */
+  border-spacing: 0;           /* keep cells tight */
   font-size:13px;
   table-layout:fixed;
   font-variant-numeric:tabular-nums;
   width:max-content;
 }
-.rate-table th,.rate-table td{
-  padding:8px; border:1px solid var(--ring); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+
+
+.rate-table th, .rate-table td{
+  border: 1px solid var(--ring);
 }
-.rate-table thead th{ position:sticky; top:0; background:#f8f8f8; z-index:2 }
+
+.rate-table tr > * { border-right: 0; border-bottom: 0; }
+.rate-table tr > *:last-child { border-right: 1px solid var(--ring); }
+.rate-table tr:last-child > * { border-bottom: 1px solid var(--ring); }
+
+.rate-table thead th{
+  position: sticky;
+  top: 0;
+  background:#f8f8f8;
+  z-index: 3; /* above body cells */
+}
+
+
 .rate-table .sticky-col{
-  position:sticky; left:0; background:#fff; z-index:3; font-weight:600;
+  position: sticky;
+  left: 0;
+  background:#fff;
+  z-index: 4; /* above header row */
 }
 .rate-table .section-row th{
   padding:10px; background:#f3f4f6; text-align:left; border-left:0; border-right:0;
 }
+
+.rate-table thead .sticky-col{ z-index: 5; }
+
+
 .rate-table .section-row .sticky-col{ background:#f3f4f6; z-index:4 }
 .rate-table td:not(.sticky-col), .rate-table th:not(.sticky-col){ text-align:right }
 
