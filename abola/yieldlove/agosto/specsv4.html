@@ -84,9 +84,57 @@ button:disabled,
 [type="submit"]:disabled,
 [type="reset"]:disabled{ cursor:not-allowed; opacity:.6; }
 
+body.no-scroll { overflow: hidden; }
+
+
+/* Icon-style close button for the drawer */
+.close-drawer{
+  /* size & layout */
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* shape & base color */
+  border-radius: 12px;
+  background: #E20613; /* brand red */
+  border: 1px solid rgba(0,0,0,.14);
+
+  /* glossy/soft depth */
+  background-image:
+    radial-gradient(40% 60% at 30% 30%, rgba(255,255,255,.12), transparent),
+    linear-gradient(180deg, #E20613 0%, #C50F19 100%);
+  box-shadow: 0 1px 0 var(--ring), 0 6px 16px rgba(0,0,0,.18);
+
+  color: #fff;
+  transition: transform .02s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+.close-drawer:hover{
+  filter: brightness(1.04);
+}
+
+.close-drawer:active{
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--ring), 0 3px 10px rgba(0,0,0,.16);
+}
+
+/* the “X” mark */
+.close-drawer .x{
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  /* keep line weight crisp on scale */
+  vector-effect: non-scaling-stroke;
+}
+
+/* keep your accessible focus ring (you already have a global rule for button:focus-visible) */
+
+
 
 /* =========================================================
-   HERO – HIGHLIGHTS (Imprensa / Social Media / A Bola TV)
+   HERO – HIGHLIGHTS (print / Social Media / A Bola TV)
    ========================================================= */
 .hero-highlights{
   margin-top: 12px;
@@ -417,7 +465,7 @@ body{
 @media (min-width:1200px){ .grid{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
 
 /* Optional notice */
-.imprensa-note{ margin:6px 0 16px 0; padding:12px 16px; border:1px dashed var(--ring); background:#fff; border-radius:12px; color:var(--muted); font-size:12px; }
+.print-note{ margin:6px 0 16px 0; padding:12px 16px; border:1px dashed var(--ring); background:#fff; border-radius:12px; color:var(--muted); font-size:12px; }
 
 /* TV panel */
 .tv-panel{ border:1px solid var(--ring); background:#fff; border-radius:16px; padding:16px; box-shadow:var(--shadow); }
@@ -432,6 +480,56 @@ body{
 
 
 
+/* Branded hero block */
+.branded-hero{
+  display:grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(16px, 3vw, 28px);
+  padding: clamp(16px, 2.6vw, 24px);
+  margin: 10px 0 18px 0;
+  background:#fff;
+  border:1px solid var(--ring);
+  border-radius:16px;
+  box-shadow: var(--shadow);
+  align-items:center;
+}
+.branded-hero .brand-kicker{
+  margin:0 0 8px 0;
+  color: var(--brand-red);
+  font-size: clamp(24px, 3.4vw, 40px);
+  line-height:1.05;
+  letter-spacing:.2px;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+.branded-hero p{ margin: 0 0 10px 0; font-size: clamp(15px, 1.6vw, 19px); line-height:1.45; color:#111; }
+.branded-hero .muted.small{ color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+.branded-graphic{
+  width: 100%;
+  max-width: 560px;           /* keep it from getting too huge on desktop */
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  margin-inline: auto;
+}
+
+/* mobile stacking & spacing */
+@media (max-width: 900px){
+  .branded-hero{ grid-template-columns: 1fr; }
+  .branded-copy{ order: 1; }
+  .branded-graphic{
+    order: 2;                 /* BELOW the text */
+    margin-top: 12px;
+    max-width: clamp(300px, 80vw, 420px);
+    justify-self: center;
+  }
+}
+
+/* very small phones: tighten */
+@media (max-width: 420px){
+  .branded-hero{ border-radius:12px; }
+}
 
 
 /* ===== Cards ===== */
@@ -449,12 +547,44 @@ body{
 .drawer.show{ right:0 }
 .drawer-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; background:#fff; padding:16px 16px 8px 16px; border-bottom:1px solid var(--ring); }
 .drawer-title{ margin:0 0 2px 0; font-size:18px }
-.drawer-content{ padding:16px; overflow:auto; display:flex; flex-direction:column; gap:16px }
+
+
+/* Drawer scroll area (keep) */
+.drawer-content{
+  flex: 1 1 auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+
 .preview{ border:1px solid var(--ring); border-radius:16px; overflow:hidden; min-height:160px }
 .specs{ border:1px solid var(--ring); border-radius:12px; padding:12px }
 .specs dl{ display:grid; grid-template-columns:1fr 1fr; gap:8px }
 .specs dt{ color:var(--muted); font-size:12px }
 .specs dd{ margin:0; font-weight:600 }
+
+
+/* Lock page scroll when drawer is open */
+html.no-scroll,
+body.no-scroll{
+  overflow: hidden;
+  height: 100%;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+/* Make the drawer the only scroll area while open */
+.drawer{
+  /* already has position:fixed etc. */
+  overscroll-behavior: contain; /* stop scroll chaining */
+}
+.drawer-content{
+  flex: 1 1 auto;              /* fill remaining height under sticky header */
+  overflow: auto;              /* scroll inside the drawer */
+  overscroll-behavior: contain;
+}
+
+
 
 /* ===== Generic .btn (chips etc.) ===== */
 .btn{
@@ -537,6 +667,78 @@ body{
   .rate-table th,.rate-table td{ padding:6px }
 }
 
+
+/* --- TV table column UX --- */
+.rate-table th.dur,
+.rate-table td[data-dur] { cursor: pointer; }
+
+/* selected column */
+.rate-table th.col-active,
+.rate-table td.col-active { background: #f6d809 !important; }
+
+/* hover preview (non-selected) */
+.rate-table th.col-hover:not(.col-active),
+.rate-table td.col-hover:not(.col-active) { background: #fffaf0 !important; }
+
+/* (optional) smoother hover on desktops */
+@media (hover: hover) and (pointer: fine){
+  .rate-table th.dur,
+  .rate-table td[data-dur] { transition: background-color .12s ease; }
+}
+
+
+/* --- TV tech spec block --- */
+.tv-tech{
+  margin-top:12px;
+  background:#fff;
+  border:1px solid var(--ring);
+  border-radius:12px;
+  padding:12px 14px;
+  box-shadow:var(--shadow);
+  font-size:13px;
+  color:#111;
+}
+.tv-tech h3{ margin:0 0 10px 0; font-size:14px; text-transform:uppercase; letter-spacing:.3px; }
+.tv-tech dl{
+  margin:0;
+  display:grid;
+  grid-template-columns: 180px 1fr;
+  gap:6px 12px;
+}
+.tv-tech dt{ font-weight:700; }
+.tv-tech dd{ margin:0; }
+
+/* --- print spec block --- */
+.print-tech{
+  margin-top:12px;
+  background:#fff;
+  border:1px solid var(--ring);
+  border-radius:12px;
+  padding:12px 14px;
+  box-shadow:var(--shadow);
+  font-size:13px;
+  color:#111;
+}
+.print-tech h3{
+  margin:0 0 10px 0;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.print-tech ul{
+  margin:0;
+  padding-left:18px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.print-tech .note{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+
 /* ============================
    Section bar with SVG tail
    ============================ */
@@ -585,7 +787,7 @@ body{
 #head-abola.hero{
   /* provide your two images here */
   --hero-img-land: url("fundo1.png");
-  --hero-img-port: url("fundo3.png");
+  --hero-img-port: url("fundo1portrait.png");
 
   position: relative;
   isolation: isolate;      /* keeps blend effects inside */
@@ -644,7 +846,7 @@ body{
 
 /* Optional: very small screens—nudge the text padding in a bit */
 @media (max-width: 480px){
-  #head-abola.hero .hero-inner{ padding-left: 18px; padding-right: 18px; }
+  .branded-graphic{ max-width: clamp(260px, 82vw, 360px); }
 }
 
 
@@ -857,7 +1059,7 @@ body{
     <div class="masthead-inner">
       <nav class="tabs main-tabs" id="mainTabs" aria-label="Categorias">
         <button data-medium="digital">Digital</button>
-        <button data-medium="imprensa">Imprensa</button>
+        <button data-medium="print">print</button>
         <button data-medium="tv">TV</button>
         <button data-medium="branded">Branded Content</button>
       </nav>
@@ -919,19 +1121,17 @@ body{
           <div class="metric"><div class="num">105M</div><div class="label">Pageviews / mês</div></div>
           <div class="metric"><div class="num">29M</div><div class="label">Visitas / mês</div></div>
           <div class="metric"><div class="num">2M</div><div class="label">Utilizadores / mês</div></div>
-          <div class="metric"><div class="num">13m</div><div class="label">Tempo médio por sessão</div></div>
+          <div class="metric"><div class="num">13 minutos</div><div class="label">Tempo médio por sessão</div></div>
         </div>
 
         <!-- ===========================
      START: extra hero content
      =========================== -->
 
-<!-- ===== HERO: triplo destaque (Imprensa / Social / TV) ===== -->
+<!-- ===== HERO: triplo destaque (print / Social / TV) ===== -->
 <section class="hero-highlights" aria-label="Canais A BOLA">
   <article class="hcard">
-    <div class="h-ico" aria-hidden="true">📰</div>
-    <h3>Imprensa</h3>
-    <p class="h-sub">Experiência / Credibilidade</p>
+    <h3>print</h3>
     <ul class="h-list">
       <li><strong>9,8%</strong> audiência</li>
       <li><strong>800K</strong> readership</li>
@@ -940,9 +1140,7 @@ body{
   </article>
 
   <article class="hcard">
-    <div class="h-ico" aria-hidden="true">💬</div>
     <h3>Social Media</h3>
-    <p class="h-sub">Sports / Interaction Fans</p>
     <ul class="h-list">
       <li><strong>1.2M</strong> Facebook</li>
       <li><strong>213K</strong> Instagram</li>
@@ -954,9 +1152,7 @@ body{
   </article>
 
   <article class="hcard">
-    <div class="h-ico" aria-hidden="true">📺</div>
     <h3>A BOLA TV</h3>
-    <p class="h-sub">Authenticity / Passion</p>
     <ul class="h-list">
       <li><strong>300K</strong> audiência</li>
       <li><strong>24/7</strong> emissão</li>
@@ -967,58 +1163,8 @@ body{
 <!-- ===== HERO: painéis de audiência (Website/App e Social) ===== -->
 <section class="hero-audience-panels" aria-label="Perfil de audiência">
   <!-- Website & Mobile App -->
-  <article class="apanel">
-    <header>
-      <h4>Website &amp; Mobile App</h4>
-      <p class="atag">Classe ABCD</p>
-    </header>
+ 
 
-    <div class="abig">
-      <div class="abig-num">27% <span>Mulheres</span></div>
-      <div class="abig-num">73% <span>Homens</span></div>
-    </div>
-
-    <p class="a-note">
-      <strong>Idades:</strong> <span class="a-emph">58%</span> 25–54 anos
-    </p>
-
-    <!-- Barras ilustrativas (altera --v para ajustar alturas) -->
-    <div class="abars">
-      <div style="--v:5"><span>18–24</span></div>
-      <div style="--v:15"><span>25–34</span></div>
-      <div style="--v:16"><span>35–44</span></div>
-      <div style="--v:10"><span>45–54</span></div>
-      <div style="--v:26"><span>55–64</span></div>
-      <div style="--v:28"><span>65+</span></div>
-    </div>
-  </article>
-
-  <!-- Social Media -->
-  <article class="apanel">
-    <header>
-      <h4>Social Media</h4>
-      <p class="atag">Classe ABCD</p>
-    </header>
-
-    <div class="abig">
-      <div class="abig-num">16% <span>Mulheres</span></div>
-      <div class="abig-num">84% <span>Homens</span></div>
-    </div>
-
-    <p class="a-note">
-      <strong>Idades:</strong> <span class="a-emph">72%</span> 18–44 anos
-    </p>
-
-    <div class="abars">
-      <div style="--v:4"><span>13–17</span></div>
-      <div style="--v:20"><span>18–24</span></div>
-      <div style="--v:31"><span>25–34</span></div>
-      <div style="--v:22"><span>35–44</span></div>
-      <div style="--v:12"><span>45–54</span></div>
-      <div style="--v:6"><span>55–64</span></div>
-      <div style="--v:6"><span>65+</span></div>
-    </div>
-  </article>
 </section>
 
 <!-- =========================
@@ -1044,7 +1190,7 @@ body{
             <strong>Classe</strong> · AB (38%) · C1 (34%) · C2 (20%) · DE (8%)
           </div>
         </div>
--->
+
         <div class="hero-video-wrap" aria-label="Destaques em vídeo">
           <video src="intro-highlight.mp4" autoplay muted loop playsinline></video>
         </div>
@@ -1052,6 +1198,8 @@ body{
         <div class="hero-footnote">
           * Fontes indicativas — substituir pelos valores mais recentes (AT Internet / GA4 / redes).
         </div>
+
+        -->
       </div>
     </header>
   </section>
@@ -1062,10 +1210,10 @@ body{
     <main id="gridDigital" class="grid"></main>
   </section>
 
-  <section id="sec-imprensa" class="section">
-    <div class="section-head" id="head-imprensa"><h2>Imprensa</h2></div>
-    <div id="imprensaNotice" class="imprensa-note"></div>
-    <main id="gridImprensa" class="grid"></main>
+  <section id="sec-print" class="section">
+    <div class="section-head" id="head-print"><h2>print</h2></div>
+    <div id="printNotice" class="print-note"></div>
+    <main id="gridprint" class="grid"></main>
   </section>
 
   <section id="sec-tv" class="section">
@@ -1074,7 +1222,95 @@ body{
   </section>
 
   <section id="sec-branded" class="section">
-    <div class="section-head" id="head-branded"><h2>Branded</h2></div>
+    <div class="section-head" id="head-branded"><h2>Branded Content</h2></div>
+    <!-- Branded intro block -->
+<section class="branded-hero" aria-labelledby="branded-hero-title">
+  <div class="branded-copy">
+    <h3 id="branded-hero-title" class="brand-kicker">O PODER DO CONTEÚDO</h3>
+
+    <p>
+      O Branded content transcende as fronteiras do marketing tradicional,
+      oferecendo valor genuíno ao público enquanto promove a identidade e os
+      valores da marca.
+    </p>
+
+    <p>
+      Assim, criamos projetos 360º para marcas, sob medida, com uma abordagem criativa
+      e estratégica, através de narrativas que inspirem, eduquem ou entretenham.
+    </p>
+
+    <p>
+      Seja por meio de artigos ou entrevistas, vídeos ou experiências interativas,
+      tudo é produzido com a curadoria d’A BOLA.
+    </p>
+
+  </div>
+<figure class="branded-graphic" aria-label="Canais de distribuição de branded content">
+  <svg viewBox="0 0 600 600" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+    <!-- outer ring -->
+    <circle cx="300" cy="300" r="210" fill="none" stroke="var(--brand-red)" stroke-width="10"/>
+
+    <!-- shared icon styling -->
+    <defs>
+      <g id="icon-newspaper" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 56x70 centered -->
+        <rect x="-28" y="-35" width="56" height="70" rx="6"/>
+        <rect x="-18" y="-29" width="36" height="12" rx="2"/>
+        <line x1="-18" y1="-10" x2="18" y2="-10"/>
+        <line x1="-18" y1="2"   x2="18" y2="2"/>
+        <line x1="-18" y1="14"  x2="18" y2="14"/>
+      </g>
+
+      <g id="icon-monitor" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 72x44 centered -->
+        <rect x="-36" y="-22" width="72" height="44" rx="6"/>
+        <line x1="0" y1="22" x2="0" y2="34"/>
+        <rect x="-14" y="34" width="28" height="8" rx="2"/>
+      </g>
+
+      <g id="icon-tv" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 72x44 centered -->
+        <rect x="-36" y="-22" width="72" height="44" rx="6"/>
+        <line x1="-20" y1="22" x2="-26" y2="34"/>
+        <line x1="20"  y1="22" x2="26"  y2="34"/>
+      </g>
+
+      <g id="icon-phone" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 40x60 centered -->
+        <rect x="-20" y="-30" width="40" height="60" rx="8"/>
+        <rect x="-14" y="-22" width="28" height="40" rx="2"/>
+        <circle cx="0" cy="26" r="3" fill="#fff" stroke="none"/>
+      </g>
+    </defs>
+
+    <!-- TOP (newspaper) -->
+    <g transform="translate(300,90)">
+      <circle r="86" fill="var(--brand-red)"/>
+      <use href="#icon-newspaper"/>
+    </g>
+
+    <!-- RIGHT (monitor) -->
+    <g transform="translate(510,300)">
+      <circle r="86" fill="var(--brand-red)"/>
+      <use href="#icon-monitor"/>
+    </g>
+
+    <!-- BOTTOM (tv) -->
+    <g transform="translate(300,510)">
+      <circle r="86" fill="var(--brand-red)"/>
+      <use href="#icon-tv"/>
+    </g>
+
+    <!-- LEFT (phone) -->
+    <g transform="translate(90,300)">
+      <circle r="86" fill="var(--brand-red)"/>
+      <use href="#icon-phone"/>
+    </g>
+  </svg>
+</figure>
+
+</section>
+
     <main id="gridBranded" class="grid"></main>
   </section>
 
@@ -1140,7 +1376,13 @@ body{
         <h2 id="drawerTitle" class="drawer-title">Title</h2>
         <div class="muted" id="drawerTags">—</div>
       </div>
-      <button id="closeDrawerBtn" class="btn close-drawer">Close</button>
+      <button id="closeDrawerBtn" class="close-drawer" aria-label="Fechar painel">
+  <svg class="x" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M6 6 L18 18 M18 6 L6 18" stroke-linecap="round" stroke-width="2.5" fill="none"/>
+  </svg>
+</button>
+
+
     </header>
     <div class="drawer-content">
       <section><div id="preview" class="preview"></div></section>
@@ -1186,10 +1428,6 @@ const DIGITAL = [
     peek:'300×600 • ≤120KB • MP4 ≤1MB', gradient:['#f97316','#fecaca'],
     specs:{ 'Dimensions':'300×600 px', 'File types':'HTML / JPG / PNG / MP4', 'Max weight':'120 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 110 € · Canais 130 €' }
   },
-  { id:'leaderboard', medium:'digital', subtype:'display', name:'Leaderboard', summary:'728×90 horizontal banner.',
-    peek:'728×90 • ≤80KB • MP4 ≤1MB', gradient:['#fde68a','#fca5a5'],
-    specs:{ 'Dimensions':'728×90 px', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'80 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet', 'CPM':'ROS/HP 100 €' }
-  },
   { id:'billboard', medium:'digital', subtype:'display', name:'Billboard', summary:'Hero banner across devices.',
     peek:'1260×220 / 970×250 (D) · 728×90 (T) · 310×100 (M) • ≤200KB • MP4 ≤1MB', gradient:['#fca5a5','#fde68a'],
     specs:{ 'Dimensions':'1260×220 px or 970×250 px (desktop); 728×90 px (tablet); 310×100 px (smartphone) — or external responsive tag', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'200 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 200 €' }
@@ -1224,88 +1462,88 @@ const DIGITAL = [
   }
 ];
 
-const IMPRENSA = [
-  { id:'capa-modular', medium:'imprensa', imprensaType:'capa', name:'Capa — Modular', summary:'Preço por número de módulos (grelha 5×20 = 100).',
+const print = [
+  { id:'capa-modular', medium:'print', subtype:'capa', name:'Capa — Modular', summary:'Preço por número de módulos (grelha 5×20 = 100).',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 cm • 5 col • 20 módulos/col',
     specs:{ 'Mancha de impressão':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Módulos por página':100, 'Medida do módulo':'4,78 × 1,20 cm' },
     pricing:{ type:'per_module', base:null }
   },
-  { id:'capa-rodape', medium:'imprensa', imprensaType:'capa', name:'Capa — Rodapé', summary:'Faixa inferior em toda a largura.',
+  { id:'capa-rodape', medium:'print', subtype:'capa', name:'Capa — Rodapé', summary:'Faixa inferior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'Faixa • 5 col × 2 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm (faixa)', 'Colunas':5, 'Módulos por coluna':2, 'Preço':'€ 2 230,00' }, pricing:{ type:'fixed', amount:2230.00 } },
-  { id:'capa-rodatopo', medium:'imprensa', imprensaType:'capa', name:'Capa — Roda-topo', summary:'Faixa superior em toda a largura.',
+  { id:'capa-rodatopo', medium:'print', subtype:'capa', name:'Capa — Roda-topo', summary:'Faixa superior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'Topo • 5 col × 2 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Preço':'€ 3 450,00' }, pricing:{ type:'fixed', amount:3450.00 } },
-  { id:'capa-orelha', medium:'imprensa', imprensaType:'capa', name:'Capa — Orelha', summary:'Bloco lateral superior.',
+  { id:'capa-orelha', medium:'print', subtype:'capa', name:'Capa — Orelha', summary:'Bloco lateral superior.',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78 × 4,2 cm • 1 col',
     specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Preço':'€ 1 990,00' }, pricing:{ type:'fixed', amount:1990.00 } },
-  { id:'capa-coluna', medium:'imprensa', imprensaType:'capa', name:'Capa — Coluna', summary:'Coluna vertical lateral.',
+  { id:'capa-coluna', medium:'print', subtype:'capa', name:'Capa — Coluna', summary:'Coluna vertical lateral.',
     grid:{ cols:1, rows:20, hot:'right' }, peek:'30,2 × 4,78 cm • 1 col',
     specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':1, 'Módulos por coluna':20, 'Preço':'€ 25 000,00' }, pricing:{ type:'fixed', amount:25000.00 } },
-  { id:'capa-takeover', medium:'imprensa', imprensaType:'capa', name:'Capa — Takeover', summary:'Faixa topo + coluna lateral.',
+  { id:'capa-takeover', medium:'print', subtype:'capa', name:'Capa — Takeover', summary:'Faixa topo + coluna lateral.',
     grid:{ cols:1, rows:20, hot:'all' }, peek:'2,7×25,9 + 30,2×4,78 (zona lateral)',
     specs:{ 'Mancha útil':'2,7 × 25,9 + 30,2 × 4,78 cm (zona lateral)', 'Colunas':1, 'Módulos por coluna':20, 'Preço':'€ 37 500,00' }, pricing:{ type:'fixed', amount:37500.00 } },
 
-  { id:'interior-pagina', medium:'imprensa', imprensaType:'interior', name:'Página', summary:'5 colunas × 20 módulos — página inteira.',
+  { id:'interior-pagina', medium:'print', subtype:'interior', name:'Página', summary:'5 colunas × 20 módulos — página inteira.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 • 100 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100,
       'Base DC Par':'€ 8 940,00', 'Sobretaxa DC Ímpar 15%':'€ 10 281,00', 'Sobretaxa AC Ímpar 30%':'€ 11 622,00', 'Sobretaxa AC Par 10%':'€ 9 834,00',
       'Observações':'Localização obrigatória +50% · Idioma estrangeiro +50% · Produzida pelo jornal +50%'} },
-  { id:'interior-junior', medium:'imprensa', imprensaType:'interior', name:'Junior Page', summary:'4 colunas × 12 módulos.',
+  { id:'interior-junior', medium:'print', subtype:'interior', name:'Junior Page', summary:'4 colunas × 12 módulos.',
     grid:{ cols:4, rows:12, hot:'bottom' }, peek:'Mancha 20,62×18 • 48 módulos',
     specs:{ 'Mancha útil':'20,62 × 18 cm', 'Colunas':4, 'Módulos por coluna':12, 'Total de módulos':48,
       'Base DC Par':'€ 4 967,00', 'Sobretaxa DC Ímpar 15%':'€ 5 712,05', 'Sobretaxa AC Ímpar 30%':'€ 6 457,60', 'Sobretaxa AC Par 10%':'€ 5 463,70' } },
-  { id:'interior-meia-h', medium:'imprensa', imprensaType:'interior', name:'1/2 Página (Horizontal)', summary:'5 colunas × 10 módulos.',
+  { id:'interior-meia-h', medium:'print', subtype:'interior', name:'1/2 Página (Horizontal)', summary:'5 colunas × 10 módulos.',
     grid:{ cols:5, rows:10, hot:'bottom' }, peek:'Mancha 25,9×14,9 • 50 módulos',
     specs:{ 'Mancha útil':'25,9 × 14,9 cm', 'Colunas':5, 'Módulos por coluna':10, 'Total de módulos':50,
       'Base DC Par':'€ 4 386,00', 'Sobretaxa DC Ímpar 15%':'€ 5 043,90', 'Sobretaxa AC Ímpar 30%':'€ 5 701,80', 'Sobretaxa AC Par 10%':'€ 4 824,60' } },
-  { id:'interior-meia-v-2c', medium:'imprensa', imprensaType:'interior', name:'1/2 Página (Vertical — 2 col.)', summary:'2 colunas × 20 módulos.',
+  { id:'interior-meia-v-2c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 2 col.)', summary:'2 colunas × 20 módulos.',
     grid:{ cols:2, rows:20, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
     specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':20, 'Total de módulos':40,
       'Base DC Par':'€ 3 612,00', 'Sobretaxa DC Ímpar 15%':'€ 4 153,80', 'Sobretaxa AC Ímpar 30%':'€ 4 695,60', 'Sobretaxa AC Par 10%':'€ 3 973,20' } },
-  { id:'interior-meia-v-3c', medium:'imprensa', imprensaType:'interior', name:'1/2 Página (Vertical — 3 col.)', summary:'3 colunas × 20 módulos.',
+  { id:'interior-meia-v-3c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 3 col.)', summary:'3 colunas × 20 módulos.',
     grid:{ cols:3, rows:20, hot:'right' }, peek:'Mancha 15,34×30,2 • 60 módulos',
     specs:{ 'Mancha útil':'15,34 × 30,2 cm', 'Colunas':3, 'Módulos por coluna':20, 'Total de módulos':60,
       'Base DC Par':'€ 5 160,00', 'Sobretaxa DC Ímpar 15%':'€ 5 934,00', 'Sobretaxa AC Ímpar 30%':'€ 6 708,00', 'Sobretaxa AC Par 10%':'€ 5 676,00' } },
-  { id:'interior-um-quarto-h', medium:'imprensa', imprensaType:'interior', name:'1/4 Página (Horizontal)', summary:'5 colunas × 5 módulos.',
+  { id:'interior-um-quarto-h', medium:'print', subtype:'interior', name:'1/4 Página (Horizontal)', summary:'5 colunas × 5 módulos.',
     grid:{ cols:5, rows:5, hot:'bottom' }, peek:'Mancha 25,9×7,2 • 25 módulos',
     specs:{ 'Mancha útil':'25,9 × 7,2 cm', 'Colunas':5, 'Módulos por coluna':5, 'Total de módulos':25,
       'Base DC Par':'€ 3 000,00', 'Sobretaxa DC Ímpar 15%':'€ 3 450,00', 'Sobretaxa AC Ímpar 30%':'€ 3 900,00', 'Sobretaxa AC Par 10%':'€ 3 300,00' } },
-  { id:'interior-um-quarto-3c', medium:'imprensa', imprensaType:'interior', name:'1/4 Página (3 colunas)', summary:'3 colunas × 10 módulos.',
+  { id:'interior-um-quarto-3c', medium:'print', subtype:'interior', name:'1/4 Página (3 colunas)', summary:'3 colunas × 10 módulos.',
     grid:{ cols:3, rows:10, hot:'all' }, peek:'Mancha 15,34×14,9 • 30 módulos',
     specs:{ 'Mancha útil':'15,34 × 14,9 cm', 'Colunas':3, 'Módulos por coluna':10, 'Total de módulos':30,
       'Base DC Par':'€ 2 773,50', 'Sobretaxa DC Ímpar 15%':'€ 3 189,53', 'Sobretaxa AC Ímpar 30%':'€ 3 605,55', 'Sobretaxa AC Par 10%':'€ 3 050,85' } },
-  { id:'interior-um-quarto-2c', medium:'imprensa', imprensaType:'interior', name:'1/4 Página (2 colunas)', summary:'2 colunas × 10 módulos.',
+  { id:'interior-um-quarto-2c', medium:'print', subtype:'interior', name:'1/4 Página (2 colunas)', summary:'2 colunas × 10 módulos.',
     grid:{ cols:2, rows:10, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
     specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':10, 'Total de módulos':40,
       'Base DC Par':'€ 1 935,00', 'Sobretaxa DC Ímpar 15%':'€ 2 225,25', 'Sobretaxa AC Ímpar 30%':'€ 2 515,50', 'Sobretaxa AC Par 10%':'€ 2 128,50' } },
-  { id:'interior-um-oitavo', medium:'imprensa', imprensaType:'interior', name:'1/8 Página', summary:'2 colunas × 5 módulos.',
+  { id:'interior-um-oitavo', medium:'print', subtype:'interior', name:'1/8 Página', summary:'2 colunas × 5 módulos.',
     grid:{ cols:2, rows:5, hot:'bottom' }, peek:'Mancha 30,2×4,78 • 10 módulos',
     specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':2, 'Módulos por coluna':5, 'Total de módulos':10,
       'Base DC Par':'€ 1 354,50', 'Sobretaxa DC Ímpar 15%':'€ 1 557,68', 'Sobretaxa AC Ímpar 30%':'€ 1 760,85', 'Sobretaxa AC Par 10%':'€ 1 489,95' } },
-  { id:'interior-rodape-3mod', medium:'imprensa', imprensaType:'interior', name:'Rodapé — 3 módulos', summary:'Faixa com 3 módulos de altura.',
+  { id:'interior-rodape-3mod', medium:'print', subtype:'interior', name:'Rodapé — 3 módulos', summary:'Faixa com 3 módulos de altura.',
     grid:{ cols:5, rows:3, hot:'bottom' }, peek:'Mancha 25,9×4,20 • 15 módulos',
     specs:{ 'Mancha útil':'25,9 × 4,20 cm', 'Colunas':5, 'Módulos por coluna':3, 'Total de módulos':15,
       'Base DC Par':'€ 2 325,40', 'Sobretaxa DC Ímpar 15%':'€ 2 674,21', 'Sobretaxa AC Ímpar 30%':'€ 3 023,02', 'Sobretaxa AC Par 10%':'€ 2 557,94' } },
-  { id:'interior-dupla-abertura', medium:'imprensa', imprensaType:'interior', name:'Página Dupla (Abertura)', summary:'Dupla página — abertura de caderno.',
+  { id:'interior-dupla-abertura', medium:'print', subtype:'interior', name:'Página Dupla (Abertura)', summary:'Dupla página — abertura de caderno.',
     grid:{ cols:10, rows:20, hot:'all' }, peek:'Mancha 53,5×30,2 • 200 módulos',
     specs:{ 'Mancha útil':'53,5 × 30,2 cm', 'Colunas':10, 'Módulos por coluna':20, 'Total de módulos':200,
       'AC':'€ 20 838,00', 'DC':'€ 19 025,00', 'Dupla abertura':'€ 30 000,00' } },
-  { id:'interior-dupla-horizontal-baixo', medium:'imprensa', imprensaType:'interior', name:'Página Dupla (Horizontal baixo)', summary:'Dupla — metade inferior.',
+  { id:'interior-dupla-horizontal-baixo', medium:'print', subtype:'interior', name:'Página Dupla (Horizontal baixo)', summary:'Dupla — metade inferior.',
     grid:{ cols:10, rows:10, hot:'bottom' }, peek:'Mancha 53,5×14,9 • 100 módulos',
     specs:{ 'Mancha útil':'53,5 × 14,9 cm', 'Colunas':10, 'Módulos por coluna':10, 'Total de módulos':100,
       'Base DC Par':'€ 9 515,00', 'Sobretaxa DC Ímpar 15%':'€ 10 942,25', 'Sobretaxa AC Ímpar 30%':'€ 12 369,50', 'Sobretaxa AC Par 10%':'€ 10 466,50' } },
 
-  { id:'contracapa-rodape', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Rodapé', summary:'Faixa inferior (5×2 módulos).',
+  { id:'contracapa-rodape', medium:'print', subtype:'contracapa', name:'Contracapa — Rodapé', summary:'Faixa inferior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'25,9×2,7 cm • 10 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Preço':'€ 2 000,00' }, pricing:{ type:'fixed', amount:2000.00 } },
-  { id:'contracapa-rodatopo', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Roda-topo', summary:'Faixa superior (5×2 módulos).',
+  { id:'contracapa-rodatopo', medium:'print', subtype:'contracapa', name:'Contracapa — Roda-topo', summary:'Faixa superior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'25,9×2,7 cm • 10 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Preço':'€ 3 000,00' }, pricing:{ type:'fixed', amount:3000.00 } },
-  { id:'contracapa-orelha', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Orelha', summary:'Bloco lateral superior (1×3 módulos).',
+  { id:'contracapa-orelha', medium:'print', subtype:'contracapa', name:'Contracapa — Orelha', summary:'Bloco lateral superior (1×3 módulos).',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78×4,2 cm • 3 módulos',
     specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Total de módulos':3, 'Preço':'€ 1 500,00' }, pricing:{ type:'fixed', amount:1500.00 } },
-  { id:'contracapa-pagina-inteira', medium:'imprensa', imprensaType:'contracapa', name:'Contracapa — Página Inteira', summary:'5 colunas × 20 módulos — página completa.',
+  { id:'contracapa-pagina-inteira', medium:'print', subtype:'contracapa', name:'Contracapa — Página Inteira', summary:'5 colunas × 20 módulos — página completa.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'25,9×30,2 cm • 100 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100, 'Preço':'€ 15 000,00' }, pricing:{ type:'fixed', amount:15000.00 } }
 ];
@@ -1348,7 +1586,7 @@ const TV = [
 // ---- Safe dataset fallbacks (empty if not defined) ----
 const DATA = {
   DIGITAL : (typeof DIGITAL  !== 'undefined' && Array.isArray(DIGITAL))  ? DIGITAL  : [],
-  IMPRENSA: (typeof IMPRENSA !== 'undefined' && Array.isArray(IMPRENSA)) ? IMPRENSA : [],
+  print: (typeof print !== 'undefined' && Array.isArray(print)) ? print : [],
   TV      : (typeof TV       !== 'undefined' && Array.isArray(TV))       ? TV       : [],
   ABOLA   : (typeof ABOLA    !== 'undefined' && Array.isArray(ABOLA))    ? ABOLA    : [],
   BRANDED : (typeof BRANDED  !== 'undefined' && Array.isArray(BRANDED))  ? BRANDED  : []
@@ -1358,8 +1596,8 @@ const DATA = {
 let state = {
   medium: 'abola',
   digitalType: 'all',
-  imprensaType: 'all',
-  tvDuration: 30,
+  subtype: 'all',
+  tvDuration: null,
   tvShowAll: false
 };
 
@@ -1373,7 +1611,7 @@ const $brandBtn = document.getElementById('brandBtn');
 // Sections
 const $secAbola    = document.getElementById('sec-abola');
 const $secDigital  = document.getElementById('sec-digital');
-const $secImprensa = document.getElementById('sec-imprensa');
+const $secprint = document.getElementById('sec-print');
 const $secTV       = document.getElementById('sec-tv');
 const $secBranded  = document.getElementById('sec-branded');
 const $secTerms    = document.getElementById('sec-condicoes');
@@ -1381,10 +1619,10 @@ const $secTerms    = document.getElementById('sec-condicoes');
 // Grids / panels
 const $gridAbola    = document.getElementById('gridAbola');
 const $gridDigital  = document.getElementById('gridDigital');
-const $gridImprensa = document.getElementById('gridImprensa');
+const $gridprint = document.getElementById('gridprint');
 const $gridBranded  = document.getElementById('gridBranded');
 const $tvPanel      = document.getElementById('tvPanel');
-const $imprensaNote = document.getElementById('imprensaNotice');
+const $printNote = document.getElementById('printNotice');
 
 // Drawer (optional if present)
 const $scrim          = document.getElementById('scrim');
@@ -1398,7 +1636,7 @@ const $closeDrawerBtn = document.getElementById('closeDrawerBtn');
 
 const $brandBar = document.querySelector('.masthead > .brand');
 
-
+const $drawerContent = document.querySelector('.drawer-content');
 // ---------------- Layout helpers ----------------
 function mastHeight(){ return $masthead?.getBoundingClientRect().height || 0; }
 
@@ -1407,6 +1645,55 @@ function syncHeaderSpacer(){
   const h = $masthead?.getBoundingClientRect().height || 0;
   if ($headerSpacer) $headerSpacer.style.height = h + 'px';
   document.documentElement.style.setProperty('--mastpad', (h + 8) + 'px'); 
+}
+
+function buildItemHash(item){
+  if(item.medium === 'digital'){
+    const sub = state.digitalType || 'all';
+    return `#digital/${sub}/item/${item.id}`;
+  }
+  if(item.medium === 'print'){
+    const sub = state.subtype || 'all';
+    return `#print/${sub}/item/${item.id}`;
+  }
+  if(item.medium === 'branded'){
+    return `#branded/item/${item.id}`;
+  }
+  if(item.medium === 'abola'){
+    return `#abola/item/${item.id}`;
+  }
+  return location.hash || '#';
+}
+
+
+
+function buildprintTechBox(){
+  const box = document.createElement('section');
+  box.className = 'print-tech';
+  box.innerHTML = `
+    <h3>Especificações de Impressão</h3>
+    <ul>
+      <li>Formato <strong>PDF, EPS</strong> ou <strong>TIFF</strong>, <strong>300&nbsp;dpi</strong>, <strong>CMYK</strong> (quadricromia).</li>
+      <li>Os textos devem ser <strong>convertidos em curvas</strong>.</li>
+      <li>Para melhores resultados de impressão, os ficheiros devem ser <strong>acompanhados de provas de cor</strong>.</li>
+      <li>Os textos devem ser <strong>exclusivamente a preto (100%)</strong>; as restantes cores <strong>CMY</strong> devem vir com <strong>0%</strong>.</li>
+    </ul>
+    <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
+    <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
+    <h3>SOBRETAXA</h3>
+    <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Produzida pelo jornal +50%</p>
+  `;
+  return box;
+}
+
+
+function baseHashForCurrent(){
+  if (state.medium === 'digital')   return `#digital/${state.digitalType}`;
+  if (state.medium === 'print')     return `#print/${state.subtype}`;
+  if (state.medium === 'tv')        return '#'+updateHashTV();
+  if (state.medium === 'branded')   return '#branded';
+  if (state.medium === 'condicoes') return '#condicoes';
+  return '#abola';
 }
 
 
@@ -1551,14 +1838,14 @@ function buildSubmenu(medium){
       { val: 'display',   label: 'Display' },
       { val: 'rich-media',label: 'Rich Media' }
     ];
-  } else if (medium === 'imprensa') {
-    options = [
-      { val: 'all',       label: 'All' },
-      { val: 'capa',      label: 'Capa' },
-      { val: 'interior',  label: 'Interior' },
-      { val: 'contracapa',label: 'Contracapa' }
-    ];
-  }
+} else if (medium === 'print') {
+  options = [
+    { val: 'all',        label: 'All' },
+    { val: 'capa',       label: 'Front page' },
+    { val: 'interior',   label: 'inside page' },
+    { val: 'contracapa', label: 'back page' }
+  ];
+}
 
   // --- If no submenu for this medium, close (fade out) the slot and stop ---
   if (options.length === 0) {
@@ -1582,7 +1869,7 @@ function buildSubmenu(medium){
 
     const isActive =
       (medium === 'digital'  && state.digitalType   === opt.val) ||
-      (medium === 'imprensa' && state.imprensaType === opt.val);
+      (medium === 'print' && state.subtype === opt.val);
     if (isActive) btn.classList.add('active');
 
     btn.onclick = () => {
@@ -1592,10 +1879,10 @@ function buildSubmenu(medium){
         history.replaceState(null, '', `#digital/${opt.val}`);
         scrollToHeadById('head-digital');
       } else {
-        state.imprensaType = opt.val;
-        renderImprensaSection();
-        history.replaceState(null, '', `#imprensa/${opt.val}`);
-        scrollToHeadById('head-imprensa');
+        state.subtype = opt.val;
+        renderprintSection();
+        history.replaceState(null, '', `#print/${opt.val}`);
+        scrollToHeadById('head-print');
       }
       setActiveTab(nextNav, opt.val, 'data-sub');
     };
@@ -1647,28 +1934,78 @@ function buildSubmenu(medium){
   });
 }
 
+// --- Scroll lock helpers (preserve page position) ---
+let __lockY = 0;
+function lockPageScroll(){
+  __lockY = window.scrollY || window.pageYOffset || 0;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${__lockY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+}
+function unlockPageScroll(){
+  const y = Math.abs(parseInt(document.body.style.top || '0', 10)) || 0;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  window.scrollTo(0, y);
+}
 
-// ---------------- Drawer ----------------
-function closeDrawer(){
+
+// ---------------- Drawer ----------------//
+ 
+function closeDrawer({ updateHash = true } = {}){
   $scrim?.classList.remove('show');
   $drawer?.classList.remove('show');
-}
-$scrim?.addEventListener('click', closeDrawer);
-$closeDrawerBtn?.addEventListener('click', closeDrawer);
-window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); });
+  document.body.classList.remove('no-scroll');
 
-function openDrawer(item){
-  if(!item || item.medium==='tv' || !$drawer) return;
-  if($drawerTitle) $drawerTitle.textContent = item.name || 'Details';
-  if($drawerTags)  $drawerTags.textContent  = [item.subtype,item.medium].filter(Boolean).join(' · ');
-  if($preview){
+  // strip /item/... from the URL but keep you in the same section
+  if (updateHash){
+    history.replaceState(null, '', baseHashForCurrent()); // no jump
+  }
+}
+
+// listeners (put these AFTER the function above, and AFTER $scrim / $closeDrawerBtn are defined)
+$scrim?.addEventListener('click', (e) => {
+  e.preventDefault();
+  closeDrawer({ updateHash: true });
+});
+
+$closeDrawerBtn?.addEventListener('click', (e) => {
+  e.preventDefault();
+  closeDrawer({ updateHash: true });
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeDrawer({ updateHash: true });
+  }
+});
+
+
+
+
+function openDrawer(item, { fromHash = false } = {}){
+  if (!item || item.medium === 'tv' || !$drawer) return;
+
+  // Title + tags
+  if ($drawerTitle) $drawerTitle.textContent = item.name || 'Details';
+  if ($drawerTags)  $drawerTags.textContent  = [item.subtype, item.medium].filter(Boolean).join(' · ');
+
+  // Preview
+  if ($preview){
     $preview.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.style.cssText = `height:200px;border-radius:12px;border:1px solid var(--ring);${gradStyle(item.gradient||['#eee','#fff'])}`;
     $preview.appendChild(wrap);
   }
-  if($specList){
-    $specList.innerHTML='';
+
+  // Specs
+  if ($specList){
+    $specList.innerHTML = '';
     const specs = item.specs || { Note:'Specs coming soon' };
     Object.entries(specs).forEach(([k,v])=>{
       const dt=document.createElement('dt'); dt.textContent=k;
@@ -1676,12 +2013,67 @@ function openDrawer(item){
       $specList.append(dt,dd);
     });
   }
-  if($specSection) $specSection.style.display='block';
+  if ($specSection) $specSection.style.display='block';
+
+  // If it's a print item, append the "print-tech" info INSIDE the drawer (bottom)
+  const drawerContent = document.querySelector('.drawer-content');
+  if (drawerContent){
+    // remove previous block if any
+    const old = drawerContent.querySelector('.print-tech-inside');
+    if (old) old.remove();
+
+    if (item.medium === 'print'){
+      const box = document.createElement('section');
+      box.className = 'print-tech print-tech-inside';
+      box.innerHTML = `
+        <h3>Especificações de Impressão</h3>
+        <ul>
+          <li>Formato <strong>PDF, EPS</strong> ou <strong>TIFF</strong>, <strong>300&nbsp;dpi</strong>, <strong>CMYK</strong> (quadricromia).</li>
+          <li>Os textos devem ser <strong>convertidos em curvas</strong>.</li>
+          <li>Para melhores resultados de impressão, os ficheiros devem ser <strong>acompanhados de provas de cor</strong>.</li>
+          <li>Os textos devem ser <strong>exclusivamente a preto (100%)</strong>; as restantes cores <strong>CMY</strong> devem vir com <strong>0%</strong>.</li>
+        </ul>
+        <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
+        <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
+        <h3>SOBRETAXA</h3>
+        <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Produzida pelo jornal +50%</p>
+      `;
+      drawerContent.appendChild(box);
+    }
+  }
+
+  // Show drawer (and lock page scroll)
   $scrim?.classList.add('show');
   $drawer?.classList.add('show');
+  document.body.classList.add('no-scroll');
+
+  // Make the URL shareable for this item WITHOUT triggering hashchange/scroll
+  if (!fromHash){
+    let hash = baseHashForCurrent();
+    if (item.medium === 'digital')   hash = `#digital/${state.digitalType}/item/${item.id}`;
+    else if (item.medium === 'print') hash = `#print/${state.subtype}/item/${item.id}`;
+    else if (item.medium === 'branded') hash = `#branded/item/${item.id}`;
+    history.replaceState(null, '', hash); // no jump
+  }
 }
 
+
+function labelForItem(item){
+  const sub = item.subtype || '';
+  const nice = {
+    'display': 'Display',
+    'rich-media': 'Rich Media',
+    'capa': 'Front page',
+    'interior': 'Inside pages',
+    'contracapa': 'Back pages'
+  };
+  return nice[sub] || '';
+}
+
+
+
 // ---------------- Builders ----------------
+
 function buildPoster(item){
   const card   = document.createElement('article'); card.className='card';
   const poster = document.createElement('div'); poster.className='poster';
@@ -1689,17 +2081,20 @@ function buildPoster(item){
   grad.style = gradStyle(item.gradient || ['#e5e7eb','#ffffff']);
   poster.appendChild(grad);
 
-  const lbl = document.createElement('div'); lbl.className='label';
-  lbl.textContent = item.medium || '';
-  poster.appendChild(lbl);
+  // static, per-item label
+  const badge = labelForItem(item);
+  if (badge){
+    const lbl = document.createElement('div');
+    lbl.className = 'label';
+    lbl.textContent = badge;
+    poster.appendChild(lbl);
+  }
 
   const meta   = document.createElement('div'); meta.className='meta';
   const title  = document.createElement('div'); title.className='title';
   title.innerHTML = `<span>${item.name||''}</span>`;
-
   const summary = document.createElement('div'); summary.className='muted'; summary.style.fontSize='13px';
   summary.textContent = item.summary || '';
-
   meta.append(title, summary);
   card.append(poster, meta);
 
@@ -1710,7 +2105,7 @@ function buildPoster(item){
 // ---------------- Datasets ----------------
 function datasetAbola(){   return DATA.ABOLA; }
 function datasetDigital(){ return state.digitalType==='all' ? DATA.DIGITAL : DATA.DIGITAL.filter(i=>i.subtype===state.digitalType); }
-function datasetImprensa(){return state.imprensaType==='all'? DATA.IMPRENSA: DATA.IMPRENSA.filter(i=>i.imprensaType===state.imprensaType); }
+function datasetprint(){return state.subtype==='all'? DATA.print: DATA.print.filter(i=>i.subtype===state.subtype); }
 function datasetBranded(){ return DATA.BRANDED; }
 
 // ---------------- Renderers ----------------
@@ -1724,15 +2119,43 @@ function renderDigitalSection(){
   $gridDigital.innerHTML='';
   datasetDigital().forEach(item=> $gridDigital.appendChild(buildPoster(item)));
 }
-function renderImprensaSection(){
-  if(!$gridImprensa) return;
-  $gridImprensa.innerHTML='';
-  datasetImprensa().forEach(item=> $gridImprensa.appendChild(buildPoster(item)));
-  if($imprensaNote){
-    $imprensaNote.style.display='block';
-    $imprensaNote.textContent='SOBRETAXA — Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Produzida pelo jornal +50%';
+function renderprintSection(){
+  if(!$gridprint || !$secprint) return;
+
+  // populate grid
+  $gridprint.innerHTML='';
+  datasetprint().forEach(item=> $gridprint.appendChild(buildPoster(item)));
+
+  // hide old "print-note" banner (we’re moving it to the bottom)
+  if($printNote){
+    $printNote.style.display='none';
+    $printNote.textContent='';
   }
+
+  // remove any previous foot blocks to avoid duplicates on re-render
+  [...$secprint.querySelectorAll('.print-tech')].forEach(n=> n.remove());
+
+  // build the bottom box (Ficheiros + Sobretaxa)
+  const box = document.createElement('section');
+  box.className = 'print-tech';
+  box.innerHTML = `
+    <h3>Especificações de Impressão</h3>
+    <ul>
+      <li>Formato <strong>PDF, EPS</strong> ou <strong>TIFF</strong>, <strong>300&nbsp;dpi</strong>, <strong>CMYK</strong> (quadricromia).</li>
+      <li>Os textos devem ser <strong>convertidos em curvas</strong>.</li>
+      <li>Para melhores resultados de impressão, os ficheiros devem ser <strong>acompanhados de provas de cor</strong>.</li>
+      <li>Os textos devem ser <strong>exclusivamente a preto (100%)</strong>; as restantes cores <strong>CMY</strong> devem vir com <strong>0%</strong>.</li>
+    </ul>
+
+    <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
+    <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
+
+    <h3>SOBRETAXA</h3>
+    <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Produzida pelo jornal +50%</p>
+  `;
+  $secprint.appendChild(box);
 }
+
 function renderBrandedSection(){
   if(!$gridBranded) return;
   $gridBranded.innerHTML='';
@@ -1741,119 +2164,168 @@ function renderBrandedSection(){
 
 // ---- TV Ratecard ----
 function updateHashTV(){
-  let hash = 'tv/tv-ratecard';
-  if(state.tvDuration) hash += '/' + state.tvDuration;
-  if(state.tvShowAll) hash += '/all';
+  let hash = 'tv';
+  if (Number.isFinite(state.tvDuration)) hash += '/' + state.tvDuration;
+  if (state.tvShowAll) hash += '/all';
   return hash;
 }
+
 function renderTVMatrix(item, targetEl){
-  const isCompact = window.matchMedia('(max-width: 640px)').matches && !state.tvShowAll;
-  const activeDur = state.tvDuration || item.durations[0];
-  const durationsToRender = isCompact ? [activeDur] : item.durations;
+  const durations = item.durations;
+  const scroller = document.createElement('div'); scroller.className = 'hscroll';
+  const table = document.createElement('table'); table.className = 'rate-table';
 
-  const chipsBar = document.createElement('div');
-  chipsBar.style.display='flex';
-  chipsBar.style.flexWrap='wrap';
-  chipsBar.style.gap='6px';
-  chipsBar.style.margin='10px 0';
+  // keep references to every cell per duration (for hover/active toggles)
+  const cellsByDur = Object.fromEntries(durations.map(d => [d, []]));
 
-  item.durations.forEach(d=>{
-    const b=document.createElement('button');
-    b.className='btn';
-    b.textContent=`${d}”`;
-    if(state.tvDuration===d) b.classList.add('primary');
-    b.onclick = ()=>{
-      state.tvDuration = d;
-      renderTVOutside(item);
-      history.replaceState(null,'','#'+updateHashTV());
-     scrollToHeadById('head-tv');
-    };
-    chipsBar.appendChild(b);
-  });
-
-  if (window.matchMedia('(max-width: 640px)').matches){
-    const toggle=document.createElement('button');
-    toggle.className='btn ghost';
-    toggle.style.marginLeft='6px';
-    toggle.textContent = state.tvShowAll ? 'Show less' : 'Show all durations';
-    toggle.onclick = ()=>{
-      state.tvShowAll = !state.tvShowAll;
-      renderTVOutside(item);
-      history.replaceState(null,'','#'+updateHashTV());
-      scrollToHeadById('head-tv');
-    };
-    chipsBar.appendChild(toggle);
+  function setHover(dur, on){
+    (cellsByDur[dur] || []).forEach(el => el.classList.toggle('col-hover', on));
+  }
+  function setActive(dur){
+    // clear previous
+    Object.values(cellsByDur).flat().forEach(el => el.classList.remove('col-active'));
+    // set new
+    (cellsByDur[dur] || []).forEach(el => el.classList.add('col-active'));
+  }
+  function selectDuration(dur){
+    state.tvDuration = dur;
+    setActive(dur);
+    history.replaceState(null, '', '#'+updateHashTV());
+    scrollToHeadById('head-tv');
   }
 
-  const scroller = document.createElement('div'); scroller.className='hscroll';
-  const table = document.createElement('table'); table.className='rate-table';
+  // THEAD
+  const thead = document.createElement('thead');
+  const htr = document.createElement('tr');
 
-  const thead=document.createElement('thead');
-  const htr=document.createElement('tr');
-  const thTime=document.createElement('th'); thTime.textContent='Time'; thTime.className='sticky-col'; htr.appendChild(thTime);
-  durationsToRender.forEach(d=>{
-    const th=document.createElement('th'); th.textContent=`${d}”`;
-    if(state.tvDuration===d) th.style.background='#fff7ed';
+  const thTime = document.createElement('th');
+  thTime.textContent = 'Time';
+  thTime.className = 'sticky-col';
+  htr.appendChild(thTime);
+
+  durations.forEach(d => {
+    const th = document.createElement('th');
+    th.textContent = `${d}”`;
+    th.classList.add('dur');
+    th.dataset.dur = d;
+    th.addEventListener('mouseenter', () => setHover(d, true));
+    th.addEventListener('mouseleave', () => setHover(d, false));
+    th.addEventListener('click', () => selectDuration(d));
+    cellsByDur[d].push(th);
     htr.appendChild(th);
   });
+
   thead.appendChild(htr);
   table.appendChild(thead);
 
-  const tbody=document.createElement('tbody');
-  (item.dayparts||[]).forEach(dp=>{
-    const sec=document.createElement('tr'); sec.className='section-row';
-    const s1=document.createElement('th'); s1.className='sticky-col'; s1.textContent=dp.name||''; sec.appendChild(s1);
-    const s2=document.createElement('th'); s2.colSpan=durationsToRender.length; sec.appendChild(s2);
+  // TBODY
+  const tbody = document.createElement('tbody');
+
+  (item.dayparts || []).forEach(dp => {
+    const sec = document.createElement('tr'); sec.className = 'section-row';
+    const s1 = document.createElement('th'); s1.className = 'sticky-col'; s1.textContent = dp.name || '';
+    const s2 = document.createElement('th'); s2.colSpan = durations.length;
+    sec.append(s1, s2);
     tbody.appendChild(sec);
 
-    (dp.slots||[]).forEach(row=>{
-      const tr=document.createElement('tr');
-      const tdTime=document.createElement('td'); tdTime.className='sticky-col'; tdTime.textContent=row.time||''; tr.appendChild(tdTime);
-      durationsToRender.forEach(d=>{
-        const td=document.createElement('td');
-        const val=row.prices?.[d];
-        td.textContent = (val!=null) ? ('€ '+ val.toLocaleString('pt-PT')) : '—';
-        if(state.tvDuration===d) td.style.background='#fff7ed';
+    (dp.slots || []).forEach(row => {
+      const tr = document.createElement('tr');
+
+      const tdTime = document.createElement('td');
+      tdTime.className = 'sticky-col';
+      tdTime.textContent = row.time || '';
+      tr.appendChild(tdTime);
+
+      durations.forEach(d => {
+        const td = document.createElement('td');
+        td.dataset.dur = d;
+        const val = row.prices?.[d];
+        td.textContent = (val != null) ? ('€ ' + val.toLocaleString('pt-PT')) : '—';
+
+        td.addEventListener('mouseenter', () => setHover(d, true));
+        td.addEventListener('mouseleave', () => setHover(d, false));
+        td.addEventListener('click',      () => selectDuration(d));
+
+        cellsByDur[d].push(td);
         tr.appendChild(td);
       });
+
       tbody.appendChild(tr);
     });
   });
 
-  const idxHead=document.createElement('tr'); idxHead.className='section-row';
-  const ih1=document.createElement('th'); ih1.className='sticky-col'; ih1.textContent='INDEX'; idxHead.appendChild(ih1);
-  const ih2=document.createElement('th'); ih2.colSpan=durationsToRender.length; idxHead.appendChild(ih2);
+  // INDEX section
+  const idxHead = document.createElement('tr'); idxHead.className = 'section-row';
+  const ih1 = document.createElement('th'); ih1.className = 'sticky-col'; ih1.textContent = 'INDEX';
+  const ih2 = document.createElement('th'); ih2.colSpan = durations.length;
+  idxHead.append(ih1, ih2);
   tbody.appendChild(idxHead);
 
-  const idxRow=document.createElement('tr');
-  const il=document.createElement('td'); il.className='sticky-col'; il.textContent=''; idxRow.appendChild(il);
-  durationsToRender.forEach(d=>{
-    const td=document.createElement('td');
+  const idxRow = document.createElement('tr');
+  const il = document.createElement('td'); il.className = 'sticky-col'; il.textContent = '';
+  idxRow.appendChild(il);
+
+  durations.forEach(d => {
+    const td = document.createElement('td');
+    td.dataset.dur = d;
     td.textContent = (item.index?.[d] ?? '—');
-    if(state.tvDuration===d) td.style.background='#fff7ed';
+
+    td.addEventListener('mouseenter', () => setHover(d, true));
+    td.addEventListener('mouseleave', () => setHover(d, false));
+    td.addEventListener('click',      () => selectDuration(d));
+
+    cellsByDur[d].push(td);
     idxRow.appendChild(td);
   });
-  tbody.appendChild(idxRow);
 
+  tbody.appendChild(idxRow);
   table.appendChild(tbody);
   scroller.appendChild(table);
-  targetEl.appendChild(chipsBar);
   targetEl.appendChild(scroller);
+
+  // mark current duration
+if (Number.isFinite(state.tvDuration)) setActive(state.tvDuration);
+
 }
+
+
+
+function renderTVTechNote(targetEl){
+  const box = document.createElement('section');
+  box.className = 'tv-tech';
+  box.innerHTML = `
+    <h3>Broadcast Technical Specifications</h3>
+    <dl>
+      <dt>File Type</dt><dd>MXF (.mxf)</dd>
+      <dt>Codec</dt><dd>MPEG Video — XCam HD 35 — Version 2</dd>
+      <dt>Bit rate</dt><dd>35 Mb/s</dd>
+      <dt>Resolution</dt><dd>1920×1080 — 16:9</dd>
+      <dt>Frame rate</dt><dd>25.000 FPS</dd>
+      <dt>Bit depth</dt><dd>8 bits</dd>
+      <dt>Scan type</dt><dd>Interlaced</dd>
+      <dt>Scan order</dt><dd>Top Field Order</dd>
+      <dt>Compression mode</dt><dd>Lossy</dd>
+    </dl>
+    <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the broadcast.</p>
+    <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na emissão.</p>
+  `;
+  targetEl.appendChild(box);
+}
+
+
+
 function renderTVOutside(item){
   if(!$tvPanel || !item) return;
-  $tvPanel.innerHTML='';
-  const header=document.createElement('div');
-  header.innerHTML=`<h2>${item.name||'TV'}</h2><div class="muted">${item.summary||''}</div>`;
-  $tvPanel.appendChild(header);
+  $tvPanel.innerHTML = '';
   renderTVMatrix(item, $tvPanel);
+  renderTVTechNote($tvPanel); 
 }
 
 // Render all initially
 function renderAll(){
   renderAbolaSection();
   renderDigitalSection();
-  renderImprensaSection();
+  renderprintSection();
   renderBrandedSection();
   if (DATA.TV[0]) renderTVOutside(DATA.TV[0]);
 }
@@ -1881,7 +2353,7 @@ $mainTabs?.addEventListener('click', (e)=>{
 
 const headMap = {
   digital:'head-digital',
-  imprensa:'head-imprensa',
+  print:'head-print',
   tv:'head-tv',
   branded:'head-branded',
   condicoes:'head-condicoes'
@@ -1890,14 +2362,14 @@ const headMap = {
   scrollToHeadById(headMap[medium]);
 
   if(medium==='digital')        history.replaceState(null,'',`#digital/${state.digitalType}`);
-  else if(medium==='imprensa')  history.replaceState(null,'',`#imprensa/${state.imprensaType}`);
-  else if(medium==='tv')        history.replaceState(null,'',`#tv/tv-ratecard/${state.tvDuration}${state.tvShowAll?'/all':''}`);
+  else if(medium==='print')  history.replaceState(null,'',`#print/${state.subtype}`);
+  else if (medium==='tv') history.replaceState(null,'', '#'+updateHashTV());
   else                          history.replaceState(null,'',`#${medium}`);
 });// ---------------- Scroll spy (reference-line method; no flicker) ----------------
 const SECTION_TO_MEDIUM = {
   'sec-abola':'abola',
   'sec-digital':'digital',
-  'sec-imprensa':'imprensa',
+  'sec-print':'print',
   'sec-tv':'tv',
   'sec-branded':'branded',
   'sec-condicoes':'condicoes'
@@ -1958,19 +2430,30 @@ function onScrollSpy(){
     }
 
     
-    if (medium && medium !== 'condicoes' && state.medium !== medium){
-      state.medium = medium;
-      setActiveTab($mainTabs, medium);
-      buildSubmenu(medium); // reflect current section without scrolling
+if (medium && state.medium !== medium){
+  state.medium = medium;
 
-      // keep URL in sync (don’t change filters here)
-      if (medium === 'digital')       history.replaceState(null,'',`#digital/${state.digitalType}`);
-      else if (medium === 'imprensa') history.replaceState(null,'',`#imprensa/${state.imprensaType}`);
-      else if (medium === 'tv')       history.replaceState(null,'',`#tv/tv-ratecard/${state.tvDuration}${state.tvShowAll?'/all':''}`);
-      else                            history.replaceState(null,'',`#${medium}`);
+  if (medium === 'condicoes'){
+    // clear highlight + close the context slot
+    setActiveTab($mainTabs, null);          // no main tab selected
+    buildSubmenu('condicoes');              // hides the context slot
+    history.replaceState(null,'','#condicoes');
+  } else {
+    setActiveTab($mainTabs, medium);
+    buildSubmenu(medium);
 
-      cool(); // small cooldown to avoid immediate re-flips
-    }
+    if (medium === 'digital')
+      history.replaceState(null,'',`#digital/${state.digitalType}`);
+    else if (medium === 'print')
+      history.replaceState(null,'',`#print/${state.subtype}`);
+else if (medium === 'tv') history.replaceState(null,'', '#'+updateHashTV());
+    else
+      history.replaceState(null,'',`#${medium}`);
+  }
+
+  cool();
+}
+
   });
 }
 
@@ -1984,76 +2467,154 @@ onScrollSpy(); // init once
 
 // ---------------- Deep link handling ----------------
 function handleHash(){
-  const raw = (location.hash||'').replace('#','').trim();
-  if(!raw){ buildSubmenu('abola'); return; }
+  const raw = (location.hash || '').replace('#','').trim();
+  if (!raw){
+    // default landing: hero (A BOLA)
+    state.medium = 'abola';
+    setActiveTab($mainTabs, null);
+    buildSubmenu('abola'); // closes the context slot
+    return;
+  }
 
-  const parts  = raw.split('/').filter(Boolean);
-  const first  = parts[0];
+  const parts = raw.split('/').filter(Boolean);
+  const first = parts[0];
 
-  if(first==='tv'){
+  // ===== TV =====
+  if (first === 'tv'){
     state.medium = 'tv';
-    const dur = parseInt(parts[2] || parts[1], 10);
-    if(!isNaN(dur)) state.tvDuration = dur;
-    state.tvShowAll = parts.includes('all');
     setActiveTab($mainTabs, 'tv');
-    buildSubmenu('tv'); // empty
+    buildSubmenu('tv'); // no submenu options for tv
+
+    // Accept #tv/30 or #tv/30/all or #tv/all
+    const dur = parseInt(parts[2] || parts[1], 10);
+    if (!isNaN(dur)) state.tvDuration = dur;
+    state.tvShowAll = parts.includes('all');
+
     if (DATA.TV[0]) renderTVOutside(DATA.TV[0]);
+
+    // bring the section under the masthead; do NOT jump the page elsewhere
     lockSpy(900);
     scrollToHeadById('head-tv');
     return;
   }
 
-  if(first==='digital'){
+  // ===== DIGITAL =====
+  if (first === 'digital'){
     state.medium = 'digital';
+
+    // subtype (all | display | rich-media)
     const sub = parts[1];
-    if(['all','display','rich-media'].includes(sub)){ state.digitalType=sub; }
+    if (['all','display','rich-media'].includes(sub)) state.digitalType = sub;
+
     setActiveTab($mainTabs, 'digital');
     buildSubmenu('digital');
-setActiveTab(getContextNav(), state.digitalType, 'data-sub');
+    setActiveTab(getContextNav(), state.digitalType, 'data-sub');
     renderDigitalSection();
-    lockSpy(900);
-    scrollToHeadById('head-digital');
+
+    // Deep-link drawer: #digital/<sub>/item/<id>
+    if (parts[2] === 'item' && parts[3]){
+      const id = parts[3];
+      const item = DATA.DIGITAL.find(i => i.id === id);
+      lockSpy(900);
+      scrollToHeadById('head-digital');
+      if (item) setTimeout(() => openDrawer(item), 0);
+    } else {
+      lockSpy(900);
+      scrollToHeadById('head-digital');
+    }
     return;
   }
 
-  if(first==='imprensa'){
-    state.medium = 'imprensa';
+  // ===== print =====
+  if (first === 'print'){
+    state.medium = 'print';
+
+    // subtype (all | capa | interior | contracapa)
     const sub = parts[1];
-    if(['all','capa','interior','contracapa'].includes(sub)){ state.imprensaType=sub; }
-    setActiveTab($mainTabs, 'imprensa');
-    buildSubmenu('imprensa');
- setActiveTab(getContextNav(), state.imprensaType, 'data-sub');
-    renderImprensaSection();
-    lockSpy(900);
-    scrollToHeadById('head-imprensa');
+    if (['all','capa','interior','contracapa'].includes(sub)) state.subtype = sub;
+
+    setActiveTab($mainTabs, 'print');
+    buildSubmenu('print');
+    setActiveTab(getContextNav(), state.subtype, 'data-sub');
+    renderprintSection();
+
+    // Deep-link drawer: #print/<sub>/item/<id>
+    if (parts[2] === 'item' && parts[3]){
+      const id = parts[3];
+      const item = DATA.print.find(i => i.id === id);
+      lockSpy(900);
+      scrollToHeadById('head-print');
+      if (item) setTimeout(() => openDrawer(item), 0);
+    } else {
+      lockSpy(900);
+      scrollToHeadById('head-print');
+    }
     return;
   }
 
-  if(first==='top'){
-  state.medium = 'top';
-  setActiveTab($mainTabs, null);   // no main tab
-  buildSubmenu('top');
-  lockSpy(900);
-  scrollToHeadById('head-abola');
-  return;
-}
+  // ===== BRANDED =====
+  if (first === 'branded'){
+    state.medium = 'branded';
+    setActiveTab($mainTabs, 'branded');
+    buildSubmenu('branded'); // no submenu
+    renderBrandedSection();
 
+    // Deep-link drawer: #branded/item/<id>
+    if (parts[1] === 'item' && parts[2]){
+      const id = parts[2];
+      const item = DATA.BRANDED?.find?.(i => i.id === id);
+      lockSpy(900);
+      scrollToHeadById('head-branded');
+      if (item) setTimeout(() => openDrawer(item), 0);
+    } else {
+      lockSpy(900);
+      scrollToHeadById('head-branded');
+    }
+    return;
+  }
 
-if(first==='abola' || first==='branded' || first==='condicoes'){
-  state.medium = first;
-  setActiveTab($mainTabs, first);
-  buildSubmenu(first);
+  // ===== TOP / ABOLA / CONDICOES =====
+  if (first === 'top'){
+    state.medium = 'top';
+    setActiveTab($mainTabs, null);
+    buildSubmenu('top'); // closes the context slot
+    lockSpy(900);
+    scrollToHeadById('head-abola');
+    return;
+  }
 
-  lockSpy(900);
-  if(first==='abola')       scrollToHeadById('head-abola');
-  else if(first==='branded')scrollToHeadById('head-branded');
-  else if(first==='condicoes')scrollToHeadById('head-condicoes');
-  return;
-}
-updateBrandVisibility();
+  if (first === 'abola'){
+    state.medium = 'abola';
+    setActiveTab($mainTabs, null);
+    buildSubmenu('abola');
 
+    // Optional deep-link drawer for hero items: #abola/item/<id>
+    if (parts[1] === 'item' && parts[2]){
+      const id = parts[2];
+      const item = DATA.ABOLA?.find?.(i => i.id === id);
+      lockSpy(900);
+      scrollToHeadById('head-abola');
+      if (item) setTimeout(() => openDrawer(item), 0);
+    } else {
+      lockSpy(900);
+      scrollToHeadById('head-abola');
+    }
+    return;
+  }
+
+  if (first === 'condicoes'){
+    state.medium = 'condicoes';
+    setActiveTab($mainTabs, null);
+    buildSubmenu('condicoes'); // closes the context slot
+    lockSpy(900);
+    scrollToHeadById('head-condicoes');
+    return;
+  }
+
+  // ===== Fallback =====
   buildSubmenu(state.medium);
 }
+
 window.addEventListener('hashchange', handleHash);
 handleHash();
 
