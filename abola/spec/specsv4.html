@@ -1524,7 +1524,7 @@ const DIGITAL = [
     peek:'Framing unit • spec template', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#ef4444','#f3f4f6'],
     specs:{ 'Dimensions':'Framing template', 'File types':'JPG / PNG / GIF', 'Max weight':'—', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Consult' }
   },
-  { id:'takeover', medium:'digital', subtype:'rich-media', name:'Takeover', summary:'Billboard + Halfpage + MREC orchestration.',
+  { id:'takeover', medium:'digital', subtype:'rich-media', name:'Takeover',  summary:'Billboard + Halfpage + MREC orchestration.',
     peek:'HTML/IMG/MP4 • 50KB img • MP4 ≤1MB', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#b91c1c','#e5e7eb'],
     specs:{ 'Dimensions':'Billboard + Halfpage + MREC', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'50 KB (images), MP4 up to 1 MB', 'Visible on':'desktop', 'CPM':'POA (24h takeover available)' }
   },
@@ -1576,28 +1576,28 @@ const print = [
     specs:{ 'Mancha de impressão':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Módulos por página':100, 'Medida do módulo':'4,78 × 1,20 cm' },
     pricing:{ type:'per_module', base:null }
   },
-  { id:'capa-rodape', medium:'print', subtype:'capa', name:'Capa — Rodapé', summary:'Faixa inferior em toda a largura.',
+  { id:'capa-rodape', medium:'print', subtype:'capa', name:'Capa — Rodapé', art:'print/rodape.png', summary:'Faixa inferior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'Faixa • 5 col × 2 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm (faixa)', 'Colunas':5, 'Módulos por coluna':2, 'Preço':'€ 2 230,00' }, pricing:{ type:'fixed', amount:2230.00 } },
-  { id:'capa-rodatopo', medium:'print', subtype:'capa', name:'Capa — Roda-topo', summary:'Faixa superior em toda a largura.',
+  { id:'capa-rodatopo', medium:'print', subtype:'capa', name:'Capa — Roda-topo', art:'print/rodatopo.png', summary:'Faixa superior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'Topo • 5 col × 2 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Preço':'€ 3 450,00' }, pricing:{ type:'fixed', amount:3450.00 } },
-  { id:'capa-orelha', medium:'print', subtype:'capa', name:'Capa — Orelha', summary:'Bloco lateral superior.',
+  { id:'capa-orelha', medium:'print', subtype:'capa', name:'Capa — Orelha', art:'print/orelha.png', summary:'Bloco lateral superior.',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78 × 4,2 cm • 1 col',
     specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Preço':'€ 1 990,00' }, pricing:{ type:'fixed', amount:1990.00 } },
-  { id:'capa-coluna', medium:'print', subtype:'capa', name:'Capa — Coluna', summary:'Coluna vertical lateral.',
+  { id:'capa-coluna', medium:'print', subtype:'capa', name:'Capa — Coluna',  art:'print/coluna.png', summary:'Coluna vertical lateral.',
     grid:{ cols:1, rows:20, hot:'right' }, peek:'30,2 × 4,78 cm • 1 col',
     specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':1, 'Módulos por coluna':20, 'Preço':'€ 25 000,00' }, pricing:{ type:'fixed', amount:25000.00 } },
-  { id:'capa-takeover', medium:'print', subtype:'capa', name:'Capa — Takeover', summary:'Faixa topo + coluna lateral.',
+  { id:'capa-takeover', medium:'print', subtype:'capa', name:'Capa — Takeover',  art:'print/takeover.png', summary:'Faixa topo + coluna lateral.',
     grid:{ cols:1, rows:20, hot:'all' }, peek:'2,7×25,9 + 30,2×4,78 (zona lateral)',
     specs:{ 'Mancha útil':'2,7 × 25,9 + 30,2 × 4,78 cm (zona lateral)', 'Colunas':1, 'Módulos por coluna':20, 'Preço':'€ 37 500,00' }, pricing:{ type:'fixed', amount:37500.00 } },
 
-  { id:'interior-pagina', medium:'print', subtype:'interior', name:'Página', summary:'5 colunas × 20 módulos — página inteira.',
+  { id:'interior-pagina', medium:'print', subtype:'interior', name:'Página', art:'print/pagina.png',  summary:'5 colunas × 20 módulos — página inteira.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 • 100 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100,
-      'Base DC Par':'€ 8 940,00', 'Sobretaxa DC Ímpar 15%':'€ 10 281,00', 'Sobretaxa AC Ímpar 30%':'€ 11 622,00', 'Sobretaxa AC Par 10%':'€ 9 834,00',
-      'Observações':'Localização obrigatória +50% · Idioma estrangeiro +50% · Produzida pelo jornal +50%'} },
-  { id:'interior-junior', medium:'print', subtype:'interior', name:'Junior Page', summary:'4 colunas × 12 módulos.',
+      'Base DC Par':'€ 8 940,00', 'Sobretaxa DC Ímpar 15%':'€ 10 281,00', 'Sobretaxa AC Ímpar 30%':'€ 11 622,00', 'Sobretaxa AC Par 10%':'€ 9 834,00'} },
+ 
+      { id:'interior-junior', medium:'print', subtype:'interior', name:'Junior Page',  art:'print/juniorpage.png', summary:'4 colunas × 12 módulos.',
     grid:{ cols:4, rows:12, hot:'bottom' }, peek:'Mancha 20,62×18 • 48 módulos',
     specs:{ 'Mancha útil':'20,62 × 18 cm', 'Colunas':4, 'Módulos por coluna':12, 'Total de módulos':48,
       'Base DC Par':'€ 4 967,00', 'Sobretaxa DC Ímpar 15%':'€ 5 712,05', 'Sobretaxa AC Ímpar 30%':'€ 6 457,60', 'Sobretaxa AC Par 10%':'€ 5 463,70' } },
@@ -1606,58 +1606,71 @@ const print = [
     grid:{ cols:5, rows:10, hot:'bottom' }, peek:'Mancha 25,9×14,9 • 50 módulos',
     specs:{ 'Mancha útil':'25,9 × 14,9 cm', 'Colunas':5, 'Módulos por coluna':10, 'Total de módulos':50,
       'Base DC Par':'€ 4 386,00', 'Sobretaxa DC Ímpar 15%':'€ 5 043,90', 'Sobretaxa AC Ímpar 30%':'€ 5 701,80', 'Sobretaxa AC Par 10%':'€ 4 824,60' } },
- 
- 
+
+
+
+
+
+
       { id:'interior-meia-v-2c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 2 col.)', art:'print/meiapagina2colunas.png', summary:'2 colunas × 20 módulos.',
     grid:{ cols:2, rows:20, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
     specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':20, 'Total de módulos':40,
       'Base DC Par':'€ 3 612,00', 'Sobretaxa DC Ímpar 15%':'€ 4 153,80', 'Sobretaxa AC Ímpar 30%':'€ 4 695,60', 'Sobretaxa AC Par 10%':'€ 3 973,20' } },
-
-
-
-  { id:'interior-meia-v-3c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 3 col.)', summary:'3 colunas × 20 módulos.',
+  { id:'interior-meia-v-3c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 3 col.)', art:'print/meiapagina3colunasvert.png', summary:'3 colunas × 20 módulos.',
     grid:{ cols:3, rows:20, hot:'right' }, peek:'Mancha 15,34×30,2 • 60 módulos',
+
+
     specs:{ 'Mancha útil':'15,34 × 30,2 cm', 'Colunas':3, 'Módulos por coluna':20, 'Total de módulos':60,
       'Base DC Par':'€ 5 160,00', 'Sobretaxa DC Ímpar 15%':'€ 5 934,00', 'Sobretaxa AC Ímpar 30%':'€ 6 708,00', 'Sobretaxa AC Par 10%':'€ 5 676,00' } },
-  { id:'interior-um-quarto-h', medium:'print', subtype:'interior', name:'1/4 Página (Horizontal)', summary:'5 colunas × 5 módulos.',
+  
+      { id:'interior-um-quarto-h', medium:'print', subtype:'interior', name:'1/4 Página (Horizontal)', art:'print/quartopaginahorz.png', summary:'5 colunas × 5 módulos.',
     grid:{ cols:5, rows:5, hot:'bottom' }, peek:'Mancha 25,9×7,2 • 25 módulos',
+
+    
     specs:{ 'Mancha útil':'25,9 × 7,2 cm', 'Colunas':5, 'Módulos por coluna':5, 'Total de módulos':25,
       'Base DC Par':'€ 3 000,00', 'Sobretaxa DC Ímpar 15%':'€ 3 450,00', 'Sobretaxa AC Ímpar 30%':'€ 3 900,00', 'Sobretaxa AC Par 10%':'€ 3 300,00' } },
-  { id:'interior-um-quarto-3c', medium:'print', subtype:'interior', name:'1/4 Página (3 colunas)', summary:'3 colunas × 10 módulos.',
+ 
+ 
+      { id:'interior-um-quarto-3c', medium:'print', subtype:'interior', name:'1/4 Página (3 colunas)',  art:'print/quartopagina3colunas.png', summary:'3 colunas × 10 módulos.',
     grid:{ cols:3, rows:10, hot:'all' }, peek:'Mancha 15,34×14,9 • 30 módulos',
     specs:{ 'Mancha útil':'15,34 × 14,9 cm', 'Colunas':3, 'Módulos por coluna':10, 'Total de módulos':30,
       'Base DC Par':'€ 2 773,50', 'Sobretaxa DC Ímpar 15%':'€ 3 189,53', 'Sobretaxa AC Ímpar 30%':'€ 3 605,55', 'Sobretaxa AC Par 10%':'€ 3 050,85' } },
-  { id:'interior-um-quarto-2c', medium:'print', subtype:'interior', name:'1/4 Página (2 colunas)', summary:'2 colunas × 10 módulos.',
+
+
+
+
+  { id:'interior-um-quarto-2c', medium:'print', subtype:'interior', name:'1/4 Página (2 colunas)', art:'print/quartopagina2colunas.png', summary:'2 colunas × 10 módulos.',
     grid:{ cols:2, rows:10, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
     specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':10, 'Total de módulos':40,
       'Base DC Par':'€ 1 935,00', 'Sobretaxa DC Ímpar 15%':'€ 2 225,25', 'Sobretaxa AC Ímpar 30%':'€ 2 515,50', 'Sobretaxa AC Par 10%':'€ 2 128,50' } },
-  { id:'interior-um-oitavo', medium:'print', subtype:'interior', name:'1/8 Página', summary:'2 colunas × 5 módulos.',
+  { id:'interior-um-oitavo', medium:'print', subtype:'interior', name:'1/8 Página', art:'print/1-8pagina.png', summary:'2 colunas × 5 módulos.',
     grid:{ cols:2, rows:5, hot:'bottom' }, peek:'Mancha 30,2×4,78 • 10 módulos',
     specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':2, 'Módulos por coluna':5, 'Total de módulos':10,
       'Base DC Par':'€ 1 354,50', 'Sobretaxa DC Ímpar 15%':'€ 1 557,68', 'Sobretaxa AC Ímpar 30%':'€ 1 760,85', 'Sobretaxa AC Par 10%':'€ 1 489,95' } },
-  { id:'interior-rodape-3mod', medium:'print', subtype:'interior', name:'Rodapé — 3 módulos', summary:'Faixa com 3 módulos de altura.',
+  { id:'interior-rodape-3mod', medium:'print', subtype:'interior', name:'Rodapé — 3 módulos', art:'print/rodape3modulos.png', summary:'Faixa com 3 módulos de altura.',
     grid:{ cols:5, rows:3, hot:'bottom' }, peek:'Mancha 25,9×4,20 • 15 módulos',
     specs:{ 'Mancha útil':'25,9 × 4,20 cm', 'Colunas':5, 'Módulos por coluna':3, 'Total de módulos':15,
       'Base DC Par':'€ 2 325,40', 'Sobretaxa DC Ímpar 15%':'€ 2 674,21', 'Sobretaxa AC Ímpar 30%':'€ 3 023,02', 'Sobretaxa AC Par 10%':'€ 2 557,94' } },
-  { id:'interior-dupla-abertura', medium:'print', subtype:'interior', name:'Página Dupla (Abertura)', summary:'Dupla página — abertura de caderno.',
+  { id:'interior-dupla-abertura', medium:'print', subtype:'interior', name:'Página Dupla (Abertura)', art:'print/paginaduplaabertura.png', summary:'Dupla página — abertura de caderno.',
     grid:{ cols:10, rows:20, hot:'all' }, peek:'Mancha 53,5×30,2 • 200 módulos',
     specs:{ 'Mancha útil':'53,5 × 30,2 cm', 'Colunas':10, 'Módulos por coluna':20, 'Total de módulos':200,
       'AC':'€ 20 838,00', 'DC':'€ 19 025,00', 'Dupla abertura':'€ 30 000,00' } },
-  { id:'interior-dupla-horizontal-baixo', medium:'print', subtype:'interior', name:'Página Dupla (Horizontal baixo)', summary:'Dupla — metade inferior.',
+
+  { id:'interior-dupla-horizontal-baixo', medium:'print', subtype:'interior', name:'Página Dupla (Horizontal baixo)', art:'print/paginaduplabaixohorz.png', summary:'Dupla — metade inferior.',
     grid:{ cols:10, rows:10, hot:'bottom' }, peek:'Mancha 53,5×14,9 • 100 módulos',
     specs:{ 'Mancha útil':'53,5 × 14,9 cm', 'Colunas':10, 'Módulos por coluna':10, 'Total de módulos':100,
       'Base DC Par':'€ 9 515,00', 'Sobretaxa DC Ímpar 15%':'€ 10 942,25', 'Sobretaxa AC Ímpar 30%':'€ 12 369,50', 'Sobretaxa AC Par 10%':'€ 10 466,50' } },
 
-  { id:'contracapa-rodape', medium:'print', subtype:'contracapa', name:'Contracapa — Rodapé', summary:'Faixa inferior (5×2 módulos).',
+  { id:'contracapa-rodape', medium:'print', subtype:'contracapa', name:'Contracapa — Rodapé', art:'print/rodape.png', summary:'Faixa inferior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'25,9×2,7 cm • 10 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Preço':'€ 2 000,00' }, pricing:{ type:'fixed', amount:2000.00 } },
-  { id:'contracapa-rodatopo', medium:'print', subtype:'contracapa', name:'Contracapa — Roda-topo', summary:'Faixa superior (5×2 módulos).',
+  { id:'contracapa-rodatopo', medium:'print', subtype:'contracapa', name:'Contracapa — Roda-topo', art:'print/rodatopo.png', summary:'Faixa superior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'25,9×2,7 cm • 10 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Preço':'€ 3 000,00' }, pricing:{ type:'fixed', amount:3000.00 } },
-  { id:'contracapa-orelha', medium:'print', subtype:'contracapa', name:'Contracapa — Orelha', summary:'Bloco lateral superior (1×3 módulos).',
+  { id:'contracapa-orelha', medium:'print', subtype:'contracapa', name:'Contracapa — Orelha',  art:'print/orelha.png', summary:'Bloco lateral superior (1×3 módulos).',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78×4,2 cm • 3 módulos',
     specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Total de módulos':3, 'Preço':'€ 1 500,00' }, pricing:{ type:'fixed', amount:1500.00 } },
-  { id:'contracapa-pagina-inteira', medium:'print', subtype:'contracapa', name:'Contracapa — Página Inteira', summary:'5 colunas × 20 módulos — página completa.',
+  { id:'contracapa-pagina-inteira', medium:'print', subtype:'contracapa', name:'Contracapa — Página Inteira',  art:'print/paginainteira.png', summary:'5 colunas × 20 módulos — página completa.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'25,9×30,2 cm • 100 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100, 'Preço':'€ 15 000,00' }, pricing:{ type:'fixed', amount:15000.00 } }
 ];
@@ -1795,7 +1808,7 @@ function buildprintTechBox(){
     <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
     <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
     <h3>SOBRETAXA</h3>
-    <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Produzida pelo jornal +50%</p>
+    <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%</p>
   `;
   return box;
 }
@@ -2178,7 +2191,7 @@ if ($preview){
         <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
         <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
         <h3>SOBRETAXA</h3>
-        <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Produzida pelo jornal +50%</p>
+        <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%</p>
       `;
       drawerContent.appendChild(box);
     }
@@ -2301,7 +2314,7 @@ function renderprintSection(){
     <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
 
     <h3>SOBRETAXA</h3>
-    <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Produzida pelo jornal +50%</p>
+    <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%</p>
   `;
   $secprint.appendChild(box);
 }
