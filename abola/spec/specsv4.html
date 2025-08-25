@@ -1587,23 +1587,23 @@ const print = [
   { id:'capa-modular', medium:'print', subtype:'capa', name:'Capa — Modular', summary:'Valor por número de módulos (grelha 5×20 = 100).',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 cm • 5 col • 20 módulos/col',
     specs:{ 'Mancha de impressão':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Módulos por página':100, 'Medida do módulo':'4,78 × 1,20 cm' },
-    pricing:{ type:'per_module', base:null }
+    pricing:{ type:'per_module', Base:null }
   },
   { id:'capa-rodape', medium:'print', subtype:'capa', name:'Capa — Rodapé', art:'print/rodape.png', summary:'Faixa inferior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'Faixa • 5 col × 2 módulos',
-    specs:{ 'Mancha útil':'25,9 × 30,2 cm (faixa)', 'Colunas':5, 'Módulos por coluna':2, 'Valor':'2 230,00 €' }, pricing:{ type:'fixed', amount:2230.00 } },
+    specs:{ 'Mancha útil':'25,9 × 30,2 cm (faixa)', 'Colunas':5, 'Módulos por coluna':2, 'Base':'2 230,00 €' }, pricing:{ type:'fixed', amount:2230.00 } },
   { id:'capa-rodatopo', medium:'print', subtype:'capa', name:'Capa — Roda-topo', art:'print/rodatopo.png', summary:'Faixa superior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'Topo • 5 col × 2 módulos',
-    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Valor':'3 450,00 €' }, pricing:{ type:'fixed', amount:3450.00 } },
+    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Base':'3 450,00 €' }, pricing:{ type:'fixed', amount:3450.00 } },
   { id:'capa-orelha', medium:'print', subtype:'capa', name:'Capa — Orelha', art:'print/orelha.png', summary:'Bloco lateral superior.',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78 × 4,2 cm • 1 col',
-    specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Valor':'1 990,00 €' }, pricing:{ type:'fixed', amount:1990.00 } },
+    specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Base':'1 990,00 €' }, pricing:{ type:'fixed', amount:1990.00 } },
   { id:'capa-coluna', medium:'print', subtype:'capa', name:'Capa — Coluna',  art:'print/coluna.png', summary:'Coluna vertical lateral.',
     grid:{ cols:1, rows:20, hot:'right' }, peek:'30,2 × 4,78 cm • 1 col',
-    specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':1, 'Módulos por coluna':20, 'Valor':'25 000,00 €' }, pricing:{ type:'fixed', amount:25000.00 } },
+    specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':1, 'Módulos por coluna':20, 'Base':'25 000,00 €' }, pricing:{ type:'fixed', amount:25000.00 } },
   { id:'capa-takeover', medium:'print', subtype:'capa', name:'Capa — Takeover',  art:'print/takeover.png', summary:'Faixa topo + coluna lateral.',
     grid:{ cols:1, rows:20, hot:'all' }, peek:'2,7×25,9 + 30,2×4,78 (zona lateral)',
-    specs:{ 'Mancha útil':'2,7 × 25,9 + 30,2 × 4,78 cm (zona lateral)', 'Colunas':1, 'Módulos por coluna':20, 'Valor':'37 500,00 €' }, pricing:{ type:'fixed', amount:37500.00 } },
+    specs:{ 'Mancha útil':'2,7 × 25,9 + 30,2 × 4,78 cm (zona lateral)', 'Colunas':1, 'Módulos por coluna':20, 'Base':'37 500,00 €' }, pricing:{ type:'fixed', amount:37500.00 } },
 
   { id:'interior-pagina', medium:'print', subtype:'interior', name:'Página', art:'print/pagina.png',  summary:'5 colunas × 20 módulos — página inteira.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 • 100 módulos',
@@ -1676,16 +1676,16 @@ const print = [
 
   { id:'contracapa-rodape', medium:'print', subtype:'contracapa', name:'Contracapa — Rodapé', art:'print/rodape.png', summary:'Faixa inferior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'25,9×2,7 cm • 10 módulos',
-    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Valor':'2 000,00 €' }, pricing:{ type:'fixed', amount:2000.00 } },
+    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'BASE':'2 000,00 €' }, pricing:{ type:'fixed', amount:2000.00 } },
   { id:'contracapa-rodatopo', medium:'print', subtype:'contracapa', name:'Contracapa — Roda-topo', art:'print/rodatopo.png', summary:'Faixa superior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'25,9×2,7 cm • 10 módulos',
-    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'Valor':'3 000,00 €' }, pricing:{ type:'fixed', amount:3000.00 } },
+    specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'BASE':'3 000,00 €' }, pricing:{ type:'fixed', amount:3000.00 } },
   { id:'contracapa-orelha', medium:'print', subtype:'contracapa', name:'Contracapa — Orelha',  art:'print/orelha.png', summary:'Bloco lateral superior (1×3 módulos).',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78×4,2 cm • 3 módulos',
-    specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Total de módulos':3, 'Valor':'1 500,00 €' }, pricing:{ type:'fixed', amount:1500.00 } },
+    specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Total de módulos':3, 'BASE':'1 500,00 €' }, pricing:{ type:'fixed', amount:1500.00 } },
   { id:'contracapa-pagina-inteira', medium:'print', subtype:'contracapa', name:'Contracapa — Página Inteira',  art:'print/paginainteira.png', summary:'5 colunas × 20 módulos — página completa.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'25,9×30,2 cm • 100 módulos',
-    specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100, 'Valor':'15 000,00 €' }, pricing:{ type:'fixed', amount:15000.00 } }
+    specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100, 'BASE':'15 000,00 €' }, pricing:{ type:'fixed', amount:15000.00 } }
 ];
 
 const TV = [
