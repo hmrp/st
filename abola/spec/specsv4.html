@@ -1617,62 +1617,62 @@ const DIGITAL = [
     specs:{ 'Dimensions':'800×600 px and 768×1024 px', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'254 KB (images), MP4 up to 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
   },
   { id:'billboard-xxl', medium:'digital', subtype:'display', name:'Billboard XXL', summary:'High-impact header canvas.',
-    peek:'Specs on request • ≤500KB', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#f59e0b','#e5e7eb'],
+    peek:'Specs on request • ≤500KB', art:'digital/billboardXXL.png', video:'digital/intro.mp4', gradient:['#f59e0b','#e5e7eb'],
     specs:{ 'Dimensions':'On request', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'500 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'HP 230 €' }
   },
   { id:'cube-spin', medium:'digital', subtype:'rich-media', name:'Cube Spin', summary:'Interactive 3D cube gallery.',
-    peek:'(300×300)×6 • ≤480KB • JPG/PNG',art:'digital/intro.png', video:'digital/intro.mp4',  gradient:['#fb7185','#dc2626'],
+    peek:'(300×300)×6 • ≤480KB • JPG/PNG',art:'digital/interactivecube.png', video:'digital/intro.mp4',  gradient:['#fb7185','#dc2626'],
     specs:{ 'Dimensions':'(300×300 px) × 6 tiles', 'File types':'JPG / PNG', 'Max weight':'480 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS 170 €' }
   },
-  { id:'ticker', medium:'digital', subtype:'display', name:'Ticker', summary:'Persistent news ticker band.',
-    peek:'728×90 (D) • 320×100 (M) • ≤120KB', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#e5e7eb','#f87171'],
+  { id:'ticker', medium:'digital', subtype:'rich-media', name:'Ticker', summary:'Persistent news ticker band.',
+    peek:'728×90 (D) • 320×100 (M) • ≤120KB', art:'digital/ticker.png', video:'digital/intro.mp4', gradient:['#e5e7eb','#f87171'],
     specs:{ 'Dimensions':'728×90 (desktop), 320×100 (smartphone)', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS 190 €' }
   },
-  { id:'moldura', medium:'digital', subtype:'display', name:'Moldura', summary:'Framed page skin variant.',
-    peek:'Framing unit • spec template', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#ef4444','#f3f4f6'],
+  { id:'moldura', medium:'digital', subtype:'rich-media', name:'Moldura', summary:'Framed page skin variant.',
+    peek:'Framing unit • spec template', art:'digital/moldura.png', video:'digital/intro.mp4', gradient:['#ef4444','#f3f4f6'],
     specs:{ 'Dimensions':'Framing template', 'File types':'JPG / PNG / GIF', 'Max weight':'—', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Consult' }
   },
   { id:'takeover', medium:'digital', subtype:'rich-media', name:'Takeover',  summary:'Billboard + Halfpage + MREC orchestration.',
-    peek:'HTML/IMG/MP4 • 50KB img • MP4 ≤1MB', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#b91c1c','#e5e7eb'],
+    peek:'HTML/IMG/MP4 • 50KB img • MP4 ≤1MB', art:'digital/takeover.png', video:'digital/intro.mp4', gradient:['#b91c1c','#e5e7eb'],
     specs:{ 'Dimensions':'Billboard + Halfpage + MREC', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'50 KB (images), MP4 up to 1 MB', 'Visible on':'desktop', 'CPM':'POA (24h takeover available)' }
   },
   { id:'mrec', medium:'digital', subtype:'display', name:'MREC', summary:'Standard 300×250 placement.',
-    peek:'300×250 • ≤75KB • MP4 ≤500KB', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#ef4444','#fbbf24'],
+    peek:'300×250 • ≤75KB • MP4 ≤500KB', art:'digital/mrec.png', video:'digital/intro.mp4', gradient:['#ef4444','#fbbf24'],
     specs:{ 'Dimensions':'300×250 px', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'75 KB (images), MP4 up to 500 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 90 € · Canais 110 €' }
   },
   { id:'halfpage', medium:'digital', subtype:'display', name:'Halfpage', summary:'Tall 300×600 canvas.',
-    peek:'300×600 • ≤120KB • MP4 ≤1MB', art:'digital/intro.png', video:'digital/intro.mp4', gradient:['#f97316','#fecaca'],
+    peek:'300×600 • ≤120KB • MP4 ≤1MB', art:'digital/halfpage.png', video:'digital/intro.mp4', gradient:['#f97316','#fecaca'],
     specs:{ 'Dimensions':'300×600 px', 'File types':'HTML / JPG / PNG / MP4', 'Max weight':'120 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 110 € · Canais 130 €' }
   },
-  { id:'billboard', medium:'digital', subtype:'display', name:'Billboard', summary:'Hero banner across devices.',
+  { id:'billboard', medium:'digital', subtype:'display', name:'Billboard',  art:'digital/intro.png', video:'digital/intro.mp4', summary:'Hero banner across devices.',
     peek:'1260×220 / 970×250 (D) · 728×90 (T) · 310×100 (M) • ≤200KB • MP4 ≤1MB', gradient:['#fca5a5','#fde68a'],
     specs:{ 'Dimensions':'1260×220 px or 970×250 px (desktop); 728×90 px (tablet); 310×100 px (smartphone) — or external responsive tag', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'200 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 200 €' }
   },
-  { id:'preroll', medium:'digital', subtype:'rich-media', name:'Pre-roll', summary:'In-player video ad before content.',
+  { id:'preroll', medium:'digital', subtype:'rich-media', name:'Pre-roll',  art:'digital/preroll.png',  summary:'In-player video ad before content.',
     peek:'640×480 • MP4 • ≤10MB', gradient:['#111827','#6b7280'],
     specs:{ 'Dimensions':'640×480 px', 'File types':'MP4', 'Max weight':'10 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
   },
-  { id:'skyscraper', medium:'digital', subtype:'display', name:'Sky-scrapper', summary:'Vertical 120×600 banner (desktop/tablet).',
+  { id:'skyscraper', medium:'digital', subtype:'display', name:'Sky-scrapper', art:'digital/skyscrapper.png', video:'digital/skyscrapper.mp4', summary:'Vertical 120×600 banner (desktop/tablet).',
     peek:'120×600 • ≤120KB', gradient:['#e5e7eb','#9ca3af'],
     specs:{ 'Dimensions':'120×600 px', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Visible on':'desktop, tablet', 'CPM':'ROS/HP — € · Canais — €' }
   },
-  { id:'incontent-video', medium:'digital', subtype:'rich-media', name:'In-content Video', summary:'Inline video inside article body.',
+  { id:'incontent-video', medium:'digital', subtype:'rich-media', name:'In-content Video', art:'digital/incontent.png', summary:'Inline video inside article body.',
     peek:'640×480 • MP4/WEBM • ≤950KB', gradient:['#f87171','#ef4444'],
     specs:{ 'Dimensions':'640×480 px', 'File types':'MP4 / WEBM', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 160 € · CPV sob consulta' }
   },
-  { id:'open-door', medium:'digital', subtype:'rich-media', name:'Open Door', summary:'Center reveal with perspective walls.',
+  { id:'open-door', medium:'digital', subtype:'rich-media', name:'Open Door', art:'digital/opendoor.png', video:'digital/opendoor.mp4', summary:'Center reveal with perspective walls.',
     peek:'768×1024 & 800×600 • ≤950KB', gradient:['#f43f5e','#fb7185'],
     specs:{ 'Dimensions':'768×1024 px and 800×600 px', 'File types':'JPG / PNG / MP4', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 320 €' }
   },
-  { id:'top-scroll', medium:'digital', subtype:'rich-media', name:'Top Scroll', summary:'Scroll-reactive top unit.',
+  { id:'top-scroll', medium:'digital', subtype:'rich-media', name:'Top Scroll',  art:'digital/interactivecube.png', video:'digital/intro.mp4', summary:'Scroll-reactive top unit.',
     peek:'Dims: variable (X×X) • ≤950KB', gradient:['#fecaca','#fef3c7'],
     specs:{ 'Dimensions':'Variable (X × X)', 'File types':'JPG / PNG', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos — €' }
   },
-  { id:'galeria', medium:'digital', subtype:'rich-media', name:'Galeria', summary:'Carousel gallery inside articles.',
+  { id:'galeria', medium:'digital', subtype:'rich-media', name:'Galeria', art:'digital/galeria.png', video:'digital/galeria.mp4', summary:'Carousel gallery inside articles.',
     peek:'300×300 • 6–12 slides • ≤250KB', gradient:['#fda4af','#fef08a'],
     specs:{ 'Dimensions':'300×300 px', 'Slides':'Recommended 6 to 12', 'File types':'JPG / PNG', 'Max weight':'250 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 240 €' }
   },
-  { id:'parallax', medium:'digital', subtype:'rich-media', name:'Parallax', summary:'Scroll-tied background motion.',
+  { id:'parallax', medium:'digital', subtype:'rich-media', name:'Parallax', art:'digital/parallax.png', video:'digital/parallax.mp4', summary:'Scroll-tied background motion.',
     peek:'720×1280 • JPG/PNG/MP4 • ≤950KB', gradient:['#fecaca','#f87171'],
     specs:{ 'Dimensions':'720×1280 px', 'File types':'JPG / PNG / MP4', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 260 €' }
   }
