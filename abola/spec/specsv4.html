@@ -7,7 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-:root{
+
+    :root{
   --bg:#fafafa;
   --panel:#fff;
   --ink:#111;
@@ -1148,6 +1149,100 @@ radial-gradient(ellipse at center,
   opacity: 1;
   transform: translateY(0);
 }
+
+/* === HERO METRICS ROTATOR + SUBTLE BOTTOM ARROWS =======================
+   Shows one .hero-metrics at a time; fade handled by JS. Arrows sit
+   in a bottom bar so they never overlap the content.
+======================================================================= */
+
+/* Rotator stage reserves height equal to tallest slide */
+#head-abola .metrics-rotator{
+  position: relative;
+  min-height: var(--rot-h, 0px);   /* set by JS */
+  padding-bottom: 28px;            /* space reserved for the nav buttons */
+}
+
+/* Each metrics block becomes a slide inside the stage */
+#head-abola .metrics-rotator .metrics-slide{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .4s ease;
+}
+#head-abola .metrics-rotator .metrics-slide.is-active{
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Bottom nav bar (does not overlap content) */
+#head-abola .metrics-rotator .hero-metrics-nav{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  pointer-events: none;    /* only buttons are interactive */
+  z-index: 1;
+}
+
+/* Subtle ghost-style buttons that fit the hero */
+#head-abola .metrics-rotator .nav-btn{
+  pointer-events: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.22);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: none;
+  opacity: .6;
+  transition:
+    opacity .2s ease,
+    transform .02s ease,
+    background-color .2s ease,
+    border-color .2s ease;
+}
+#head-abola .metrics-rotator .nav-btn:hover{
+  opacity: 1;
+  background: rgba(0,0,0,.32);
+  border-color: rgba(255,255,255,.35);
+}
+#head-abola .metrics-rotator .nav-btn:active{
+  transform: translateY(1px);
+}
+#head-abola .metrics-rotator .nav-btn svg{
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* Desktop: keep them ultra subtle until hover/focus */
+@media (hover:hover) and (pointer:fine){
+  #head-abola .metrics-rotator .nav-btn{ opacity: 0; }
+  #head-abola .metrics-rotator:hover .nav-btn,
+  #head-abola .metrics-rotator:focus-within .nav-btn{ opacity: .75; }
+}
+
+/* Small screens: slightly tighter footprint */
+@media (max-width: 680px){
+  #head-abola .metrics-rotator{ padding-bottom: 22px; }
+  #head-abola .metrics-rotator .nav-btn{ width: 28px; height: 28px; opacity: .7; }
+  #head-abola .metrics-rotator .nav-btn svg{ width: 16px; height: 16px; }
+}
+
+/* Optional: nudge buttons right to the edges a bit tighter*/
+#head-abola .metrics-rotator .hero-metrics-nav{ padding: 0; }
+#head-abola .metrics-rotator .nav-btn.prev{ margin-left: -6px; }
+#head-abola .metrics-rotator .nav-btn.next{ margin-right: -6px; }
+
+
   </style>
 </head>
 <body> 
@@ -2730,6 +2825,107 @@ mqMobile.addEventListener?.('change', ()=>{
   if (state.medium==='tv' && DATA.TV[0]) renderTVOutside(DATA.TV[0]); 
 });
 
+
+
+(function initHeroMetricsRotator(){
+  const ROTATE_MS = 5000; // change interval if you like
+
+  const heroInner = document.querySelector('#head-abola .hero-inner');
+  if(!heroInner) return;
+
+  const slides = Array.from(heroInner.querySelectorAll('.hero-metrics'));
+  if(slides.length <= 1) return;
+
+  // stage
+  const stage = document.createElement('div');
+  stage.className = 'metrics-rotator';
+  heroInner.insertBefore(stage, slides[0]);
+
+  // move & measure
+  let maxH = 0;
+  slides.forEach(s => { stage.appendChild(s); maxH = Math.max(maxH, s.offsetHeight || 0); });
+  stage.style.setProperty('--rot-h', maxH + 'px');
+
+  // slide setup
+  slides.forEach(s => { s.classList.add('metrics-slide'); s.setAttribute('aria-hidden','true'); });
+
+  // nav UI
+  const nav = document.createElement('div');
+  nav.className = 'hero-metrics-nav';
+  const mkBtn = (dir, label, svg) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `nav-btn ${dir}`;
+    b.setAttribute('aria-label', label);
+    b.innerHTML = svg;
+    return b;
+  };
+  const prevBtn = mkBtn(
+    'prev','Anterior',
+    `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  );
+  const nextBtn = mkBtn(
+    'next','Seguinte',
+    `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 L16 12 L9 19" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  );
+  nav.append(prevBtn, nextBtn);
+  stage.appendChild(nav);
+
+  // logic
+  let idx = 0;
+  let timer = null;
+  let userStopped = false; // becomes true when user clicks or uses keyboard
+
+  function show(i){
+    slides[idx].classList.remove('is-active');
+    slides[idx].setAttribute('aria-hidden','true');
+    idx = (i + slides.length) % slides.length;
+    slides[idx].classList.add('is-active');
+    slides[idx].setAttribute('aria-hidden','false');
+  }
+
+  function start(){ if(!userStopped){ stop(); timer = setInterval(()=> show(idx + 1), ROTATE_MS); } }
+  function stop(){ if(timer){ clearInterval(timer); timer = null; } }
+
+  // first slide
+  show(0);
+
+  // manual controls — stop auto on first interaction
+  function manualNext(){ userStopped = true; stop(); show(idx + 1); }
+  function manualPrev(){ userStopped = true; stop(); show(idx - 1); }
+
+  prevBtn.addEventListener('click', manualPrev);
+  nextBtn.addEventListener('click', manualNext);
+
+  // keyboard: focusable stage
+  stage.tabIndex = 0;
+  stage.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowRight'){ manualNext(); }
+    else if(e.key === 'ArrowLeft'){ manualPrev(); }
+  });
+
+  // pause on hover; resume only if user never interacted
+  stage.addEventListener('mouseenter', stop);
+  stage.addEventListener('mouseleave', ()=> { if(!userStopped) start(); });
+
+  // only rotate while visible; don't restart if user stopped it
+  const io = new IntersectionObserver(([entry])=>{
+    if(entry && entry.isIntersecting && !userStopped) start(); else stop();
+  }, { threshold: 0.2 });
+  io.observe(stage);
+
+  // recalc reserved height if layout changes
+  function recalcHeight(){
+    slides.forEach(s => s.classList.remove('metrics-slide'));  // flow to measure
+    const newH = Math.max(...slides.map(s => s.offsetHeight || 0));
+    stage.style.setProperty('--rot-h', (newH || maxH) + 'px');
+    slides.forEach(s => s.classList.add('metrics-slide'));
+  }
+  let rAF;
+  window.addEventListener('resize', () => { cancelAnimationFrame(rAF); rAF = requestAnimationFrame(recalcHeight); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(recalcHeight).catch(()=>{});
+  setTimeout(recalcHeight, 1200);
+})();
 </script>
 
 
