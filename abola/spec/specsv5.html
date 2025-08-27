@@ -572,9 +572,8 @@ body{
   .card[data-medium="print"] .poster{ background:#000; }
 .card[data-medium="print"] .poster .grad{ background-color:#000; }
 
-.preview .media-box.is-print{ background:#000; aspect-ratio: 3/2;}
-.preview .media-box.is-print img,
-.preview .media-box.is-print video{ background:transparent; object-fit: contain; }
+
+
 
 .meta{ padding:8px; background:transparent }
 .title{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:700 }
@@ -609,23 +608,34 @@ body{
 .preview .media-box{
   width:100%;
   max-width: var(--maxw, 650px);
-  aspect-ratio: var(--ar, 13 / 7);
+  aspect-ratio: var(--ar, 8 / 7);
   margin:0 auto;
   border-radius:0px;
   overflow:hidden;
   background:#f3f4f6;
 }
 
-.preview .media-box.is-digital{ --ar: 13 / 7; --maxw: 650px; }
+.preview .media-box.is-digital{ --ar: 12 / 7; --maxw: 650px; }
 
-.preview .media-box img,
-.preview .media-box video{
-  width:100%;
-  height:100%;
-  object-fit: cover;
-  display:block;
+/* prevent image stretching (letterbox/pillarbox as needed) */
+.preview .media-box.is-digital img, .preview .media-box.is-print img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
 }
 
+.preview .media-box.is-print img{ 
+  background:#000;
+}
+
+/* optional: make videos fill the square without distortion (cropped) */
+.preview .media-box.is-digital video{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;       /* or 'contain' if you prefer no crop */
+  object-position: center;
+}
 
 
 .specs{ border:1px solid var(--ring); border-radius:12px; padding:12px }
@@ -1243,6 +1253,29 @@ radial-gradient(ellipse at center,
 #head-abola .metrics-rotator .nav-btn.next{ margin-right: -6px; }
 
 
+/* Preview switcher (under the media) */
+.preview-switch{
+  display:flex; gap:8px;
+  margin:10px auto 10px;
+  max-width: var(--maxw, 650px);
+  justify-content:center;
+}
+.preview-switch .switch-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 10px; border-radius:10px;
+  background:#f3f4f6; border:1px solid rgba(0,0,0,.12);
+  font-weight:700; font-size:12px; letter-spacing:.2px;
+  transition:background-color .15s ease, border-color .15s ease, transform .02s ease;
+}
+.preview-switch .switch-btn svg{ width:16px; height:16px; display:block; }
+.preview-switch .switch-btn:hover{ background:#eee; }
+.preview-switch .switch-btn:active{ transform:translateY(1px); }
+.preview-switch .switch-btn.is-active{
+  background:#f6d809; border-color:#d7c800; color:#111;
+  box-shadow:0 1px 0 rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.08);
+}
+.preview-switch .switch-btn[disabled]{ opacity:.55; cursor:not-allowed; }
+
   </style>
 </head>
 <body> 
@@ -1613,19 +1646,19 @@ radial-gradient(ellipse at center,
 // ---------------- Data ----------------
 const DIGITAL = [
   { id:'intro', medium:'digital', subtype:'rich-media', name:'Intro', summary:'Full-screen intro unit on entry.',
-    peek:'800×600 / 768×1024 • ≤254KB (img) • MP4 ≤1MB', art:'digital/intro.png', video:'digital/intro.mp4',
+    peek:'800×600 / 768×1024 • ≤254KB (img) • MP4 ≤1MB', art:'digital/intro.png', videos:{ desktop:'digital/intro.mp4', mobile:'digital/intro_mobile.mp4' },
     specs:{ 'Dimensions':'800×600 px and 768×1024 px', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'254 KB (images), MP4 up to 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
   },
   { id:'billboard-xxl', medium:'digital', subtype:'display', name:'Billboard XXL', summary:'High-impact header canvas.',
-    peek:'Specs on request • ≤500KB', art:'digital/billboardXXL.png', video:'digital/intro.mp4', gradient:['#f59e0b','#e5e7eb'],
+    peek:'Specs on request • ≤500KB', art:'digital/billboardXXL.png', videos:{ desktop:'digital/billboardxxl.mp4', mobile:'digital/billboardxxl_mobile.mp4' },  gradient:['#f59e0b','#e5e7eb'],
     specs:{ 'Dimensions':'On request', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'500 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'HP 230 €' }
   },
   { id:'cube-spin', medium:'digital', subtype:'rich-media', name:'Cube Spin', summary:'Interactive 3D cube gallery.',
-    peek:'(300×300)×6 • ≤480KB • JPG/PNG',art:'digital/interactivecube.png', video:'digital/intro.mp4',  gradient:['#fb7185','#dc2626'],
+    peek:'(300×300)×6 • ≤480KB • JPG/PNG',art:'digital/interactivecube.png', videos:{ desktop:'digital/interactivecube.mp4', mobile:'digital/interactivecube2.mp4' },  gradient:['#fb7185','#dc2626'],
     specs:{ 'Dimensions':'(300×300 px) × 6 tiles', 'File types':'JPG / PNG', 'Max weight':'480 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS 170 €' }
   },
   { id:'ticker', medium:'digital', subtype:'rich-media', name:'Ticker', summary:'Persistent news ticker band.',
-    peek:'728×90 (D) • 320×100 (M) • ≤120KB', art:'digital/ticker.png', video:'digital/intro.mp4', gradient:['#e5e7eb','#f87171'],
+    peek:'728×90 (D) • 320×100 (M) • ≤120KB', art:'digital/ticker.png', videos:{ desktop:'digital/ticker.mp4', mobile:'digital/ticker_mobile.mp4' }, gradient:['#e5e7eb','#f87171'],
     specs:{ 'Dimensions':'728×90 (desktop), 320×100 (smartphone)', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS 190 €' }
   },
   { id:'moldura', medium:'digital', subtype:'rich-media', name:'Moldura', summary:'Framed page skin variant.',
@@ -1637,22 +1670,22 @@ const DIGITAL = [
     specs:{ 'Dimensions':'Billboard + Halfpage + MREC', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'50 KB (images), MP4 up to 1 MB', 'Visible on':'desktop', 'CPM':'POA (24h takeover available)' }
   },
   { id:'mrec', medium:'digital', subtype:'display', name:'MREC', summary:'Standard 300×250 placement.',
-    peek:'300×250 • ≤75KB • MP4 ≤500KB', art:'digital/mrec.png', video:'digital/intro.mp4', gradient:['#ef4444','#fbbf24'],
+    peek:'300×250 • ≤75KB • MP4 ≤500KB', art:'digital/mrec.png', videos:{ desktop:'digital/mrec.mp4', mobile:'digital/mrec_mobile.mp4' },
     specs:{ 'Dimensions':'300×250 px', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'75 KB (images), MP4 up to 500 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 90 € · Canais 110 €' }
   },
   { id:'halfpage', medium:'digital', subtype:'display', name:'Halfpage', summary:'Tall 300×600 canvas.',
-    peek:'300×600 • ≤120KB • MP4 ≤1MB', art:'digital/halfpage.png', video:'digital/intro.mp4', gradient:['#f97316','#fecaca'],
+    peek:'300×600 • ≤120KB • MP4 ≤1MB', art:'digital/halfpage.png', videos:{ desktop:'digital/halfpage.mp4', mobile:'digital/halfpage_mobile.mp4' },
     specs:{ 'Dimensions':'300×600 px', 'File types':'HTML / JPG / PNG / MP4', 'Max weight':'120 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 110 € · Canais 130 €' }
   },
-  { id:'billboard', medium:'digital', subtype:'display', name:'Billboard',  art:'digital/intro.png', video:'digital/intro.mp4', summary:'Hero banner across devices.',
+  { id:'billboard', medium:'digital', subtype:'display', name:'Billboard',  art:'digital/billboard.png', videos:{ desktop:'digital/billboard.mp4', mobile:'digital/billboard_mobile.mp4' },summary:'Hero banner across devices.',
     peek:'1260×220 / 970×250 (D) · 728×90 (T) · 310×100 (M) • ≤200KB • MP4 ≤1MB', gradient:['#fca5a5','#fde68a'],
     specs:{ 'Dimensions':'1260×220 px or 970×250 px (desktop); 728×90 px (tablet); 310×100 px (smartphone) — or external responsive tag', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'200 KB (images), MP4 máx. 1 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 200 €' }
   },
-  { id:'preroll', medium:'digital', subtype:'rich-media', name:'Pre-roll',  art:'digital/preroll.png',  summary:'In-player video ad before content.',
+  { id:'preroll', medium:'digital', subtype:'rich-media', name:'Pre-roll',  art:'digital/preroll.png',  videos:{ desktop:'digital/preroll.mp4', mobile:'digital/preroll_mobile.mp4' }, summary:'In-player video ad before content.',
     peek:'640×480 • MP4 • ≤10MB', gradient:['#111827','#6b7280'],
     specs:{ 'Dimensions':'640×480 px', 'File types':'MP4', 'Max weight':'10 MB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
   },
-  { id:'skyscraper', medium:'digital', subtype:'display', name:'Sky-scrapper', art:'digital/skyscrapper.png', video:'digital/skyscrapper.mp4', summary:'Vertical 120×600 banner (desktop/tablet).',
+  { id:'skyscraper', medium:'digital', subtype:'display', name:'skyscraper', art:'digital/skyscraper.png', video:'digital/skyscraper.mp4', summary:'Vertical 120×600 banner (desktop/tablet).',
     peek:'120×600 • ≤120KB', gradient:['#e5e7eb','#9ca3af'],
     specs:{ 'Dimensions':'120×600 px', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Visible on':'desktop, tablet', 'CPM':'ROS/HP — € · Canais — €' }
   },
@@ -1660,11 +1693,11 @@ const DIGITAL = [
     peek:'640×480 • MP4/WEBM • ≤950KB', gradient:['#f87171','#ef4444'],
     specs:{ 'Dimensions':'640×480 px', 'File types':'MP4 / WEBM', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 160 € · CPV sob consulta' }
   },
-  { id:'open-door', medium:'digital', subtype:'rich-media', name:'Open Door', art:'digital/opendoor.png', video:'digital/opendoor.mp4', summary:'Center reveal with perspective walls.',
+  { id:'open-door', medium:'digital', subtype:'rich-media', name:'Open Door', art:'digital/opendoor.png', videos:{ desktop:'digital/opendoor.mp4', mobile:'digital/opendoor_mobile.mp4' }, summary:'Center reveal with perspective walls.',
     peek:'768×1024 & 800×600 • ≤950KB', gradient:['#f43f5e','#fb7185'],
     specs:{ 'Dimensions':'768×1024 px and 800×600 px', 'File types':'JPG / PNG / MP4', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'ROS/HP 320 €' }
   },
-  { id:'top-scroll', medium:'digital', subtype:'rich-media', name:'Top Scroll',  art:'digital/interactivecube.png', video:'digital/intro.mp4', summary:'Scroll-reactive top unit.',
+  { id:'top-scroll', medium:'digital', subtype:'rich-media', name:'Top Scroll',  art:'digital/topscroll.png', videos:{ desktop:'digital/topscroll.mp4', mobile:'digital/topscroll_mobile.mp4' },  summary:'Scroll-reactive top unit.',
     peek:'Dims: variable (X×X) • ≤950KB', gradient:['#fecaca','#fef3c7'],
     specs:{ 'Dimensions':'Variable (X × X)', 'File types':'JPG / PNG', 'Max weight':'950 KB', 'Visible on':'desktop, tablet, smartphone', 'CPM':'Interior Artigos — €' }
   },
@@ -1679,33 +1712,33 @@ const DIGITAL = [
 ];
 
 const print = [
-  { id:'capa-rodape', medium:'print', subtype:'capa', name:'Capa — Rodapé', art:'print/rodape.png', summary:'Faixa inferior em toda a largura.',
+  { id:'capa-rodape', medium:'print', subtype:'capa', name:'Capa — Rodapé', art:'print/rodape.png', gridReference:'print/referenceFrontPage.png', summary:'Faixa inferior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'Faixa • 5 col × 2 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm (faixa)', 'Colunas':5, 'Módulos por coluna':2, 'Base':'2 230,00 €' }, pricing:{ type:'fixed', amount:2230.00 } },
-  { id:'capa-rodatopo', medium:'print', subtype:'capa', name:'Capa — Roda-topo', art:'print/rodatopo.png', summary:'Faixa superior em toda a largura.',
+  { id:'capa-rodatopo', medium:'print', subtype:'capa', name:'Capa — Roda-topo',  gridReference:'print/referenceFrontPage.png', art:'print/rodatopo.png', summary:'Faixa superior em toda a largura.',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'Topo • 5 col × 2 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Base':'3 450,00 €' }, pricing:{ type:'fixed', amount:3450.00 } },
-  { id:'capa-orelha', medium:'print', subtype:'capa', name:'Capa — Orelha', art:'print/orelha.png', summary:'Bloco lateral superior.',
+  { id:'capa-orelha', medium:'print', subtype:'capa', name:'Capa — Orelha',  gridReference:'print/referenceFrontPage.png', art:'print/orelha.png', summary:'Bloco lateral superior.',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78 × 4,2 cm • 1 col',
     specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Base':'1 990,00 €' }, pricing:{ type:'fixed', amount:1990.00 } },
-  { id:'capa-coluna', medium:'print', subtype:'capa', name:'Capa — Coluna',  art:'print/coluna.png', summary:'Coluna vertical lateral.',
+  { id:'capa-coluna', medium:'print', subtype:'capa', name:'Capa — Coluna',   gridReference:'print/referenceFrontPage.png', art:'print/coluna.png', summary:'Coluna vertical lateral.',
     grid:{ cols:1, rows:20, hot:'right' }, peek:'30,2 × 4,78 cm • 1 col',
     specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':1, 'Módulos por coluna':20, 'Base':'25 000,00 €' }, pricing:{ type:'fixed', amount:25000.00 } },
-  { id:'capa-takeover', medium:'print', subtype:'capa', name:'Capa — Takeover',  art:'print/takeover.png', summary:'Faixa topo + coluna lateral.',
+  { id:'capa-takeover', medium:'print', subtype:'capa', name:'Capa — Takeover',   gridReference:'print/referenceFrontPage.png', art:'print/takeover.png', summary:'Faixa topo + coluna lateral.',
     grid:{ cols:1, rows:20, hot:'all' }, peek:'2,7×25,9 + 30,2×4,78 (zona lateral)',
     specs:{ 'Mancha útil':'2,7 × 25,9 + 30,2 × 4,78 cm (zona lateral)', 'Colunas':1, 'Módulos por coluna':20, 'Base':'37 500,00 €' }, pricing:{ type:'fixed', amount:37500.00 } },
 
-  { id:'interior-pagina', medium:'print', subtype:'interior', name:'Página', art:'print/pagina.png',  summary:'5 colunas × 20 módulos — página inteira.',
+  { id:'interior-pagina', medium:'print', subtype:'interior', name:'Página', art:'print/pagina.png', gridReference:'print/reference.png', summary:'5 colunas × 20 módulos — página inteira.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'Mancha 25,9×30,2 • 100 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100,
       'Base DC Par':'8 940,00 €', 'Sobretaxa DC Ímpar 15%':'10 281,00 €', 'Sobretaxa AC Ímpar 30%':'11 622,00 €', 'Sobretaxa AC Par 10%':'9 834,00 €'} },
  
-      { id:'interior-junior', medium:'print', subtype:'interior', name:'Junior Page',  art:'print/juniorpage.png', summary:'4 colunas × 12 módulos.',
+      { id:'interior-junior', medium:'print', subtype:'interior', name:'Junior Page',  art:'print/juniorpage.png',  gridReference:'print/reference.png',  summary:'4 colunas × 12 módulos.',
     grid:{ cols:4, rows:12, hot:'bottom' }, peek:'Mancha 20,62×18 • 48 módulos',
     specs:{ 'Mancha útil':'20,62 × 18 cm', 'Colunas':4, 'Módulos por coluna':12, 'Total de módulos':48,
       'Base DC Par':'4 967,00 €', 'Sobretaxa DC Ímpar 15%':'5 712,05 €', 'Sobretaxa AC Ímpar 30%':'6 457,60 €', 'Sobretaxa AC Par 10%':'5 463,70 €' } },
   
-  { id:'interior-meia-h', medium:'print', subtype:'interior', name:'1/2 Página (Horizontal)', art:'print/1-2paghorz.png', summary:'5 colunas × 10 módulos.',
+  { id:'interior-meia-h', medium:'print', subtype:'interior', name:'1/2 Página (Horizontal)', art:'print/1-2paghorz.png',  gridReference:'print/reference.png',  summary:'5 colunas × 10 módulos.',
     grid:{ cols:5, rows:10, hot:'bottom' }, peek:'Mancha 25,9×14,9 • 50 módulos',
     specs:{ 'Mancha útil':'25,9 × 14,9 cm', 'Colunas':5, 'Módulos por coluna':10, 'Total de módulos':50,
       'Base DC Par':'4 386,00 €', 'Sobretaxa DC Ímpar 15%':'5 043,90 €', 'Sobretaxa AC Ímpar 30%':'5 701,80 €', 'Sobretaxa AC Par 10%':'4 824,60 €' } },
@@ -1715,18 +1748,18 @@ const print = [
 
 
 
-      { id:'interior-meia-v-2c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 2 col.)', art:'print/meiapagina2colunas.png', summary:'2 colunas × 20 módulos.',
+      { id:'interior-meia-v-2c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 2 col.)', art:'print/meiapagina2colunas.png',  gridReference:'print/reference.png',  summary:'2 colunas × 20 módulos.',
     grid:{ cols:2, rows:20, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
     specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':20, 'Total de módulos':40,
       'Base DC Par':'3 612,00 €', 'Sobretaxa DC Ímpar 15%':'4 153,80 €', 'Sobretaxa AC Ímpar 30%':'4 695,60 €', 'Sobretaxa AC Par 10%':'3 973,20 €' } },
-  { id:'interior-meia-v-3c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 3 col.)', art:'print/meiapagina3colunasvert.png', summary:'3 colunas × 20 módulos.',
+  { id:'interior-meia-v-3c', medium:'print', subtype:'interior', name:'1/2 Página (Vertical — 3 col.)', art:'print/meiapagina3colunasvert.png',  gridReference:'print/reference.png',  summary:'3 colunas × 20 módulos.',
     grid:{ cols:3, rows:20, hot:'right' }, peek:'Mancha 15,34×30,2 • 60 módulos',
 
 
     specs:{ 'Mancha útil':'15,34 × 30,2 cm', 'Colunas':3, 'Módulos por coluna':20, 'Total de módulos':60,
       'Base DC Par':'5 160,00 €', 'Sobretaxa DC Ímpar 15%':'5 934,00 €', 'Sobretaxa AC Ímpar 30%':'6 708,00 €', 'Sobretaxa AC Par 10%':'5 676,00 €' } },
   
-      { id:'interior-um-quarto-h', medium:'print', subtype:'interior', name:'1/4 Página (Horizontal)', art:'print/quartopaginahorz.png', summary:'5 colunas × 5 módulos.',
+      { id:'interior-um-quarto-h', medium:'print', subtype:'interior', name:'1/4 Página (Horizontal)', art:'print/quartopaginahorz.png',  gridReference:'print/reference.png',  summary:'5 colunas × 5 módulos.',
     grid:{ cols:5, rows:5, hot:'bottom' }, peek:'Mancha 25,9×7,2 • 25 módulos',
 
     
@@ -1734,7 +1767,7 @@ const print = [
       'Base DC Par':'3 000,00 €', 'Sobretaxa DC Ímpar 15%':'3 450,00 €', 'Sobretaxa AC Ímpar 30%':'3 900,00 €', 'Sobretaxa AC Par 10%':'3 300,00 €' } },
  
  
-      { id:'interior-um-quarto-3c', medium:'print', subtype:'interior', name:'1/4 Página (3 colunas)',  art:'print/quartopagina3colunas.png', summary:'3 colunas × 10 módulos.',
+      { id:'interior-um-quarto-3c', medium:'print', subtype:'interior', name:'1/4 Página (3 colunas)',  art:'print/quartopagina3colunas.png',  gridReference:'print/reference.png',  summary:'3 colunas × 10 módulos.',
     grid:{ cols:3, rows:10, hot:'all' }, peek:'Mancha 15,34×14,9 • 30 módulos',
     specs:{ 'Mancha útil':'15,34 × 14,9 cm', 'Colunas':3, 'Módulos por coluna':10, 'Total de módulos':30,
       'Base DC Par':'2 773,50 €', 'Sobretaxa DC Ímpar 15%':'3 189,53 €', 'Sobretaxa AC Ímpar 30%':'3 605,55 €', 'Sobretaxa AC Par 10%':'3 050,85 €' } },
@@ -1742,38 +1775,38 @@ const print = [
 
 
 
-  { id:'interior-um-quarto-2c', medium:'print', subtype:'interior', name:'1/4 Página (2 colunas)', art:'print/quartopagina2colunas.png', summary:'2 colunas × 10 módulos.',
+  { id:'interior-um-quarto-2c', medium:'print', subtype:'interior', name:'1/4 Página (2 colunas)', art:'print/quartopagina2colunas.png',  gridReference:'print/reference.png',  summary:'2 colunas × 10 módulos.',
     grid:{ cols:2, rows:10, hot:'right' }, peek:'Mancha 10,06×30,2 • 40 módulos',
     specs:{ 'Mancha útil':'10,06 × 30,2 cm', 'Colunas':2, 'Módulos por coluna':10, 'Total de módulos':40,
       'Base DC Par':'1 935,00 €', 'Sobretaxa DC Ímpar 15%':'2 225,25 €', 'Sobretaxa AC Ímpar 30%':'2 515,50 €', 'Sobretaxa AC Par 10%':'2 128,50 €' } },
-  { id:'interior-um-oitavo', medium:'print', subtype:'interior', name:'1/8 Página', art:'print/1-8pagina.png', summary:'2 colunas × 5 módulos.',
+  { id:'interior-um-oitavo', medium:'print', subtype:'interior', name:'1/8 Página', art:'print/1-8pagina.png',  gridReference:'print/reference.png',  summary:'2 colunas × 5 módulos.',
     grid:{ cols:2, rows:5, hot:'bottom' }, peek:'Mancha 30,2×4,78 • 10 módulos',
     specs:{ 'Mancha útil':'30,2 × 4,78 cm', 'Colunas':2, 'Módulos por coluna':5, 'Total de módulos':10,
       'Base DC Par':'1 354,50 €', 'Sobretaxa DC Ímpar 15%':'1 557,68 €', 'Sobretaxa AC Ímpar 30%':'1 760,85 €', 'Sobretaxa AC Par 10%':'1 489,95 €' } },
-  { id:'interior-rodape-3mod', medium:'print', subtype:'interior', name:'Rodapé — 3 módulos', art:'print/rodape3modulos.png', summary:'Faixa com 3 módulos de altura.',
+  { id:'interior-rodape-3mod', medium:'print', subtype:'interior', name:'Rodapé — 3 módulos', art:'print/rodape3modulos.png',  gridReference:'print/reference.png',  summary:'Faixa com 3 módulos de altura.',
     grid:{ cols:5, rows:3, hot:'bottom' }, peek:'Mancha 25,9×4,20 • 15 módulos',
     specs:{ 'Mancha útil':'25,9 × 4,20 cm', 'Colunas':5, 'Módulos por coluna':3, 'Total de módulos':15,
       'Base DC Par':'2 325,40 €', 'Sobretaxa DC Ímpar 15%':'2 674,21 €', 'Sobretaxa AC Ímpar 30%':'3 023,02 €', 'Sobretaxa AC Par 10%':'2 557,94 €' } },
-  { id:'interior-dupla-abertura', medium:'print', subtype:'interior', name:'Página Dupla (Abertura)', art:'print/paginaduplaabertura.png', summary:'Dupla página — abertura de caderno.',
+  { id:'interior-dupla-abertura', medium:'print', subtype:'interior', name:'Página Dupla (Abertura)', art:'print/paginaduplaabertura.png',  gridReference:'print/reference.png',  summary:'Dupla página — abertura de caderno.',
     grid:{ cols:10, rows:20, hot:'all' }, peek:'Mancha 53,5×30,2 • 200 módulos',
     specs:{ 'Mancha útil':'53,5 × 30,2 cm', 'Colunas':10, 'Módulos por coluna':20, 'Total de módulos':200,
       'AC':'20 838,00 €', 'DC':'19 025,00 €', 'Dupla abertura':'30 000,00 €' } },
 
-  { id:'interior-dupla-horizontal-baixo', medium:'print', subtype:'interior', name:'Página Dupla (Horizontal baixo)', art:'print/paginaduplabaixohorz.png', summary:'Dupla — metade inferior.',
+  { id:'interior-dupla-horizontal-baixo', medium:'print', subtype:'interior', name:'Página Dupla (Horizontal baixo)', art:'print/paginaduplabaixohorz.png',  gridReference:'print/reference.png',  summary:'Dupla — metade inferior.',
     grid:{ cols:10, rows:10, hot:'bottom' }, peek:'Mancha 53,5×14,9 • 100 módulos',
     specs:{ 'Mancha útil':'53,5 × 14,9 cm', 'Colunas':10, 'Módulos por coluna':10, 'Total de módulos':100,
       'Base DC Par':'9 515,00 €', 'Sobretaxa DC Ímpar 15%':'10 942,25 €', 'Sobretaxa AC Ímpar 30%':'12 369,50 €', 'Sobretaxa AC Par 10%':'10 466,50 €' } },
 
-  { id:'contracapa-rodape', medium:'print', subtype:'contracapa', name:'Contracapa — Rodapé', art:'print/rodape.png', summary:'Faixa inferior (5×2 módulos).',
+  { id:'contracapa-rodape', medium:'print', subtype:'contracapa', name:'Contracapa — Rodapé', art:'print/rodape.png',  gridReference:'print/reference.png',  summary:'Faixa inferior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'bottom' }, peek:'25,9×2,7 cm • 10 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'BASE':'2 000,00 €' }, pricing:{ type:'fixed', amount:2000.00 } },
-  { id:'contracapa-rodatopo', medium:'print', subtype:'contracapa', name:'Contracapa — Roda-topo', art:'print/rodatopo.png', summary:'Faixa superior (5×2 módulos).',
+  { id:'contracapa-rodatopo', medium:'print', subtype:'contracapa', name:'Contracapa — Roda-topo', art:'print/rodatopo.png',  gridReference:'print/reference.png',  summary:'Faixa superior (5×2 módulos).',
     grid:{ cols:5, rows:2, hot:'all' }, peek:'25,9×2,7 cm • 10 módulos',
     specs:{ 'Mancha útil':'25,9 × 2,7 cm', 'Colunas':5, 'Módulos por coluna':2, 'Total de módulos':10, 'BASE':'3 000,00 €' }, pricing:{ type:'fixed', amount:3000.00 } },
-  { id:'contracapa-orelha', medium:'print', subtype:'contracapa', name:'Contracapa — Orelha',  art:'print/orelha.png', summary:'Bloco lateral superior (1×3 módulos).',
+  { id:'contracapa-orelha', medium:'print', subtype:'contracapa', name:'Contracapa — Orelha',  art:'print/orelha.png',  gridReference:'print/reference.png',  summary:'Bloco lateral superior (1×3 módulos).',
     grid:{ cols:1, rows:3, hot:'right' }, peek:'4,78×4,2 cm • 3 módulos',
     specs:{ 'Mancha útil':'4,78 × 4,2 cm', 'Colunas':1, 'Módulos por coluna':3, 'Total de módulos':3, 'BASE':'1 500,00 €' }, pricing:{ type:'fixed', amount:1500.00 } },
-  { id:'contracapa-pagina-inteira', medium:'print', subtype:'contracapa', name:'Contracapa — Página Inteira',  art:'print/paginainteira.png', summary:'5 colunas × 20 módulos — página completa.',
+  { id:'contracapa-pagina-inteira', medium:'print', subtype:'contracapa', name:'Contracapa — Página Inteira',  art:'print/paginainteira.png',  gridReference:'print/reference.png', summary:'5 colunas × 20 módulos — página completa.',
     grid:{ cols:5, rows:20, hot:'all' }, peek:'25,9×30,2 cm • 100 módulos',
     specs:{ 'Mancha útil':'25,9 × 30,2 cm', 'Colunas':5, 'Módulos por coluna':20, 'Total de módulos':100, 'BASE':'15 000,00 €' }, pricing:{ type:'fixed', amount:15000.00 } }
 ];
@@ -2149,7 +2182,6 @@ window.addEventListener('keydown', (e) => {
 
 
 
-
 function openDrawer(item, { fromHash = false } = {}){
   if (!item || item.medium === 'tv' || !$drawer) return;
 
@@ -2157,39 +2189,288 @@ function openDrawer(item, { fromHash = false } = {}){
   if ($drawerTitle) $drawerTitle.textContent = item.name || 'Details';
   if ($drawerTags)  $drawerTags.textContent  = [item.subtype, item.medium].filter(Boolean).join(' · ');
 
-  // Preview
-if ($preview){
-  $preview.innerHTML = '';
+  // Inject (or update) the hover/FS hint CSS once — note: zoom cursor only on .is-zoomable
+  (function ensureFsOverlayStyle(){
+    let css = document.getElementById('fs-overlay-style');
+    if (!css){
+      css = document.createElement('style');
+      css.id = 'fs-overlay-style';
+      document.head.appendChild(css);
+    }
+    css.textContent = `
+      .preview .media-box{ position:relative; }             /* no global zoom cursor */
+      .preview .media-box.is-zoomable{ cursor: zoom-in; }    /* zoom cursor only when allowed */
+      .preview .media-box:focus{ outline:none; }
+      .fs-btn{
+        position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+        width:66px; height:66px; border-radius:999px;
+        background: rgba(0,0,0,.55);
+        border:1px solid rgba(255,255,255,.18);
+        box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.25);
+        color:#fff; display:flex; align-items:center; justify-content:center;
+        opacity:0; pointer-events:none; transition:opacity .18s ease, transform .02s ease;
+      }
+      .fs-btn svg{ width:28px; height:28px; display:block; }
+      @media (hover:hover) and (pointer:fine){
+        .media-box.is-zoomable:hover .fs-btn{ opacity:.9; }
+      }
+      .media-box.is-zoomable:focus-visible .fs-btn{ opacity:.9; }
+      .is-fs .fs-btn{ display:none; }
+      .media-box video{ pointer-events:none; } /* let clicks bubble to container */
+    `;
+  })();
 
-  const box = document.createElement('div');
-  box.className = 'media-box ' + (item.medium === 'print' ? 'is-print' : 'is-digital');
+  // Preview shell + helpers
+  if ($preview){
+    $preview.innerHTML = '';
 
-  if (item.medium === 'print' && item.video){           // MP4 takes priority on print
-    const v = document.createElement('video');
-    v.src = item.video;
-    v.autoplay = true;
-    v.muted = true;
-    v.loop = true;
-    v.playsInline = true;
-    v.controls = true;            // keep or remove, your call
-    v.preload = 'metadata';
-    box.appendChild(v);
+    const box = document.createElement('div');
+    box.className = 'media-box ' + (item.medium === 'print' ? 'is-print' : 'is-digital');
+    box.tabIndex = 0;
 
-  } else if (item.art){                                   // PNG
-    const img = document.createElement('img');
-    img.src = item.art;
-    img.alt = item.name || '';
-    img.loading = 'lazy';
-    box.appendChild(img);
+    const makeImg = (src = item.art) => {
+      if (!src) return null;
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = item.name || '';
+      img.loading = 'lazy';
+      return img;
+    };
 
-  } else {                                                // gradient fallback
-    box.style.background = item.gradient
-      ? `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`
-      : 'linear-gradient(135deg,#eee,#fff)';
+    const swapImgInBox = (src) => {
+      const img = makeImg(src);
+      if (!img) return;
+      const existingVid = box.querySelector('video');
+      if (existingVid) { try{ existingVid.pause(); }catch{} box.removeChild(existingVid); }
+      const existingImg = box.querySelector('img');
+      if (existingImg) existingImg.replaceWith(img);
+      else box.appendChild(img);
+    };
+
+    const setGradientIfEmpty = () => {
+      if (!box.querySelector('video, img')){
+        const g = item.gradient || ['#eee','#fff'];
+        box.style.background = `linear-gradient(135deg, ${g[0]}, ${g[1]})`;
+      }
+    };
+
+    /* ---------- Fullscreen helpers & scroll restore ---------- */
+    let __fsRestoreY = 0;
+    const getScrollY = () => window.scrollY || document.documentElement.scrollTop || 0;
+    const restoreScrollY = (y) => {
+      requestAnimationFrame(() => window.scrollTo(0, y));
+      // defensive clear
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+    };
+    const isBoxFullscreen = () =>
+      document.fullscreenElement === box || document.webkitFullscreenElement === box;
+    const onFSChange = () => {
+      const inFS = isBoxFullscreen();
+      box.classList.toggle('is-fs', inFS);
+      if (!inFS) restoreScrollY(__fsRestoreY);
+    };
+    const enterFullscreen = async () => {
+      __fsRestoreY = getScrollY();
+      try {
+        if (box.requestFullscreen) await box.requestFullscreen();
+        else if (box.webkitRequestFullscreen) box.webkitRequestFullscreen();
+      } catch {}
+    };
+    const exitFullscreen = async () => {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+      } catch {}
+    };
+    const toggleFullscreen = () => { isBoxFullscreen() ? exitFullscreen() : enterFullscreen(); };
+
+    document.addEventListener('fullscreenchange', onFSChange);
+    document.addEventListener('webkitfullscreenchange', onFSChange);
+
+    /* =========================
+       DIGITAL (video) branch
+       ========================= */
+    if (item.medium === 'digital' && (item.video || item.videos)){
+      box.classList.add('is-zoomable'); // enables zoom cursor + hint
+
+      const vids = {
+        desktop: item.videos?.desktop || item.video || null,
+        mobile : item.videos?.mobile  || null
+      };
+      const posters = {
+        desktop: item.posters?.desktop || item.art || null,
+        mobile : item.posters?.mobile  || item.art || null
+      };
+      let mode = vids.desktop ? 'desktop' : (vids.mobile ? 'mobile' : null);
+
+      const v = document.createElement('video');
+      v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+      v.controls = false; v.preload = 'metadata';
+
+      // Declare toolbar buttons BEFORE we use them inside applyMode
+      let btnDesk = null;
+      let btnMob  = null;
+
+      const applyMode = (m) => {
+        if (!m || !vids[m]) return;
+        mode = m;
+        try { v.pause(); } catch {}
+        v.src = vids[m];
+        if (posters[m]) v.setAttribute('poster', posters[m]); else v.removeAttribute('poster');
+        v.load();
+        v.play().catch(()=>{});
+        btnDesk?.classList?.toggle('is-active', m === 'desktop');
+        btnMob?.classList?.toggle('is-active',  m === 'mobile');
+      };
+
+      v.addEventListener('error', () => { swapImgInBox(item.art); }, { once: true });
+      if ('webkitEnterFullscreen' in HTMLVideoElement.prototype) {
+        v.addEventListener('webkitendfullscreen', () => restoreScrollY(__fsRestoreY));
+      }
+
+      box.appendChild(v);
+
+      // Fullscreen hint button
+      const fsBtn = document.createElement('div');
+      fsBtn.className = 'fs-btn';
+      fsBtn.setAttribute('aria-hidden', 'true');
+      fsBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 3 H5 a2 2 0 0 0 -2 2 V8 M16 3 H19 a2 2 0 0 1 2 2 V8
+                   M8 21 H5 a2 2 0 0 1 -2 -2 V16 M16 21 H19 a2 2 0 0 0 2 -2 V16"
+                fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 9 L5 5 M15 9 L19 5 M9 15 L5 19 M15 15 L19 19"
+                fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      box.appendChild(fsBtn);
+
+      // Click ANYWHERE toggles fullscreen
+      const onMediaClick = (e) => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); };
+      box.addEventListener('click', onMediaClick);
+
+      // Build the device switcher
+      const bar = document.createElement('div');
+      bar.className = 'preview-switch';
+
+      if (vids.desktop) {
+        btnDesk = document.createElement('button');
+        btnDesk.className = 'switch-btn';
+        btnDesk.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 5h18v12H3zM8 21h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Desktop`;
+        btnDesk.addEventListener('click', ()=> applyMode('desktop'));
+        bar.appendChild(btnDesk);
+      }
+
+      if (vids.mobile) {
+        btnMob = document.createElement('button');
+        btnMob.className = 'switch-btn';
+        btnMob.innerHTML = `<svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="18" r="1.2"/></svg> Mobile`;
+        btnMob.addEventListener('click', ()=> applyMode('mobile'));
+        bar.appendChild(btnMob);
+      }
+
+      // Mount the media + toolbar
+      $preview.appendChild(box);
+      if (bar.childElementCount) $preview.appendChild(bar);
+
+      // Now it's safe to pick the initial source & set button highlights
+      if (mode) applyMode(mode);
+
+      // Cleanup on drawer close / esc / scrim
+      const cleanup = () => {
+        document.removeEventListener('fullscreenchange', onFSChange);
+        document.removeEventListener('webkitfullscreenchange', onFSChange);
+        box.removeEventListener('click', onMediaClick);
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+      };
+      $scrim?.addEventListener('click', cleanup, { once: true });
+      $closeDrawerBtn?.addEventListener('click', cleanup, { once: true });
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') cleanup(); }, { once: true });
+
+    /* =========================
+       PRINT (image) branch  — now zoomable
+       ========================= */
+    } else if (item.medium === 'print'){
+      // Enable zoom UI on images
+      box.classList.add('is-zoomable');
+
+      // Put the image in the box
+      swapImgInBox(item.art);
+      $preview.appendChild(box);
+
+      // Fullscreen hint button
+      const fsBtn = document.createElement('div');
+      fsBtn.className = 'fs-btn';
+      fsBtn.setAttribute('aria-hidden', 'true');
+      fsBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 3 H5 a2 2 0 0 0 -2 2 V8 M16 3 H19 a2 2 0 0 1 2 2 V8
+                   M8 21 H5 a2 2 0 0 1 -2 -2 V16 M16 21 H19 a2 2 0 0 0 2 -2 V16"
+                fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 9 L5 5 M15 9 L19 5 M9 15 L5 19 M15 15 L19 19"
+                fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      box.appendChild(fsBtn);
+
+      // Click ANYWHERE toggles fullscreen
+      const onMediaClick = (e) => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); };
+      box.addEventListener('click', onMediaClick);
+
+      // Optional Layout/gridReference switcher
+      if (item.gridReference){
+        const bar = document.createElement('div');
+        bar.className = 'preview-switch';
+
+        const btnLayout = document.createElement('button');
+        btnLayout.className = 'switch-btn is-active';
+        btnLayout.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 9h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Layout`;
+
+        const btnRef = document.createElement('button');
+        btnRef.className = 'switch-btn';
+        btnRef.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 7h16v10H4zM8 11l3 3 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Page Grid`;
+
+        const setMode = (m) => {
+          if (m === 'layout'){ swapImgInBox(item.art); }
+          else { swapImgInBox(item.gridReference); }
+          btnLayout.classList.toggle('is-active', m==='layout');
+          btnRef.classList.toggle('is-active', m==='gridReference');
+        };
+
+        btnLayout.addEventListener('click', ()=> setMode('layout'));
+        btnRef.addEventListener('click',   ()=> setMode('gridReference'));
+
+        bar.append(btnLayout, btnRef);
+        $preview.appendChild(bar);
+      }
+
+      // Cleanup on drawer close / esc / scrim (same as video)
+      const cleanup = () => {
+        document.removeEventListener('fullscreenchange', onFSChange);
+        document.removeEventListener('webkitfullscreenchange', onFSChange);
+        box.removeEventListener('click', onMediaClick);
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+      };
+      $scrim?.addEventListener('click', cleanup, { once: true });
+      $closeDrawerBtn?.addEventListener('click', cleanup, { once: true });
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') cleanup(); }, { once: true });
+
+    } else {
+      // Fallback: gradient card
+      setGradientIfEmpty();
+      $preview.appendChild(box);
+    }
   }
-
-  $preview.appendChild(box);
-}
 
   // Specs
   if ($specList){
@@ -2203,13 +2484,11 @@ if ($preview){
   }
   if ($specSection) $specSection.style.display='block';
 
-  // If it's a print item, append the "print-tech" info INSIDE the drawer (bottom)
+  // Print tech block inside drawer for print
   const drawerContent = document.querySelector('.drawer-content');
   if (drawerContent){
-    // remove previous block if any
     const old = drawerContent.querySelector('.print-tech-inside');
     if (old) old.remove();
-
     if (item.medium === 'print'){
       const box = document.createElement('section');
       box.className = 'print-tech print-tech-inside';
@@ -2230,20 +2509,23 @@ if ($preview){
     }
   }
 
-  // Show drawer (and lock page scroll)
+  // Show drawer (lock via class only)
   $scrim?.classList.add('show');
   $drawer?.classList.add('show');
   document.body.classList.add('no-scroll');
 
-  // Make the URL shareable for this item WITHOUT triggering hashchange/scroll
+  // Shareable hash
   if (!fromHash){
     let hash = baseHashForCurrent();
-    if (item.medium === 'digital')   hash = `#digital/${state.digitalType}/item/${item.id}`;
-    else if (item.medium === 'print') hash = `#print/${state.subtype}/item/${item.id}`;
+    if (item.medium === 'digital')      hash = `#digital/${state.digitalType}/item/${item.id}`;
+    else if (item.medium === 'print')   hash = `#print/${state.subtype}/item/${item.id}`;
     else if (item.medium === 'branded') hash = `#branded/item/${item.id}`;
-    history.replaceState(null, '', hash); // no jump
+    history.replaceState(null, '', hash);
   }
 }
+
+
+
 
 
 function labelForItem(item){
@@ -2371,7 +2653,7 @@ function renderTVMatrix(item, targetEl){
   const scroller = document.createElement('div'); scroller.className = 'hscroll';
   const table = document.createElement('table'); table.className = 'rate-table';
 
-  // keep references to every cell per duration (for hover/active toggles)
+  // keep gridReferences to every cell per duration (for hover/active toggles)
   const cellsByDur = Object.fromEntries(durations.map(d => [d, []]));
 
   function setHover(dur, on){
@@ -2561,7 +2843,7 @@ const headMap = {
   else if(medium==='print')  history.replaceState(null,'',`#print/${state.subtype}`);
   else if (medium==='tv') history.replaceState(null,'', '#'+updateHashTV());
   else                          history.replaceState(null,'',`#${medium}`);
-});// ---------------- Scroll spy (reference-line method; no flicker) ----------------
+});// ---------------- Scroll spy (gridReference-line method; no flicker) ----------------
 const SECTION_TO_MEDIUM = {
   'sec-abola':'abola',
   'sec-digital':'digital',
@@ -2573,7 +2855,7 @@ const SECTION_TO_MEDIUM = {
 
 const SECTIONS = Array.from(document.querySelectorAll('.section'));
 const COOLDOWN_MS = 200;     // tiny cooldown after we switch, to avoid double flips
-const REF_EXTRA   = 12;      // pixels below the masthead we place the reference line
+const REF_EXTRA   = 12;      // pixels below the masthead we place the gridReference line
 
 let spyCooldown = false;
 function cool(ms = COOLDOWN_MS){
