@@ -1047,7 +1047,7 @@
      NEW: Branded Package block (Descrição + Specs)
      place this after "casos de sucesso"
      ======================================================= */
-  .branded-package{ margin:16px 0; }
+  .native-ad-pack{ margin:16px 0; }
   .package-grid{
     display:grid; gap:16px;
     grid-template-columns: 2fr 1fr;
@@ -1097,7 +1097,7 @@
 
 
 /* --- Added: Package head strap to visually associate with Branded section --- */
-.branded-package .package-head{
+.native-ad-pack .package-head{
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -1640,7 +1640,7 @@ section.package-breakdown > table.bc-breakdown tbody tr + tr td{
   section.package-breakdown > table.bc-breakdown td:nth-child(1){ font-weight: 800; color:#111; }
   section.package-breakdown > table.bc-breakdown td:nth-child(2)::before{ content: "Detalhe"; display:block; font-weight:700; color:#6b7280; margin-bottom:2px; }
   section.package-breakdown > table.bc-breakdown td:nth-child(3){ text-align: left; }
-  section.package-breakdown > table.bc-breakdown td:nth-child(3)::before{ content: "Qt./Meta"; display:block; font-weight:700; color:#6b7280; margin-bottom:2px; }
+  section.package-breakdown > table.bc-breakdown td:nth-child(3)::before{ content: "Objetivo"; display:block; font-weight:700; color:#6b7280; margin-bottom:2px; }
 }
 
 /* Package specs — grey panel like screenshot */
@@ -1904,12 +1904,13 @@ section.package-specs .spec-list{
       <div class="branded-copy">
         <div class="branded-copy-panel" role="group" aria-label="Introdução ao Branded Content">
   <h1 class="hero-title"><span class="hero-mark" aria-hidden="true"></span><span class="hero-text">O PODER DO CONTEÚDO</span></h1>
-  <p class="hero-lead">Branded content que informa, entretém e converte — produzido e distribuído com a curadoria d’A BOLA.</p>
-  <ul class="hero-chips" role="list">
+  <p class="hero-lead">Branded content que informa, entretém e converte </p>
+    <p class="hero-lead"></p>Produzido e distribuído com a curadoria d’A BOLA</p>
+  <!-- <ul class="hero-chips" role="list">
     <li>Vídeo + Artigo</li>
     <li>Distribuição Social</li>
     <li>Medição First‑Party</li>
-  </ul>
+  </ul> -->
 </div>
       </div>
     </section>
@@ -1994,19 +1995,18 @@ section.package-specs .spec-list{
     </section>
 
     <!-- NOVA SECÇÃO: PACK / DESCRIÇÃO / SPECS -->
-    <section class="branded-package" aria-label="Pack Branded Content — A BOLA" id="branded-package">
+    <section class="native-ad-pack" aria-label="Pack Native AD" id="native-ad-pack">
       <header class="package-head">
-        <h3>Pack Branded Content</h3>
+        <h3>Pack Native Ad</h3>
       </header>
 
       <!-- Descrição e quantidades -->
       <section class="package-breakdown" aria-labelledby="pack-desc-title">
         <table class="bc-breakdown" aria-describedby="pack-desc-title">
           <thead>
-            <tr><th>Elemento</th><th>Detalhe</th><th>Qt./Meta</th></tr>
+            <tr><th>Elemento</th><th>Detalhe</th><th>Objetivo</th></tr>
           </thead>
           <tbody>
-            <tr><td>A BOLA — Conteúdo</td><td>Texto + Fotos</td><td>1</td></tr>
             <tr><td>Destaque de Conteúdo HP</td><td>HOMEPAGE - A BOLA</td><td>24 H</td></tr>
             <tr><td>Promoção conteudo site</td><td>MREC - Desenvolvimento A BOLA</td><td>500&nbsp;000 IMP</td></tr>
             <tr>
@@ -2023,7 +2023,7 @@ section.package-specs .spec-list{
 
       <!-- Especificações -->
       <section class="package-specs spec-panel" aria-labelledby="pack-specs-title">
-        <h4 id="pack-specs-title">Branded Content — Specs</h4>
+        <h4 id="pack-specs-title">Especificações Native Ad</h4>
         <ul class="spec-list">
           <li>Briefing cliente</li>
           <li>Fotos — mínimo 2 (300&nbsp;dpi de resolução)</li>
