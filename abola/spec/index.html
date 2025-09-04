@@ -1,19 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tabela de Publicidade / Especificações - ABOLA.pt</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Tabela de Publicidade / Especifica&ccedil;&otilde;es - ABOLA.pt
+  </title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+  <style>
+   :root{
     --bg:#fafafa;
     --panel:#fff;
     --ink:#111;
     --muted:#6b7280;
     --ring:rgba(0,0,0,.08);
 
-    /* Buttons (generic .btn — NOT the nav tabs) */
+    
     --btn-bg:#f3f4f6;
     --btn-fg:#3f3f3f;
     --btn-border:rgba(0,0,0,.14);
@@ -30,26 +32,26 @@
     --z-masthead:50;
     --z-section-head:5;
 
-    /* Section bar/tail */
+    
     --brand-red:#E20613;
     --tail-w-sm:148px;
     --bar-h-sm:14px;
     --tail-w-lg:185px;
     --bar-h-lg:16px;
 
-    /* Tabs metrics */
+    
     --tab-fs:14px;
     --tab-pt:6px;
     --tab-pb:12px;
     --tab-ul:8px;
   }
 
-  /* Typography */
+  
   html, body { font-family: 'Open Sans', sans-serif; }
   h1, h2, h3, h4, h5, h6{ font-weight:800; }
   strong, b{ font-weight:600; }
 
-  /* ==== Global button reset ==== */
+  
   button,
   [type="button"],
   [type="submit"],
@@ -85,7 +87,7 @@
 
   body.no-scroll { overflow: hidden; }
 
-  /* Icon-style close button for the drawer */
+  
   .close-drawer{
     width: 40px;
     height: 40px;
@@ -111,9 +113,7 @@
     width: 18px; height: 18px; stroke: currentColor; vector-effect: non-scaling-stroke;
   }
 
-  /* =========================================================
-     HERO – HIGHLIGHTS (print / Social Media / A Bola TV)
-     ========================================================= */
+  
   .hero-highlights{
     margin-top: 12px;
     display: grid;
@@ -167,9 +167,7 @@
   }
   .hl-pill .k{ font-weight:700; }
 
-  /* =========================================================
-     HERO – AUDIENCE PANELS (Website & Mobile App | Social Media)
-     ========================================================= */
+  
   .hero-audience-panels{ margin-top: 18px; }
   .aud-grid{ display:grid; gap: 18px; grid-template-columns: 1fr 1fr; }
   @media (max-width: 980px){ .aud-grid{ grid-template-columns: 1fr; } }
@@ -248,7 +246,7 @@
   .hero .hl-card,
   .hero .aud-panel{ backdrop-filter: saturate(1.1); }
 
-  /* Accessible focus ring */
+  
   button:focus-visible,
   [type="button"]:focus-visible,
   [type="submit"]:focus-visible,
@@ -272,14 +270,14 @@
     }
   }
 
-  /* ===== Global layout ===== */
+  
   html { scroll-padding-top: var(--mastpad, 96px); }
   @media (max-width:680px){ html { scroll-padding-top: var(--mastpad, 120px); } }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{ margin:0; color:var(--ink); }
 
-  /* ===== Sticky masthead ===== */
+  
   .masthead{
     position:fixed; inset:0 0 auto 0; z-index:var(--z-masthead);
     background:#a80f1d;
@@ -341,7 +339,7 @@
                 inset 0 -1px 0 rgba(0,0,0,.06);
   }
 
-  /* NAV TABS */
+  
   .tabs{ display:flex; gap:18px; padding:0; background:transparent; border:0; }
   .masthead-inner .tabs button{
     position:relative;
@@ -378,26 +376,25 @@
 
   .header-spacer{ height:96px }
 
-  /* ===== Sections ===== */
+  
   .section{ max-width:1200px; margin:0 auto; padding:0 24px; }
   .section + .section{ margin-top:12px; }
 
-  /* ===== Abola (hero) full-bleed ===== */
+  
   #sec-abola{ max-width:none; padding:0; margin:0; width:100%; }
   .context-slot{ display:none; justify-self:end; }
   .context-slot.is-open{ display:block; }
 
-  /* ===== Sticky section headers ===== */
+  
   .section-head{
     position:sticky; top:0; z-index:var(--z-section-head);
     background:linear-gradient(180deg,#fff,#fafafa);
-    border-bottom:1px solid var(--ring);
     padding:12px 0; margin-bottom:8px;
     display:flex; align-items:center; gap:12px;
   }
   .section-head h2{ margin:0; font-size:1.55rem; text-transform:uppercase; }
 
-  /* Grid */
+  
   .grid{ display:grid; gap:18px; grid-template-columns:repeat(1,minmax(0,1fr)); }
   @media (min-width:700px){ .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
   @media (min-width:1000px){ .grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
@@ -413,7 +410,7 @@
 
   .site-footer{ max-width:1200px; margin:32px auto; padding:12px 24px; color:var(--muted); font-size:12px; text-align:center; }
 
-  /* Branded hero block (grid) */
+  
   .branded-hero{
     display:grid;
     grid-template-columns: 1.05fr 1fr;
@@ -458,7 +455,7 @@
   }
   @media (max-width: 420px){ .branded-hero{ border-radius:12px; } }
 
-  /* ===== Cards ===== */
+  
   .card{ background:transparent; border:0; cursor:pointer;}
   .card:hover {opacity:0.9; color:#222222}
 
@@ -493,7 +490,7 @@
   .meta{ padding:8px; background:transparent }
   .title{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:700 }
 
-  /* ===== Drawer + Scrim ===== */
+  
   .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.28); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:9990; }
   .scrim.show{ opacity:1; pointer-events:auto }
   .drawer{ position:fixed; top:0; right:-560px; width:100%; max-width:560px; height:100%; background:#fff; border-left:1px solid var(--ring); box-shadow:-8px 0 24px rgba(0,0,0,.12); display:flex; flex-direction:column; transition:right .25s ease; z-index:10000; }
@@ -538,7 +535,7 @@
   .drawer{ overscroll-behavior: contain; }
   .drawer-content{ flex: 1 1 auto; overflow: auto; overscroll-behavior: contain; }
 
-  /* ===== Generic .btn (chips etc.) ===== */
+  
   .btn{
     border:1px solid var(--btn-border);
     background:var(--btn-bg);
@@ -572,7 +569,7 @@
     .btn{ padding:6px 8px; font-size:13px; }
   }
 
-  /* ---- TV ratecard table + scroller ---- */
+  
   .hscroll{ display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
   @supports (-webkit-touch-callout: none) { .hscroll{ -webkit-overflow-scrolling: auto; } }
 
@@ -649,9 +646,7 @@
   }
   .print-tech .note{ margin-top:10px; color:var(--muted); font-size:12px; }
 
-  /* ============================
-     Section bar with SVG tail
-     ============================ */
+  
   .section-head::after{
     content:"";
     flex:1 1 auto;
@@ -669,7 +664,7 @@
     }
   }
 
-  /* ===== HERO INTRO (sec-abola) ===== */
+  
   .hero{
     position:relative;
     width:100%;
@@ -691,7 +686,7 @@
     gap:24px;
   }
 
-  /* ===== HERO ONLY: diagonal-cut photo background ===== */
+  
   #head-abola.hero{
     --hero-img-land: url("fundo1.png");
     --hero-img-port: url("fundo1portrait.png");
@@ -778,7 +773,7 @@
     .hero-title .sub  { font-size: 1.2rem; }
   }
 
-  /* Condições — masonry-style columns */
+  
   #sec-condicoes .doc{ font-size:15px; line-height:1.65; }
   .terms-wrap{ width:100%; }
   .terms{
@@ -805,7 +800,7 @@
     color: #fff;
     background: var(--brand-red, #E20613);
     position: relative;
-    /* Parallelogram shape (both sides slanted) */
+    
     clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
     box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 6px 14px rgba(0,0,0,.18);
     font-variant-numeric: tabular-nums;
@@ -823,7 +818,7 @@
 
   .terms p{ margin:0; color:#111; }
 
-  /* Collapsible brand bar */
+  
   .masthead{ --brandH: 60px; }
   .masthead > .brand{
     max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-12px);
@@ -833,7 +828,7 @@
     max-height: var(--brandH); opacity: 1; transform: translateY(0);
   }
 
-  /* Metrics rotator */
+  
   #head-abola .metrics-rotator{ position: relative; min-height: var(--rot-h, 0px); padding-bottom: 28px; }
   #head-abola .metrics-rotator .metrics-slide{
     position: absolute; inset: 0; width: 100%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .4s ease;
@@ -851,7 +846,7 @@
   }
   #head-abola .metrics-rotator .nav-btn:hover{ opacity: 1; background: rgba(0,0,0,.32); border-color: rgba(255,255,255,.35); }
   #head-abola .metrics-rotator .nav-btn:active{ transform: translateY(1px); }
-  #head-abola .metrics-rotator .nav-btn svg{ width: 18px; height: 18px; display: block; }
+  #head-abola .metrics-rotator .nav-btn svg{ width: 18px; height: 18px; display: block; margin:7px}
   @media (hover:hover) and (pointer:fine){
     #head-abola .metrics-rotator .nav-btn{ opacity: 0; }
     #head-abola .metrics-rotator:hover .nav-btn,
@@ -863,7 +858,7 @@
     #head-abola .metrics-rotator .nav-btn svg{ width: 16px; height: 16px; }
   }
   #head-abola .metrics-rotator .hero-metrics-nav{ padding: 0; }
-  #head-abola .metrics-rotator .nav-btn.prev{ margin-left: -6px; }
+  #head-abola .metrics-rotator .nav-btn.prev{ margin-left: 0px; display:none;}
   #head-abola .metrics-rotator .nav-btn.next{ margin-right: -6px; }
 
   .preview-switch{
@@ -885,7 +880,7 @@
   }
   .preview-switch .switch-btn[disabled]{ opacity:.55; cursor:not-allowed; }
 
-  /* === Video hero (=bgvideo variant) === */
+  
   .branded-video { margin: 10px 0 16px; }
   .video-wrap{
     position:relative; border:1px solid var(--ring); border-radius:16px; overflow:hidden;
@@ -912,7 +907,7 @@
   .vid-stats strong{ font-weight:900; display:block; line-height:1; }
   .vid-stats span{ font-size:12px; opacity:.9 }
 
-  /* === Impact strip / Cases / Process === */
+  
   .branded-impact{ margin: 12px 0 6px; }
   .impact-grid{ display:grid; gap:12px; grid-template-columns: repeat(4, minmax(0,1fr)); }
   .impact-item{ background:#fff; border:1px solid var(--ring); border-radius:14px; box-shadow:var(--shadow); padding:12px; text-align:center; }
@@ -943,9 +938,12 @@
   .case-meta dt{ font-weight:800; color:#555; }
   .case-meta dd{ margin:0; }
 
+  #branded-process {display:none;}
+
   @media (min-width: 980px){
     .cases-track{ display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; overflow:visible; }
     .case-card{ flex:unset; max-width:none; }
+    #branded-process {display:block !important;}
   }
 
   .branded-process{ margin: 16px 0; }
@@ -953,7 +951,7 @@
   .process-steps{
     list-style:none; margin:0; padding:0;
     display:grid; gap:10px;
-    grid-template-columns: repeat(6, minmax(0,1fr));
+    grid-template-columns: repeat(5, minmax(0,1fr));
   }
   .process-steps li{
     background:#fff; border:1px solid var(--ring);
@@ -996,7 +994,7 @@
     .process-steps{ grid-template-columns: 1fr; }
   }
 
-  /* ===== Vídeo de fundo no hero (background) ===== */
+  
   .bgvideo { position: relative; min-height: clamp(380px, 62vh, 720px); border-radius: 16px; overflow: hidden; }
   .bgvideo-media { position: absolute; inset: 0; z-index: 0; }
   .bgvideo-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 55% center; }
@@ -1043,10 +1041,7 @@
     .bgvideo { background: url('branded/poster.jpg') center / cover no-repeat; }
   }
 
-  /* =======================================================
-     NEW: Branded Package block (Descrição + Specs)
-     place this after "casos de sucesso"
-     ======================================================= */
+  
   .native-ad-pack{ margin:16px 0; }
   .package-grid{
     display:grid; gap:16px;
@@ -1063,7 +1058,7 @@
     margin:0 0 10px 0; font-size:16px; text-transform:uppercase; letter-spacing:.3px;
   }
 
-  /* Left column: DESCRIÇÃO + Entregáveis */
+  
   .deliverables{
     display:grid; grid-template-columns: 220px 1fr;
     gap:8px 14px; margin:0;
@@ -1081,7 +1076,7 @@
     margin-top:.6em; flex:0 0 auto;
   }
 
-  /* Right column: KPIs & quick facts */
+  
   .kpi-grid{
     display:grid; grid-template-columns: 1fr 1fr; gap:10px;
   }
@@ -1096,7 +1091,7 @@
 
 
 
-/* --- Added: Package head strap to visually associate with Branded section --- */
+
 .native-ad-pack .package-head{
   display: flex;
   align-items: baseline;
@@ -1108,7 +1103,7 @@
 }
 
 
-/* --- Added: Stronger global overlay for busy video frames --- */
+
 .bgvideo-overlay{
   background:
     radial-gradient(120% 90% at 12% 90%, rgba(0,0,0,.62) 0%, rgba(0,0,0,.2) 52%, rgba(0,0,0,.12) 100%),
@@ -1117,7 +1112,7 @@
   mix-blend-mode: multiply;
 }
 
-/* --- Added: Branded copy panel glass card for contrast --- */
+
 .branded-copy-panel{
   background: linear-gradient(180deg, rgba(0,0,0,.56), rgba(0,0,0,.44));
   border: 1px solid rgba(255,255,255,.18);
@@ -1140,23 +1135,16 @@
     border-color: rgba(255,255,255,.22);
   }
 }
-
-</style>
-
-
-<style>
-
-/* === Contrast Overrides v2 (hero readability) === */
-
-/* Neutral, left-to-right scrim over the video (removes heavy red tint) */
-.bgvideo-overlay{
+  </style>
+  <style>
+   .bgvideo-overlay{
   background:
     linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.48) 38%, rgba(0,0,0,.18) 64%, rgba(0,0,0,0) 100%),
     radial-gradient(120% 70% at 100% 0%, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 70%);
   mix-blend-mode: normal;
 }
 
-/* Local guaranteed-contrast "scrim" behind the text card */
+
 .branded-copy-panel{
   position: relative;
   background: rgba(12,12,12,.84);
@@ -1177,7 +1165,7 @@
   z-index:-1;
 }
 
-/* Headings and text readable on any frame */
+
 .branded-copy-panel h1,
 .branded-copy-panel h2,
 .branded-copy-panel h3{ 
@@ -1190,14 +1178,14 @@
   text-shadow: 0 1px 6px rgba(0,0,0,.55);
 }
 
-/* Keep brand accent without sacrificing contrast */
+
 .branded-copy-panel .brand, 
 .branded-copy-panel .accent{
   color: color(display-p3 1 0.2 0.2 / 0.95);
-  color: #ff3131; /* sRGB fallback */
+  color: #ff3131; 
 }
 
-/* Slightly stronger on smaller screens where the panel is narrower */
+
 @media (max-width: 640px){
   .bgvideo-overlay{
     background:
@@ -1208,15 +1196,9 @@
     padding: 18px;
   }
 }
-
-</style>
-
-<style>
-
-/* === Branded Hero v3 — premium composition === */
-
-/* Subtle vignette & spotlight behind the card */
-.branded-hero .branded-copy{
+  </style>
+  <style>
+   .branded-hero .branded-copy{
   position: relative;
 }
 .branded-hero .branded-copy::before{
@@ -1228,7 +1210,7 @@
   z-index:0;
 }
 
-/* Card layout */
+
 .branded-copy-panel{
   position: relative;
   z-index: 1;
@@ -1244,7 +1226,7 @@
   -webkit-backdrop-filter: blur(4px) saturate(108%);
 }
 
-/* Typographic system */
+
 .branded-copy-panel 
 .branded-copy-panel .hero-title{
   margin: 0 0 8px;
@@ -1261,7 +1243,7 @@
   line-height: 1.5;
 }
 
-/* Chips for quick scannability */
+
 .hero-chips{
   display:flex; flex-wrap:wrap; gap:8px 10px;
   margin: 0 0 14px; padding:0; list-style:none;
@@ -1276,7 +1258,7 @@
   backdrop-filter: blur(2px);
 }
 
-/* Smallscreens: stronger overlay and full-width card */
+
 @media (max-width: 720px){
   .branded-hero .branded-copy::before{
     background: radial-gradient(120% 80% at 20% 70%, rgba(0,0,0,.78) 0%, rgba(0,0,0,.36) 48%, rgba(0,0,0,.14) 72%, rgba(0,0,0,0) 100%);
@@ -1289,24 +1271,18 @@
     left:-10px; top:12px; bottom:12px;
   }
 }
+  </style>
+  <style>
+   .section-subnav{ display:none !important; }
 
-</style>
 
-<style>
-
-/* === Hero v4 — lighter, square, blurred panel; minimal chrome; diagonal mark before H1 === */
-
-/* Remove subnav if any leftover */
-.section-subnav{ display:none !important; }
-
-/* Lighten global overlay so video is more visible */
 .bgvideo-overlay{
   background:
     linear-gradient(90deg, rgba(0,0,0,.46) 0%, rgba(0,0,0,.22) 48%, rgba(0,0,0,0) 100%);
   mix-blend-mode: normal;
 }
 
-/* Square, translucent, blurred panel */
+
 .branded-copy-panel{
   background: rgba(10,10,10,.32);
   border: 1px solid rgba(255,255,255,.16);
@@ -1319,7 +1295,7 @@
 .branded-copy-panel .hero-title{ color:#fff; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
 .branded-copy-panel .hero-lead{ color:#f3f4f6; }
 
-/* Diagonal mark before the title (like the screenshot) */
+
 .hero-mark{
   display:inline-block;
   width: .55em;
@@ -1331,19 +1307,19 @@
   vertical-align: -0.08em;
 }
 
-/* Chips remain; tone them down slightly */
+
 .hero-chips li{
   background: rgba(255,255,255,.08);
   border-color: rgba(255,255,255,.16);
 }
 
-/* Remove CTA styles if still present */
+
 .hero-ctas, .btn, .btn-primary, .btn-ghost{ display:none !important; }
 
-/* Video handling for mobile/portrait */
+
 .branded-hero video{ object-fit: cover; width:100%; height:100%; }
 @media (max-width: 640px){
-  /* Let more of the video breathe on mobile */
+  
   .branded-hero{ min-height: 66vh; }
   .bgvideo-overlay{
     background: linear-gradient(90deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.20) 55%, rgba(0,0,0,0) 100%);
@@ -1356,28 +1332,22 @@
     padding: 16px 16px;
     margin-right: 6vw;
   }
-  /* If a portrait video is used later, keep focal point centered */
+  
   .branded-hero video{ object-position: 50% 40%; }
 }
-
-</style>
-
-<style>
-
-/* === Hero v5 — Minimal panel, no ring/shadows; narrow copy === */
-
-/* Limit copy container width */
-.branded-hero .branded-copy{
-  max-width: 240px !important;
+  </style>
+  <style>
+   .branded-hero .branded-copy{
+  max-width: 220px !important;
 }
 
-/* Remove any ring/border/shadow from inside the hero copy zone */
+
 .branded-hero .branded-copy,
 .branded-hero .branded-copy *{
   box-shadow: none !important;
 }
 
-/* Keep the blur effect only; remove fill and borders */
+
 .branded-copy-panel{
   background: transparent !important;
   border: 0 !important;
@@ -1386,25 +1356,19 @@
   -webkit-backdrop-filter: blur(12px) saturate(110%) !important;
 }
 
-/* Remove any pseudo-element background halo */
+
 .branded-copy-panel::before{
   content: none !important;
 }
 
-/* Tighten mobile spacing so more of the video shows */
+
 @media (max-width: 640px){
   .branded-hero{ min-height: 64vh; }
   .branded-copy-panel{ padding: 14px 14px !important; }
 }
-
-</style>
-
-<style>
-
-/* === Hero v6 — Mobile-first visibility of video === */
-
-/* Compact overlay: title only on mobile; dock to top-left so it doesn't cover the center action */
-@media (max-width: 640px){
+  </style>
+  <style>
+   @media (max-width: 640px){
   .branded-hero{ min-height: 72vh; }
   .branded-hero .branded-copy{
     position: absolute;
@@ -1416,22 +1380,22 @@
     backdrop-filter: blur(10px) saturate(110%) !important;
     -webkit-backdrop-filter: blur(10px) saturate(110%) !important;
   }
-  /* Hide long text/chips inside the overlay on mobile; they appear below the video */
+  
   .branded-copy-panel .hero-lead,
   .branded-copy-panel .hero-chips{ display: none !important; }
-  /* Make sure the hero mark and title stay crisp */
+  
   .branded-copy-panel .hero-title{ font-size: clamp(20px, 5.6vw, 26px); }
   .hero-mark{ width: .5em; height: .9em; }
-  /* Video composition for portrait sources: keep face/action centered */
+  
   .branded-hero video{ object-fit: cover; object-position: 50% 40%; }
 }
 
-/* Desktop/tablet keeps the full overlay */
+
 @media (min-width: 641px){
   .branded-meta-mobile{ display: none; }
 }
 
-/* Mobile meta styling (below the video) */
+
 .branded-meta-mobile{
   display: none;
   margin: 10px 8px 0;
@@ -1458,31 +1422,25 @@
   }
 }
 
-/* Make overlay gradients lighter so more of the video shows */
+
 @media (max-width: 640px){
   .bgvideo-overlay{
     background: linear-gradient(90deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.14) 50%, rgba(0,0,0,0) 100%);
   }
 }
-
-</style>
-
-<style>
-
-/* === Hero v7 — mobile: dock overlay bottom-left; hero-mark flush to title === */
-
-/* Ensure hero-mark hugs the left of the title on all devices */
-.branded-copy-panel .hero-title{
+  </style>
+  <style>
+   .branded-copy-panel .hero-title{
   display: inline-flex;
   align-items: center;
   gap: .35em;
 }
 .hero-mark{
-  margin-right: 0; /* now using flex gap */
+  margin-right: 0; 
   vertical-align: middle;
 }
 
-/* Mobile docked position */
+
 @media (max-width: 640px){
   .branded-hero .branded-copy{
     position: absolute !important;
@@ -1493,13 +1451,9 @@
     max-width: 260px !important;
   }
 }
-
-</style>
-
-<style>
-
-/* === Fix: hero mark inline-left of title on all breakpoints === */
-.branded-copy-panel .hero-title{
+  </style>
+  <style>
+   .branded-copy-panel .hero-title{
   display: inline-grid !important;
   grid-template-columns: auto 1fr;
   align-items: center;
@@ -1519,24 +1473,20 @@
   display:block;
   white-space: normal;
 }
-
-</style>
-
-<style>
-
-/* === Hero v9 — mark before the first letter via ::before on the title === */
-.branded-copy-panel .hero-title{
+  </style>
+  <style>
+   .branded-copy-panel .hero-title{
   position: relative !important;
   display: inline-block !important;
-  padding-left: 0.9em !important; /* make room for the mark */
+  padding-left: 0.9em !important; 
   margin: 0 0 8px;
-  /* cancel earlier grid rules */
+  
   grid-template-columns: none !important;
   column-gap: 0 !important;
 }
-.branded-copy-panel .hero-title .hero-mark{ display: none !important; } /* remove old span if present */
+.branded-copy-panel .hero-title .hero-mark{ display: none !important; } 
 
-/* The red diagonal slash that appears immediately before the first letter */
+
 .branded-copy-panel .hero-title::before{
   content:"";
   position: absolute;
@@ -1549,7 +1499,7 @@
   box-shadow: none;
 }
 
-/* Slightly adjust on small screens to match cap height */
+
 @media (max-width: 640px){
   .branded-copy-panel .hero-title{
     padding-left: 0.8em !important;
@@ -1558,15 +1508,9 @@
     left: 0.05em; top: 0.02em; width: 0.5em; height: 0.86em;
   }
 }
-
-</style>
-
-<style>
-
-/* === v17: Match visuals from screenshots for package-breakdown & package-specs === */
-
-/* Package breakdown — desktop table card */
-section.package-breakdown{
+  </style>
+  <style>
+   section.package-breakdown{
   margin-top: 8px;
 }
 section.package-breakdown > table.bc-breakdown{
@@ -1587,7 +1531,7 @@ section.package-breakdown > table.bc-breakdown{
   section.package-breakdown > table.bc-breakdown th,
   section.package-breakdown > table.bc-breakdown td{ display: table-cell !important; }
 }
-/* Head row */
+
 section.package-breakdown > table.bc-breakdown thead th{
   background: #f6f7f8;
   font-weight: 800;
@@ -1597,7 +1541,7 @@ section.package-breakdown > table.bc-breakdown thead th{
   border-bottom: 1px solid var(--ring, #e5e7eb);
   text-align: left;
 }
-/* Body cells */
+
 section.package-breakdown > table.bc-breakdown td{
   padding: 14px 16px;
   line-height: 1.55;
@@ -1607,7 +1551,7 @@ section.package-breakdown > table.bc-breakdown td{
 section.package-breakdown > table.bc-breakdown tbody tr + tr td{
   border-top: 1px solid var(--ring, #eef0f2);
 }
-/* Proportions and alignment */
+
 @media (min-width: 981px){
   section.package-breakdown > table.bc-breakdown th:nth-child(1),
   section.package-breakdown > table.bc-breakdown td:nth-child(1){ width: 42%; }
@@ -1621,7 +1565,7 @@ section.package-breakdown > table.bc-breakdown tbody tr + tr td{
   }
 }
 
-/* Mobile stacked cards remain intact */
+
 @media (max-width: 980px){
   section.package-breakdown > table.bc-breakdown{ border: 0; background: transparent; }
   section.package-breakdown > table.bc-breakdown thead{ position: absolute; left: -9999px; top: -9999px; }
@@ -1643,7 +1587,7 @@ section.package-breakdown > table.bc-breakdown tbody tr + tr td{
   section.package-breakdown > table.bc-breakdown td:nth-child(3)::before{ content: "Objetivo"; display:block; font-weight:700; color:#6b7280; margin-bottom:2px; }
 }
 
-/* Package specs — grey panel like screenshot */
+
 section.package-specs{
   border: 1px solid rgba(0,0,0,.06);
   border-radius: 12px;
@@ -1665,13 +1609,9 @@ section.package-specs .spec-list{
   gap: 6px;
   color: #111;
 }
-
-</style>
-
-<style>
-
-/* === Shared spec card: .spec-panel (used by .print-tech and .package-specs) === */
-.spec-panel{
+  </style>
+  <style>
+   .spec-panel{
   margin-top:12px;
   background:#fff;
   border:1px solid var(--ring);
@@ -1688,7 +1628,7 @@ section.package-specs .spec-list{
   text-transform:uppercase;
   letter-spacing:.3px;
 }
-/* Lists: works for <ul> and custom .spec-list */
+
 .spec-panel ul,
 .spec-panel .spec-list{
   margin:0;
@@ -1698,11 +1638,9 @@ section.package-specs .spec-list{
   gap:6px;
 }
 .spec-panel .note{ margin-top:10px; color:var(--muted); font-size:12px; }
-
-</style>
-
-<style>
-  .brand-footer{ background:#e20613; color:#fff; margin-top:24px; }
+  </style>
+  <style>
+   .brand-footer{ background:#e20613; color:#fff; margin-top:24px; }
   .brand-footer-inner{ max-width:1200px; margin:0 auto; padding:22px 24px 26px; }
   .bf-row{ display:flex; flex-direction:column; gap:14px; }
   .bf-logo{ height:40px; width:auto; display:block; }
@@ -1717,439 +1655,1823 @@ section.package-specs .spec-list{
   }
   .bf-socials a:hover{ filter:brightness(1.05); }
   .bf-socials a:active{ transform: translateY(1px); }
-  .bf-socials svg{ width:22px; height:22px; display:block; fill: currentColor; }
+  .bf-socials svg{ width:42px; height:42px; display:block; fill: currentColor; }
   @media (max-width:680px){ .bf-logo{ height:32px; } .bf-socials a{ width:40px; height:40px; } .brand-footer-inner{ padding:18px 16px 22px; } }
-</style>
-
-</head>
-<body> 
-
-  <!-- MASTHEAD -->
-  <div class="masthead" id="masthead">
-    <div class="brand">
-      <div class="brand-inner">
-        <div class="brand-left">
-          <!-- A BOLA SVG wordmark (kept) -->
-          <svg width="238" height="30" viewBox="0 0 238 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <g clip-path="url(#clip0_7239_3186)">
-              <path d="M19.49 23.4532H0V28.9703H19.49V23.4532Z" fill="#FAFAFA"/>
-              <path d="M29.8917 1.02734H10.3555V6.54438H29.8917V1.02734Z" fill="#FAFAFA"/>
-              <path d="M48.4851 23.4531H24.2422V28.9702H48.4851V23.4531Z" fill="#FAFAFA"/>
-              <path d="M34.0416 18.1602H13.7031V20.4533H34.0416V18.1602Z" fill="#FAFAFA"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M26.9629 1.02734H18.6631L2.63281 28.9705H10.9308L26.9629 1.02734Z" fill="#FAFAFA"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M46.0283 28.9702H33.3741L17.3438 1.02702L29.9908 1.02344L46.0283 28.9702Z" fill="#FAFAFA"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M182.014 23.4642H171.209V6.54438H176.862V1.02734H153.52V6.54438H158.989V23.4642H153.52V28.9705H187.645V18.1602H182.014V23.4642Z" fill="#FAFAFA"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M102.457 12.6594H102.183C103.755 11.4672 104.689 9.56258 104.689 7.61139C104.689 4.05629 101.749 1.02747 98.1468 1.02747H66.5273V6.5445H72.1358V23.4536H66.5273V28.9707H102.453C107.035 28.9707 110.751 25.3225 110.751 20.8258C110.751 16.3291 107.037 12.6594 102.453 12.6594H102.457ZM83.2176 6.5445H92.4725C93.9311 6.5445 95.1852 7.75997 95.1852 9.25111C95.1852 10.7422 93.9311 11.913 92.4725 11.913H83.2176V6.5445ZM95.733 23.4304V23.4536H83.2176V18.0852H95.733C97.213 18.0852 98.4688 19.3006 98.4688 20.7918C98.4688 22.2829 97.2148 23.4304 95.733 23.4304Z" fill="#FAFAFA"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M135.184 0H130.254C120.141 0 111.918 5.96814 111.918 13.2162V16.7838C111.918 24.0319 120.141 30 130.254 30H135.184C145.297 30 153.52 24.0337 153.52 16.7838V13.2162C153.52 5.96814 145.297 0 135.184 0ZM138.986 21.5257C138.986 22.5013 138.039 23.4537 137.002 23.4537H128.434C127.399 23.4537 126.451 22.5013 126.451 21.5257V8.42592C126.451 7.36082 127.331 6.58393 128.169 6.58393H137.266C138.103 6.58393 138.984 7.36082 138.984 8.42592V21.5257H138.986Z" fill="#FAFAFA"/>
-              <path d="M209.002 23.4531H189.512V28.9702H209.002V23.4531Z" fill="#FAFAFA"/>
-              <path d="M219.403 1.02734H199.867V6.54438H219.403V1.02734Z" fill="#FAFAFA"/>
-              <path d="M238.001 23.4531H213.758V28.9702H238.001V23.4531Z" fill="#FAFAFA"/>
-              <path d="M223.553 18.1602H203.215V20.4533H223.553V18.1602Z" fill="#FAFAFA"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M216.475 1.02734H208.175L192.145 28.9705H200.443L216.475 1.02734Z" fill="#FAFAFA"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M235.54 28.9705H222.888L206.855 1.02734H219.51L235.54 28.9705Z" fill="#FAFAFA"/>
-            </g>
-            <defs><clipPath id="clip0_7239_3186"><rect width="238" height="30" fill="white"/></clipPath></defs>
-          </svg>
-        </div>
-        <a class="brand-contact" href="mailto:sales@abola.pt">CONTACTO</a>
-      </div>
-    </div>
-
-    <div class="masthead-inner">
-      <nav class="tabs main-tabs" id="mainTabs" aria-label="Categorias">
-        <button data-medium="digital">Digital</button>
-        <button data-medium="print">Print</button>
-        <button data-medium="tv">TV</button>
-        <button data-medium="branded">Branded Content</button>
-      </nav>
-      <div class="context-slot">
-        <nav class="tabs context-tabs" id="contextTabs" aria-label="Subcategoria"></nav>
-      </div>
-    </div>
-  </div>
-
-  <!-- HERO / INTRO -->
-  <section id="sec-abola" class="section">
-    <header id="head-abola" class="hero" aria-label="A BOLA — introdução">
-      <div class="hero-inner">
-
-<div class="hero-logo-combo">
-        <svg class="hero-logo-abola" width="238" height="30" viewBox="0 0 238 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <g clip-path="url(#clip0_7239_3186)">
-            <path d="M19.49 23.4532H0V28.9703H19.49V23.4532Z" fill="#FAFAFA"/>
-            <path d="M29.8917 1.02734H10.3555V6.54438H29.8917V1.02734Z" fill="#FAFAFA"/>
-            <path d="M48.4851 23.4531H24.2422V28.9702H48.4851V23.4531Z" fill="#FAFAFA"/>
-            <path d="M34.0416 18.1602H13.7031V20.4533H34.0416V18.1602Z" fill="#FAFAFA"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M26.9629 1.02734H18.6631L2.63281 28.9705H10.9308L26.9629 1.02734Z" fill="#FAFAFA"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M46.0283 28.9702H33.3741L17.3438 1.02702L29.9908 1.02344L46.0283 28.9702Z" fill="#FAFAFA"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M182.014 23.4642H171.209V6.54438H176.862V1.02734H153.52V6.54438H158.989V23.4642H153.52V28.9705H187.645V18.1602H182.014V23.4642Z" fill="#FAFAFA"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M102.457 12.6594H102.183C103.755 11.4672 104.689 9.56258 104.689 7.61139C104.689 4.05629 101.749 1.02747 98.1468 1.02747H66.5273V6.5445H72.1358V23.4536H66.5273V28.9707H102.453C107.035 28.9707 110.751 25.3225 110.751 20.8258C110.751 16.3291 107.037 12.6594 102.453 12.6594H102.457ZM83.2176 6.5445H92.4725C93.9311 6.5445 95.1852 7.75997 95.1852 9.25111C95.1852 10.7422 93.9311 11.913 92.4725 11.913H83.2176V6.5445ZM95.733 23.4304V23.4536H83.2176V18.0852H95.733C97.213 18.0852 98.4688 19.3006 98.4688 20.7918C98.4688 22.2829 97.2148 23.4304 95.733 23.4304Z" fill="#FAFAFA"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M135.184 0H130.254C120.141 0 111.918 5.96814 111.918 13.2162V16.7838C111.918 24.0319 120.141 30 130.254 30H135.184C145.297 30 153.52 24.0337 153.52 16.7838V13.2162C153.52 5.96814 145.297 0 135.184 0ZM138.986 21.5257C138.986 22.5013 138.039 23.4537 137.002 23.4537H128.434C127.399 23.4537 126.451 22.5013 126.451 21.5257V8.42592C126.451 7.36082 127.331 6.58393 128.169 6.58393H137.266C138.103 6.58393 138.984 7.36082 138.984 8.42592V21.5257H138.986Z" fill="#FAFAFA"/>
-            <path d="M209.002 23.4531H189.512V28.9702H209.002V23.4531Z" fill="#FAFAFA"/>
-            <path d="M219.403 1.02734H199.867V6.54438H219.403V1.02734Z" fill="#FAFAFA"/>
-            <path d="M238.001 23.4531H213.758V28.9702H238.001V23.4531Z" fill="#FAFAFA"/>
-            <path d="M223.553 18.1602H203.215V20.4533H223.553V18.1602Z" fill="#FAFAFA"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M216.475 1.02734H208.175L192.145 28.9705H200.443L216.475 1.02734Z" fill="#FAFAFA"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M235.54 28.9705H222.888L206.855 1.02734H219.51L235.54 28.9705Z" fill="#FAFAFA"/>
-          </g>
-          <defs><clipPath id="clip0_7239_3186"><rect width="238" height="30" fill="white"/></clipPath></defs>
-        </svg>
-  <img class="hero-logo-smg" src="ringierlogo.png" alt="Sports Media Group logo">
-</div>
+  </style>
+  <style>
+   .section-banner{
+  height: 250px;
+  box-shadow: var(--shadow, 0 1px 2px rgba(0,0,0,.06));
+  margin: 0px 0 50px 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #f3f4f6;
+}
 
 
-
-        <h1 class="hero-title">
-          <span class="main">N.º 1 do Desporto em Portugal</span>
-          <span class="sub">há mais de 80 anos</span>
-        </h1>
-
-        <p class="hero-sub">
-          A BOLA lidera em alcance e engagement no desporto português — multiplataforma,
-          credível e com formatos premium que geram resultados.
-        </p>
-
-        <div class="hero-metrics">
-          <h3>SITE</h3>
-          <div class="metric"><div class="num">105M</div><div class="label">Pageviews / mês</div></div>
-          <div class="metric"><div class="num">29M</div><div class="label">Visitas / mês</div></div>
-          <div class="metric"><div class="num">2M</div><div class="label">Utilizadores / mês</div></div>
-          <div class="metric"><div class="num">13 minutos</div><div class="label">Tempo médio por sessão</div></div>
-        </div>
-
-        <div class="hero-metrics">
-          <h3>SOCIAL MEDIA</h3>
-          <div class="metric"><div class="num">1.2M</div><div class="label">Facebook</div></div>
-          <div class="metric"><div class="num">213K</div><div class="label">Instagram</div></div>
-          <div class="metric"><div class="num">244K</div><div class="label">TikTok</div></div>
-          <div class="metric"><div class="num">210K</div><div class="label">X</div></div>
-          <div class="metric"><div class="num">123K</div><div class="label">WhatsApp</div></div>
-          <div class="metric"><div class="num">73K</div><div class="label">YouTube</div></div>
-        </div>
-
-        <div class="hero-metrics">
-          <h3>PRINT</h3>
-          <div class="metric"><div class="num">9,8%</div><div class="label">Audiência</div></div>
-          <div class="metric"><div class="num">800K</div><div class="label">Readership</div></div>
-          <div class="metric"><div class="num">22K</div><div class="label">circulação do jornal</div></div>
-        </div>
-
-        <div class="hero-metrics">
-          <h3>ABOLA TV</h3>
-          <div class="metric"><div class="num">300K</div><div class="label">Audiência</div></div>
-          <div class="metric"><div class="num">24/7</div><div class="label">Emissão</div></div>
-        </div>
-
-      </div>
-    </header>
-  </section>
-
-  <!-- DIGITAL (unchanged markup) -->
-  <section id="sec-digital" class="section">
-    <div class="section-head" id="head-digital"><h2>Digital</h2></div>
-    <main id="gridDigital" class="grid">
-      <!-- cards … (same as before) -->
-    </main>
-  </section>
-
-  <!-- PRINT (unchanged markup) -->
-  <section id="sec-print" class="section">
-    <div class="section-head" id="head-print"><h2>Print</h2></div>
-    <div id="printNotice" class="print-note"></div>
-    <main id="gridprint" class="grid">
-      <!-- cards … (same as before) -->
-    </main>
-  </section>
-
-  <!-- TV (unchanged markup) -->
-  <section id="sec-tv" class="section">
-    <div class="section-head" id="head-tv"><h2>TV</h2></div>
-    <section id="tvPanel" class="tv-panel">
-      <h3>Tabela de Preços (exemplo)</h3>
-      <table class="rate-table">
-        <thead><tr><th>Time</th><th>20”</th><th>30”</th><th>60”</th></tr></thead>
-        <tbody>
-          <tr><td>Daytime</td><td>€ 154,90</td><td>€ 246,29</td><td>€ 666,07</td></tr>
-          <tr><td>Prime Time</td><td>€ 1.054,05</td><td>€ 1.675,94</td><td>€ 4.532,42</td></tr>
-        </tbody>
-      </table>
-      <section class="tv-tech">
-        <h3>Especificações Técnicas</h3>
-        <dl>
-          <dt>Formato</dt><dd>MXF (.mxf)</dd>
-          <dt>Codec</dt><dd>MPEG Video — XCam HD 35</dd>
-          <dt>Resolução</dt><dd>1920×1080 (16:9)</dd>
-          <dt>FPS</dt><dd>25</dd>
-        </dl>
-      </section>
-    </section>
-  </section>
-
-  <!-- BRANDED CONTENT -->
-  <section id="sec-branded" class="section">
-    <div class="section-head" id="head-branded"><h2>Branded Content</h2></div>
+.section-banner.banner-digital{ background-image: url("digital/section_header.png"); }
+.section-banner.banner-print{   background-image: url("print/section_header.png"); }
+.section-banner.banner-tv{      background-image: url("tv/section_header.png"); }
+  </style>
+  <style>
+   .hero-metrics .hero-footnote{
+  flex-basis: 100%;
+  width: 100%;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  text-transform: none;
+  margin: 0 100px;
+}
 
 
-    <!-- HERO COM VÍDEO DE FUNDO (simplificado) -->
-    <section class="branded-hero bgvideo" aria-labelledby="branded-hero-title" id="branded-hero">
-      <div class="bgvideo-media" aria-hidden="true">
-        <video id="bcHeroVideo" playsinline muted autoplay loop preload="metadata" poster="branded/poster.jpg">
-          <source src="brand/brand_landscape_low.mp4" type="video/mp4" media="(max-width: 900px)">
-          <source src="brand/brand_landscape_low.mp4" type="video/mp4">
-        </video>
-      </div>
-      <!-- keep a stronger overlay/backdrop via CSS later -->
-      <div class="bgvideo-overlay"></div>
-
-      <div class="branded-copy">
-        <div class="branded-copy-panel" role="group" aria-label="Introdução ao Branded Content">
-  <h1 class="hero-title"><span class="hero-mark" aria-hidden="true"></span><span class="hero-text">O PODER DO CONTEÚDO</span></h1>
-  <p class="hero-lead">Branded content que informa, entretém e converte </p>
-    <p class="hero-lead"></p>Produzido e distribuído com a curadoria d’A BOLA</p>
-  <!-- <ul class="hero-chips" role="list">
-    <li>Vídeo + Artigo</li>
-    <li>Distribuição Social</li>
-    <li>Medição First‑Party</li>
-  </ul> -->
-</div>
-      </div>
-    </section>
-<!-- Mobile meta directly under the hero; Deliverly on small screens -->
-<div class="branded-meta-mobile">
-  <p class="hero-lead">Branded content que informa, entretém e converte — produzido e distribuído com a curadoria d’A BOLA.</p>
-  <ul class="hero-chips hero-chips--light" role="list">
-    <li>Vídeo + Artigo</li>
-    <li>Distribuição Social</li>
-    <li>Medição First‑Party</li>
-  </ul>
-</div>
-    <!-- Processo (sem a .process-cta) -->
-    <section class="branded-process" aria-label="Como trabalhamos" id="branded-process">
-      <ol class="process-steps">
-        <li><span class="n">1</span><h4>Brief</h4><p>Objetivos, público, KPIs.</p></li>
-        <li><span class="n">2</span><h4>Co-criação</h4><p>Conceito e formatos.</p></li>
-        <li><span class="n">3</span><h4>Produção</h4><p>Texto, vídeo, design.</p></li>
-        <li><span class="n">4</span><h4>Distribuição</h4><p>Site, App, Social, TV.</p></li>
-        <li><span class="n">5</span><h4>Amplificação</h4><p>Ativação de media.</p></li>
-        <li><span class="n">6</span><h4>Relatório</h4><p>Métricas e learnings.</p></li>
-      </ol>
-    </section>
-
-    <!-- Casos de sucesso -->
-    <section class="branded-cases" aria-label="Casos de sucesso" id="branded-cases">
-      <header class="cases-head">
-        <h3>Casos de Sucesso</h3>
-      </header>
-
-      <div class="cases-track" id="casesTrack">
-        <article class="case-card">
-          <div class="case-media">
-            <video playsinline muted loop preload="metadata" poster="brand/HeinekenStarFans.png">
-              <source src="branded/case1-clip.mp4" type="video/mp4" />
-            </video>
-          </div>
-          <div class="case-meta">
-            <div class="brandrow">
-              <img src="brand/Generali_Tranquilidade_logo.png" alt="LOGO Generali Tranquilidade" />
-            </div>
-            <h4>EM CAMPO SOMOS TODOS IGUAIS</h4>
-            <dl>
-              <dt>Objetivo</dt><dd>Final Taça Portugal</dd>
-              <dt>Solução</dt><dd>Artigo + vídeo 60” + distribuição social</dd>
-              <dt>Resultado</dt><dd>1.2M reach | 2M impressões | ...</dd>
-            </dl>
-          </div>
-        </article>
-
-        
-        <article class="case-card">
-          <div class="case-media"><img src="brand/HeinekenStarFans.png" alt="HEINEKEN STAR FANS"/></div>
-          <div class="case-meta">
-            <div class="brandrow">
-              <img  height="40" src="brand/Sagres_logo.png" alt="LOGO Cerveja Sagres" />
-            </div>
-            <h4>APOIA NAVEGADORAS</h4>
-            <dl>
-              <dt>Objetivo</dt><dd>...Passatempo apoio navegadoras</dd>
-              <dt>Solução</dt><dd>Série de 4 artigos + vídeo 15”</dd>
-              <dt>Resultado</dt><dd>1.2M reach | 2M impressões | ... </dd>
-            </dl>
-          </div>
-        </article>
-
-        <article class="case-card">
-          <div class="case-media"><img src="brand/HeinekenStarFans.png" alt="HEINEKEN STAR FANS" /></div>
-          <div class="case-meta">
-            <div class="brandrow">
-              <img src="brand/Heineken_logo.png" alt="LOGO Heineken" />
-            </div>
-            <h4>STAR FANS</h4>
-            <dl>
-              <dt>Objetivo</dt><dd>...Campanha Star Fans</dd>
-              <dt>Solução</dt><dd>Artigos e Vídeos  </dd>
-              <dt>Resultado</dt><dd>1.2M reach | 2M impressões | ...</dd>
-            </dl>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- NOVA SECÇÃO: PACK / DESCRIÇÃO / SPECS -->
-    <section class="native-ad-pack" aria-label="Pack Native AD" id="native-ad-pack">
-      <header class="package-head">
-        <h3>Pack Native Ad</h3>
-      </header>
-
-      <!-- Descrição e quantidades -->
-      <section class="package-breakdown" aria-labelledby="pack-desc-title">
-        <table class="bc-breakdown" aria-describedby="pack-desc-title">
-          <thead>
-            <tr><th>Elemento</th><th>Detalhe</th><th>Objetivo</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Destaque de Conteúdo HP</td><td>HOMEPAGE - A BOLA</td><td>24 H</td></tr>
-            <tr><td>Promoção conteudo site</td><td>MREC - Desenvolvimento A BOLA</td><td>500&nbsp;000 IMP</td></tr>
-            <tr>
-              <td>Post patrocinado Social Media</td>
-              <td>Desenvolvimento A BOLA</td>
-              <td>Alcance mínimo: 30&nbsp;000</td>
-            </tr>
-            <tr><td>Duração promoção (paga)</td><td>Campanha</td><td>7 Dias</td></tr>
-            <tr><td>Pesquisa orgânica</td><td>Indexação</td><td>Always On</td></tr>
-            <tr><td>KPI Garantidos</td><td>Objetivo mínimo</td><td>7&nbsp;500 PV</td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Especificações -->
-      <section class="package-specs spec-panel" aria-labelledby="pack-specs-title">
-        <h4 id="pack-specs-title">Especificações Native Ad</h4>
-        <ul class="spec-list">
-          <li>Briefing cliente</li>
-          <li>Fotos — mínimo 2 (300&nbsp;dpi de resolução)</li>
-          <li>Hiperlinks — até 3</li>
-          <li>Possibilidade de colocação de vídeo</li>
-          <li>Prazos: 6 dias úteis para execução</li>
-        </ul>
-      </section>
-    </section>
+#head-abola .metrics-rotator{ min-height: auto; padding-bottom: 0; }
+#head-abola .metrics-rotator .hero-metrics-nav{
+  position: static;
+  left: auto; right: auto; bottom: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  pointer-events: auto;
+  z-index: auto;
+}
+#head-abola .metrics-rotator .nav-btn{
+  width: 36px; height: 36px;
+  opacity: 0.8;
+}
+@media (max-width: 640px){
+  #head-abola .metrics-rotator .hero-metrics-nav{
+    justify-content: center;
+    gap: 16px;
+  }
+}
+  </style>
+  <style>
+   .metrics-badge{
+  width: 36px; height: 36px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.25); color: #fff;
+  flex: 0 0 auto;
+}
+.metrics-badge svg{ width: 22px; height: 22px; display: block; }
+@media (max-width: 640px){ .metrics-badge{ width: 32px; height: 32px; } .metrics-badge svg{ width: 20px; height: 20px; }}
 
 
+.hero-metrics.is-social .metric{
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.hero-metrics .logo-badge{
+  width: 24px; height: 24px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.25);
+  color: #fff;
+  flex: 0 0 auto;
+}
+.hero-metrics .logo-badge svg{ width: 90%; height: 90%; display: block; }
+@media (max-width: 680px){
+  .hero-metrics .logo-badge{ width: 22px; height: 22px; }
+}
+  </style>
+  <style>
+   .metrics-badge{ width: 60px; height: 38px; }
+.metrics-badge svg{ width: 22px; height: 22px; }
+@media (max-width: 640px){
+  .metrics-badge{ width: 60px; height: 34px; }
+  .metrics-badge svg{ width: 20px; height: 20px; }
+}
+  </style>
+  <style>
+   .metrics-badge svg{ width: 24px; height: 24px; }
+  </style>
+  <style>
+   .metrics-badge{
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 6px 4px;
+  min-height: 46px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.25);
+  color: #fff;
+}
+.metrics-badge svg{ width: 22px; height: 22px; display: block; }
+.metrics-badge .metrics-badge-label{
+  font-size: 10px;
+  line-height: 1;
+  opacity: .9;
+  text-transform: uppercase;
+  letter-spacing: .2px;
+}
+@media (max-width: 640px){
+  .metrics-badge{ width: 44px; padding: 5px 5px 4px; border-radius: 10px; }
+  .metrics-badge svg{ width: 20px; height: 20px; }
+  .metrics-badge .metrics-badge-label{ font-size: 9.5px; opacity: .85; }
+}
+  </style>
+  <style>
+   .metrics-badge--social{ background: rgba(0,0,0,.25); color:#fff; }
+.metrics-badge--social svg{ width:22px; height:22px; }
 
-    <!-- Formatos opcionais (mantidos) -->
-    <main id="gridBranded" class="grid">
-      <article class="card" data-medium="branded">
-        <div class="poster"><img src="branded/format-article.jpg" alt="Artigo patrocinado" /></div>
-        <div class="meta"><div class="title"><span>Artigo Patrocinado</span></div><div class="muted">Conteúdo editorial sob medida.</div></div>
-      </article>
-      <article class="card" data-medium="branded">
-        <div class="poster"><img src="branded/format-video.jpg" alt="Vídeo nativo" /></div>
-        <div class="meta"><div class="title"><span>Vídeo Nativo</span></div><div class="muted">Histórias em 15–60 segundos.</div></div>
-      </article>
-    </main>
-  </section>
 
-  <!-- CONDIÇÕES GERAIS -->
-  <section id="sec-condicoes" class="section">
-    <div class="section-head" id="head-condicoes"><h2>Condições Gerais</h2></div>
-    <div id="condicoesBody" class="doc">
-      <div class="terms-wrap">
-        <ol class="terms">
-          <li><span class="n">1.</span><p>A Sociedade Vicra Desportiva, S.A. rege-se pelas presentes condições gerais contratuais, bem como pelo Código da Publicidade e restante legislação aplicável.</p></li>
-          <li><span class="n">2.</span><p>A Sociedade Vicra Desportiva, S.A. reserva o direito de não inserir publicidade que não esteja em harmonia com a sua orientação ética.</p></li>
-          <li><span class="n">3.</span><p>A Sociedade Vicra Desportiva, S.A. reserva o direito de adiar inserções de publicidade sempre que as circunstâncias o imponham.</p></li>
-          <li><span class="n">4.</span><p>O conteúdo das inserções, assim como o material a ser fornecido para as mesmas, é da inteira responsabilidade do cliente. A Sociedade Vicra Desportiva, S.A. não se responsabiliza pela perda ou danos causados aos materiais fornecidos para publicação. A entrega de materiais em suporte físico cabe ao anunciante ou ao seu representante efetuar a recolha no prazo máximo de 2 meses após a data de entrega, sob pena de serem destruídos.</p></li>
-          <li><span class="n">5.</span><p>A Sociedade Vicra Desportiva, S.A. não se responsabiliza, para além da repetição correta, por inserções com erros, lapsos ou omissões que lhe sejam imputáveis.</p></li>
-          <li><span class="n">6.</span><p>Toda a reclamação deverá ser feita, por escrito, até 5 dias úteis após a data de publicação do anúncio.</p></li>
-          <li><span class="n">7.</span><p>Os Anunciantes ou os seus representantes serão exclusivamente responsáveis pelo conteúdo publicitário e pelas consequências da sua publicação pela Sociedade Vicra Desportiva, S.A., bem como por todo e qualquer direito ou autorização de terceiros relativos à publicidade a publicar, nomeadamente direitos de autor ou outros. A Sociedade Vicra Desportiva, S.A. terá direito de regresso sobre os anunciantes e seus representantes por qualquer coima, multa, indemnização ou outros encargos decorrentes de incumprimento legal ou contratual de normas aplicáveis ao conteúdo da publicidade publicada.</p></li>
-          <li><span class="n">8.</span><p>Em todas as ordens de publicação firmadas pelos anunciantes ou agências presume-se o conhecimento e aceitação da tabela de publicidade e das presentes condições gerais.</p></li>
-          <li><span class="n">9.</span><p>Para execução de todas as questões emergentes ou interpretações deste contrato, as partes consideram competente o tribunal da comarca de Lisboa, com expressa recusa de qualquer outro.</p></li>
-        </ol>
-      </div>
-    </div>
-  </section>
+.hero .hero-copy, .hero .hero-subtitle, .hero .hero-lead, .hero p{
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
 
-  <!-- FOOTER -->
+
+@media (max-width: 680px){
   
-  <!-- BRAND FOOTER -->
-  <footer class="brand-footer" aria-label="A BOLA Footer">
-    <div class="brand-footer-inner">
-      <div class="bf-row">
-        <!-- A BOLA wordmark (white on red) -->
-        <div class="bf-brand">
-<svg width="238" height="30" viewBox="0 0 238 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <g clip-path="url(#clip0_7239_3186)">
-              <path d="M19.49 23.4532H0V28.9703H19.49V23.4532Z" fill="#FAFAFA"></path>
-              <path d="M29.8917 1.02734H10.3555V6.54438H29.8917V1.02734Z" fill="#FAFAFA"></path>
-              <path d="M48.4851 23.4531H24.2422V28.9702H48.4851V23.4531Z" fill="#FAFAFA"></path>
-              <path d="M34.0416 18.1602H13.7031V20.4533H34.0416V18.1602Z" fill="#FAFAFA"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M26.9629 1.02734H18.6631L2.63281 28.9705H10.9308L26.9629 1.02734Z" fill="#FAFAFA"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M46.0283 28.9702H33.3741L17.3438 1.02702L29.9908 1.02344L46.0283 28.9702Z" fill="#FAFAFA"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M182.014 23.4642H171.209V6.54438H176.862V1.02734H153.52V6.54438H158.989V23.4642H153.52V28.9705H187.645V18.1602H182.014V23.4642Z" fill="#FAFAFA"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M102.457 12.6594H102.183C103.755 11.4672 104.689 9.56258 104.689 7.61139C104.689 4.05629 101.749 1.02747 98.1468 1.02747H66.5273V6.5445H72.1358V23.4536H66.5273V28.9707H102.453C107.035 28.9707 110.751 25.3225 110.751 20.8258C110.751 16.3291 107.037 12.6594 102.453 12.6594H102.457ZM83.2176 6.5445H92.4725C93.9311 6.5445 95.1852 7.75997 95.1852 9.25111C95.1852 10.7422 93.9311 11.913 92.4725 11.913H83.2176V6.5445ZM95.733 23.4304V23.4536H83.2176V18.0852H95.733C97.213 18.0852 98.4688 19.3006 98.4688 20.7918C98.4688 22.2829 97.2148 23.4304 95.733 23.4304Z" fill="#FAFAFA"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M135.184 0H130.254C120.141 0 111.918 5.96814 111.918 13.2162V16.7838C111.918 24.0319 120.141 30 130.254 30H135.184C145.297 30 153.52 24.0337 153.52 16.7838V13.2162C153.52 5.96814 145.297 0 135.184 0ZM138.986 21.5257C138.986 22.5013 138.039 23.4537 137.002 23.4537H128.434C127.399 23.4537 126.451 22.5013 126.451 21.5257V8.42592C126.451 7.36082 127.331 6.58393 128.169 6.58393H137.266C138.103 6.58393 138.984 7.36082 138.984 8.42592V21.5257H138.986Z" fill="#FAFAFA"></path>
-              <path d="M209.002 23.4531H189.512V28.9702H209.002V23.4531Z" fill="#FAFAFA"></path>
-              <path d="M219.403 1.02734H199.867V6.54438H219.403V1.02734Z" fill="#FAFAFA"></path>
-              <path d="M238.001 23.4531H213.758V28.9702H238.001V23.4531Z" fill="#FAFAFA"></path>
-              <path d="M223.553 18.1602H203.215V20.4533H223.553V18.1602Z" fill="#FAFAFA"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M216.475 1.02734H208.175L192.145 28.9705H200.443L216.475 1.02734Z" fill="#FAFAFA"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M235.54 28.9705H222.888L206.855 1.02734H219.51L235.54 28.9705Z" fill="#FAFAFA"></path>
-            </g>
-            <defs><clipPath id="clip0_7239_3186"><rect width="238" height="30" fill="white"></rect></clipPath></defs>
-          </svg>
-        </div>
+  .hero-metrics{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 18px;
+    align-items: start;
+  }
+  .hero-metrics .metric{
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 8px;
+  }
+  
+  .hero-metrics .logo-badge{
+    grid-column: 1;
+  }
+  .hero-metrics .num{
+    grid-column: 2;
+  }
+  
+  .hero-metrics .hero-footnote{
+    grid-column: 1 / -1;
+    margin: 0px;
+  }
 
-        <!-- Social icons -->
-        <ul class="bf-socials" aria-label="Redes Sociais">
-          <li><a href="https://www.facebook.com/abolapt" aria-label="Facebook">
-             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M232,128a104.16,104.16,0,0,1-91.55,103.26,4,4,0,0,1-4.45-4V152h24a8,8,0,0,0,8-8.53,8.17,8.17,0,0,0-8.25-7.47H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,8-8.53A8.17,8.17,0,0,0,167.73,80H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0-8,8.53A8.17,8.17,0,0,0,96.27,152H120v75.28a4,4,0,0,1-4.44,4A104.15,104.15,0,0,1,24.07,124.09c2-54,45.74-97.9,99.78-100A104.12,104.12,0,0,1,232,128Z"></path></svg> 
-          </a></li>
-          <li><a href="https://www.instagram.com/abolapt" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Zm5 4.5A3.5 3.5 0 1 0 15.5 12 3.5 3.5 0 0 0 12 8.5Zm5-2.3a.8.8 0 1 0 .8.8.8.8 0 0 0-.8-.8Z"/><circle cx="12" cy="12" r="2.5"/></svg>
-          </a></li>
-          <li><a href="https://www.tiktok.com/@abola" aria-label="TikTok">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4c.6 1.7 1.9 3 3.6 3.6v2.1a6.6 6.6 0 0 1-3.6-1.2v5.9a5 5 0 1 1-5-5c.3 0 .6 0 .9.1v2.3a2.7 2.7 0 1 0 1.8 2.6V4h2.3Z"/></svg>
-          </a></li>
-          <li><a href="https://x.com/abolapt" aria-label="X (Twitter)">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4.7l3.7 5 4.7-5H22l-7.2 7.9L22 20h-4.7l-4.1-5.5L8.5 20H2l7.8-8.6L4 4Zm3.8 2 3.3 4.6L7 17.9h2.3l3.3-3.7 3 3.7h2.9l-3.6-5 4.9-5.4h-2.3l-3.6 3.9L10.8 6H7.8Z"/></svg>
-          </a></li>
+  
+  #head-abola .metrics-rotator{ min-height: auto; padding-bottom: 0; }
+  #head-abola .metrics-rotator .hero-metrics-nav{
+    position: static !important;
+    display: flex; justify-content: center; gap: 12px;
+    pointer-events: auto; z-index: auto;
+  }
+  #head-abola .metrics-rotator .nav-btn{
+    width: 36px; height: 36px; opacity: .9;
+  }
 
-          <li><a href="https://www.youtube.com/c/ABOLATVOFICIAL/videos" aria-label="YouTube">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12s0-3.2-.4-4.7a2.7 2.7 0 0 0-1.9-1.9C17.2 5 12 5 12 5s-5.2 0-7.7.4a2.7 2.7 0 0 0-1.9 1.9C2 8.8 2 12 2 12s0 3.2.4 4.7c.2.9 1 1.7 1.9 1.9C6.8 19 12 19 12 19s5.2 0 7.7-.4a2.7 2.7 0 0 0 1.9-1.9C22 15.2 22 12 22 12Zm-12-3 6 3.1-6 3V9Z"/></svg>
-          </a></li>
-          <li><a href="https://www.whatsapp.com/channel/0029VaAdZdLEquiWSfL3ik1e" aria-label="WhatsApp">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a9 9 0 0 0-7.8 13.4L3 22l6.7-1.8A9 9 0 1 0 12 2Zm5.2 13.4c-.2.6-1.1 1.1-1.7 1.2-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6a9.9 9.9 0 0 1-4.9-4.9c-.3-.7-.5-1.3-.6-1.7-.2-.7-.2-1.3-.1-1.8.1-.6.6-1.5 1.2-1.7.3-.1.6-.1.8 0 .2.1.4.3.6.6.2.3.4.6.4.8.1.3 0 .5-.1.7 0 .1-.1.3-.2.4l-.3.4c-.1.2-.2.3-.2.4 0 .1 0 .2.1.4.2.3.5.7 1 1.2.7.7 1.3 1.1 1.6 1.2.1.1.3.1.4.1.1 0 .2-.1.4-.2l.3-.2c.1-.1.2-.1.3-.2.1 0 .3-.1.5-.1.2 0 .5 0 .8.1.2.1.6.3.8.5.2.2.3.4.4.6.2.6.1.9 0 1.1Z"/></svg>
-          </a></li>
+  
+  .hero .hero-title, .hero .hero-lead{
+    position: relative; z-index: 2;
+  }
+}
 
-        </ul>
-      </div>
+
+.hero-metrics .metrics-badge{ margin-right: 10px; }
+  </style>
+  <style>
+   @media (max-width: 680px){
+  
+  .hero .hero-title .main{ font-size: clamp(22px, 7vw, 28px); line-height: 1.15; }
+  .hero .hero-title .sub{ font-size: clamp(14px, 4.2vw, 16px); }
+  .hero .hero-lead, .hero .hero-copy{ font-size: clamp(13px, 3.8vw, 15px); line-height: 1.35; }
+
+  
+  .hero-metrics{
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+    align-items: start;
+  }
+  .hero-metrics .metrics-badge{
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin: 2px 0 6px;
+  }
+  
+  .hero-metrics .metric{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  .hero-metrics .metric .num{
+    font-size: clamp(18px, 8vw, 28px);
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .hero-metrics .metric .label{
+    font-size: 11px;
+    opacity: .9;
+  }
+
+  
+  .hero-metrics.is-social .metric{
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-metrics .logo-badge{
+    flex: 0 0 auto;
+  }
+
+  
+  .hero-metrics .hero-footnote{
+    grid-column: 1 / -1;
+    font-size: 11px;
+  }
+
+  
+  #head-abola .metrics-rotator{ min-height: auto !important; padding-bottom: 0 !important; }
+  #head-abola .metrics-rotator .metrics-slide{ padding-bottom: 0 !important; }
+  #head-abola .metrics-rotator .hero-metrics-nav{
+    position: static !important;
+    left: auto !important; right: auto !important; bottom: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    pointer-events: auto !important;
+    z-index: auto !important;
+  }
+  #head-abola .metrics-rotator .nav-btn{ width: 34px; height: 34px; opacity: .95; }
+
+  
+  .hero .hero-title, .hero .hero-lead, .hero .hero-copy{ position: relative; z-index: 1; }
+}
+
+
+.hero-metrics .metric .num{ letter-spacing: 0.2px; }
+  </style>
+  <style>
+   #head-abola .metrics-rotator{
+  display: block !important;
+  min-height: auto !important;
+  padding-bottom: 0 !important;
+}
+
+#head-abola .metrics-rotator .metrics-slide{
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transition: none !important;
+}
+#head-abola .metrics-rotator .metrics-slide:not(.is-active){
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#head-abola .metrics-rotator .hero-metrics-nav{
+  position: static !important;
+  left: auto !important; right: auto !important; bottom: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+  z-index: auto !important;
+}
+#head-abola .metrics-rotator .nav-btn{
+  width: 38px !important; height: 38px !important;
+  opacity: .9 !important;
+}
+@media (max-width: 680px){
+  #head-abola .metrics-rotator .nav-btn{ width: 34px !important; height: 34px !important; }
+}
+
+
+#head-abola .metrics-rotator .metrics-slide .hero-metrics{
+  margin-bottom: 6px;
+}
+  </style>
+  <style>
+   #head-abola .metrics-rotator{
+  position: relative !important;
+  display: block !important;
+  min-height: var(--rot-h, 320px) !important; 
+  padding-bottom: 0 !important;
+}
+#head-abola .metrics-rotator .metrics-slide{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity .35s ease !important;
+}
+#head-abola .metrics-rotator .metrics-slide.is-active{
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+#head-abola .metrics-rotator .hero-metrics-nav{
+  position: static !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+  z-index: auto !important;
+}
+
+#head-abola .metrics-rotator .metrics-slide.is-active .hero-metrics{
+  margin-bottom: 4px;
+}
+
+@media (max-width: 680px){
+  #head-abola .metrics-rotator{ min-height: var(--rot-h, 360px) !important; }
+  #head-abola .metrics-rotator .nav-btn{ width: 34px !important; height: 34px !important; }
+}
+  </style>
+  <style>
+   .hero-metrics.is-social{
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 16px 24px !important;
+}
+.hero-metrics.is-social .metric{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 5px 4px 0 0;
+}
+.hero-metrics.is-social .num{
+  line-height: 1.05 !important;
+  display: inline-block !important;
+}
+
+
+#head-abola .metrics-rotator{
+  position: relative !important;
+  padding-bottom: 0 !important;
+}
+#head-abola .metrics-rotator .metrics-slide{
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important; 
+}
+#head-abola .metrics-rotator .hero-metrics-nav{
+  position: relative !important;
+  z-index: 2 !important;      
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+padding: 0 !important;
+}
+#head-abola .metrics-rotator .nav-btn{ width: 38px; height: 38px; opacity: .95; }
+
+
+@media (max-width: 680px){
+  #head-abola .metrics-rotator .hero-metrics-nav{  }
+  .hero-metrics.is-social{ gap: 12px 16px !important; }
+}
+  </style>
+  <style>
+   .hero-metrics.is-social{
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  gap: 32px !important; 
+}
+.hero-metrics.is-social .metric{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+
+#head-abola .metrics-rotator{
+  position: relative !important;
+  padding-bottom: 56px !important; 
+}
+#head-abola .metrics-rotator .metrics-slide{
+  position: absolute !important;
+  inset: 0 !important;
+  padding-bottom: 56px !important; 
+}
+#head-abola .metrics-rotator .hero-metrics-nav{
+  position: absolute !important;
+  left: 0 !important; right: 0 !important; bottom: 8px !important;
+  display: flex !important; justify-content: center !important; align-items: center !important;
+  gap: 12px !important; padding: 0 !important;
+  pointer-events: auto !important; z-index: 2 !important;
+}
+
+@media (max-width: 680px){
+  #head-abola .metrics-rotator{ padding-bottom: 60px !important; }
+  #head-abola .metrics-rotator .metrics-slide{ padding-bottom: 60px !important; }
+  #head-abola .metrics-rotator .nav-btn{ width: 34px !important; height: 34px !important; }
+}
+  </style>
+  <style>
+   @media (max-width: 680px){
+  
+  .hero-metrics{
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    gap: 16px 18px !important;
+  }
+  
+  .hero-metrics .metric{
+    display: block !important;
+    flex: 1 1 calc(50% - 10px) !important;
+    min-width: calc(50% - 10px) !important;
+  }
+  .hero-metrics .metric .num{
+    font-size: clamp(20px, 7vw, 28px) !important;
+    line-height: 1.05 !important;
+    margin-bottom: 2px;
+  }
+  .hero-metrics .metric .label{
+    font-size: 11px !important;
+    opacity: .9 !important;
+  }
+
+  
+  .hero-metrics.is-social .metric{
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 0 0 auto !important;
+    min-width: auto !important;
+  }
+  .hero-metrics .logo-badge{
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    vertical-align: middle !important;
+  }
+
+  
+  .hero-metrics .metrics-badge{
+    flex: 0 0 auto !important;
+    margin-right: 8px;
+  }
+
+  
+  .hero-metrics .hero-footnote{
+    flex-basis: 100% !important;
+    width: 100% !important;
+
+    font-size: 11px !important;
+  }
+}
+  </style>
+  <style>
+   @media (max-width: 680px){
+  
+  .hero-metrics{
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px 18px !important;
+    align-items: start !important;
+  }
+  .hero-metrics .metrics-badge{
+    grid-column: 1 / -1 !important;
+    margin: 2px 0 2px !important;
+  }
+  
+  .hero-metrics .metric{
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    min-width: 0 !important;
+    padding-right: 4px;
+  }
+  .hero-metrics .metric .num{
+    font-size: clamp(20px, 6.2vw, 26px) !important;
+    line-height: 1.05 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.1px !important;
+    margin: 0 0 2px 0 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .hero-metrics .metric .label{
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+    letter-spacing: .2px;
+    opacity: .9 !important;
+    text-transform: uppercase;
+  }
+  
+  .hero-metrics .metric:nth-of-type(4){
+    grid-column: 1 / -1 !important;
+  }
+  
+  .hero-metrics.is-social{
+    grid-template-columns: 1fr !important;  
+    gap: 10px !important;
+  }
+  .hero-metrics.is-social .metric{
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .hero-metrics .logo-badge{ flex: 0 0 auto !important; }
+  
+  .hero-metrics .hero-footnote{
+    grid-column: 1 / -1 !important;
+    font-size: 11px !important;
+
+  }
+  
+  #head-abola .metrics-rotator .hero-metrics-nav{
+    position: absolute !important;
+    left: 0; right: 0; bottom: 8px !important;
+    display: flex !important; justify-content: center !important; gap: 12px !important;
+padding: 0 !important;
+  }
+  #head-abola .metrics-rotator{ padding-bottom: 60px !important; }
+  #head-abola .metrics-rotator .metrics-slide{ padding-bottom: 60px !important; }
+}
+
+.hero-metrics .metric .num{ letter-spacing: .1px; }
+  </style>
+  <style>
+   .hero-metrics.is-social{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+.hero-metrics.is-social .metric{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-metrics.is-social .num{ line-height: 1.05; }
+.hero-metrics.is-social .label{ margin-left: 0; }
+
+
+.hero-metrics.is-tv{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+
+@media (max-width: 680px){
+  
+  .hero-metrics.is-social{
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px 18px !important;
+    align-items: start !important;
+  }
+  .hero-metrics.is-tv{
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px 18px !important;
+    align-items: start !important;
+  }
+
+  
+  .hero-metrics.is-social .metric{
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    gap: 6px 8px !important;
+  }
+  .hero-metrics.is-social .metric .logo-badge{ grid-column: 1; grid-row: 1; }
+  .hero-metrics.is-social .metric .num{ grid-column: 2; grid-row: 1; font-size: clamp(18px, 6vw, 24px) !important; }
+  .hero-metrics.is-social .metric .label{ grid-column: 1 / -1; grid-row: 2; margin-top: -2px; font-size: 10.5px !important; }
+
+  
+  .hero-metrics.is-tv .metric .num{ font-size: clamp(20px, 6.2vw, 26px) !important; }
+  .hero-metrics.is-tv .metric .label{ font-size: 11px !important; }
+}
+  </style>
+  <style>
+   .hero .brand-contact.hero-cta{
+  align-self: flex-start;
+  margin:0 0 30px;
+  width: auto;
+  max-width: 220px;
+  white-space: nowrap;
+}
+@media (max-width: 680px){
+  .hero .brand-contact.hero-cta{
+    padding: 8px 12px;
+    font-size: 13px;
+    max-width: 200px;
+  }
+}
+  </style>
+  <style>
+   #head-abola .metrics-rotator{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  min-height: unset !important;
+  padding-bottom: 0 !important;
+}
+#head-abola .metrics-rotator .hero-metrics-nav{
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  margin:10px 64px 0 !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+  width: auto !important;
+  opacity: 1 !important; 
+}
+
+#head-abola .metrics-rotator .nav-btn{
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 999px !important;
+  background: rgba(0,0,0,.28) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.28) !important;
+  opacity: .9 !important;
+}
+#head-abola .metrics-rotator .nav-btn svg{
+  width: 14px !important;
+  height: 14px !important;
+  margin: 7px !important;
+}
+#head-abola .metrics-rotator .nav-btn:hover{
+  background: rgba(0,0,0,.36) !important;
+  border-color: rgba(255,255,255,.38) !important;
+  opacity: 1 !important;
+}
+#head-abola .metrics-rotator .nav-btn:active{ transform: translateY(1px); }
+
+
+@media (max-width: 680px){
+  #head-abola .metrics-rotator .nav-btn{
+    width: 24px !important;
+    height: 24px !important;
+  }
+  #head-abola .metrics-rotator .nav-btn svg{
+    width: 12px !important;
+    height: 12px !important;
+    margin: 6px !important;
+  }
+}
+  </style>
+  <style>
+   #head-abola .metrics-rotator .hero-metrics-nav{
+  gap: 6px !important;
+
+}
+#head-abola .metrics-rotator .nav-btn{
+  width: 24px !important;
+  height: 24px !important;
+}
+#head-abola .metrics-rotator .nav-btn svg{
+  width: 12px !important;
+  height: 12px !important;
+  margin: 6px !important;
+}
+@media (max-width: 680px){
+  #head-abola .metrics-rotator .nav-btn{
+    width: 20px !important;
+    height: 20px !important;
+  }
+  #head-abola .metrics-rotator .nav-btn svg{
+    width: 10px !important;
+    height: 10px !important;
+    margin: 5px !important;
+  }
+}
+  </style>
+  <style>
+   @media (max-width:680px) and (orientation:portrait){
+  .context-slot{
+    justify-self: start;
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+  </style>
+  <style>
+   footer { background: #111; color: #fff; padding: 20px 0; }
+.footer-container { max-width: 1150px; margin: 0 auto; padding: 0 16px; }
+.footer-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.footer-social a { display: inline-block; margin-right: 10px; }
+.footer-contact { font-size: 0.95rem; color: #ccc; text-align: right; }
+@media (max-width: 768px) {
+  .footer-bar { flex-direction: column; align-items: center; }
+  .footer-social { margin-bottom: 10px; }
+  .footer-contact { text-align: center; margin-top: 4px; }
+}
+  </style>
+ </head>
+ <body>
+  <div class="masthead" id="masthead">
+   <div class="brand">
+    <div class="brand-inner">
+     <div class="brand-left">
+      <svg aria-hidden="true" fill="none" height="30" viewbox="0 0 238 30" width="238" xmlns="http://www.w3.org/2000/svg">
+       <g clip-path="url(#clip0_7239_3186)">
+        <path d="M19.49 23.4532H0V28.9703H19.49V23.4532Z" fill="#FAFAFA">
+        </path>
+        <path d="M29.8917 1.02734H10.3555V6.54438H29.8917V1.02734Z" fill="#FAFAFA">
+        </path>
+        <path d="M48.4851 23.4531H24.2422V28.9702H48.4851V23.4531Z" fill="#FAFAFA">
+        </path>
+        <path d="M34.0416 18.1602H13.7031V20.4533H34.0416V18.1602Z" fill="#FAFAFA">
+        </path>
+        <path clip-rule="evenodd" d="M26.9629 1.02734H18.6631L2.63281 28.9705H10.9308L26.9629 1.02734Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M46.0283 28.9702H33.3741L17.3438 1.02702L29.9908 1.02344L46.0283 28.9702Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M182.014 23.4642H171.209V6.54438H176.862V1.02734H153.52V6.54438H158.989V23.4642H153.52V28.9705H187.645V18.1602H182.014V23.4642Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M102.457 12.6594H102.183C103.755 11.4672 104.689 9.56258 104.689 7.61139C104.689 4.05629 101.749 1.02747 98.1468 1.02747H66.5273V6.5445H72.1358V23.4536H66.5273V28.9707H102.453C107.035 28.9707 110.751 25.3225 110.751 20.8258C110.751 16.3291 107.037 12.6594 102.453 12.6594H102.457ZM83.2176 6.5445H92.4725C93.9311 6.5445 95.1852 7.75997 95.1852 9.25111C95.1852 10.7422 93.9311 11.913 92.4725 11.913H83.2176V6.5445ZM95.733 23.4304V23.4536H83.2176V18.0852H95.733C97.213 18.0852 98.4688 19.3006 98.4688 20.7918C98.4688 22.2829 97.2148 23.4304 95.733 23.4304Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M135.184 0H130.254C120.141 0 111.918 5.96814 111.918 13.2162V16.7838C111.918 24.0319 120.141 30 130.254 30H135.184C145.297 30 153.52 24.0337 153.52 16.7838V13.2162C153.52 5.96814 145.297 0 135.184 0ZM138.986 21.5257C138.986 22.5013 138.039 23.4537 137.002 23.4537H128.434C127.399 23.4537 126.451 22.5013 126.451 21.5257V8.42592C126.451 7.36082 127.331 6.58393 128.169 6.58393H137.266C138.103 6.58393 138.984 7.36082 138.984 8.42592V21.5257H138.986Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path d="M209.002 23.4531H189.512V28.9702H209.002V23.4531Z" fill="#FAFAFA">
+        </path>
+        <path d="M219.403 1.02734H199.867V6.54438H219.403V1.02734Z" fill="#FAFAFA">
+        </path>
+        <path d="M238.001 23.4531H213.758V28.9702H238.001V23.4531Z" fill="#FAFAFA">
+        </path>
+        <path d="M223.553 18.1602H203.215V20.4533H223.553V18.1602Z" fill="#FAFAFA">
+        </path>
+        <path clip-rule="evenodd" d="M216.475 1.02734H208.175L192.145 28.9705H200.443L216.475 1.02734Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M235.54 28.9705H222.888L206.855 1.02734H219.51L235.54 28.9705Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+       </g>
+       <defs>
+        <clippath id="clip0_7239_3186">
+         <rect fill="white" height="30" width="238">
+         </rect>
+        </clippath>
+       </defs>
+      </svg>
+     </div>
+     <a class="brand-contact" href="mailto:sales@abola.pt">
+      CONTACTO
+     </a>
     </div>
-  </footer>
-
-
-  <!-- SCRIM & DRAWER (markup only) -->
-  <div class="scrim" id="scrim"></div>
-  <aside class="drawer" id="drawer" aria-labelledby="drawerTitle" aria-modal="true" role="dialog">
-    <header class="drawer-head">
-      <div class="title-wrap">
-        <h2 id="drawerTitle" class="drawer-title">Title</h2>
-        <div class="muted" id="drawerTags">—</div>
+   </div>
+   <div class="masthead-inner">
+    <nav aria-label="Categorias" class="tabs main-tabs" id="mainTabs">
+     <button data-medium="digital">
+      Digital
+     </button>
+     <button data-medium="print">
+      Print
+     </button>
+     <button data-medium="tv">
+      TV
+     </button>
+     <button data-medium="branded">
+      Branded Content
+     </button>
+    </nav>
+    <div class="context-slot">
+     <nav aria-label="Subcategoria" class="tabs context-tabs" id="contextTabs">
+     </nav>
+    </div>
+   </div>
+  </div>
+  <section class="section" id="sec-abola">
+   <header aria-label="A BOLA &mdash; introdu&ccedil;&atilde;o" class="hero" id="head-abola">
+    <div class="hero-inner">
+     <div class="hero-logo-combo">
+      <svg aria-hidden="true" class="hero-logo-abola" fill="none" height="30" viewbox="0 0 238 30" width="238" xmlns="http://www.w3.org/2000/svg">
+       <g clip-path="url(#clip0_7239_3186)">
+        <path d="M19.49 23.4532H0V28.9703H19.49V23.4532Z" fill="#FAFAFA">
+        </path>
+        <path d="M29.8917 1.02734H10.3555V6.54438H29.8917V1.02734Z" fill="#FAFAFA">
+        </path>
+        <path d="M48.4851 23.4531H24.2422V28.9702H48.4851V23.4531Z" fill="#FAFAFA">
+        </path>
+        <path d="M34.0416 18.1602H13.7031V20.4533H34.0416V18.1602Z" fill="#FAFAFA">
+        </path>
+        <path clip-rule="evenodd" d="M26.9629 1.02734H18.6631L2.63281 28.9705H10.9308L26.9629 1.02734Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M46.0283 28.9702H33.3741L17.3438 1.02702L29.9908 1.02344L46.0283 28.9702Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M182.014 23.4642H171.209V6.54438H176.862V1.02734H153.52V6.54438H158.989V23.4642H153.52V28.9705H187.645V18.1602H182.014V23.4642Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M102.457 12.6594H102.183C103.755 11.4672 104.689 9.56258 104.689 7.61139C104.689 4.05629 101.749 1.02747 98.1468 1.02747H66.5273V6.5445H72.1358V23.4536H66.5273V28.9707H102.453C107.035 28.9707 110.751 25.3225 110.751 20.8258C110.751 16.3291 107.037 12.6594 102.453 12.6594H102.457ZM83.2176 6.5445H92.4725C93.9311 6.5445 95.1852 7.75997 95.1852 9.25111C95.1852 10.7422 93.9311 11.913 92.4725 11.913H83.2176V6.5445ZM95.733 23.4304V23.4536H83.2176V18.0852H95.733C97.213 18.0852 98.4688 19.3006 98.4688 20.7918C98.4688 22.2829 97.2148 23.4304 95.733 23.4304Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M135.184 0H130.254C120.141 0 111.918 5.96814 111.918 13.2162V16.7838C111.918 24.0319 120.141 30 130.254 30H135.184C145.297 30 153.52 24.0337 153.52 16.7838V13.2162C153.52 5.96814 145.297 0 135.184 0ZM138.986 21.5257C138.986 22.5013 138.039 23.4537 137.002 23.4537H128.434C127.399 23.4537 126.451 22.5013 126.451 21.5257V8.42592C126.451 7.36082 127.331 6.58393 128.169 6.58393H137.266C138.103 6.58393 138.984 7.36082 138.984 8.42592V21.5257H138.986Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path d="M209.002 23.4531H189.512V28.9702H209.002V23.4531Z" fill="#FAFAFA">
+        </path>
+        <path d="M219.403 1.02734H199.867V6.54438H219.403V1.02734Z" fill="#FAFAFA">
+        </path>
+        <path d="M238.001 23.4531H213.758V28.9702H238.001V23.4531Z" fill="#FAFAFA">
+        </path>
+        <path d="M223.553 18.1602H203.215V20.4533H223.553V18.1602Z" fill="#FAFAFA">
+        </path>
+        <path clip-rule="evenodd" d="M216.475 1.02734H208.175L192.145 28.9705H200.443L216.475 1.02734Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+        <path clip-rule="evenodd" d="M235.54 28.9705H222.888L206.855 1.02734H219.51L235.54 28.9705Z" fill="#FAFAFA" fill-rule="evenodd">
+        </path>
+       </g>
+       <defs>
+        <clippath id="clip0_7239_3186">
+         <rect fill="white" height="30" width="238">
+         </rect>
+        </clippath>
+       </defs>
+      </svg>
+      <img alt="Sports Media Group logo" class="hero-logo-smg" src="ringierlogo.png"/>
+     </div>
+     <h1 class="hero-title">
+      <span class="main">
+       N.&ordm; 1 do Desporto em Portugal
+      </span>
+      <span class="sub">
+       h&aacute; mais de 80 anos
+      </span>
+     </h1>
+     <p class="hero-sub">
+      A BOLA lidera em alcance e engagement no desporto portugu&ecirc;s
+      <br/>
+      multiplataforma, cred&iacute;vel e com formatos premium que geram resultados
+     </p>
+     <a class="brand-contact hero-cta" href="mailto:sales@abola.pt">
+      FALE CONNOSCO
+     </a>
+     <div class="hero-metrics">
+      <div aria-hidden="true" class="metrics-badge metrics-badge--site">
+       <svg aria-hidden="true" viewbox="0 0 24 24">
+        <rect fill="none" height="8" rx="1.6" ry="1.6" stroke="currentColor" stroke-width="2" width="12" x="2" y="7">
+        </rect>
+        <path d="M1 17h14c.8 0 1.5.6 1.7 1.4l.3.6H-1l.3-.6C-.5 17.6.2 17 1 17Z" fill="currentColor" transform="translate(3 0)">
+        </path>
+        <rect fill="none" height="12.5" rx="1.8" ry="1.8" stroke="currentColor" stroke-width="2" width="6.5" x="15.5" y="5">
+        </rect>
+        <rect fill="currentColor" height="0.9" rx="0.45" width="2.9" x="17.8" y="6.8">
+        </rect>
+        <circle cx="18.8" cy="15.8" fill="currentColor" r="0.6">
+        </circle>
+       </svg>
+       <span class="metrics-badge-label">
+        Site
+       </span>
       </div>
-      <button id="closeDrawerBtn" class="close-drawer" aria-label="Fechar painel">
-        <svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18" stroke-linecap="round" stroke-width="2.5" fill="none"/></svg>
-      </button>
+      <div class="metric">
+       <div class="num">
+        +100M
+       </div>
+       <div class="label">
+        Pageviews / m&ecirc;s
+       </div>
+      </div>
+      <div class="metric">
+       <div class="num">
+        29M
+       </div>
+       <div class="label">
+        Visitas / m&ecirc;s
+       </div>
+      </div>
+      <div class="metric">
+       <div class="num">
+        2M
+       </div>
+       <div class="label">
+        Utilizadores / m&ecirc;s
+       </div>
+      </div>
+      <div class="metric">
+       <div class="num">
+        13 minutos
+       </div>
+       <div class="label">
+        Tempo m&eacute;dio por sess&atilde;o
+       </div>
+      </div>
+      <div class="hero-footnote">
+       Fonte: NetAudience Julho 2025
+      </div>
+     </div>
+     <div class="hero-metrics is-social">
+      <div aria-hidden="true" class="metrics-badge metrics-badge--social">
+       <svg aria-hidden="true" viewbox="0 0 24 24">
+        <circle cx="4" cy="4" fill="currentColor" r="2">
+        </circle>
+        <circle cx="20" cy="5" fill="currentColor" r="2">
+        </circle>
+        <circle cx="20" cy="19" fill="currentColor" r="2">
+        </circle>
+        <circle cx="5" cy="20" fill="currentColor" r="2">
+        </circle>
+        <path d="M8 7h8a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4h-3l-3 3v-3H8a4 4 0 0 1-4-4v-1a4 4 0 0 1 4-4Z" fill="currentColor">
+        </path>
+       </svg>
+       <span class="metrics-badge-label">
+        Social
+       </span>
+      </div>
+      <div class="metric">
+       <span aria-label="Facebook" class="logo-badge" title="Facebook">
+        <svg class="h-6 w-6" fill="currentColor" viewbox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+         <path d="M232,128a104.16,104.16,0,0,1-91.55,103.26,4,4,0,0,1-4.45-4V152h24a8,8,0,0,0,8-8.53,8.17,8.17,0,0,0-8.25-7.47H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,8-8.53A8.17,8.17,0,0,0,167.73,80H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0-8,8.53A8.17,8.17,0,0,0,96.27,152H120v75.28a4,4,0,0,1-4.44,4A104.15,104.15,0,0,1,24.07,124.09c2-54,45.74-97.9,99.78-100A104.12,104.12,0,0,1,232,128Z">
+         </path>
+        </svg>
+       </span>
+       <div class="num">
+        1.6M
+       </div>
+      </div>
+      <div class="metric">
+       <span aria-label="Instagram" class="logo-badge" title="Instagram">
+        <svg aria-hidden="true" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Zm5 4.5A3.5 3.5 0 1 0 15.5 12 3.5 3.5 0 0 0 12 8.5Zm5-2.3a.8.8 0 1 0 .8.8.8.8 0 0 0-.8-.8Z">
+         </path>
+         <circle cx="12" cy="12" r="2.5">
+         </circle>
+        </svg>
+       </span>
+       <div class="num">
+        300K
+       </div>
+      </div>
+      <div class="metric">
+       <span aria-label="TikTok" class="logo-badge" title="TikTok">
+        <svg aria-hidden="true" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M15.5 4c.6 1.7 1.9 3 3.6 3.6v2.1a6.6 6.6 0 0 1-3.6-1.2v5.9a5 5 0 1 1-5-5c.3 0 .6 0 .9.1v2.3a2.7 2.7 0 1 0 1.8 2.6V4h2.3Z">
+         </path>
+        </svg>
+       </span>
+       <div class="num">
+        450K
+       </div>
+      </div>
+      <div class="metric">
+       <span aria-label="X" class="logo-badge" title="X">
+        <svg aria-hidden="true" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M4 4h4.7l3.7 5 4.7-5H22l-7.2 7.9L22 20h-4.7l-4.1-5.5L8.5 20H2l7.8-8.6L4 4Zm3.8 2 3.3 4.6L7 17.9h2.3l3.3-3.7 3 3.7h2.9l-3.6-5 4.9-5.4h-2.3l-3.6 3.9L10.8 6H7.8Z">
+         </path>
+        </svg>
+       </span>
+       <div class="num">
+        226K
+       </div>
+      </div>
+      <div class="metric">
+       <span aria-label="WhatsApp" class="logo-badge" title="WhatsApp">
+        <svg aria-hidden="true" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M12 2a9 9 0 0 0-7.8 13.4L3 22l6.7-1.8A9 9 0 1 0 12 2Zm5.2 13.4c-.2.6-1.1 1.1-1.7 1.2-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6a9.9 9.9 0 0 1-4.9-4.9c-.3-.7-.5-1.3-.6-1.7-.2-.7-.2-1.3-.1-1.8.1-.6.6-1.5 1.2-1.7.3-.1.6-.1.8 0 .2.1.4.3.6.6.2.3.4.6.4.8.1.3 0 .5-.1.7 0 .1-.1.3-.2.4l-.3.4c-.1.2-.2.3-.2.4 0 .1 0 .2.1.4.2.3.5.7 1 1.2.7.7 1.3 1.1 1.6 1.2.1.1.3.1.4.1.1 0 .2-.1.4-.2l.3-.2c.1-.1.2-.1.3-.2.1 0 .3-.1.5-.1.2 0 .5 0 .8.1.2.1.6.3.8.5.2.2.3.4.4.6.2.6.1.9 0 1.1Z">
+         </path>
+        </svg>
+       </span>
+       <div class="num">
+        617K
+       </div>
+      </div>
+      <div class="metric">
+       <span aria-label="YouTube" class="logo-badge" title="YouTube">
+        <svg aria-hidden="true" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M22 12s0-3.2-.4-4.7a2.7 2.7 0 0 0-1.9-1.9C17.2 5 12 5 12 5s-5.2 0-7.7.4a2.7 2.7 0 0 0-1.9 1.9C2 8.8 2 12 2 12s0 3.2.4 4.7c.2.9 1 1.7 1.9 1.9C6.8 19 12 19 12 19s5.2 0 7.7-.4a2.7 2.7 0 0 0 1.9-1.9C22 15.2 22 12 22 12Zm-12-3 6 3.1-6 3V9Z">
+         </path>
+        </svg>
+       </span>
+       <div class="num">
+        84K
+       </div>
+      </div>
+     </div>
+     <div class="hero-metrics">
+      <div aria-hidden="true" class="metrics-badge metrics-badge--print">
+       <svg aria-hidden="true" viewbox="0 0 24 24">
+        <rect fill="none" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="2" width="18" x="3" y="4">
+        </rect>
+        <rect fill="currentColor" height="5" rx="1" ry="1" width="6" x="6" y="7">
+        </rect>
+        <rect fill="currentColor" height="1.6" rx="0.8" width="6" x="13" y="7.3">
+        </rect>
+        <rect fill="currentColor" height="1.6" rx="0.8" width="5.5" x="13" y="10">
+        </rect>
+        <rect fill="currentColor" height="1.6" rx="0.8" width="13" x="6" y="13.5">
+        </rect>
+        <rect fill="currentColor" height="1.6" rx="0.8" width="11" x="6" y="16">
+        </rect>
+       </svg>
+       <span class="metrics-badge-label">
+        Print
+       </span>
+      </div>
+      <div class="metric">
+       <div class="num">
+        9,8%
+       </div>
+       <div class="label">
+        Audi&ecirc;ncia
+       </div>
+      </div>
+      <div class="metric">
+       <div class="num">
+        800K
+       </div>
+       <div class="label">
+        Readership
+       </div>
+      </div>
+      <div class="metric">
+       <div class="num">
+        22K
+       </div>
+       <div class="label">
+        circula&ccedil;&atilde;o do jornal
+       </div>
+      </div>
+      <div class="hero-footnote">
+       Tiragem m&eacute;dia em dezembro de 2024: 20.300 Exemplares
+      </div>
+     </div>
+     <div class="hero-metrics is-tv">
+      <div aria-hidden="true" class="metrics-badge metrics-badge--tv">
+       <svg aria-hidden="true" viewbox="0 0 24 24">
+        <rect fill="none" height="12" rx="2" ry="2" stroke="currentColor" stroke-width="2" width="18" x="3" y="7">
+        </rect>
+        <path d="M8 3l4 4M16 3l-4 4" stroke="currentColor" stroke-linecap="round" stroke-width="2">
+        </path>
+        <path d="M11 11l4 3-4 3z" fill="currentColor">
+        </path>
+       </svg>
+       <span class="metrics-badge-label">
+        TV
+       </span>
+      </div>
+      <div class="metric">
+       <div class="num">
+        300K
+       </div>
+       <div class="label">
+        Audi&ecirc;ncia
+       </div>
+      </div>
+      <div class="metric">
+       <div class="num">
+        24/7
+       </div>
+       <div class="label">
+        Emiss&atilde;o
+       </div>
+      </div>
+     </div>
+    </div>
+   </header>
+  </section>
+  <section class="section" id="sec-digital">
+   <div class="section-head" id="head-digital">
+    <h2>
+     Digital
+    </h2>
+   </div>
+   <div aria-hidden="true" class="section-banner banner-digital">
+   </div>
+   <main class="grid" id="gridDigital">
+   </main>
+  </section>
+  <section class="section" id="sec-print">
+   <div class="section-head" id="head-print">
+    <h2>
+     Print
+    </h2>
+   </div>
+   <div aria-hidden="true" class="section-banner banner-print">
+   </div>
+   <div class="print-note" id="printNotice">
+   </div>
+   <main class="grid" id="gridprint">
+   </main>
+  </section>
+  <section class="section" id="sec-tv">
+   <div class="section-head" id="head-tv">
+    <h2>
+     TV
+    </h2>
+   </div>
+   <div aria-hidden="true" class="section-banner banner-tv">
+   </div>
+   <section class="tv-panel" id="tvPanel">
+    <h3>
+     Tabela de Pre&ccedil;os (exemplo)
+    </h3>
+    <table class="rate-table">
+     <thead>
+      <tr>
+       <th>
+        Time
+       </th>
+       <th>
+        20&rdquo;
+       </th>
+       <th>
+        30&rdquo;
+       </th>
+       <th>
+        60&rdquo;
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <td>
+        Daytime
+       </td>
+       <td>
+        &euro; 154,90
+       </td>
+       <td>
+        &euro; 246,29
+       </td>
+       <td>
+        &euro; 666,07
+       </td>
+      </tr>
+      <tr>
+       <td>
+        Prime Time
+       </td>
+       <td>
+        &euro; 1.054,05
+       </td>
+       <td>
+        &euro; 1.675,94
+       </td>
+       <td>
+        &euro; 4.532,42
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <section class="tv-tech">
+     <h3>
+      Especifica&ccedil;&otilde;es T&eacute;cnicas
+     </h3>
+     <dl>
+      <dt>
+       Formato
+      </dt>
+      <dd>
+       MXF (.mxf)
+      </dd>
+      <dt>
+       Codec
+      </dt>
+      <dd>
+       MPEG Video &mdash; XCam HD 35
+      </dd>
+      <dt>
+       Resolu&ccedil;&atilde;o
+      </dt>
+      <dd>
+       1920&times;1080 (16:9)
+      </dd>
+      <dt>
+       FPS
+      </dt>
+      <dd>
+       25
+      </dd>
+     </dl>
+    </section>
+   </section>
+  </section>
+  <section class="section" id="sec-branded">
+   <div class="section-head" id="head-branded">
+    <h2>
+     Branded Content
+    </h2>
+   </div>
+   <section aria-labelledby="branded-hero-title" class="branded-hero bgvideo" id="branded-hero">
+    <div aria-hidden="true" class="bgvideo-media">
+     <video autoplay="" id="bcHeroVideo" loop="" muted="" playsinline="" poster="branded/poster.jpg" preload="metadata">
+      <source media="(max-width: 900px)" src="brand/brand_portrait.mp4" type="video/mp4"/>
+      <source src="brand/brand_landscape.mp4" type="video/mp4"/>
+     </video>
+    </div>
+    <div class="bgvideo-overlay">
+    </div>
+    <div class="branded-copy">
+     <div aria-label="Introdu&ccedil;&atilde;o ao Branded Content" class="branded-copy-panel" role="group">
+      <h1 class="hero-title">
+       <span aria-hidden="true" class="hero-mark">
+       </span>
+       <span class="hero-text">
+        O PODER DO CONTE&Uacute;DO
+       </span>
+      </h1>
+      <p class="hero-lead">
+       Branded content que informa, entret&eacute;m e converte
+      </p>
+      <p class="hero-lead">
+      </p>
+      Produzido e distribu&iacute;do com a curadoria d&rsquo;A BOLA
+     </div>
+    </div>
+   </section>
+   <div class="branded-meta-mobile">
+    <p class="hero-lead">
+     Branded content que informa, entret&eacute;m e converte &mdash; produzido e distribu&iacute;do com a curadoria d&rsquo;A BOLA.
+    </p>
+    <ul class="hero-chips hero-chips--light" role="list">
+     <li>
+      V&iacute;deo + Artigo
+     </li>
+     <li>
+      Distribui&ccedil;&atilde;o Social
+     </li>
+     <li>
+      Medi&ccedil;&atilde;o First‑Party
+     </li>
+    </ul>
+   </div>
+   <section aria-label="Como trabalhamos" class="branded-process" id="branded-process">
+    <ol class="process-steps">
+     <li>
+      <span class="n">
+       1
+      </span>
+      <h4>
+       Brief
+      </h4>
+      <p>
+       Objetivos, audi&ecirc;ncias, kpis, budget, timings
+      </p>
+     </li>
+     <li>
+      <span class="n">
+       2
+      </span>
+      <h4>
+       Co-cria&ccedil;&atilde;o
+      </h4>
+      <p>
+       Conceito e formatos
+      </p>
+     </li>
+     <li>
+      <span class="n">
+       3
+      </span>
+      <h4>
+       Produ&ccedil;&atilde;o
+      </h4>
+      <p>
+       Desenvolvimento: design, texto, v&iacute;deo, imagem, caras
+      </p>
+     </li>
+     <li>
+      <span class="n">
+       4
+      </span>
+      <h4>
+       Implementa&ccedil;&atilde;o
+      </h4>
+      <p>
+       Ativa&ccedil;&atilde;o, acompanhamento e amplifica&ccedil;&atilde;o
+      </p>
+     </li>
+     <li>
+      <span class="n">
+       5
+      </span>
+      <h4>
+       Avalia&ccedil;&atilde;o
+      </h4>
+      <p>
+       Reporting: m&eacute;tricas e insights
+      </p>
+     </li>
+    </ol>
+   </section>
+   <section aria-label="Casos de sucesso" class="branded-cases" id="branded-cases">
+    <header class="cases-head">
+     <h3>
+      Casos de Sucesso
+     </h3>
     </header>
-    <div class="drawer-content">
-      <section><div id="preview" class="preview"></div></section>
-      <section id="specSection" class="specs"><dl id="specList"></dl></section>
+    <div class="cases-track" id="casesTrack">
+     <article class="case-card">
+      <div class="case-media">
+       <img alt="Betclic" src="brand/HeinekenStarFans.png"/>
+      </div>
+      <div class="case-meta">
+       <div class="brandrow">
+        <img alt="LOGO Betclic" height="40" src="brand/betclic__Logo.svg"/>
+       </div>
+       <h4>
+        Central de Transfer&ecirc;ncias
+       </h4>
+       <p>
+        A Central de Transfer&ecirc;ncias by Betclic levou a todos os adeptos do desporto as atualiza&ccedil;&otilde;es do mercado, atrav&eacute;s da complementaridade da amplifica&ccedil;&atilde;o de v&aacute;rios formatos: live streaming online na &uacute;ltima hora, transfer cards em social media, resumos patrocinados, presen&ccedil;a n&rsquo;A BOLA TV e edi&ccedil;&atilde;o impressa do jornal.
+       </p>
+      </div>
+     </article>
+     <article class="case-card">
+      <div class="case-media">
+       <img alt="HEINEKEN STAR FANS" src="brand/generali_caso.png"/>
+      </div>
+      <div class="case-meta">
+       <div class="brandrow">
+        <img alt="LOGO Generali Tranquilidade" src="brand/Generali_Tranquilidade_logo.png"/>
+       </div>
+       <h4>
+        Fair Play
+       </h4>
+       <p>
+        De forma a criar uma mancha de marca, Generali Tranquilidade entrou em campo no grande final da Ta&ccedil;a de Portugal em todos os assets d&rsquo;A BOLA e marcou a sua presen&ccedil;a celebrando o verdadeiro esp&iacute;rito do Fair Play.
+       </p>
+      </div>
+     </article>
+     <article class="case-card">
+      <div class="case-media">
+       <img alt="HEINEKEN STAR FANS" src="brand/sagres_caso.png"/>
+      </div>
+      <div class="case-meta">
+       <div class="brandrow">
+        <img alt="LOGO Cerveja Sagres" height="40" src="brand/Sagres_logo.png"/>
+       </div>
+       <h4>
+        Apoiar as Navegadoras
+       </h4>
+       <p>
+        Vivemos uma experi&ecirc;ncia cheia de alma com o Clube Sagres &ndash; fomos a Berna com 4 duplas de verdadeiros vencedores para apoiar as Navegadoras! O desafio era claro: viver o futebol como nunca antes, com toda a alma, porque isto de viver a Sele&ccedil;&atilde;o n&atilde;o se explica, sente-se.
+       </p>
+      </div>
+     </article>
+     <article class="case-card">
+      <div class="case-media">
+       <img alt="HEINEKEN STAR FANS" src="brand/lebull_caso.jpg"/>
+      </div>
+      <div class="case-meta">
+       <div class="brandrow">
+        <img alt="LOGO Le Bull" height="40" src="brand/lebull.webp"/>
+       </div>
+       <h4>
+        Na &Aacute;rea by LeBull
+       </h4>
+       <p>
+        Um novo formato de v&iacute;deo editorial d&rsquo;A BOLA com o selo irreverente da LeBull. Sem floreados, sem discursos vazios &mdash; s&oacute; futebol no limite. Ao longo de v&aacute;rios epis&oacute;dios semanais, uma apresentadora com garra vai direta ao que interessa: momentos de press&atilde;o, jogos decisivos, protagonistas em risco, surpresas de mercado ou equipas a ferver. Com a atitude LeBull, sem bullshit.
+       </p>
+      </div>
+     </article>
+     <article class="case-card">
+      <div class="case-media">
+       <img alt="HEINEKEN STAR FANS" src="brand/HeinekenStarFans.png"/>
+      </div>
+      <div class="case-meta">
+       <div class="brandrow">
+        <img alt="LOGO Allianz" height="40" src="brand/allianz_Logo.svg"/>
+       </div>
+       <h4>
+        Allianz CUP
+       </h4>
+       <p>
+        A Allianz juntou-se &agrave; A Bola e em conjunto viveram a emo&ccedil;&atilde;o do desporto, na Allianz CUP. Com uma estrat&eacute;gia que envolveu entrevistas de rua, oferta de pr&eacute;mios e comunica&ccedil;&atilde;o do evento em digital e print, a marca esteve ao lado dos adeptos a celebrar cada momento, dentro e fora das quatro linhas, refor&ccedil;ando a proximidade com o p&uacute;blico e consolidando a Allianz CUP como um momento &uacute;nico
+       </p>
+      </div>
+     </article>
+     <article class="case-card">
+      <div class="case-media">
+       <img alt="HEINEKEN STAR FANS" src="brand/HeinekenStarFans.png"/>
+      </div>
+      <div class="case-meta">
+       <div class="brandrow">
+        <img alt="LOGO Heineken" src="brand/Heineken_logo.png"/>
+       </div>
+       <h4>
+        Star Fans
+       </h4>
+       <p>
+        Pelos Heineken Bars de Lisboa, tivemos uma s&eacute;rie de antevis&otilde;es dos jogos da UEFA Champions League apresentada por M&aacute;rcia Pacheco com o objetivo de aumentar a proximidade entre os f&atilde;s do jogo e a marca. Seguindo-se de um passatempo em que lev&aacute;mos verdadeiros Star Fans a viver uma experi&ecirc;ncia exclusiva em Londres &ndash; a grande final da Liga dos Campe&otilde;es.
+       </p>
+      </div>
+     </article>
     </div>
+   </section>
+   <section aria-label="Pack Native Ads" class="native-ad-pack" id="native-ad-pack">
+    <header class="package-head">
+     <h3>
+      Pack Native Ad
+     </h3>
+    </header>
+    <section aria-labelledby="pack-desc-title" class="package-breakdown">
+     <table aria-describedby="pack-desc-title" class="bc-breakdown">
+      <thead>
+       <tr>
+        <th>
+         Elemento
+        </th>
+        <th>
+         Detalhe
+        </th>
+        <th>
+         Objetivo
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td>
+         Destaque de Conte&uacute;do HP
+        </td>
+        <td>
+         HOMEPAGE - A BOLA
+        </td>
+        <td>
+         24 H
+        </td>
+       </tr>
+       <tr>
+        <td>
+         Promo&ccedil;&atilde;o conteudo site
+        </td>
+        <td>
+         MREC - Desenvolvimento A BOLA
+        </td>
+        <td>
+         500&nbsp;000 IMP
+        </td>
+       </tr>
+       <tr>
+        <td>
+         Artigo patrocinado
+        </td>
+        <td>
+         <strong>
+          Op&ccedil;&atilde;o A:
+         </strong>
+         Texto escrito pela equipa de branded content d&rsquo;A BOLA ap&oacute;s briefing do anunciante.
+         <br/>
+         <strong>
+          Op&ccedil;&atilde;o B:
+         </strong>
+         Texto enviado pelo cliente, sujeito &agrave; aprova&ccedil;&atilde;o d&rsquo;A BOLA.
+        </td>
+        <td>
+         1 unidade
+        </td>
+       </tr>
+       <tr>
+        <td>
+         Post no Facebook
+        </td>
+        <td>
+         Publica&ccedil;&atilde;o na p&aacute;gina oficial d&rsquo;A BOLA (Facebook).
+        </td>
+        <td>
+         1 unidade
+        </td>
+       </tr>
+       <tr>
+        <td>
+         Instastory no Instagram
+        </td>
+        <td>
+         Story no perfil oficial d&rsquo;A BOLA (Instagram).
+        </td>
+        <td>
+         1 unidade
+        </td>
+       </tr>
+       <tr>
+        <td>
+         Dura&ccedil;&atilde;o promo&ccedil;&atilde;o (paga)
+        </td>
+        <td>
+         Campanha
+        </td>
+        <td>
+         7 Dias
+        </td>
+       </tr>
+       <tr>
+        <td>
+         Pesquisa org&acirc;nica
+        </td>
+        <td>
+         Indexa&ccedil;&atilde;o
+        </td>
+        <td>
+         Always On
+        </td>
+       </tr>
+       <tr>
+        <td>
+         KPI Garantidos
+        </td>
+        <td>
+         Objetivo m&iacute;nimo
+        </td>
+        <td>
+         7&nbsp;500 PV
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </section>
+    <section aria-labelledby="pack-specs-title" class="package-specs spec-panel">
+     <h4 id="pack-specs-title">
+      Especifica&ccedil;&otilde;es Native Ad
+     </h4>
+     <ul class="spec-list">
+      <li>
+       Briefing cliente
+      </li>
+      <li>
+       Fotos &mdash; m&iacute;nimo 2 (300&nbsp;dpi de resolu&ccedil;&atilde;o)
+      </li>
+      <li>
+       Hiperlinks &mdash; at&eacute; 3
+      </li>
+      <li>
+       Possibilidade de coloca&ccedil;&atilde;o de v&iacute;deo
+      </li>
+      <li>
+       Prazos: 6 dias &uacute;teis para execu&ccedil;&atilde;o
+      </li>
+     </ul>
+    </section>
+   </section>
+   <main class="grid" id="gridBranded">
+    <article class="card" data-medium="branded">
+     <div class="poster">
+      <img alt="Artigo patrocinado" src="branded/format-article.jpg"/>
+     </div>
+     <div class="meta">
+      <div class="title">
+       <span>
+        Artigo Patrocinado
+       </span>
+      </div>
+      <div class="muted">
+       Conte&uacute;do editorial sob medida.
+      </div>
+     </div>
+    </article>
+    <article class="card" data-medium="branded">
+     <div class="poster">
+      <img alt="V&iacute;deo nativo" src="branded/format-video.jpg"/>
+     </div>
+     <div class="meta">
+      <div class="title">
+       <span>
+        V&iacute;deo Nativo
+       </span>
+      </div>
+      <div class="muted">
+       Hist&oacute;rias em 15&ndash;60 segundos.
+      </div>
+     </div>
+    </article>
+   </main>
+  </section>
+  <section class="section" id="sec-condicoes">
+   <div class="section-head" id="head-condicoes">
+    <h2>
+     Condi&ccedil;&otilde;es Gerais
+    </h2>
+   </div>
+   <div class="doc" id="condicoesBody">
+    <div class="terms-wrap">
+     <ol class="terms">
+      <li>
+       <span class="n">
+        1.
+       </span>
+       <p>
+        A Sociedade Vicra Desportiva, S.A. rege-se pelas presentes condi&ccedil;&otilde;es gerais contratuais, bem como pelo C&oacute;digo da Publicidade e restante legisla&ccedil;&atilde;o aplic&aacute;vel.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        2.
+       </span>
+       <p>
+        A Sociedade Vicra Desportiva, S.A. reserva o direito de n&atilde;o inserir publicidade que n&atilde;o esteja em harmonia com a sua orienta&ccedil;&atilde;o &eacute;tica.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        3.
+       </span>
+       <p>
+        A Sociedade Vicra Desportiva, S.A. reserva o direito de adiar inser&ccedil;&otilde;es de publicidade sempre que as circunst&acirc;ncias o imponham.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        4.
+       </span>
+       <p>
+        O conte&uacute;do das inser&ccedil;&otilde;es, assim como o material a ser fornecido para as mesmas, &eacute; da inteira responsabilidade do cliente. A Sociedade Vicra Desportiva, S.A. n&atilde;o se responsabiliza pela perda ou danos causados aos materiais fornecidos para publica&ccedil;&atilde;o. A entrega de materiais em suporte f&iacute;sico cabe ao anunciante ou ao seu representante efetuar a recolha no prazo m&aacute;ximo de 2 meses ap&oacute;s a data de entrega, sob pena de serem destru&iacute;dos.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        5.
+       </span>
+       <p>
+        A Sociedade Vicra Desportiva, S.A. n&atilde;o se responsabiliza, para al&eacute;m da repeti&ccedil;&atilde;o correta, por inser&ccedil;&otilde;es com erros, lapsos ou omiss&otilde;es que lhe sejam imput&aacute;veis.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        6.
+       </span>
+       <p>
+        Toda a reclama&ccedil;&atilde;o dever&aacute; ser feita, por escrito, at&eacute; 5 dias &uacute;teis ap&oacute;s a data de publica&ccedil;&atilde;o do an&uacute;ncio.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        7.
+       </span>
+       <p>
+        Os Anunciantes ou os seus representantes ser&atilde;o exclusivamente respons&aacute;veis pelo conte&uacute;do publicit&aacute;rio e pelas consequ&ecirc;ncias da sua publica&ccedil;&atilde;o pela Sociedade Vicra Desportiva, S.A., bem como por todo e qualquer direito ou autoriza&ccedil;&atilde;o de terceiros relativos &agrave; publicidade a publicar, nomeadamente direitos de autor ou outros. A Sociedade Vicra Desportiva, S.A. ter&aacute; direito de regresso sobre os anunciantes e seus representantes por qualquer coima, multa, indemniza&ccedil;&atilde;o ou outros encargos decorrentes de incumprimento legal ou contratual de normas aplic&aacute;veis ao conte&uacute;do da publicidade publicada.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        8.
+       </span>
+       <p>
+        Em todas as ordens de publica&ccedil;&atilde;o firmadas pelos anunciantes ou ag&ecirc;ncias presume-se o conhecimento e aceita&ccedil;&atilde;o da tabela de publicidade e das presentes condi&ccedil;&otilde;es gerais.
+       </p>
+      </li>
+      <li>
+       <span class="n">
+        9.
+       </span>
+       <p>
+        Para execu&ccedil;&atilde;o de todas as quest&otilde;es emergentes ou interpreta&ccedil;&otilde;es deste contrato, as partes consideram competente o tribunal da comarca de Lisboa, com expressa recusa de qualquer outro.
+       </p>
+      </li>
+     </ol>
+    </div>
+   </div>
+  </section>
+  <footer aria-label="A BOLA Footer" class="brand-footer">
+   <div class="footer-container">
+    <div class="footer-bar">
+     <div class="footer-social">
+      <div class="brand-footer-inner">
+       <div class="bf-row">
+        <div class="bf-brand">
+         <svg aria-hidden="true" fill="none" height="30" viewbox="0 0 238 30" width="238" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_7239_3186)">
+           <path d="M19.49 23.4532H0V28.9703H19.49V23.4532Z" fill="#FAFAFA">
+           </path>
+           <path d="M29.8917 1.02734H10.3555V6.54438H29.8917V1.02734Z" fill="#FAFAFA">
+           </path>
+           <path d="M48.4851 23.4531H24.2422V28.9702H48.4851V23.4531Z" fill="#FAFAFA">
+           </path>
+           <path d="M34.0416 18.1602H13.7031V20.4533H34.0416V18.1602Z" fill="#FAFAFA">
+           </path>
+           <path clip-rule="evenodd" d="M26.9629 1.02734H18.6631L2.63281 28.9705H10.9308L26.9629 1.02734Z" fill="#FAFAFA" fill-rule="evenodd">
+           </path>
+           <path clip-rule="evenodd" d="M46.0283 28.9702H33.3741L17.3438 1.02702L29.9908 1.02344L46.0283 28.9702Z" fill="#FAFAFA" fill-rule="evenodd">
+           </path>
+           <path clip-rule="evenodd" d="M182.014 23.4642H171.209V6.54438H176.862V1.02734H153.52V6.54438H158.989V23.4642H153.52V28.9705H187.645V18.1602H182.014V23.4642Z" fill="#FAFAFA" fill-rule="evenodd">
+           </path>
+           <path clip-rule="evenodd" d="M102.457 12.6594H102.183C103.755 11.4672 104.689 9.56258 104.689 7.61139C104.689 4.05629 101.749 1.02747 98.1468 1.02747H66.5273V6.5445H72.1358V23.4536H66.5273V28.9707H102.453C107.035 28.9707 110.751 25.3225 110.751 20.8258C110.751 16.3291 107.037 12.6594 102.453 12.6594H102.457ZM83.2176 6.5445H92.4725C93.9311 6.5445 95.1852 7.75997 95.1852 9.25111C95.1852 10.7422 93.9311 11.913 92.4725 11.913H83.2176V6.5445ZM95.733 23.4304V23.4536H83.2176V18.0852H95.733C97.213 18.0852 98.4688 19.3006 98.4688 20.7918C98.4688 22.2829 97.2148 23.4304 95.733 23.4304Z" fill="#FAFAFA" fill-rule="evenodd">
+           </path>
+           <path clip-rule="evenodd" d="M135.184 0H130.254C120.141 0 111.918 5.96814 111.918 13.2162V16.7838C111.918 24.0319 120.141 30 130.254 30H135.184C145.297 30 153.52 24.0337 153.52 16.7838V13.2162C153.52 5.96814 145.297 0 135.184 0ZM138.986 21.5257C138.986 22.5013 138.039 23.4537 137.002 23.4537H128.434C127.399 23.4537 126.451 22.5013 126.451 21.5257V8.42592C126.451 7.36082 127.331 6.58393 128.169 6.58393H137.266C138.103 6.58393 138.984 7.36082 138.984 8.42592V21.5257H138.986Z" fill="#FAFAFA" fill-rule="evenodd">
+           </path>
+           <path d="M209.002 23.4531H189.512V28.9702H209.002V23.4531Z" fill="#FAFAFA">
+           </path>
+           <path d="M219.403 1.02734H199.867V6.54438H219.403V1.02734Z" fill="#FAFAFA">
+           </path>
+           <path d="M238.001 23.4531H213.758V28.9702H238.001V23.4531Z" fill="#FAFAFA">
+           </path>
+           <path d="M223.553 18.1602H203.215V20.4533H223.553V18.1602Z" fill="#FAFAFA">
+           </path>
+           <path clip-rule="evenodd" d="M216.475 1.02734H208.175L192.145 28.9705H200.443L216.475 1.02734Z" fill="#FAFAFA" fill-rule="evenodd">
+           </path>
+           <path clip-rule="evenodd" d="M235.54 28.9705H222.888L206.855 1.02734H219.51L235.54 28.9705Z" fill="#FAFAFA" fill-rule="evenodd">
+           </path>
+          </g>
+          <defs>
+           <clippath id="clip0_7239_3186">
+            <rect fill="white" height="30" width="238">
+            </rect>
+           </clippath>
+          </defs>
+         </svg>
+        </div>
+        <ul aria-label="Redes Sociais" class="bf-socials">
+         <li>
+          <a aria-label="Facebook" href="https://www.facebook.com/abolapt">
+           <svg class="h-6 w-6" fill="currentColor" viewbox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+            <path d="M232,128a104.16,104.16,0,0,1-91.55,103.26,4,4,0,0,1-4.45-4V152h24a8,8,0,0,0,8-8.53,8.17,8.17,0,0,0-8.25-7.47H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,8-8.53A8.17,8.17,0,0,0,167.73,80H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0-8,8.53A8.17,8.17,0,0,0,96.27,152H120v75.28a4,4,0,0,1-4.44,4A104.15,104.15,0,0,1,24.07,124.09c2-54,45.74-97.9,99.78-100A104.12,104.12,0,0,1,232,128Z">
+            </path>
+           </svg>
+          </a>
+         </li>
+         <li>
+          <a aria-label="Instagram" href="https://www.instagram.com/abolapt">
+           <svg aria-hidden="true" viewbox="0 0 24 24">
+            <path d="M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Zm5 4.5A3.5 3.5 0 1 0 15.5 12 3.5 3.5 0 0 0 12 8.5Zm5-2.3a.8.8 0 1 0 .8.8.8.8 0 0 0-.8-.8Z">
+            </path>
+            <circle cx="12" cy="12" r="2.5">
+            </circle>
+           </svg>
+          </a>
+         </li>
+         <li>
+          <a aria-label="TikTok" href="https://www.tiktok.com/@abola">
+           <svg aria-hidden="true" viewbox="0 0 24 24">
+            <path d="M15.5 4c.6 1.7 1.9 3 3.6 3.6v2.1a6.6 6.6 0 0 1-3.6-1.2v5.9a5 5 0 1 1-5-5c.3 0 .6 0 .9.1v2.3a2.7 2.7 0 1 0 1.8 2.6V4h2.3Z">
+            </path>
+           </svg>
+          </a>
+         </li>
+         <li>
+          <a aria-label="X (Twitter)" href="https://x.com/abolapt">
+           <svg aria-hidden="true" viewbox="0 0 24 24">
+            <path d="M4 4h4.7l3.7 5 4.7-5H22l-7.2 7.9L22 20h-4.7l-4.1-5.5L8.5 20H2l7.8-8.6L4 4Zm3.8 2 3.3 4.6L7 17.9h2.3l3.3-3.7 3 3.7h2.9l-3.6-5 4.9-5.4h-2.3l-3.6 3.9L10.8 6H7.8Z">
+            </path>
+           </svg>
+          </a>
+         </li>
+         <li>
+          <a aria-label="YouTube" href="https://www.youtube.com/c/ABOLATVOFICIAL/videos">
+           <svg aria-hidden="true" viewbox="0 0 24 24">
+            <path d="M22 12s0-3.2-.4-4.7a2.7 2.7 0 0 0-1.9-1.9C17.2 5 12 5 12 5s-5.2 0-7.7.4a2.7 2.7 0 0 0-1.9 1.9C2 8.8 2 12 2 12s0 3.2.4 4.7c.2.9 1 1.7 1.9 1.9C6.8 19 12 19 12 19s5.2 0 7.7-.4a2.7 2.7 0 0 0 1.9-1.9C22 15.2 22 12 22 12Zm-12-3 6 3.1-6 3V9Z">
+            </path>
+           </svg>
+          </a>
+         </li>
+         <li>
+          <a aria-label="WhatsApp" href="https://www.whatsapp.com/channel/0029VaAdZdLEquiWSfL3ik1e">
+           <svg aria-hidden="true" viewbox="0 0 24 24">
+            <path d="M12 2a9 9 0 0 0-7.8 13.4L3 22l6.7-1.8A9 9 0 1 0 12 2Zm5.2 13.4c-.2.6-1.1 1.1-1.7 1.2-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6a9.9 9.9 0 0 1-4.9-4.9c-.3-.7-.5-1.3-.6-1.7-.2-.7-.2-1.3-.1-1.8.1-.6.6-1.5 1.2-1.7.3-.1.6-.1.8 0 .2.1.4.3.6.6.2.3.4.6.4.8.1.3 0 .5-.1.7 0 .1-.1.3-.2.4l-.3.4c-.1.2-.2.3-.2.4 0 .1 0 .2.1.4.2.3.5.7 1 1.2.7.7 1.3 1.1 1.6 1.2.1.1.3.1.4.1.1 0 .2-.1.4-.2l.3-.2c.1-.1.2-.1.3-.2.1 0 .3-.1.5-.1.2 0 .5 0 .8.1.2.1.6.3.8.5.2.2.3.4.4.6.2.6.1.9 0 1.1Z">
+            </path>
+           </svg>
+          </a>
+         </li>
+        </ul>
+       </div>
+      </div>
+     </div>
+     <div class="footer-contact">
+      <a class="brand-contact" href="mailto:sales@abola.pt">
+       sales@abola.pt
+      </a>
+      | +351 900 000 000
+     </div>
+    </div>
+   </div>
+  </footer>
+  <div class="scrim" id="scrim">
+  </div>
+  <aside aria-labelledby="drawerTitle" aria-modal="true" class="drawer" id="drawer" role="dialog">
+   <header class="drawer-head">
+    <div class="title-wrap">
+     <h2 class="drawer-title" id="drawerTitle">
+      Title
+     </h2>
+     <div class="muted" id="drawerTags">
+      &mdash;
+     </div>
+    </div>
+    <button aria-label="Fechar painel" class="close-drawer" id="closeDrawerBtn">
+     <svg aria-hidden="true" class="x" viewbox="0 0 24 24">
+      <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke-linecap="round" stroke-width="2.5">
+      </path>
+     </svg>
+    </button>
+   </header>
+   <div class="drawer-content">
+    <section>
+     <div class="preview" id="preview">
+     </div>
+    </section>
+    <section class="specs" id="specSection">
+     <dl id="specList">
+     </dl>
+    </section>
+   </div>
   </aside>
-
-
-
   <script>
-// ---------------- Data ----------------
-const DIGITAL = [
+   const DIGITAL = [
   { id:'intro', medium:'digital', subtype:'rich-media', name:'Intro', summary:'',
     peek:'800×600 / 768×1024 • ≤254KB (img) • MP4 ≤1MB', art:'digital/intro.png', videos:{ desktop:'digital/intro.mp4', mobile:'digital/intro_mobile.mp4' },
     specs:{ 'Dimensions':'800×600 px and 768×1024 px', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'254 KB (images), MP4 up to 1 MB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
@@ -2341,15 +3663,8 @@ const TV = [
   }
 ];
 
-/* ============================================================
-   APP SCRIPT (NO DATA ARRAYS)
-   - Single sticky masthead (no mastTitle element)
-   - Main tabs update only when .section-head is near top
-   - Clicks scroll to .section-head with header offset
-   - Spy lock prevents premature “you already arrived” stops
-   ============================================================ */
 
-// ---- Safe dataset fallbacks (empty if not defined) ----
+
 const DATA = {
   DIGITAL : (typeof DIGITAL  !== 'undefined' && Array.isArray(DIGITAL))  ? DIGITAL  : [],
   print: (typeof print !== 'undefined' && Array.isArray(print)) ? print : [],
@@ -2358,7 +3673,6 @@ const DATA = {
   BRANDED : (typeof BRANDED  !== 'undefined' && Array.isArray(BRANDED))  ? BRANDED  : []
 };
 
-// ---------------- State ----------------
 let state = {
   medium: 'abola',
   digitalType: 'all',
@@ -2367,14 +3681,12 @@ let state = {
   tvShowAll: false
 };
 
-// ---------------- DOM ----------------
 const $masthead     = document.getElementById('masthead');
 const $headerSpacer = document.getElementById('headerSpacer');
 const $mainTabs     = document.getElementById('mainTabs');
 const $contextTabs  = document.getElementById('contextTabs');
 const $brandBtn = document.getElementById('brandBtn');
 
-// Sections
 const $secAbola    = document.getElementById('sec-abola');
 const $secDigital  = document.getElementById('sec-digital');
 const $secprint = document.getElementById('sec-print');
@@ -2382,7 +3694,6 @@ const $secTV       = document.getElementById('sec-tv');
 const $secBranded  = document.getElementById('sec-branded');
 const $secTerms    = document.getElementById('sec-condicoes');
 
-// Grids / panels
 const $gridAbola    = document.getElementById('gridAbola');
 const $gridDigital  = document.getElementById('gridDigital');
 const $gridprint = document.getElementById('gridprint');
@@ -2390,7 +3701,6 @@ const $gridBranded  = document.getElementById('gridBranded');
 const $tvPanel      = document.getElementById('tvPanel');
 const $printNote = document.getElementById('printNotice');
 
-// Drawer (optional if present)
 const $scrim          = document.getElementById('scrim');
 const $drawer         = document.getElementById('drawer');
 const $drawerTitle    = document.getElementById('drawerTitle');
@@ -2403,7 +3713,6 @@ const $closeDrawerBtn = document.getElementById('closeDrawerBtn');
 const $brandBar = document.querySelector('.masthead > .brand');
 
 const $drawerContent = document.querySelector('.drawer-content');
-// ---------------- Layout helpers ----------------
 function mastHeight(){ return $masthead?.getBoundingClientRect().height || 0; }
 
 
@@ -2464,11 +3773,11 @@ function baseHashForCurrent(){
 
 
 
-/* Measure the natural height of the brand bar and store in a CSS var */
+
 function measureBrand(){
   if(!$brandBar || !$masthead) return;
   const wasOpen = $masthead.classList.contains('show-brand');
-  // open temporarily to measure true height
+ 
   $masthead.classList.add('show-brand');
   requestAnimationFrame(()=>{
     const h = $brandBar.scrollHeight || 0;
@@ -2478,7 +3787,7 @@ function measureBrand(){
   });
 }
 
-/* Toggle visibility: hidden on hero (abola), Deliver other sections */
+
 function updateBrandVisibility(){
   const sec = pickSectionByRefLine();
   const medium = sec ? SECTION_TO_MEDIUM[sec.id] : null;
@@ -2499,13 +3808,13 @@ function scrollToHeadById(headId){
   const head = document.getElementById(headId);
   if(!head) return;
 
-  // Recalc mast sizes first (context tabs can change masthead height)
+ 
   syncHeaderSpacer();
 
-  // Use the SECTION top (not the sticky head's rect) to avoid "early stop" going upwards
+ 
   const section = head.closest('.section') || head;
 
-  // Prefer offsetTop (fast) and fall back to getBoundingClientRect if needed
+ 
   let sectionTop = 0;
   if (typeof section.offsetTop === 'number') {
     sectionTop = section.offsetTop;
@@ -2516,7 +3825,7 @@ function scrollToHeadById(headId){
   const pad = 8;
   const y = Math.max(0, sectionTop - mastHeight() - pad);
 
-  // Lock the spy long enough for a smooth scroll regardless of distance
+ 
   const dist = Math.abs(window.scrollY - y);
   lockSpy(Math.min(2000, Math.max(900, dist * 0.9)));
 
@@ -2536,7 +3845,6 @@ function setActiveTab($tabs, value, attr='data-medium'){
 }
 function gradStyle([a,b]){ return `background:linear-gradient(135deg,${a},${b});`; }
 
-// --- Spy lock to prevent mid-scroll interruptions ---
 let spyLocked = false;
 let spyUnlockTimer = null;
 
@@ -2550,20 +3858,18 @@ function unlockSpy(){
   if (!spyLocked) return;
   spyLocked = false;
   clearTimeout(spyUnlockTimer);
-  onScrollSpy(); // re-evaluate active section immediately
+  onScrollSpy();
 }
 
-// Cancel lock on any “I’m scrolling now” signals
 window.addEventListener('wheel', unlockSpy, { passive: true });
 window.addEventListener('touchstart', unlockSpy, { passive: true });
 window.addEventListener('touchmove', unlockSpy, { passive: true });
 window.addEventListener('keydown', (e) => {
-  // keys that typically scroll
+ 
   const keys = ['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '];
   if (keys.includes(e.key)) unlockSpy();
 }, { passive: true });
 
-// ---------------- Submenu (context tabs) ----------------
 
 
 function buildSubmenu(medium){
@@ -2587,16 +3893,16 @@ function buildSubmenu(medium){
     ];
   }
 
-  // show only if there are options (digital/print); otherwise hide
+ 
   slot.classList.toggle('is-open', options.length > 0);
 
-  // if hidden, no need to render anything
+ 
   if (options.length === 0){
     nav.innerHTML = '';
     return;
   }
 
-  // build buttons
+ 
   nav.innerHTML = '';
   for (const opt of options){
     const btn = document.createElement('button');
@@ -2620,7 +3926,7 @@ function buildSubmenu(medium){
         history.replaceState(null, '', `#print/${opt.val}`);
         scrollToHeadById('head-print');
       }
-      // update active visual
+     
       [...nav.querySelectorAll('button')].forEach(b =>
         b.classList.toggle('active', b === btn)
       );
@@ -2632,7 +3938,6 @@ function buildSubmenu(medium){
 
 
 
-// --- Scroll lock helpers (preserve page position) ---
 let __lockY = 0;
 function lockPageScroll(){
   __lockY = window.scrollY || window.pageYOffset || 0;
@@ -2653,22 +3958,20 @@ function unlockPageScroll(){
 }
 
 
-// ---------------- Drawer ----------------//
  
 function closeDrawer({ updateHash = true } = {}){
-  // stop any preview videos
+ 
 $preview?.querySelectorAll('video')?.forEach(v => { try{ v.pause(); v.currentTime = 0; }catch{} });
   $scrim?.classList.remove('show');
   $drawer?.classList.remove('show');
   document.body.classList.remove('no-scroll');
 
-  // strip /item/... from the URL but keep you in the same section
+ 
   if (updateHash){
-    history.replaceState(null, '', baseHashForCurrent()); // no jump
+    history.replaceState(null, '', baseHashForCurrent());
   }
 }
 
-// listeners (put these AFTER the function above, and AFTER $scrim / $closeDrawerBtn are defined)
 $scrim?.addEventListener('click', (e) => {
   e.preventDefault();
   closeDrawer({ updateHash: true });
@@ -2690,11 +3993,11 @@ window.addEventListener('keydown', (e) => {
 function openDrawer(item, { fromHash = false } = {}){
   if (!item || item.medium === 'tv' || !$drawer) return;
 
-  // Title + tags
+ 
   if ($drawerTitle) $drawerTitle.textContent = item.name || 'Details';
   if ($drawerTags)  $drawerTags.textContent  = [item.subtype, item.medium].filter(Boolean).join(' · ');
 
-  // Inject (or update) the hover/FS hint CSS once — note: zoom cursor only on .is-zoomable
+ 
   (function ensureFsOverlayStyle(){
     let css = document.getElementById('fs-overlay-style');
     if (!css){
@@ -2703,8 +4006,8 @@ function openDrawer(item, { fromHash = false } = {}){
       document.head.appendChild(css);
     }
     css.textContent = `
-      .preview .media-box{ position:relative; }             /* no global zoom cursor */
-      .preview .media-box.is-zoomable{ cursor: zoom-in; }    /* zoom cursor only when allowed */
+      .preview .media-box{ position:relative; }             
+      .preview .media-box.is-zoomable{ cursor: zoom-in; }    
       .preview .media-box:focus{ outline:none; }
       .fs-btn{
         position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
@@ -2721,11 +4024,11 @@ function openDrawer(item, { fromHash = false } = {}){
       }
       .media-box.is-zoomable:focus-visible .fs-btn{ opacity:.9; }
       .is-fs .fs-btn{ display:none; }
-      .media-box video{ pointer-events:none; } /* let clicks bubble to container */
+      .media-box video{ pointer-events:none; } 
     `;
   })();
 
-  // Preview shell + helpers
+ 
   if ($preview){
     $preview.innerHTML = '';
 
@@ -2759,12 +4062,12 @@ function openDrawer(item, { fromHash = false } = {}){
       }
     };
 
-    /* ---------- Fullscreen helpers & scroll restore ---------- */
+    
     let __fsRestoreY = 0;
     const getScrollY = () => window.scrollY || document.documentElement.scrollTop || 0;
     const restoreScrollY = (y) => {
       requestAnimationFrame(() => window.scrollTo(0, y));
-      // defensive clear
+     
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.left = '';
@@ -2796,11 +4099,9 @@ function openDrawer(item, { fromHash = false } = {}){
     document.addEventListener('fullscreenchange', onFSChange);
     document.addEventListener('webkitfullscreenchange', onFSChange);
 
-    /* =========================
-       DIGITAL (video) branch
-       ========================= */
+    
     if (item.medium === 'digital' && (item.video || item.videos)){
-      box.classList.add('is-zoomable'); // enables zoom cursor + hint
+      box.classList.add('is-zoomable');
 
       const vids = {
         desktop: item.videos?.desktop || item.video || null,
@@ -2816,7 +4117,7 @@ function openDrawer(item, { fromHash = false } = {}){
       v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
       v.controls = false; v.preload = 'metadata';
 
-      // Declare toolbar buttons BEFORE we use them inside applyMode
+     
       let btnDesk = null;
       let btnMob  = null;
 
@@ -2839,7 +4140,7 @@ function openDrawer(item, { fromHash = false } = {}){
 
       box.appendChild(v);
 
-      // Fullscreen hint button
+     
       const fsBtn = document.createElement('div');
       fsBtn.className = 'fs-btn';
       fsBtn.setAttribute('aria-hidden', 'true');
@@ -2853,11 +4154,11 @@ function openDrawer(item, { fromHash = false } = {}){
         </svg>`;
       box.appendChild(fsBtn);
 
-      // Click ANYWHERE toggles fullscreen
+     
       const onMediaClick = (e) => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); };
       box.addEventListener('click', onMediaClick);
 
-      // Build the device switcher
+     
       const bar = document.createElement('div');
       bar.className = 'preview-switch';
 
@@ -2877,14 +4178,14 @@ function openDrawer(item, { fromHash = false } = {}){
         bar.appendChild(btnMob);
       }
 
-      // Mount the media + toolbar
+     
       $preview.appendChild(box);
       if (bar.childElementCount) $preview.appendChild(bar);
 
-      // Now it's safe to pick the initial source & set button highlights
+     
       if (mode) applyMode(mode);
 
-      // Cleanup on drawer close / esc / scrim
+     
       const cleanup = () => {
         document.removeEventListener('fullscreenchange', onFSChange);
         document.removeEventListener('webkitfullscreenchange', onFSChange);
@@ -2899,18 +4200,16 @@ function openDrawer(item, { fromHash = false } = {}){
       $closeDrawerBtn?.addEventListener('click', cleanup, { once: true });
       window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') cleanup(); }, { once: true });
 
-    /* =========================
-       PRINT (image) branch  — now zoomable
-       ========================= */
+    
     } else if (item.medium === 'print'){
-      // Enable zoom UI on images
+     
       box.classList.add('is-zoomable');
 
-      // Put the image in the box
+     
       swapImgInBox(item.art);
       $preview.appendChild(box);
 
-      // Fullscreen hint button
+     
       const fsBtn = document.createElement('div');
       fsBtn.className = 'fs-btn';
       fsBtn.setAttribute('aria-hidden', 'true');
@@ -2924,11 +4223,11 @@ function openDrawer(item, { fromHash = false } = {}){
         </svg>`;
       box.appendChild(fsBtn);
 
-      // Click ANYWHERE toggles fullscreen
+     
       const onMediaClick = (e) => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); };
       box.addEventListener('click', onMediaClick);
 
-      // Optional Layout/gridReference switcher
+     
       if (item.gridReference){
         const bar = document.createElement('div');
         bar.className = 'preview-switch';
@@ -2955,7 +4254,7 @@ function openDrawer(item, { fromHash = false } = {}){
         $preview.appendChild(bar);
       }
 
-      // Cleanup on drawer close / esc / scrim (same as video)
+     
       const cleanup = () => {
         document.removeEventListener('fullscreenchange', onFSChange);
         document.removeEventListener('webkitfullscreenchange', onFSChange);
@@ -2971,13 +4270,13 @@ function openDrawer(item, { fromHash = false } = {}){
       window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') cleanup(); }, { once: true });
 
     } else {
-      // Fallback: gradient card
+     
       setGradientIfEmpty();
       $preview.appendChild(box);
     }
   }
 
-  // Specs
+ 
   if ($specList){
     $specList.innerHTML = '';
     const specs = item.specs || { Note:'Specs coming soon' };
@@ -2989,7 +4288,7 @@ function openDrawer(item, { fromHash = false } = {}){
   }
   if ($specSection) $specSection.style.display='block';
 
-  // Print tech block inside drawer for print
+ 
   const drawerContent = document.querySelector('.drawer-content');
   if (drawerContent){
     const old = drawerContent.querySelector('.print-tech-inside');
@@ -3014,12 +4313,12 @@ function openDrawer(item, { fromHash = false } = {}){
     }
   }
 
-  // Show drawer (lock via class only)
+ 
   $scrim?.classList.add('show');
   $drawer?.classList.add('show');
   document.body.classList.add('no-scroll');
 
-  // Shareable hash
+ 
   if (!fromHash){
     let hash = baseHashForCurrent();
     if (item.medium === 'digital')      hash = `#digital/${state.digitalType}/item/${item.id}`;
@@ -3054,7 +4353,6 @@ function posterBG(item){
   return `background: linear-gradient(135deg, ${g[0]}, ${g[1]})`;
 }
 
-// ---------------- Builders ----------------
 
 function buildPoster(item){
   const card   = document.createElement('article'); card.className='card';
@@ -3064,7 +4362,7 @@ function buildPoster(item){
   grad.style.cssText = posterBG(item);
   poster.appendChild(grad);
 
-  // static, per-item label
+ 
   const badge = labelForItem(item);
   if (badge){
     const lbl = document.createElement('div');
@@ -3085,13 +4383,11 @@ function buildPoster(item){
   return card;
 }
 
-// ---------------- Datasets ----------------
 function datasetAbola(){   return DATA.ABOLA; }
 function datasetDigital(){ return state.digitalType==='all' ? DATA.DIGITAL : DATA.DIGITAL.filter(i=>i.subtype===state.digitalType); }
 function datasetprint(){return state.subtype==='all'? DATA.print: DATA.print.filter(i=>i.subtype===state.subtype); }
 function datasetBranded(){ return DATA.BRANDED; }
 
-// ---------------- Renderers ----------------
 function renderAbolaSection(){
   if(!$gridAbola) return;
   $gridAbola.innerHTML='';
@@ -3105,20 +4401,20 @@ function renderDigitalSection(){
 function renderprintSection(){
   if(!$gridprint || !$secprint) return;
 
-  // populate grid
+ 
   $gridprint.innerHTML='';
   datasetprint().forEach(item=> $gridprint.appendChild(buildPoster(item)));
 
-  // hide old "print-note" banner (we’re moving it to the bottom)
+ 
   if($printNote){
     $printNote.style.display='none';
     $printNote.textContent='';
   }
 
-  // remove any previous foot blocks to avoid duplicates on re-render
+ 
   [...$secprint.querySelectorAll('.print-tech')].forEach(n=> n.remove());
 
-  // build the bottom box (Ficheiros + Sobretaxa)
+ 
   const box = document.createElement('section');
   box.className = 'print-tech';
   box.innerHTML = `
@@ -3145,7 +4441,6 @@ function renderBrandedSection(){
   datasetBranded().forEach(item=> $gridBranded.appendChild(buildPoster(item)));
 }
 
-// ---- TV Ratecard ----
 function updateHashTV(){
   let hash = 'tv';
   if (Number.isFinite(state.tvDuration)) hash += '/' + state.tvDuration;
@@ -3158,16 +4453,16 @@ function renderTVMatrix(item, targetEl){
   const scroller = document.createElement('div'); scroller.className = 'hscroll';
   const table = document.createElement('table'); table.className = 'rate-table';
 
-  // keep gridReferences to every cell per duration (for hover/active toggles)
+ 
   const cellsByDur = Object.fromEntries(durations.map(d => [d, []]));
 
   function setHover(dur, on){
     (cellsByDur[dur] || []).forEach(el => el.classList.toggle('col-hover', on));
   }
   function setActive(dur){
-    // clear previous
+   
     Object.values(cellsByDur).flat().forEach(el => el.classList.remove('col-active'));
-    // set new
+   
     (cellsByDur[dur] || []).forEach(el => el.classList.add('col-active'));
   }
   function selectDuration(dur){
@@ -3177,7 +4472,7 @@ function renderTVMatrix(item, targetEl){
     scrollToHeadById('head-tv');
   }
 
-  // THEAD
+ 
   const thead = document.createElement('thead');
   const htr = document.createElement('tr');
 
@@ -3201,7 +4496,7 @@ function renderTVMatrix(item, targetEl){
   thead.appendChild(htr);
   table.appendChild(thead);
 
-  // TBODY
+ 
   const tbody = document.createElement('tbody');
 
   (item.dayparts || []).forEach(dp => {
@@ -3237,7 +4532,7 @@ function renderTVMatrix(item, targetEl){
     });
   });
 
-  // INDEX section
+ 
   const idxHead = document.createElement('tr'); idxHead.className = 'section-row';
   const ih1 = document.createElement('th'); ih1.className = 'sticky-col'; ih1.textContent = 'INDEX';
   const ih2 = document.createElement('th'); ih2.colSpan = durations.length;
@@ -3266,7 +4561,7 @@ function renderTVMatrix(item, targetEl){
   scroller.appendChild(table);
   targetEl.appendChild(scroller);
 
-  // mark current duration
+ 
 if (Number.isFinite(state.tvDuration)) setActive(state.tvDuration);
 
 }
@@ -3304,7 +4599,6 @@ function renderTVOutside(item){
   renderTVTechNote($tvPanel); 
 }
 
-// Render all initially
 function renderAll(){
   renderAbolaSection();
   renderDigitalSection();
@@ -3317,15 +4611,14 @@ renderAll();
 
 $brandBtn?.addEventListener('click', () => {
   state.medium = 'top';
-  setActiveTab($mainTabs, null);     // clear highlight from main tabs
-  buildSubmenu('top');             // no submenu
+  setActiveTab($mainTabs, null);    
+  buildSubmenu('top');            
   lockSpy(900);
   scrollToHeadById('head-abola');
   history.replaceState(null, '', '#top');
 });
 
 
-// ---------------- Main tabs ----------------
 $mainTabs?.addEventListener('click', (e)=>{
   const btn = e.target.closest('button'); if(!btn) return;
   const medium = btn.dataset.medium; if(!medium) return;
@@ -3348,7 +4641,7 @@ const headMap = {
   else if(medium==='print')  history.replaceState(null,'',`#print/${state.subtype}`);
   else if (medium==='tv') history.replaceState(null,'', '#'+updateHashTV());
   else                          history.replaceState(null,'',`#${medium}`);
-});// ---------------- Scroll spy (gridReference-line method; no flicker) ----------------
+});
 const SECTION_TO_MEDIUM = {
   'sec-abola':'abola',
   'sec-digital':'digital',
@@ -3359,8 +4652,8 @@ const SECTION_TO_MEDIUM = {
 };
 
 const SECTIONS = Array.from(document.querySelectorAll('.section'));
-const COOLDOWN_MS = 200;     // tiny cooldown after we switch, to avoid double flips
-const REF_EXTRA   = 12;      // pixels below the masthead we place the gridReference line
+const COOLDOWN_MS = 200;    
+const REF_EXTRA   = 12;     
 
 let spyCooldown = false;
 function cool(ms = COOLDOWN_MS){
@@ -3369,21 +4662,21 @@ function cool(ms = COOLDOWN_MS){
 }
 
 function pickSectionByRefLine(){
-  // line sits just below the sticky masthead
+ 
   const refY = (mastHeight() || 0) + REF_EXTRA;
 
-  // find the section whose body contains that line
+ 
   let hit = null;
   for(const sec of SECTIONS){
     const r = sec.getBoundingClientRect();
-    // visible band below the masthead
+   
     if (r.top <= refY && r.bottom > refY){
       hit = sec;
       break;
     }
   }
 
-  // fallback: closest top to the ref line (in case at extremes)
+ 
   if(!hit){
     let best = null;
     for(const sec of SECTIONS){
@@ -3398,7 +4691,7 @@ function pickSectionByRefLine(){
 let ticking = false;
 function onScrollSpy(){
 
-  if (spyLocked || spyCooldown || ticking) return;  // don’t fight programmatic scrolls
+  if (spyLocked || spyCooldown || ticking) return; 
   ticking = true;
   requestAnimationFrame(()=>{
     ticking = false;
@@ -3409,7 +4702,7 @@ function onScrollSpy(){
     const medium = SECTION_TO_MEDIUM[sec.id];
 
      if ((state.medium === 'top' || location.hash.startsWith('#top')) && medium === 'abola') {
-      return; // keep #top intact
+      return;
     }
 
     
@@ -3417,9 +4710,9 @@ if (medium && state.medium !== medium){
   state.medium = medium;
 
   if (medium === 'condicoes'){
-    // clear highlight + close the context slot
-    setActiveTab($mainTabs, null);          // no main tab selected
-    buildSubmenu('condicoes');              // hides the context slot
+   
+    setActiveTab($mainTabs, null);         
+    buildSubmenu('condicoes');             
     history.replaceState(null,'','#condicoes');
   } else {
     setActiveTab($mainTabs, medium);
@@ -3442,50 +4735,49 @@ else if (medium === 'tv') history.replaceState(null,'', '#'+updateHashTV());
 
 window.addEventListener('scroll', onScrollSpy, { passive:true });
 window.addEventListener('resize', onScrollSpy);
-onScrollSpy(); // init once
+onScrollSpy();
 
 
 
 
 
-// ---------------- Deep link handling ----------------
 function handleHash(){
   const raw = (location.hash || '').replace('#','').trim();
   if (!raw){
-    // default landing: hero (A BOLA)
+   
     state.medium = 'abola';
     setActiveTab($mainTabs, null);
-    buildSubmenu('abola'); // closes the context slot
+    buildSubmenu('abola');
     return;
   }
 
   const parts = raw.split('/').filter(Boolean);
   const first = parts[0];
 
-  // ===== TV =====
+ 
   if (first === 'tv'){
     state.medium = 'tv';
     setActiveTab($mainTabs, 'tv');
-    buildSubmenu('tv'); // no submenu options for tv
+    buildSubmenu('tv');
 
-    // Accept #tv/30 or #tv/30/all or #tv/all
+   
     const dur = parseInt(parts[2] || parts[1], 10);
     if (!isNaN(dur)) state.tvDuration = dur;
     state.tvShowAll = parts.includes('all');
 
     if (DATA.TV[0]) renderTVOutside(DATA.TV[0]);
 
-    // bring the section under the masthead; do NOT jump the page elsewhere
+   
     lockSpy(900);
     scrollToHeadById('head-tv');
     return;
   }
 
-  // ===== DIGITAL =====
+ 
   if (first === 'digital'){
     state.medium = 'digital';
 
-    // subtype (all | display | rich-media)
+   
     const sub = parts[1];
     if (['all','display','rich-media'].includes(sub)) state.digitalType = sub;
 
@@ -3494,7 +4786,7 @@ function handleHash(){
     setActiveTab(getContextNav(), state.digitalType, 'data-sub');
     renderDigitalSection();
 
-    // Deep-link drawer: #digital/<sub>/item/<id>
+   
     if (parts[2] === 'item' && parts[3]){
       const id = parts[3];
       const item = DATA.DIGITAL.find(i => i.id === id);
@@ -3508,11 +4800,11 @@ function handleHash(){
     return;
   }
 
-  // ===== print =====
+ 
   if (first === 'print'){
     state.medium = 'print';
 
-    // subtype (all | capa | interior | contracapa)
+   
     const sub = parts[1];
     if (['all','capa','interior','contracapa'].includes(sub)) state.subtype = sub;
 
@@ -3521,7 +4813,7 @@ function handleHash(){
     setActiveTab(getContextNav(), state.subtype, 'data-sub');
     renderprintSection();
 
-    // Deep-link drawer: #print/<sub>/item/<id>
+   
     if (parts[2] === 'item' && parts[3]){
       const id = parts[3];
       const item = DATA.print.find(i => i.id === id);
@@ -3535,14 +4827,14 @@ function handleHash(){
     return;
   }
 
-  // ===== BRANDED =====
+ 
   if (first === 'branded'){
     state.medium = 'branded';
     setActiveTab($mainTabs, 'branded');
-    buildSubmenu('branded'); // no submenu
+    buildSubmenu('branded');
     renderBrandedSection();
 
-    // Deep-link drawer: #branded/item/<id>
+   
     if (parts[1] === 'item' && parts[2]){
       const id = parts[2];
       const item = DATA.BRANDED?.find?.(i => i.id === id);
@@ -3556,11 +4848,11 @@ function handleHash(){
     return;
   }
 
-  // ===== TOP / ABOLA / CONDICOES =====
+ 
   if (first === 'top'){
     state.medium = 'top';
     setActiveTab($mainTabs, null);
-    buildSubmenu('top'); // closes the context slot
+    buildSubmenu('top');
     lockSpy(900);
     scrollToHeadById('head-abola');
     return;
@@ -3571,7 +4863,7 @@ function handleHash(){
     setActiveTab($mainTabs, null);
     buildSubmenu('abola');
 
-    // Optional deep-link drawer for hero items: #abola/item/<id>
+   
     if (parts[1] === 'item' && parts[2]){
       const id = parts[2];
       const item = DATA.ABOLA?.find?.(i => i.id === id);
@@ -3588,20 +4880,19 @@ function handleHash(){
   if (first === 'condicoes'){
     state.medium = 'condicoes';
     setActiveTab($mainTabs, null);
-    buildSubmenu('condicoes'); // closes the context slot
+    buildSubmenu('condicoes');
     lockSpy(900);
     scrollToHeadById('head-condicoes');
     return;
   }
 
-  // ===== Fallback =====
+ 
   buildSubmenu(state.medium);
 }
 
 window.addEventListener('hashchange', handleHash);
 handleHash();
 
-// ---------------- Responsive TV re-render ----------------
 const mqMobile = window.matchMedia('(max-width: 640px)');
 mqMobile.addEventListener?.('change', ()=>{ 
   if (state.medium==='tv' && DATA.TV[0]) renderTVOutside(DATA.TV[0]); 
@@ -3610,7 +4901,7 @@ mqMobile.addEventListener?.('change', ()=>{
 
 
 (function initHeroMetricsRotator(){
-  const ROTATE_MS = 5000; // change interval if you like
+  const ROTATE_MS = 5000;
 
   const heroInner = document.querySelector('#head-abola .hero-inner');
   if(!heroInner) return;
@@ -3618,20 +4909,20 @@ mqMobile.addEventListener?.('change', ()=>{
   const slides = Array.from(heroInner.querySelectorAll('.hero-metrics'));
   if(slides.length <= 1) return;
 
-  // stage
+ 
   const stage = document.createElement('div');
   stage.className = 'metrics-rotator';
   heroInner.insertBefore(stage, slides[0]);
 
-  // move & measure
+ 
   let maxH = 0;
   slides.forEach(s => { stage.appendChild(s); maxH = Math.max(maxH, s.offsetHeight || 0); });
   stage.style.setProperty('--rot-h', maxH + 'px');
 
-  // slide setup
+ 
   slides.forEach(s => { s.classList.add('metrics-slide'); s.setAttribute('aria-hidden','true'); });
 
-  // nav UI
+ 
   const nav = document.createElement('div');
   nav.className = 'hero-metrics-nav';
   const mkBtn = (dir, label, svg) => {
@@ -3653,10 +4944,10 @@ mqMobile.addEventListener?.('change', ()=>{
   nav.append(prevBtn, nextBtn);
   stage.appendChild(nav);
 
-  // logic
+ 
   let idx = 0;
   let timer = null;
-  let userStopped = false; // becomes true when user clicks or uses keyboard
+  let userStopped = false;
 
   function show(i){
     slides[idx].classList.remove('is-active');
@@ -3669,36 +4960,36 @@ mqMobile.addEventListener?.('change', ()=>{
   function start(){ if(!userStopped){ stop(); timer = setInterval(()=> show(idx + 1), ROTATE_MS); } }
   function stop(){ if(timer){ clearInterval(timer); timer = null; } }
 
-  // first slide
+ 
   show(0);
 
-  // manual controls — stop auto on first interaction
+ 
   function manualNext(){ userStopped = true; stop(); show(idx + 1); }
   function manualPrev(){ userStopped = true; stop(); show(idx - 1); }
 
   prevBtn.addEventListener('click', manualPrev);
   nextBtn.addEventListener('click', manualNext);
 
-  // keyboard: focusable stage
+ 
   stage.tabIndex = 0;
   stage.addEventListener('keydown', (e)=>{
     if(e.key === 'ArrowRight'){ manualNext(); }
     else if(e.key === 'ArrowLeft'){ manualPrev(); }
   });
 
-  // pause on hover; resume only if user never interacted
+ 
   stage.addEventListener('mouseenter', stop);
   stage.addEventListener('mouseleave', ()=> { if(!userStopped) start(); });
 
-  // only rotate while visible; don't restart if user stopped it
+ 
   const io = new IntersectionObserver(([entry])=>{
     if(entry && entry.isIntersecting && !userStopped) start(); else stop();
   }, { threshold: 0.2 });
   io.observe(stage);
 
-  // recalc reserved height if layout changes
+ 
   function recalcHeight(){
-    slides.forEach(s => s.classList.remove('metrics-slide'));  // flow to measure
+    slides.forEach(s => s.classList.remove('metrics-slide')); 
     const newH = Math.max(...slides.map(s => s.offsetHeight || 0));
     stage.style.setProperty('--rot-h', (newH || maxH) + 'px');
     slides.forEach(s => s.classList.add('metrics-slide'));
@@ -3709,15 +5000,15 @@ mqMobile.addEventListener?.('change', ()=>{
   setTimeout(recalcHeight, 1200);
 })();
 
-/* === Branded video controls === */
+
 (function(){
   const v = document.getElementById('bcVideo');
   const playBtn = document.getElementById('bcPlay');
   const muteBtn = document.getElementById('bcMute');
   if(!v || !playBtn || !muteBtn) return;
 
-  // try to autoplay muted (mobile-safe)
-  const tryAuto = () => v.play().catch(()=>{ /* waits for user gesture */ });
+ 
+  const tryAuto = () => v.play().catch(()=>{  });
   tryAuto();
 
   playBtn.addEventListener('click', () => {
@@ -3731,17 +5022,68 @@ mqMobile.addEventListener?.('change', ()=>{
     muteBtn.classList.toggle('is-muted', v.muted);
   });
 
-  // Pause video when off-screen
+ 
   const io = new IntersectionObserver(([entry])=>{
     if(!entry) return;
     if(entry.isIntersecting){ tryAuto(); } else { v.pause(); }
   }, { threshold: 0.25 });
   io.observe(v);
 })();
+  </script>
+  <script>
+   (function(){
+  var root = document.querySelector('#head-abola .metrics-rotator');
+  if(!root) return;
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.metrics-slide'));
+  if(!slides.length) return;
 
+  function measure(){
+    var maxH = 0;
+    slides.forEach(function(sl){
+      var prevPos = sl.style.position, prevVis = sl.style.visibility, prevDisp = sl.style.display;
+      sl.style.position = 'static';
+      sl.style.visibility = 'hidden';
+      sl.style.display = 'block';
+     
+      var h = sl.offsetHeight;
+      if(h > maxH) maxH = h;
+     
+      sl.style.position = prevPos;
+      sl.style.visibility = prevVis;
+      sl.style.display = prevDisp;
+    });
+    if(maxH > 0){
+      root.style.setProperty('--rot-h', maxH + 'px');
+    }
+  }
 
-</script>
-
-
-</body>
+  var t;
+  window.addEventListener('load', measure);
+  window.addEventListener('resize', function(){
+    clearTimeout(t); t = setTimeout(measure, 120);
+  });
+ 
+  setTimeout(measure, 120);
+  setTimeout(measure, 500);
+})();
+  </script>
+  <script>
+   (function(){
+  const masthead = document.querySelector('.masthead');
+  if (!masthead) return;
+ 
+  document.addEventListener('click', function(e){
+    const el = e.target.closest('[data-medium]');
+    if (!el) return;
+    masthead.classList.add('show-brand');
+  }, true);
+ 
+  document.addEventListener('change', function(e){
+    const el = e.target.closest('[data-medium]');
+    if (!el) return;
+    masthead.classList.add('show-brand');
+  }, true);
+})();
+  </script>
+ </body>
 </html>
