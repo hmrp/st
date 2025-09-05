@@ -489,7 +489,7 @@
   .card[data-medium="print"] .poster .grad{ background-color:#000; }
 
   .meta{ padding:8px; background:transparent }
-  .title{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:700 }
+  .title{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:700; text-transform: uppercase;}
 
   
   .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.28); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:9990; }
@@ -497,7 +497,7 @@
   .drawer{ position:fixed; top:0; right:-560px; width:100%; max-width:560px; height:100%; background:#fff; border-left:1px solid var(--ring); box-shadow:-8px 0 24px rgba(0,0,0,.12); display:flex; flex-direction:column; transition:right .25s ease; z-index:10000; }
   .drawer.show{ right:0 }
   .drawer-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; background:#fff; padding:16px 16px 8px 16px; border-bottom:1px solid var(--ring); }
-  .drawer-title{ margin:0 0 2px 0; font-size:18px }
+  .drawer-title{ margin:0 0 2px 0; font-size:18px; text-transform: uppercase; }
 
   .drawer-content{ flex: 1 1 auto; overflow: auto; overscroll-behavior: contain; }
 
@@ -2517,7 +2517,47 @@ padding: 0 !important;
   .sobretaxa-list{line-height:1.45;gap:4px}
 }
 </style>
-</head>
+<style>
+.package-breakdown{
+  background:#ffffff;
+  border:1px solid var(--ring, #e5e7eb);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  padding:16px;
+  margin-top:8px;
+}
+.package-breakdown .bc-breakdown{
+  background:transparent;
+  border:0;
+  border-radius:0;
+  margin:0;
+  width:100%;
+}
+.package-breakdown .spec-panel{
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  border-radius:0;
+  padding:16px 0 0;
+  margin-top:12px;
+}
+.package-breakdown .spec-panel h4{
+  margin:0 0 10px 0;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  color:#111;
+}
+.package-breakdown .spec-panel .spec-list{
+  margin:0;
+  padding-left:18px;
+}
+@media(max-width:680px){
+  .package-breakdown{padding:12px}
+  .package-breakdown .spec-panel{padding-top:12px;margin-top:10px}
+  .package-breakdown .spec-panel h4{font-size:13px}
+}
+</style></head>
 <body>
 <div class="masthead" id="masthead">
 <div class="brand">
@@ -3195,14 +3235,11 @@ padding: 0 !important;
 </div>
 </section>
 <section aria-label="Pack Native Ads" class="native-ad-pack" id="native-ad-pack">
-<header class="package-head">
-<h3>
-      Pack Native Ad
-     </h3>
-</header>
+
 <section aria-labelledby="pack-desc-title" class="package-breakdown">
 <table aria-describedby="pack-desc-title" class="bc-breakdown">
 <thead>
+  <h4>Pack Native Ad</h4>
 <tr>
 <th>
          Elemento
@@ -3302,9 +3339,7 @@ padding: 0 !important;
         </td>
 </tr>
 </tbody>
-</table>
-</section>
-<section aria-labelledby="pack-specs-title" class="package-specs spec-panel">
+</table><section aria-labelledby="pack-specs-title" class="package-specs spec-panel">
 <h4 id="pack-specs-title">
       Especificações Native Ad
      </h4>
@@ -3326,6 +3361,8 @@ padding: 0 !important;
       </li>
 </ul>
 </section>
+</section>
+
 </section>
 <main class="grid" id="gridBranded">
 <article class="card" data-medium="branded">
@@ -3588,68 +3625,68 @@ padding: 0 !important;
 </aside>
 <script>
    const DIGITAL = [
-  { id:'intro', medium:'digital', subtype:'rich-media', name:'Intro', summary:'',
+  { id:'intro', medium:'digital', subtype:'rich-media', name:'Intro', summary:'Formato sobrepõe o conteudo da página. Encerra automaticamente após 12 segundos ou através do botão de fechar',
     peek:'800×600 / 768×1024 • ≤254KB (img) • MP4 ≤1MB', art:'digital/intro.png', videos:{ desktop:'digital/intro.mp4', mobile:'digital/intro_mobile.mp4' },
     specs:{ 'Dimensions':'800×600 px and 768×1024 px', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'254 KB (images), MP4 up to 1 MB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
   },
-  { id:'billboard-xxl', medium:'digital', subtype:'display', name:'Billboard XXL', summary:'',
-    peek:'Specs on request • ≤500KB', art:'digital/billboardXXL.png', videos:{ desktop:'digital/billboardxxl.mp4', mobile:'digital/billboardxxl_mobile.mp4' },  gradient:['#f59e0b','#e5e7eb'],
+  { id:'billboard-xxl', medium:'digital', subtype:'rich-media', name:'Billboard XXL', summary:'Formato que abrange toda a largura existente do site e com altura superior ao utilizado pelo billboard. Botão com opção para minimizar altura',
+    peek:'Specs on request • ≤500KB', art:'digital/billboardXXL.png', videos:{ desktop:'digital/billboardxxl.mp4', mobile:'digital/billboardxxl_mobile.mp4' }, 
     specs:{ 'Dimensions':'On request', 'File types':'JPG / PNG / GIF / MP4', 'Max weight':'500 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'HP 230 €' }
   },
-  { id:'cube-spin', medium:'digital', subtype:'rich-media', name:'Cube', summary:'',
-    peek:'(300×300)×6 • ≤480KB • JPG/PNG',art:'digital/interactivecube.png', videos:{ desktop:'digital/interactivecube.mp4', mobile:'digital/interactivecube2.mp4' },  gradient:['#fb7185','#dc2626'],
+  { id:'cube-spin', medium:'digital', subtype:'rich-media', name:'Cube', summary:'Cubo 3D com possibilidade de interação em todas as faces',
+    peek:'(300×300)×6 • ≤480KB • JPG/PNG',art:'digital/interactivecube.png', videos:{ desktop:'digital/interactivecube.mp4', mobile:'digital/interactivecube2.mp4' }, 
     specs:{ 'Dimensions':'(300×300 px) × 6 tiles', 'File types':'JPG / PNG', 'Max weight':'480 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS 170 €' }
   },
-  { id:'ticker', medium:'digital', subtype:'rich-media', name:'Ticker', summary:'',
-    peek:'728×90 (D) • 320×100 (M) • ≤120KB', art:'digital/ticker.png', videos:{ desktop:'digital/ticker.mp4', mobile:'digital/ticker_mobile.mp4' }, gradient:['#e5e7eb','#f87171'],
+  { id:'ticker', medium:'digital', subtype:'rich-media', name:'Ticker', summary:'Formato que aparece fixado na parte inferior do ecrã, com botão de fechar',
+    peek:'728×90 (D) • 320×100 (M) • ≤120KB', art:'digital/ticker.png', videos:{ desktop:'digital/ticker.mp4', mobile:'digital/ticker_mobile.mp4' }, 
     specs:{ 'Dimensions':'728×90 (desktop), 320×100 (smartphone)', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS 190 €' }
   },
-  { id:'moldura', medium:'digital', subtype:'rich-media', name:'Moldura', summary:'',
-    peek:'Framing unit • spec template', art:'digital/moldura.png', video:'digital/intro.mp4', gradient:['#ef4444','#f3f4f6'],
+  { id:'moldura', medium:'digital', subtype:'rich-media', name:'Moldura', summary:'Formato de grande impacto que envolve no topo, esquerda e direita, o conteúdo de destaque da página ',
+    peek:'Framing unit • spec template', art:'digital/moldura.png', video:'digital/intro.mp4', 
     specs:{ 'Dimensions':'Framing template', 'File types':'JPG / PNG / GIF', 'Max weight':'—', 'Deliver':'desktop, tablet, smartphone', 'CPM':'Consult' }
   },
-  { id:'takeover', medium:'digital', subtype:'rich-media', name:'Takeover',  summary:'',
-    peek:'HTML/IMG/MP4 • 50KB img • MP4 ≤1MB', art:'digital/takeover.png', video:'digital/moldura_takeover.mp4', gradient:['#b91c1c','#e5e7eb'],
+  { id:'takeover', medium:'digital', subtype:'rich-media', name:'Takeover',  summary:'Todos os espacos de inserção de publicidade aparecem em exclusivo por um periodo de tempo definido. Opção de inclusão do formato Moldura',
+    peek:'HTML/IMG/MP4 • 50KB img • MP4 ≤1MB', art:'digital/takeover.png', video:'digital/moldura_takeover.mp4', 
     specs:{ 'Dimensions':'Billboard + Halfpage + MREC', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'50 KB (images), MP4 up to 1 MB', 'Deliver':'desktop', 'CPM':'POA (24h takeover available)' }
   },
-  { id:'mrec', medium:'digital', subtype:'display', name:'MRec', summary:'',
+  { id:'mrec', medium:'digital', subtype:'display', name:'MREC', summary:'O MREC é um formato HTML5, carregado em todos os devices (Display, Tablets e Mobile).',
     peek:'300×250 • ≤75KB • MP4 ≤500KB', art:'digital/mrec.png', videos:{ desktop:'digital/mrec.mp4', mobile:'digital/mrec_mobile.mp4' },
     specs:{ 'Dimensions':'300×250 px', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'75 KB (images), MP4 up to 500 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 90 € · Canais 110 €' }
   },
-  { id:'halfpage', medium:'digital', subtype:'display', name:'Halfpage', summary:'',
+  { id:'halfpage', medium:'digital', subtype:'display', name:'Half Page', summary:'Banner alto e largo. Em desktop, fica fixo até certa profundidade do site. Em smartphone, preenche a maioria da area visivel do dispositivo',
     peek:'300×600 • ≤120KB • MP4 ≤1MB', art:'digital/halfpage.png', videos:{ desktop:'digital/halfpage.mp4', mobile:'digital/halfpage_mobile.mp4' },
-    specs:{ 'Dimensions':'300×600 px', 'File types':'HTML / JPG / PNG / MP4', 'Max weight':'120 KB (images), MP4 máx. 1 MB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 110 € · Canais 130 €' }
+    specs:{ 'Dimensions':'300×600 px', 'File types':'HTML5 / JPG / PNG / MP4', 'Max weight':'120 KB (images), MP4 máx. 1 MB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 110 € · Canais 130 €' }
   },
-  { id:'billboard', medium:'digital', subtype:'display', name:'Billboard',  art:'digital/billboard.png', videos:{ desktop:'digital/billboard.mp4', mobile:'digital/billboard_mobile.mp4' },summary:'',
+  { id:'billboard', medium:'digital', subtype:'display', name:'Billboard',  art:'digital/billboard.png', videos:{ desktop:'digital/billboard.mp4', mobile:'digital/billboard_mobile.mp4' },summary:'Formato que aparece no topo das páginas ou entre seccoes na homepage',
     peek:'1260×220 / 970×250 (D) · 728×90 (T) · 320×100 (M) • ≤200KB • MP4 ≤1MB', gradient:['#fca5a5','#fde68a'],
     specs:{ 'Dimensions':'1260×220 px or 970×250 px (desktop); 728×90 px (tablet); 310×100 px (smartphone) — or external responsive tag', 'File types':'HTML / JPG / PNG / GIF / MP4', 'Max weight':'200 KB (images), MP4 máx. 1 MB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 200 €' }
   },
-  { id:'preroll', medium:'digital', subtype:'rich-media', name:'Pre-roll',  art:'digital/preroll.png',  videos:{ desktop:'digital/preroll.mp4', mobile:'digital/preroll_mobile.mp4' }, summary:'',
+  { id:'preroll', medium:'digital', subtype:'rich-media', name:'Pre-roll',  art:'digital/preroll.png',  videos:{ desktop:'digital/preroll.mp4', mobile:'digital/preroll_mobile.mp4' }, summary:'Anúncio que aparece antes de iniciar conteudo de vídeo',
     peek:'640×480 • MP4 • ≤10MB', gradient:['#111827','#6b7280'],
     specs:{ 'Dimensions':'640×480 px', 'File types':'MP4', 'Max weight':'10 MB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 240 € · Canais 260 €' }
   },
-  { id:'skyscraper', medium:'digital', subtype:'display', name:'Skyscraper', art:'digital/skyscraper.png', video:'digital/skyscraper.mp4', summary:'',
-    peek:'120×600 • ≤120KB', gradient:['#e5e7eb','#9ca3af'],
-    specs:{ 'Dimensions':'120×600 px', 'File types':'JPG / PNG / GIF', 'Max weight':'120 KB', 'Deliver':'desktop, tablet', 'CPM':'ROS/HP — € · Canais — €' }
+  { id:'skyscraper', medium:'digital', subtype:'display', name:'Skyscraper', art:'digital/skyscraper.png', video:'digital/skyscraper.mp4', summary:'Banner alto e estreito utilizado nas colunas laterais do site, presenca fixa em alguma profundidade da página',
+    peek:'120×600 • ≤120KB', 
+    specs:{ 'Dimensions':'120×600 px ou 160x600 px', 'File types':'JPG / PNG / GIF / HTML5', 'Max weight':'200 KB', 'Deliver':'desktop, tablet', 'CPM':'ROS/HP — € · Canais — €' }
   },
-  { id:'incontent-video', medium:'digital', subtype:'rich-media', name:'In-content Video', art:'digital/incontent.png', summary:'',
+  { id:'incontent-video', medium:'digital', subtype:'rich-media', name:'In-content Video', art:'digital/incontent.png', summary:'Vídeo colocado entre o texto de artigos',
     peek:'640×480 • MP4/WEBM • ≤950KB', gradient:['#f87171','#ef4444'],
     specs:{ 'Dimensions':'640×480 px', 'File types':'MP4 / WEBM', 'Max weight':'950 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 160 € · CPV sob consulta' }
   },
-  { id:'open-door', medium:'digital', subtype:'rich-media', name:'Open Door', art:'digital/opendoor.png', videos:{ desktop:'digital/opendoor.mp4', mobile:'digital/opendoor_mobile.mp4' }, summary:'',
-    peek:'768×1024 & 800×600 • ≤950KB', gradient:['#f43f5e','#fb7185'],
+  { id:'open-door', medium:'digital', subtype:'rich-media', name:'Open Door', art:'digital/opendoor.png', videos:{ desktop:'digital/opendoor.mp4', mobile:'digital/opendoor_mobile.mp4' }, summary:'Formato faz um efeito de abertura sobre a página Encerra automaticamente após 12 segundos ou através do botão de fechar',
+    peek:'768×1024 & 800×600 • ≤950KB', 
     specs:{ 'Dimensions':'768×1024 px and 800×600 px', 'File types':'JPG / PNG / MP4', 'Max weight':'950 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'ROS/HP 320 €' }
   },
-  { id:'top-scroll', medium:'digital', subtype:'rich-media', name:'Top Scroll',  art:'digital/topscroll.png', videos:{ desktop:'digital/topscroll.mp4', mobile:'digital/topscroll_mobile.mp4' },  summary:'',
-    peek:'Dims: variable (X×X) • ≤950KB', gradient:['#fecaca','#fef3c7'],
+  { id:'topscroll', medium:'digital', subtype:'rich-media', name:'Top Scroll',  art:'digital/topscroll.png', videos:{ desktop:'digital/topscroll.mp4', mobile:'digital/topscroll_mobile.mp4' },  summary:'Formato de grande impacto que surge no topo e é sobreposto enquanto que se percorre a página',
+    peek:'Dims: variable (X×X) • ≤950KB', 
     specs:{ 'Dimensions':'Variable (X × X)', 'File types':'JPG / PNG', 'Max weight':'950 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'Interior Artigos — €' }
   },
-  { id:'galeria', medium:'digital', subtype:'rich-media', name:'Galeria', art:'digital/galeria.png', video:'digital/galeria.mp4', summary:'',
-    peek:'300×300 • 6–12 slides • ≤250KB', gradient:['#fda4af','#fef08a'],
+  { id:'galeria', medium:'digital', subtype:'rich-media', name:'Galeria', art:'digital/galeria.png', video:'digital/galeria.mp4', summary:'Colocado entre texto de artigos, quando se percorre a página, vão surgindo  varias imagens. Possibilidade de colocar links diferentes para cada',
+    peek:'300×300 • 6–12 slides • ≤250KB', 
     specs:{ 'Dimensions':'300×300 px', 'Slides':'Recommended 6 to 12', 'File types':'JPG / PNG', 'Max weight':'250 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 240 €' }
   },
-  { id:'parallax', medium:'digital', subtype:'rich-media', name:'Parallax', art:'digital/parallax.png', video:'digital/parallax.mp4', summary:'',
-    peek:'720×1280 • JPG/PNG/MP4 • ≤950KB', gradient:['#fecaca','#f87171'],
+  { id:'parallax', medium:'digital', subtype:'rich-media', name:'Parallax', art:'digital/parallax.png', video:'digital/parallax.mp4', summary:'Colocado entre texto de artigos, quando se percorre a página, a criatividade é desvendada',
+    peek:'720×1280 • JPG/PNG/MP4 • ≤950KB', 
     specs:{ 'Dimensions':'720×1280 px', 'File types':'JPG / PNG / MP4', 'Max weight':'950 KB', 'Deliver':'desktop, tablet, smartphone', 'CPM':'Interior Artigos 260 €' }
   }
 ];
@@ -3862,7 +3899,7 @@ function buildprintTechBox(){
   const box = document.createElement('section');
   box.className = 'print-tech';
   box.innerHTML = `
-    <h3>Especificações de Impressão</h3>
+    <h4>Especificações de Impressão</h4>
     <ul>
       <li>Formato <strong>PDF, EPS</strong> ou <strong>TIFF</strong>, <strong>300&nbsp;dpi</strong>, <strong>CMYK</strong> (quadricromia).</li>
       <li>Os textos devem ser <strong>convertidos em curvas</strong>.</li>
@@ -3872,7 +3909,8 @@ function buildprintTechBox(){
     <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
     <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
     <h3>SOBRETAXA</h3>
-    <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%</p>
+    <ul>
+    <p>Localização obrigatória +50% Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%</p>
   `;
   return box;
 }
@@ -4413,7 +4451,7 @@ function openDrawer(item, { fromHash = false } = {}){
       const box = document.createElement('section');
       box.className = 'print-tech print-tech-inside';
       box.innerHTML = `
-        <h3>Especificações de Impressão</h3>
+        <h4>Especificações de Impressão</h4>
         <ul>
           <li>Formato <strong>PDF, EPS</strong> ou <strong>TIFF</strong>, <strong>300&nbsp;dpi</strong>, <strong>CMYK</strong> (quadricromia).</li>
           <li>Os textos devem ser <strong>convertidos em curvas</strong>.</li>
@@ -4422,7 +4460,7 @@ function openDrawer(item, { fromHash = false } = {}){
         </ul>
         <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
         <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
-        <h3>SOBRETAXA</h3>
+        <h4>SOBRETAXA</h4>
         <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%</p>
       `;
       drawerContent.appendChild(box);
@@ -4534,7 +4572,7 @@ function renderprintSection(){
   const box = document.createElement('section');
   box.className = 'print-tech';
   box.innerHTML = `
-    <h3>Especificações de Impressão</h3>
+    <h4>Especificações de Impressão</h4>
     <ul>
       <li>Formato <strong>PDF, EPS</strong> ou <strong>TIFF</strong>, <strong>300&nbsp;dpi</strong>, <strong>CMYK</strong> (quadricromia).</li>
       <li>Os textos devem ser <strong>convertidos em curvas</strong>.</li>
@@ -4545,7 +4583,7 @@ function renderprintSection(){
     <p>If the above requirements are not met, Sociedade Vicra Desportiva shall not be liable for any failure or defect in the print.</p>
     <p>Caso os pontos acima não forem respeitados a Soc. Vicra Desportiva não se responsabiliza por qualquer falha ou defeito na impressão.</p>
 
-    <h3>SOBRETAXA</h3>
+    <h4>SOBRETAXA</h4>
     <p>Localização obrigatória +50% · Publicidade em idioma estrangeiro +50% · Publicidade produzida pelo jornal +50%</p>
   `;
   $secprint.appendChild(box);
@@ -4688,7 +4726,7 @@ function renderTVTechNote(targetEl){
   const box = document.createElement('section');
   box.className = 'tv-tech';
   box.innerHTML = `
-    <h3>Broadcast Technical Specifications</h3>
+    <h4>Broadcast Technical Specifications</h4>
     <dl>
       <dt>File Type</dt><dd>MXF (.mxf)</dd>
       <dt>Codec</dt><dd>MPEG Video — XCam HD 35 — Version 2</dd>
