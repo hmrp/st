@@ -2393,8 +2393,7 @@ padding: 0 !important;
   #head-abola .brand-contact.hero-cta{margin-top:clamp(6px,2vw,14px);}
   #head-abola .metrics-rotator{margin-top:clamp(10px,3vw,24px);}
 }
-</style><style>
-@media (max-width: 640px){
+</style><style>@media (max-width: 640px){
   #gridDigital,
   #gridprint{
     display:grid;
@@ -2425,7 +2424,100 @@ padding: 0 !important;
     grid-template-columns:1fr;
   }
 }
-</style></head>
+
+.hscroll{display:block;width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+@supports(-webkit-touch-callout:none){.hscroll{-webkit-overflow-scrolling:auto}}
+.hscroll::-webkit-scrollbar{height:10px}
+.hscroll::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:999px}
+
+.tv-panel .hscroll{margin-top:8px;margin-bottom:8px}
+.tv-panel .rate-table{display:inline-table;width:max-content;width:-moz-max-content;width:-webkit-max-content;max-width:none;table-layout:auto}
+.tv-panel .rate-table th,.tv-panel .rate-table td{white-space:nowrap;padding:12px 14px}
+.tv-panel .rate-table thead th{background:#f6f7f8;color:#111}
+
+@media(min-width:1024px){.tv-panel .rate-table{font-size:20px}}
+@media(min-width:1440px){.tv-panel .rate-table{font-size:22px}}
+@media(max-width:640px){
+  .tv-panel .rate-table{font-size:14px}
+  .tv-panel .rate-table th,.tv-panel .rate-table td{padding:8px 10px}
+}
+
+.tv-panel .hscroll{margin-top:12px;margin-bottom:12px}
+.tv-panel .rate-table{
+  display:inline-table;
+  width:max-content;
+  width:-moz-max-content;
+  width:-webkit-max-content;
+  max-width:none;
+  table-layout:auto;
+  font-size:clamp(15px,1.05vw,18px);
+  line-height:1.35;
+  letter-spacing:.1px;
+}
+.tv-panel .rate-table th,.tv-panel .rate-table td{
+  white-space:nowrap;
+  padding:10px 14px;
+  vertical-align:middle;
+}
+.tv-panel .rate-table thead th{
+  background:#fafbfd;
+  color:#111;
+  font-weight:600;
+}
+.tv-panel .rate-table tbody td{
+  border-bottom:1px solid #eee;
+}
+.tv-panel .rate-table tbody tr:nth-child(odd) td{
+  background:#fcfcfc;
+}
+@media(min-width:1024px){
+  .tv-panel .rate-table{font-size:clamp(16px,1vw,18px)}
+}
+@media(min-width:1440px){
+  .tv-panel .rate-table{font-size:18px}
+}
+@media(max-width:640px){
+  .tv-panel .rate-table{
+    font-size:14px;
+    line-height:1.3;
+  }
+  .tv-panel .rate-table th,.tv-panel .rate-table td{padding:8px 10px}
+}
+.tv-panel .rate-table{font-size:clamp(14px,0.95vw,17px);line-height:1.35;letter-spacing:.05px}
+.tv-panel .rate-table th,.tv-panel .rate-table td{padding:10px 18px;vertical-align:middle;white-space:nowrap}
+@media(min-width:1024px){.tv-panel .rate-table{font-size:clamp(15px,0.9vw,17px)}}
+@media(min-width:1440px){.tv-panel .rate-table{font-size:17px}}
+.tv-panel .rate-table{font-size:clamp(13px,0.9vw,16px);line-height:1.32;letter-spacing:.02em}
+.tv-panel .rate-table th,.tv-panel .rate-table td{padding:10px 22px;vertical-align:middle;white-space:nowrap}
+@media(min-width:1440px){.tv-panel .rate-table{font-size:16px}}
+.tv-panel .rate-table{font-size:clamp(12px,0.8vw,15px);line-height:1.28;letter-spacing:.01em}
+.tv-panel .rate-table th,.tv-panel .rate-table td{padding:10px 24px;vertical-align:middle;white-space:nowrap}
+.tv-panel .rate-table thead th+th,.tv-panel .rate-table tbody td+td{border-left:1px solid #f0f2f5}</style><style>
+.tv-tech,.package-specs,.spec-panel,.print-tech{font-size:clamp(14px,1.02vw,17px);line-height:1.55}
+.tv-tech h3,.package-specs h3,.spec-panel h3,.print-tech h3{font-size:clamp(16px,1.2vw,20px);line-height:1.3;margin:12px 0}
+.tv-tech p,.package-specs p,.spec-panel p,.print-tech p{margin:8px 0 10px}
+.tv-tech dl,.package-specs dl,.spec-panel dl,.print-tech dl{display:grid;grid-template-columns:minmax(140px,1fr) minmax(0,2fr);gap:8px 16px;margin:0}
+.tv-tech dt,.package-specs dt,.spec-panel dt,.print-tech dt{font-weight:700;color:#222}
+.tv-tech dd,.package-specs dd,.spec-panel dd,.print-tech dd{margin:0;color:#111}
+.package-specs ul,.spec-panel ul,.print-tech ul{margin:8px 0 0 0;padding:0;list-style:none}
+.package-specs li,.spec-panel li,.print-tech li{padding:8px 0;border-bottom:1px solid #eee}
+.package-specs li:last-child,.spec-panel li:last-child,.print-tech li:last-child{border-bottom:0}
+@media(max-width:680px){
+  .tv-tech,.package-specs,.spec-panel,.print-tech{font-size:14px;line-height:1.5}
+  .tv-tech h3,.package-specs h3,.spec-panel h3,.print-tech h3{margin:10px 0}
+  .tv-tech dl,.package-specs dl,.spec-panel dl,.print-tech dl{grid-template-columns:1fr;gap:6px 12px}
+  .package-specs li,.spec-panel li,.print-tech li{padding:8px 0}
+}
+</style><style>
+.sobretaxa-title{font-size:.95em;font-weight:600;letter-spacing:.02em;opacity:.92}
+.sobretaxa-list{margin:6px 0 0;padding:0;list-style:none;line-height:1.5;display:flex;flex-direction:column;gap:4px}
+.sobretaxa-list li{margin:0}
+@media(max-width:680px){
+  .sobretaxa-title{font-size:.95em}
+  .sobretaxa-list{line-height:1.45;gap:4px}
+}
+</style>
+</head>
 <body>
 <div class="masthead" id="masthead">
 <div class="brand">
@@ -2819,7 +2911,7 @@ padding: 0 !important;
 <h3>
      Tabela de Preços (exemplo)
     </h3>
-<table class="rate-table">
+<div class="hscroll"><table class="rate-table">
 <thead>
 <tr>
 <th>
@@ -2866,7 +2958,7 @@ padding: 0 !important;
        </td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <section class="tv-tech">
 <h3>
       Especificações Técnicas
@@ -2937,7 +3029,6 @@ padding: 0 !important;
 <p class="hero-lead">
      Branded content que informa, entretém e converte — produzido e distribuído com a curadoria d’A BOLA.
     </p>
-
 </div>
 <section aria-label="Como trabalhamos" class="branded-process" id="branded-process">
 <ol class="process-steps">
@@ -3210,17 +3301,6 @@ padding: 0 !important;
          Always On
         </td>
 </tr>
-<!-- <tr>
-        <td>
-         KPI Garantidos
-        </td>
-        <td>
-         Objetivo m&iacute;nimo
-        </td>
-        <td>
-         7&nbsp;500 PV
-        </td>
-       </tr>-->
 </tbody>
 </table>
 </section>
@@ -3472,7 +3552,7 @@ padding: 0 !important;
 <a class="brand-contact" href="mailto:sales@abola.pt">
        sales@abola.pt
       </a>
-     </div>
+</div>
 </div>
 </div>
 </footer>
@@ -5121,5 +5201,128 @@ mqMobile.addEventListener?.('change', ()=>{
   }, true);
 })();
   </script>
+<script>(function(){
+function norm(s){return(String(s||"").toLowerCase().replace(/["”“''′’]/g,"").replace(/\s+/g," ").trim())}
+function digits(s){var m=String(s||"").match(/\d+/g);return m?m.join(""):""}
+function scrollToTvCol(key){
+  var panel=document.getElementById("tvPanel");if(!panel)return;
+  var sc=panel.querySelector(".hscroll");var tbl=panel.querySelector("table.rate-table");
+  if(!sc||!tbl)return;
+  var ths=tbl.querySelectorAll("thead th");var idx=-1;var k=String(key||"").toLowerCase();var kNum=digits(k);
+  for(var i=0;i<ths.length;i++){var t=String(ths[i].textContent||"").toLowerCase();var tNum=digits(t);
+    if(kNum&&tNum===kNum){idx=i;break}
+    if(norm(t).indexOf(norm(k))>-1){idx=i;break}
+  }
+  if(idx<=0)return;
+  try{panel.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){panel.scrollIntoView()}
+  var cell=ths[idx];var rect=cell.getBoundingClientRect();var tRect=tbl.getBoundingClientRect();
+  var left=rect.left-tRect.left;var target=Math.max(0,left-24);
+  try{sc.scrollTo({left:target,behavior:"smooth"})}catch(e){sc.scrollLeft=target}
+}
+function handleHash(){
+  var h=decodeURIComponent(String(location.hash||""));
+  var m=h.match(/^#tv\/(.+)$/i);
+  if(m){scrollToTvCol(m[1])}
+}
+document.addEventListener("DOMContentLoaded",function(){setTimeout(handleHash,80)});
+window.addEventListener("hashchange",handleHash);
+})();</script><script>(function(){
+function n(s){var m=String(s||"").match(/\d+/g);return m?m.join(""):""}
+function leftRel(el,anc){var x=0;for(var e=el;e&&e!==anc;e=e.offsetParent){x+=e.offsetLeft}return x}
+function go(key){
+  var k=String(key||"");var kNum=n(k);
+  var panel=document.getElementById("tvPanel");if(!panel)return;
+  var sc=panel.querySelector(".hscroll");var tbl=panel.querySelector("table.rate-table");
+  if(!sc||!tbl)return;
+  var ths=tbl.querySelectorAll("thead th");var target=null;
+  for(var i=0;i<ths.length;i++){var a=ths[i].getAttribute("data-dur");if(a&&n(a)===kNum){target=ths[i];break}}
+  if(!target){for(var i=0;i<ths.length;i++){var t=ths[i].textContent||"";if(kNum&&n(t)===kNum){target=ths[i];break}}}
+  if(!target){var cells=tbl.querySelectorAll("[data-dur]");for(var j=0;j<cells.length;j++){var a=cells[j].getAttribute("data-dur");if(a&&n(a)===kNum){target=cells[j];break}}}
+  if(!target)return;
+  try{panel.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){panel.scrollIntoView()}
+  var L=leftRel(target,tbl);var pad=24;var dest=Math.max(0,L-pad);
+  try{sc.scrollTo({left:dest,behavior:"smooth"})}catch(e){sc.scrollLeft=dest}
+}
+function handle(){var h=decodeURIComponent(String(location.hash||""));var m=h.match(/^#tv\/(.+)$/i);if(m){go(m[1])}}
+document.addEventListener("DOMContentLoaded",function(){setTimeout(handle,150)});
+window.addEventListener("hashchange",handle);
+window.scrollToTvColumnByDur=go;
+})();</script><script>
+(function(){
+  if (window._tvDeeplinkPatched) return;
+  window._tvDeeplinkPatched = true;
+  function digits(s){var m=String(s||"").match(/\d+/g);return m?m.join(""):""}
+  function findPanel(){return document.getElementById("tvPanel")||document.querySelector(".tv-panel")||document}
+  function findTable(panel){return panel.querySelector("table.rate-table")}
+  function findScroller(panel,tbl){
+    var sc=panel.querySelector(".hscroll");
+    if(sc&&tbl&&sc.contains(tbl))return sc;
+    for(var p=tbl;p;p=p.parentElement){if(p.classList&&p.classList.contains("hscroll"))return p}
+    return panel
+  }
+  function findTarget(tbl,key){
+    var k=String(key||"");var kNum=digits(k);if(!tbl)return null;
+    var ths=tbl.querySelectorAll("thead th[data-dur]");for(var i=0;i<ths.length;i++){var a=ths[i].getAttribute("data-dur");if(a&&digits(a)===kNum)return ths[i]}
+    var any=tbl.querySelectorAll("[data-dur]");for(var j=0;j<any.length;j++){var a2=any[j].getAttribute("data-dur");if(a2&&digits(a2)===kNum)return any[j]}
+    var th2=tbl.querySelectorAll("thead th");for(var k2=0;k2<th2.length;k2++){var t=th2[k2].textContent||"";if(t&&digits(t)===kNum)return th2[k2]}
+    return null
+  }
+  function leftWithinScroller(el,sc){
+    var r=el.getBoundingClientRect();var s=sc.getBoundingClientRect();
+    return sc.scrollLeft+(r.left-s.left)
+  }
+  function clamp(v,min,max){return v<min?min:(v>max?max:v)}
+  function scrollToTvDur(key){
+    var panel=findPanel();var tbl=findTable(panel);if(!tbl)return;
+    var sc=findScroller(panel,tbl);if(!sc)return;
+    var target=findTarget(tbl,key);if(!target)return;
+    try{panel.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){panel.scrollIntoView()}
+    var pad=24;var x=leftWithinScroller(target,sc)-pad;
+    var max=tbl.scrollWidth-sc.clientWidth;var dest=clamp(x,0,max<0?0:max);
+    try{sc.scrollTo({left:dest,behavior:"smooth"})}catch(e){sc.scrollLeft=dest}
+  }
+  function handleHash(){
+    var h=decodeURIComponent(String(location.hash||""));var m=h.match(/^#tv\/(.+)$/i);
+    if(m){scrollToTvDur(m[1])}
+  }
+  function ready(fn){if(document.readyState==="complete"||document.readyState==="interactive"){fn()}else{document.addEventListener("DOMContentLoaded",fn)}}
+  ready(function(){var tries=0;(function tick(){tries++;handleHash();if(tries<14)setTimeout(tick,90)})()});
+  window.addEventListener("hashchange",handleHash);
+  window.scrollToTvColumnByDur=scrollToTvDur;
+})();
+</script><script>
+(function(){
+  if (window._sobretaxaPatchApplied) return;
+  window._sobretaxaPatchApplied = true;
+  function txt(el){return (el && el.textContent || "").replace(/\s+/g," ").trim()}
+  function isTitle(el){return /^sobretaxa(s)?$/i.test(txt(el))}
+  function splitParts(s){
+    var raw=String(s||"").trim();
+    var parts=raw.split(/\s*[•·]\s*|\s*\|\s*|\s*;\s*/).map(function(x){return x.trim()}).filter(Boolean);
+    return parts.length ? parts : (raw? [raw] : [])
+  }
+  function upgrade(){
+    var titles=[].slice.call(document.querySelectorAll("h1,h2,h3,h4,h5,h6,strong,b,dt,span"));
+    for(var i=0;i<titles.length;i++){
+      var h=titles[i]; if(!isTitle(h)) continue;
+      h.classList.add("sobretaxa-title");
+      var sib=h.nextElementSibling;
+      if(!sib) continue;
+      if(sib.hasAttribute("data-sobretaxa-processed")) continue;
+      var s=txt(sib);
+      if(!s) continue;
+      var items=splitParts(s);
+      if(!items.length) continue;
+      var ul=document.createElement("ul"); ul.className="sobretaxa-list";
+      for(var j=0;j<items.length;j++){ var li=document.createElement("li"); li.textContent=items[j]; ul.appendChild(li) }
+      sib.innerHTML="";
+      sib.appendChild(ul);
+      sib.setAttribute("data-sobretaxa-processed","1");
+    }
+  }
+  function ready(fn){if(document.readyState==="complete"||document.readyState==="interactive"){fn()}else{document.addEventListener("DOMContentLoaded",fn)}}
+  ready(function(){var t=0;(function tick(){t++;upgrade();if(t<20)setTimeout(tick,100)})()});
+})();
+</script>
 </body>
 </html>
