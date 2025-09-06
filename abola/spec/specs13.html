@@ -2537,14 +2537,6 @@ padding: 0 !important;
 }
 </style><style>:root{--vv-top:0px}#masthead,.masthead{top:0!important}.masthead{padding-top:calc(env(safe-area-inset-top,0px) + var(--vv-top,0px));}</style>
 <style>@media (max-width: 680px){ html, body { overflow-x: clip; } }</style>
-
-<style>
-.media-box .zoom-stage{position:relative;width:100%;height:100%;overflow:hidden;background:#000;touch-action:pan-x pan-y;cursor:zoom-in}
-.media-box.is-zoomed .zoom-stage{cursor:grab}
-.media-box .zoom-inner{position:absolute;inset:0;transform-origin:0 0;will-change:transform}
-.media-box img,.media-box video{pointer-events:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}
-.media-box.pannable .zoom-stage{touch-action:none}
-</style>
 </head>
 <body>
 <div class="masthead" id="masthead">
@@ -5373,94 +5365,43 @@ window.scrollToTvColumnByDur=go;
 
 <script>
 (function(){
-  var clamp=function(v,min,max){return Math.min(Math.max(v,min),max)}
-  function enhance(el){
-    if(el.dataset.enhanced==="true")return
-    el.dataset.enhanced="true"
-    var media=el.querySelector("img,video,svg,canvas")
-    if(!media)return
-    var stage=document.createElement("div")
-    stage.className="zoom-stage"
-    var inner=document.createElement("div")
-    inner.className="zoom-inner"
-    var hint=el.querySelector(".hint")
-    media.parentNode.insertBefore(stage,media)
-    inner.appendChild(media)
-    stage.appendChild(inner)
-    if(hint)stage.appendChild(hint)
-    var scale=1,minScale=1,maxScale=6,tx=0,ty=0
-    var start={x:0,y:0,tx:0,ty:0}
-    var pointers=new Map()
-    var pinch={dist:0,scaleAtStart:1,fx:0,fy:0}
-    var lastTap={t:0,x:0,y:0}
-    function size(){return{w:stage.clientWidth,h:stage.clientHeight}}
-    function bounds(s){s=s||scale;var d=size();var minX=d.w-d.w*s,minY=d.h-d.h*s;return{minX:minX,maxX:0,minY:minY,maxY:0}}
-    function apply(){inner.style.transform="translate3d("+tx+"px,"+ty+"px,0) scale("+scale+")";el.classList.toggle("is-zoomed",scale>1);el.classList.toggle("pannable",scale>1)}
-    function centerOn(cx,cy,target){
-      var r=stage.getBoundingClientRect()
-      var x=cx-r.left,y=cy-r.top
-      var ux=(x-tx)/scale,uy=(y-ty)/scale
-      scale=clamp(target,minScale,maxScale)
-      tx=x-ux*scale;ty=y-uy*scale
-      var b=bounds();tx=clamp(tx,b.minX,b.maxX);ty=clamp(ty,b.minY,b.maxY)
-      apply()
-    }
-    function reset(){scale=1;tx=0;ty=0;apply()}
-    stage.addEventListener("pointerdown",function(e){
-      stage.setPointerCapture(e.pointerId)
-      pointers.set(e.pointerId,{x:e.clientX,y:e.clientY})
-      if(pointers.size===2){
-        var a=[...pointers.values()]
-        pinch.dist=Math.hypot(a[1].x-a[0].x,a[1].y-a[0].y)
-        pinch.scaleAtStart=scale
-        var r=stage.getBoundingClientRect()
-        var mid={x:(a[0].x+a[1].x)/2-r.left,y:(a[0].y+a[1].y)/2-r.top}
-        pinch.fx=(mid.x-tx)/scale;pinch.fy=(mid.y-ty)/scale
-      }else if(pointers.size===1){
-        start={x:e.clientX,y:e.clientY,tx:tx,ty:ty}
-      }
-    })
-    stage.addEventListener("pointermove",function(e){
-      if(!pointers.has(e.pointerId))return
-      pointers.set(e.pointerId,{x:e.clientX,y:e.clientY})
-      if(pointers.size===2){
-        var a=[...pointers.values()]
-        var r=stage.getBoundingClientRect()
-        var mid={x:(a[0].x+a[1].x)/2-r.left,y:(a[0].y+a[1].y)/2-r.top}
-        var d=Math.hypot(a[1].x-a[0].x,a[1].y-a[0].y)
-        var next=clamp(pinch.scaleAtStart*(d/pinch.dist),minScale,maxScale)
-        tx=mid.x-pinch.fx*next;ty=mid.y-pinch.fy*next
-        var b=bounds(next);tx=clamp(tx,b.minX,b.maxX);ty=clamp(ty,b.minY,b.maxY)
-        scale=next;apply();e.preventDefault()
-      }else if(pointers.size===1&&scale>1){
-        var p=pointers.get(e.pointerId)
-        var b=bounds()
-        tx=clamp(start.tx+(p.x-start.x),b.minX,b.maxX)
-        ty=clamp(start.ty+(p.y-start.y),b.minY,b.maxY)
-        apply();e.preventDefault()
-      }
-    },{passive:false})
-    function up(e){pointers.delete(e.pointerId)}
-    stage.addEventListener("pointerup",up)
-    stage.addEventListener("pointercancel",up)
-    stage.addEventListener("pointerleave",function(e){if(pointers.size===1&&scale>1)e.preventDefault()})
-    stage.addEventListener("dblclick",function(e){centerOn(e.clientX,e.clientY,scale>1?1:2.5)})
-    stage.addEventListener("pointerdown",function(e){
-      if(e.pointerType!=="touch")return
-      var now=Date.now(),dt=now-lastTap.t,dx=Math.abs(e.clientX-lastTap.x),dy=Math.abs(e.clientY-lastTap.y)
-      lastTap={t:now,x:e.clientX,y:e.clientY}
-      if(dt<300&&dx<20&&dy<20){centerOn(e.clientX,e.clientY,scale>1?1:2.5)}
-    })
-    stage.addEventListener("wheel",function(e){
-      var next=clamp(scale*Math.exp(-e.deltaY/300),minScale,maxScale)
-      if(next!==scale){centerOn(e.clientX,e.clientY,next);e.preventDefault()}
-    },{passive:false})
-    if(media.tagName.toLowerCase()==="video"){media.setAttribute("playsinline","");media.setAttribute("webkit-playsinline","")}
-    apply()
-    el.addEventListener("keydown",function(e){if(e.key==="Escape")reset()})
+  function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)}
+  function supportsFS(el){return !!(el.requestFullscreen||el.webkitRequestFullscreen)}
+  var scrollY=0
+  function freeze(){scrollY=window.pageYOffset||document.documentElement.scrollTop||0;document.body.style.position="fixed";document.body.style.top="-"+scrollY+"px";document.body.style.left="0";document.body.style.right="0";document.body.style.width="100%"}
+  function restore(){document.body.style.position="";document.body.style.top="";document.body.style.left="";document.body.style.right="";document.body.style.width="";window.scrollTo(0,scrollY)}
+  function openImgOverlay(img){
+    var o=document.createElement("div")
+    o.style.cssText="position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:2147483647"
+    var im=new Image()
+    im.src=img.currentSrc||img.src
+    im.style.cssText="max-width:100vw;max-height:100vh;object-fit:contain"
+    o.appendChild(im)
+    function close(){document.removeEventListener("keydown",onKey);o.remove();restore()}
+    function onKey(e){if(e.key==="Escape")close()}
+    o.addEventListener("click",close)
+    document.addEventListener("keydown",onKey)
+    document.body.appendChild(o);freeze()
   }
-  document.querySelectorAll(".media-box.is-zoomable").forEach(enhance)
-})();
+  document.addEventListener("click",function(e){
+    var box=e.target.closest(".media-box.is-zoomable")
+    if(!box)return
+    var v=box.querySelector("video")
+    var img=box.querySelector("img")
+    var isiOS=isIOS()
+    var canFS=supportsFS(box)
+    if(isiOS&&v&&typeof v.webkitEnterFullscreen==="function"){
+      e.preventDefault();e.stopPropagation()
+      try{v.webkitEnterFullscreen()}catch(_){}
+      return
+    }
+    if(isiOS&&img&&!canFS){
+      e.preventDefault();e.stopPropagation()
+      openImgOverlay(img)
+      return
+    }
+  },true)
+})()
 </script>
 </body>
 </html>
