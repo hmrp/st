@@ -2535,11 +2535,8 @@ padding: 0 !important;
   .package-breakdown .spec-panel{padding-top:12px;margin-top:10px}
   .package-breakdown .spec-panel h4{font-size:13px}
 }
-</style><style>
-:root{--vv-top:0px}
-#masthead,.masthead{top:var(--vv-top)!important}
-</style>
-<style>@media (max-width: 680px){ html, body { overflow-x: hidden; } }</style>
+</style><style>:root{--vv-top:0px}#masthead,.masthead{top:0!important}.masthead{padding-top:calc(env(safe-area-inset-top,0px) + var(--vv-top,0px));}</style>
+<style>@media (max-width: 680px){ html, body { overflow-x: clip; } }</style>
 </head>
 <body>
 <div class="masthead" id="masthead">
