@@ -1645,7 +1645,7 @@ section.package-specs .spec-list{
   .brand-footer-inner{ max-width:1200px; margin:0 auto; padding:22px 24px 26px; }
   .bf-row{ display:flex; flex-direction:column; gap:14px; }
   .bf-logo{ height:40px; width:auto; display:block; }
-  .bf-socials{ list-style:none; display:flex; gap:16px; margin:6px 0 0; padding:0; }
+  .bf-socials{ list-style:none; display:flex; gap:16px; margin:6px 0 0; padding:0;  flex-wrap: wrap;}
   .bf-socials a{ 
     display:inline-flex; align-items:center; justify-content:center;
     width:44px; height:44px; border-radius:999px;
@@ -1676,14 +1676,7 @@ section.package-specs .spec-list{
 .section-banner.banner-tv{      background-image: url("tv/section_header.png"); }
   </style>
 <style>
-   .hero-metrics .hero-footnote{
-  flex-basis: 100%;
-  width: 100%;
-  font-size: 0.9rem;
-  opacity: 0.9;
-  text-transform: none;
-  margin: 0 100px;
-}
+   .hero-metrics .hero-footnote{flex-basis:100%;width:100%;font-size:0.9rem;opacity:0.9;text-transform:none;margin:0;padding-inline:clamp(0px,8vw,100px);max-width:100%;}
 
 
 #head-abola .metrics-rotator{ min-height: auto; padding-bottom: 0; }
@@ -1805,10 +1798,7 @@ section.package-specs .spec-list{
     grid-column: 2;
   }
   
-  .hero-metrics .hero-footnote{
-    grid-column: 1 / -1;
-    margin: 0px;
-  }
+  .hero-metrics .hero-footnote{flex-basis:100%;width:100%;font-size:0.9rem;opacity:0.9;text-transform:none;margin:0;padding-inline:clamp(0px,8vw,100px);max-width:100%;}
 
   
   #head-abola .metrics-rotator{ min-height: auto; padding-bottom: 0; }
@@ -1880,10 +1870,7 @@ section.package-specs .spec-list{
   }
 
   
-  .hero-metrics .hero-footnote{
-    grid-column: 1 / -1;
-    font-size: 11px;
-  }
+  .hero-metrics .hero-footnote{flex-basis:100%;width:100%;font-size:0.9rem;opacity:0.9;text-transform:none;margin:0;padding-inline:clamp(0px,8vw,100px);max-width:100%;}
 
   
   #head-abola .metrics-rotator{ min-height: auto !important; padding-bottom: 0 !important; }
@@ -2124,12 +2111,7 @@ padding: 0 !important;
   }
 
   
-  .hero-metrics .hero-footnote{
-    flex-basis: 100% !important;
-    width: 100% !important;
-
-    font-size: 11px !important;
-  }
+  .hero-metrics .hero-footnote{flex-basis:100%;width:100%;font-size:0.9rem;opacity:0.9;text-transform:none;margin:0;padding-inline:clamp(0px,8vw,100px);max-width:100%;}
 }
   </style>
 <style>
@@ -2187,11 +2169,7 @@ padding: 0 !important;
   }
   .hero-metrics .logo-badge{ flex: 0 0 auto !important; }
   
-  .hero-metrics .hero-footnote{
-    grid-column: 1 / -1 !important;
-    font-size: 11px !important;
-
-  }
+  .hero-metrics .hero-footnote{flex-basis:100%;width:100%;font-size:0.9rem;opacity:0.9;text-transform:none;margin:0;padding-inline:clamp(0px,8vw,100px);max-width:100%;}
   
   #head-abola .metrics-rotator .hero-metrics-nav{
     position: absolute !important;
@@ -2561,6 +2539,7 @@ padding: 0 !important;
 :root{--vv-top:0px}
 #masthead,.masthead{top:var(--vv-top)!important}
 </style>
+<style>@media (max-width: 680px){ html, body { overflow-x: hidden; } }</style>
 </head>
 <body>
 <div class="masthead" id="masthead">
