@@ -1,0 +1,892 @@
+{
+  "DIGITAL": [
+  {
+    "id": "intro",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Intro",
+    "summary": "Formato sobrepõe o conteúdo da página. Encerra automaticamente após 12 segundos ou através do botão de fechar.",
+    "art": "digital/intro.png",
+    "videos": {
+      "desktop": "digital/intro.mp4",
+      "mobile": "digital/intro_mobile.mp4"
+    },
+    "specs": {
+      "Dimensões": "800×600 px · 768×1024 px",
+      "Tipos de ficheiro": "JPG / PNG / GIF / MP4",
+      "Tamanho máx.": "300 KB (JPG / PNG / GIF) · 900 KB (MP4)",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "HP / ROS 240 € · CANAIS 260 €"
+    }
+  },
+  {
+    "id": "galeria",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Galeria",
+    "art": "digital/galeria.png",
+    "videos": {
+      "desktop": "digital/galeria.mp4",
+      "mobile": "digital/galeria_mobile.mp4"
+    },
+    "summary": "Galeria com efeito carrossel à medida que percorremos o texto de artigo. Possibilidade de colocar endereço de reencaminhamento diferente por imagem.",
+    "specs": {
+      "Dimensões": "300×300 px",
+      "Tipos de ficheiro": "JPG / PNG",
+      "Tamanho máx.": "480 KB",
+      "Peças Criativas": "3 min - 12 max",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "ARTIGOS 240 €"
+    }
+  },
+  {
+    "id": "open-door",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Open Door",
+    "art": "digital/opendoor.png",
+    "videos": {
+      "desktop": "digital/opendoor.mp4",
+      "mobile": "digital/opendoor_mobile.mp4"
+    },
+    "summary": "Efeito de abertura e fecho integrado com o conteúdo da página. Encerra automaticamente após 12 segundos ou através do botão de fechar.",
+    "specs": {
+      "Dimensões": "800×600 px · 768×1024 px",
+      "Tipos de ficheiro": "JPG / PNG / MP4",
+      "Tamanho máx.": "950 KB",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "HP / ROS 320 €"
+    }
+  },
+  {
+    "id": "topscroll",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Top Scroll",
+    "art": "digital/topscroll.png",
+    "videos": {
+      "desktop": "digital/topscroll.mp4",
+      "mobile": "digital/topscroll_mobile.mp4"
+    },
+    "summary": "Formato de grande impacto que surge no topo, fica sobreposto enquanto percorre a página.",
+    "specs": {
+      "Dimensões": "1920×1080 px · 1080×1920 px",
+      "Tipos de ficheiro": "JPG / PNG",
+      "Tamanho máx.": "950 KB",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE"
+    }
+  },
+  {
+    "id": "parallax",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Parallax",
+    "art": "digital/parallax.png",
+    "videos": {
+      "desktop": "digital/parallax.mp4",
+      "mobile": "digital/parallax_mobile.mp4"
+    },
+    "summary": "Colocado entre texto de ARTIGOS, quando se percorre a página, a criatividade é desvendada.",
+    "specs": {
+      "Dimensões": "768×1024 px",
+      "Tipos de ficheiro": "JPG / PNG / MP4",
+      "Tamanho máx.": "950 KB",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "ARTIGOS 260 €"
+    }
+  },
+  {
+    "id": "cube-spin",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Cubo",
+    "summary": "Cubo com possibilidade de interação em qualquer face.",
+    "art": "digital/interactivecube.png",
+    "videos": {
+      "desktop": "digital/interactivecube.mp4",
+      "mobile": "digital/interactivecube2.mp4"
+    },
+    "specs": {
+      "Dimensões": "300×300 px",
+      "Tipos de ficheiro": "JPG / PNG",
+      "Tamanho máx.": "480 KB",
+      "Peças Criativas": "1 min - 6 max",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "ROS 170 €"
+    }
+  },
+  {
+    "id": "ticker",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Ticker",
+    "summary": "Formato fixo que sobrepõe o conteúdo da página, com botão de fechar incorporado.",
+    "art": "digital/ticker.png",
+    "videos": {
+      "desktop": "digital/ticker.mp4",
+      "mobile": "digital/ticker_mobile.mp4"
+    },
+    "specs": {
+      "Dimensões": "728×90 px · 320×100 px",
+      "Tipos de ficheiro": "JPG / PNG / GIF / HTML5",
+      "Tamanho máx.": "120 KB",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "ROS 190 €"
+    }
+  },
+  {
+    "id": "billboard-xxl",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Billboard XXL",
+    "summary": "Formato que abrange toda a largura da página e com altura superior à utilizada pelo billboard. Botão com opção para colapsar o formato em altura.",
+    "art": "digital/billboardXXL.png",
+    "videos": {
+      "desktop": "digital/billboardxxl.mp4",
+      "mobile": "digital/billboardxxl_mobile.mp4"
+    },
+    "specs": {
+      "Dimensões": "<a href=\"digital/template_billboard_xxl_abola.zip\" target=\"_blank\" download>TEMPLATE</a>",
+      "Tipos de ficheiro": "JPG / PNG / GIF / MP4",
+      "Tamanho máx.": "500 KB",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "HP 230 €"
+    }
+  },
+  {
+    "id": "moldura",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Moldura",
+    "summary": "Formato de grande impacto que envolve no topo, esquerda e direita, o conteúdo de destaque da página.",
+    "art": "digital/moldura.png",
+    "video": "digital/moldura.mp4",
+    "specs": {
+      "Dimensão Moldura": "1920x1080 px",
+      "Tipo de ficheiro MOLDURA": "JPG / PNG",
+      "Dimensão Billboard": "970x250 px",
+      "Tipo de ficheiro BILLBOARD": "JPG / PNG / GIF / HTML5",
+      "Tamanho máx.": "800 KB",
+      "Observação": "Utilizar texto e logos apenas na área do billboard. Para garantir integração entre a camada do billboard sob o da moldura, este deverá ser enviado com o fundo transparente",
+      "Dispositivos": "DESKTOP"
+    }
+  },
+  {
+    "id": "takeover",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Takeover",
+    "summary": "Todos os espacos de inserção de publicidade aparecem em exclusivo por um periodo de tempo definido. Opção de inclusão do formato Moldura em desktop.",
+    "art": "digital/takeover.png",
+    "videos": {
+      "desktop": "digital/moldura_takeover.mp4",
+      "mobile": "digital/takeover_mobile.mp4"
+    },
+    "specs": {
+      "Dimensão Fundo Moldura": "1920x1080 px",
+      "Tipo de ficheiro MOLDURA": "JPG / PNG",
+      "Dimensão Billboard · HalfPage ÁREA MOLDURA": "970x250 px (fundo transparente) · 300x600 px (fundo transparente)",
+      "Tipo de ficheiro BILLBOARD · HALFPAGE · MREC ": "JPG / PNG / GIF / HTML5",
+      "Dimensão Billboard · HalfPage · MREC Restantes Placements": "970x250 px · 728x90 px · 320x100 px · 300x600 px · 300x250 px (standard, sem fundo transparente)",
+      "Tamanho máx.": "800 KB",
+      "Observação": "Não utilizar texto e logos na imagem de fundo da moldura, utilizar no Halfpage e Billboard com fundo transparente. Restantes formatos fora da área da moldura sem restrições",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE"
+    }
+  },
+  {
+    "id": "mrec",
+    "medium": "digital",
+    "subtype": "display",
+    "name": "MREC",
+    "summary": "O MREC é o formato com possibilidade de entrega em todos os dispositivos e páginas.",
+    "art": "digital/mrec.png",
+    "videos": {
+      "desktop": "digital/mrec.mp4",
+      "mobile": "digital/mrec_mobile.mp4"
+    },
+    "specs": {
+      "Dimensões": "300×250 px",
+      "Tipos de ficheiro": "HTML5 / JPG / PNG / GIF / MP4",
+      "Tamanho máx.": "100 KB (HTML5 / JPG / PNG / GIF) · 900 KB (MP4)",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "HP / ROS 90 € · CANAIS 110 €"
+    }
+  },
+  {
+    "id": "halfpage",
+    "medium": "digital",
+    "subtype": "display",
+    "name": "Half Page",
+    "summary": "Banner alto e largo. Em desktop, fica fixo até certa profundidade do site. Em smartphone, preenche a maioria da área visível do dispositivo.",
+    "art": "digital/halfpage.png",
+    "videos": {
+      "desktop": "digital/halfpage.mp4",
+      "mobile": "digital/halfpage_mobile.mp4"
+    },
+    "specs": {
+      "Dimensões": "300×600 px",
+      "Tipos de ficheiro": "HTML5 / JPG / PNG / MP4",
+      "Tamanho máx.": "150 KB (HTML5 / JPG / PNG / GIF) · 900 KB (MP4)",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "HP / ROS 110 € · CANAIS 130 €"
+    }
+  },
+  {
+    "id": "billboard",
+    "medium": "digital",
+    "subtype": "display",
+    "name": "Billboard",
+    "art": "digital/billboard.png",
+    "videos": {
+      "desktop": "digital/billboard.mp4",
+      "mobile": "digital/billboard_mobile.mp4"
+    },
+    "summary": "Formato que aparece no topo das páginas ou entre seccoes na homepage.",
+    "specs": {
+      "Dimensões": "1260×220 px · 970×250 px · 728×90 px · 310×100 px",
+      "Tipos de ficheiro": "HTML / JPG / PNG / GIF / MP4",
+      "Tamanho máx.": "250 KB (HTML5 / JPG / PNG / GIF) · 900 KB (MP4)",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "HP / ROS 200 € · Canais 220 €"
+    }
+  },
+  {
+    "id": "preroll",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "Pre-roll",
+    "art": "digital/preroll.png",
+    "videos": {
+      "desktop": "digital/preroll.mp4",
+      "mobile": "digital/preroll_mobile.mp4"
+    },
+    "summary": "Publicidade vídeo reproduzido antes do conteúdo editorial, no mesmo player.",
+    "specs": {
+      "Dimensões": "640×480 px",
+      "Tipos de ficheiro": "MP4",
+      "Tamanho máx.": "10 MB",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "ROS 240 € · CANAIS 260 €"
+    }
+  },
+  {
+    "id": "skyscraper",
+    "medium": "digital",
+    "subtype": "display",
+    "name": "Skyscraper",
+    "art": "digital/skyscraper.png",
+    "video": "digital/skyscraper.mp4",
+    "summary": "Banner alto e estreito utilizado nas colunas laterais do site, presenca fixa em alguma profundidade da página.",
+    "specs": {
+      "Dimensões": "120×600 px / 160x600 px",
+      "Tipos de ficheiro": "JPG / PNG / GIF / HTML5",
+      "Tamanho máx.": "200 KB",
+      "Dispositivos": "DESKTOP · TABLET"
+    }
+  },
+  {
+    "id": "incontent-video",
+    "medium": "digital",
+    "subtype": "rich media",
+    "name": "In-content Video",
+    "art": "digital/incontent.png",
+    "videos": {
+      "desktop": "digital/incontent.mp4",
+      "mobile": "digital/incontent_mobile.mp4"
+    },
+    "summary": "Vídeo publicitário colocado entre parágrafos de um artigo.",
+    "specs": {
+      "Dimensões": "640×480 px",
+      "Tipos de ficheiro": "MP4",
+      "Tamanho máx.": "950 KB",
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "ARTIGOS 160 €"
+    }
+  }
+],
+  "print": [
+  {
+    "id": "capa-rodape",
+    "medium": "print",
+    "subtype": "capa",
+    "name": "Rodapé",
+    "art": "print/rodape.png",
+    "gridReference": "print/referenceFrontPage.png",
+    "summary": "5 col × 2 módulos - 25,9 × 2,7 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 2,7 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 2,
+      "Total de módulos": 10,
+      "Base": "2 230,00 €"
+    }
+  },
+  {
+    "id": "capa-rodatopo",
+    "medium": "print",
+    "subtype": "capa",
+    "name": "Rodatopo",
+    "art": "print/rodatopo.png",
+    "gridReference": "print/referenceFrontPage.png",
+    "summary": "5 col × 2 módulos - 25,9 × 2,7 cm ",
+    "specs": {
+      "Mancha útil": "25,9 × 2,7 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 2,
+      "Total de módulos": 10,
+      "Base": "3 450,00 €"
+    }
+  },
+  {
+    "id": "capa-orelha",
+    "medium": "print",
+    "subtype": "capa",
+    "name": "Orelha",
+    "art": "print/orelha.png",
+    "gridReference": "print/referenceFrontPage.png",
+    "summary": "1 col × 5 módulos - 4,78 × 4,2 cm",
+    "specs": {
+      "Mancha útil": "4,78 × 4,2 cm",
+      "Colunas": 1,
+      "Módulos por coluna": 3,
+      "Total de módulos": 3,
+      "Base": "1 990,00 €"
+    }
+  },
+  {
+    "id": "capa-coluna",
+    "medium": "print",
+    "subtype": "capa",
+    "name": "Coluna",
+    "art": "print/coluna.png",
+    "gridReference": "print/referenceFrontPage.png",
+    "summary": "1 col × 20 módulos  - 4,78 × 32,7 cm",
+    "specs": {
+      "Mancha útil": "4,78 × 32,7 cm",
+      "Colunas": 1,
+      "Módulos por coluna": 20,
+      "Total de módulos": 3,
+      "Base": "25 000,00 €"
+    }
+  },
+  {
+    "id": "capa-takeover",
+    "medium": "print",
+    "subtype": "capa",
+    "name": "Takeover",
+    "art": "print/takeover.png",
+    "gridReference": "print/referenceFrontPage.png",
+    "summary": "2,7 × 25,9 + 32,7 × 4,78 cm (zona lateral)",
+    "specs": {
+      "Mancha útil": "2,7 × 25,9 + 32,7 × 4,78 cm (zona lateral)",
+      "Total de módulos": 36,
+      "Base": "37 500,00 €"
+    }
+  },
+  {
+    "id": "interior-pagina",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "Página",
+    "art": "print/pagina.png",
+    "gridReference": "print/reference.png",
+    "summary": "5 col × 20 módulos - 25,9 × 30,2 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 30,2 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 20,
+      "Total de módulos": 100,
+      "Base DC Par": "8 940,00 €",
+      "Sobretaxa DC Ímpar 15%": "10 281,00 €",
+      "Sobretaxa AC Ímpar 30%": "11 622,00 €",
+      "Sobretaxa AC Par 10%": "9 834,00 €"
+    }
+  },
+  {
+    "id": "interior-junior",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "Junior Page",
+    "art": "print/juniorpage.png",
+    "gridReference": "print/reference.png",
+    "summary": "4 col × 12 módulos - 20,62 × 18 cm",
+    "specs": {
+      "Mancha útil": "20,62 × 18 cm",
+      "Colunas": 4,
+      "Módulos por coluna": 12,
+      "Total de módulos": 48,
+      "Base DC Par": "4 967,00 €",
+      "Sobretaxa DC Ímpar 15%": "5 712,05 €",
+      "Sobretaxa AC Ímpar 30%": "6 457,60 €",
+      "Sobretaxa AC Par 10%": "5 463,70 €"
+    }
+  },
+  {
+    "id": "interior-meia-h",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "1/2 Página (Horizontal)",
+    "art": "print/1-2paghorz.png",
+    "gridReference": "print/reference.png",
+    "summary": "5 col × 10 módulos - 25,9 × 14,9 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 14,9 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 10,
+      "Total de módulos": 50,
+      "Base DC Par": "4 386,00 €",
+      "Sobretaxa DC Ímpar 15%": "5 043,90 €",
+      "Sobretaxa AC Ímpar 30%": "5 701,80 €",
+      "Sobretaxa AC Par 10%": "4 824,60 €"
+    }
+  },
+  {
+    "id": "interior-meia-v-2c",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "1/2 Página (Vertical — 2 col.)",
+    "art": "print/meiapagina2colunas.png",
+    "gridReference": "print/reference.png",
+    "summary": "2 col × 20 módulos - 10,06 × 30,2 cm",
+    "specs": {
+      "Mancha útil": "10,06 × 30,2 cm",
+      "Colunas": 2,
+      "Módulos por coluna": 20,
+      "Total de módulos": 40,
+      "Base DC Par": "3 612,00 €",
+      "Sobretaxa DC Ímpar 15%": "4 153,80 €",
+      "Sobretaxa AC Ímpar 30%": "4 695,60 €",
+      "Sobretaxa AC Par 10%": "3 973,20 €"
+    }
+  },
+  {
+    "id": "interior-meia-v-3c",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "1/2 Página (Vertical — 3 col.)",
+    "art": "print/meiapagina3colunasvert.png",
+    "gridReference": "print/reference.png",
+    "summary": "3 col × 20 módulos - 15,34 × 30,2 cm",
+    "specs": {
+      "Mancha útil": "15,34 × 30,2 cm",
+      "Colunas": 3,
+      "Módulos por coluna": 20,
+      "Total de módulos": 60,
+      "Base DC Par": "5 160,00 €",
+      "Sobretaxa DC Ímpar 15%": "5 934,00 €",
+      "Sobretaxa AC Ímpar 30%": "6 708,00 €",
+      "Sobretaxa AC Par 10%": "5 676,00 €"
+    }
+  },
+  {
+    "id": "interior-um-quarto-h",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "1/4 Página (Horizontal)",
+    "art": "print/quartopaginahorz.png",
+    "gridReference": "print/reference.png",
+    "summary": "5 col × 5 módulos - 25,9 × 7,2 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 7,2 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 5,
+      "Total de módulos": 25,
+      "Base DC Par": "3 000,00 €",
+      "Sobretaxa DC Ímpar 15%": "3 450,00 €",
+      "Sobretaxa AC Ímpar 30%": "3 900,00 €",
+      "Sobretaxa AC Par 10%": "3 300,00 €"
+    }
+  },
+  {
+    "id": "interior-um-quarto-3c",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "1/4 Página (3 colunas)",
+    "art": "print/quartopagina3colunas.png",
+    "gridReference": "print/reference.png",
+    "summary": "3 col × 10 módulos - 15,34 × 14,9 cm",
+    "specs": {
+      "Mancha útil": "15,34 × 14,9 cm",
+      "Colunas": 3,
+      "Módulos por coluna": 10,
+      "Total de módulos": 30,
+      "Base DC Par": "2 773,50 €",
+      "Sobretaxa DC Ímpar 15%": "3 189,53 €",
+      "Sobretaxa AC Ímpar 30%": "3 605,55 €",
+      "Sobretaxa AC Par 10%": "3 050,85 €"
+    }
+  },
+  {
+    "id": "interior-um-quarto-2c",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "1/4 Página (2 colunas)",
+    "art": "print/quartopagina2colunas.png",
+    "gridReference": "print/reference.png",
+    "summary": "2 col × 10 módulos - 10,06 × 14,9 cm",
+    "specs": {
+      "Mancha útil": "10,06 × 14,9 cm",
+      "Colunas": 2,
+      "Módulos por coluna": 10,
+      "Total de módulos": 20,
+      "Base DC Par": "1 935,00 €",
+      "Sobretaxa DC Ímpar 15%": "2 225,25 €",
+      "Sobretaxa AC Ímpar 30%": "2 515,50 €",
+      "Sobretaxa AC Par 10%": "2 128,50 €"
+    }
+  },
+  {
+    "id": "interior-um-oitavo",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "1/8 Página",
+    "art": "print/1-8pagina.png",
+    "gridReference": "print/reference.png",
+    "summary": "2 col × 10 módulos - 10,06 × 7,2 cm",
+    "specs": {
+      "Mancha útil": "10,06 × 7,2 cm",
+      "Colunas": 2,
+      "Módulos por coluna": 5,
+      "Total de módulos": 10,
+      "Base DC Par": "1 354,50 €",
+      "Sobretaxa DC Ímpar 15%": "1 557,68 €",
+      "Sobretaxa AC Ímpar 30%": "1 760,85 €",
+      "Sobretaxa AC Par 10%": "1 489,95 €"
+    }
+  },
+  {
+    "id": "interior-rodape-3mod",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "3 módulos (RODAPÉ)",
+    "art": "print/rodape3modulos.png",
+    "gridReference": "print/reference.png",
+    "summary": "5 col × 3 módulos - 25,9 × 4,20 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 4,20 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 3,
+      "Total de módulos": 15,
+      "Base DC Par": "2 325,40 €",
+      "Sobretaxa DC Ímpar 15%": "2 674,21 €",
+      "Sobretaxa AC Ímpar 30%": "3 023,02 €",
+      "Sobretaxa AC Par 10%": "2 557,94 €"
+    }
+  },
+  {
+    "id": "interior-dupla-abertura",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "Página Dupla (Abertura)",
+    "art": "print/paginaduplaabertura.png",
+    "gridReference": "print/reference.png",
+    "summary": "10 col × 20 módulos - 51,8 × 30,2 cm",
+    "specs": {
+      "Mancha útil": "51,8 × 30,2 cm",
+      "Colunas": 10,
+      "Módulos por coluna": 20,
+      "Total de módulos": 200,
+      "AC": "20 838,00 €",
+      "DC": "19 025,00 €",
+      "Dupla abertura": "30 000,00 €"
+    }
+  },
+  {
+    "id": "interior-dupla-horizontal-baixo",
+    "medium": "print",
+    "subtype": "interior",
+    "name": "Página Dupla (Horizontal baixo)",
+    "art": "print/paginaduplabaixohorz.png",
+    "gridReference": "print/reference.png",
+    "summary": "10 col × 10 módulos - 51,8 × 14,9 cm",
+    "specs": {
+      "Mancha útil": "51,8 × 14,9 cm",
+      "Colunas": 10,
+      "Módulos por coluna": 10,
+      "Total de módulos": 100,
+      "Base DC Par": "9 515,00 €",
+      "Sobretaxa DC Ímpar 15%": "10 942,25 €",
+      "Sobretaxa AC Ímpar 30%": "12 369,50 €",
+      "Sobretaxa AC Par 10%": "10 466,50 €"
+    }
+  },
+  {
+    "id": "contracapa-rodape",
+    "medium": "print",
+    "subtype": "contracapa",
+    "name": "Rodapé",
+    "art": "print/rodape.png",
+    "gridReference": "print/reference.png",
+    "summary": "5 col × 2 módulos - 25,9 × 2,7 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 2,7 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 2,
+      "Total de módulos": 10,
+      "BASE": "2 000,00 €"
+    }
+  },
+  {
+    "id": "contracapa-rodatopo",
+    "medium": "print",
+    "subtype": "contracapa",
+    "name": "Rodatopo",
+    "art": "print/rodatopo.png",
+    "gridReference": "print/reference.png",
+    "summary": "5 col × 2 módulos - 25,9 × 2,7 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 2,7 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 2,
+      "Total de módulos": 10,
+      "BASE": "3 000,00 €"
+    }
+  },
+  {
+    "id": "contracapa-orelha",
+    "medium": "print",
+    "subtype": "contracapa",
+    "name": "Orelha",
+    "art": "print/orelha.png",
+    "gridReference": "print/reference.png",
+    "summary": "1 col × 5 módulos - 4,78 × 4,2 cm",
+    "specs": {
+      "Mancha útil": "4,78 × 4,2 cm",
+      "Colunas": 1,
+      "Módulos por coluna": 3,
+      "Total de módulos": 3,
+      "BASE": "1 500,00 €"
+    }
+  },
+  {
+    "id": "contracapa-pagina-inteira",
+    "medium": "print",
+    "subtype": "contracapa",
+    "name": "Página Inteira",
+    "art": "print/pagina.png",
+    "gridReference": "print/reference.png",
+    "summary": "5 col × 20 módulos - 25,9 × 30,2 cm",
+    "specs": {
+      "Mancha útil": "25,9 × 30,2 cm",
+      "Colunas": 5,
+      "Módulos por coluna": 20,
+      "Total de módulos": 100,
+      "BASE": "15 000,00 €"
+    }
+  }
+],
+  "TV": [
+  {
+    "id": "tv-ratecard",
+    "medium": "tv",
+    "durations": [
+      5,
+      10,
+      15,
+      20,
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      90,
+      120,
+      180
+    ],
+    "index": {
+      "5": 0.4375,
+      "10": 0.75,
+      "15": 0.9375,
+      "20": 1,
+      "25": 1.325,
+      "30": 1.59,
+      "35": 2.0475,
+      "40": 2.5,
+      "45": 3,
+      "50": 3.4,
+      "55": 3.9,
+      "60": 4.3,
+      "90": 6.6,
+      "120": 8.85,
+      "180": 13.5
+    },
+    "dayparts": [
+      {
+        "name": "Daytime",
+        "slots": [
+          {
+            "time": "01:00–12:30",
+            "prices": {
+              "5": 67.77,
+              "10": 116.18,
+              "15": 145.22,
+              "20": 154.9,
+              "25": 205.24,
+              "30": 246.29,
+              "35": 317.16,
+              "40": 387.25,
+              "45": 464.7,
+              "50": 531.31,
+              "55": 604.11,
+              "60": 666.07,
+              "90": 1022.34,
+              "120": 1370.87,
+              "180": 2091.15
+            }
+          },
+          {
+            "time": "12:30–15:30",
+            "prices": {
+              "5": 98.93,
+              "10": 169.59,
+              "15": 211.99,
+              "20": 226.12,
+              "25": 299.61,
+              "30": 359.53,
+              "35": 462.98,
+              "40": 565.3,
+              "45": 678.36,
+              "50": 775.59,
+              "55": 881.87,
+              "60": 972.32,
+              "90": 1492.39,
+              "120": 2001.16,
+              "180": 3052.62
+            }
+          },
+          {
+            "time": "15:30–17:00",
+            "prices": {
+              "5": 156.18,
+              "10": 267.74,
+              "15": 334.67,
+              "20": 356.98,
+              "25": 473.0,
+              "30": 567.6,
+              "35": 730.92,
+              "40": 892.45,
+              "45": 1070.94,
+              "50": 1224.44,
+              "55": 1392.22,
+              "60": 1535.01,
+              "90": 2356.07,
+              "120": 3159.27,
+              "180": 4819.23
+            }
+          },
+          {
+            "time": "17:00–18:00",
+            "prices": {
+              "5": 173.71,
+              "10": 297.79,
+              "15": 372.23,
+              "20": 397.05,
+              "25": 526.09,
+              "30": 631.31,
+              "35": 812.96,
+              "40": 992.63,
+              "45": 1191.15,
+              "50": 1361.88,
+              "55": 1548.5,
+              "60": 1707.32,
+              "90": 2620.53,
+              "120": 3513.89,
+              "180": 5360.18
+            }
+          },
+          {
+            "time": "18:00–19:00",
+            "prices": {
+              "5": 211.49,
+              "10": 362.55,
+              "15": 453.19,
+              "20": 483.4,
+              "25": 640.51,
+              "30": 768.61,
+              "35": 989.76,
+              "40": 1208.5,
+              "45": 1450.2,
+              "50": 1658.06,
+              "55": 1885.26,
+              "60": 2078.62,
+              "90": 3190.44,
+              "120": 4278.09,
+              "180": 6525.9
+            }
+          },
+          {
+            "time": "19:00–20:00",
+            "prices": {
+              "5": 406.23,
+              "10": 696.4,
+              "15": 870.5,
+              "20": 928.53,
+              "25": 1230.3,
+              "30": 1476.36,
+              "35": 1901.17,
+              "40": 2321.33,
+              "45": 2785.59,
+              "50": 3184.86,
+              "55": 3621.27,
+              "60": 3992.68,
+              "90": 6128.3,
+              "120": 8217.49,
+              "180": 12535.16
+            }
+          }
+        ]
+      },
+      {
+        "name": "Prime Time",
+        "slots": [
+          {
+            "time": "20:00–21:30",
+            "prices": {
+              "5": 461.15,
+              "10": 790.54,
+              "15": 988.17,
+              "20": 1054.05,
+              "25": 1396.62,
+              "30": 1675.94,
+              "35": 2158.17,
+              "40": 2635.13,
+              "45": 3162.15,
+              "50": 3615.39,
+              "55": 4110.8,
+              "60": 4532.42,
+              "90": 6956.73,
+              "120": 9328.34,
+              "180": 14229.68
+            }
+          },
+          {
+            "time": "21:30–01:00",
+            "prices": {
+              "5": 608.76,
+              "10": 1043.59,
+              "15": 1304.48,
+              "20": 1391.45,
+              "25": 1843.67,
+              "30": 2212.41,
+              "35": 2848.99,
+              "40": 3478.63,
+              "45": 4174.35,
+              "50": 4772.67,
+              "55": 5426.66,
+              "60": 5983.24,
+              "90": 9183.57,
+              "120": 12314.33,
+              "180": 18784.58
+            }
+          }
+        ]
+      }
+    ]
+  }
+],
+  "ABOLA": [],
+  "BRANDED": []
+}
