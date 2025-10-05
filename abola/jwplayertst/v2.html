@@ -9586,324 +9586,158 @@
 <!-- Load JWPlayer -->
 <script src="https://cdn.jwplayer.com/libraries/O1K43iRg.js"></script>
 
+<!-- Global JW Manager -->
+<script>
+window.JWManager = {
+  players: [],
 
-<!-- apagar -->
-<script>// Robust pretty logger for JW ad tags (handles relative/odd URLs too)
-// --- Helpers -------------------------------------------------------------
-
-// Try to get a usable ad tag string from the event or config
-function extractPrerollTagFromEventOrConfig(player, e) {
-  // 1) From event (preferred)
-  if (e && typeof e.tag === 'string' && e.tag) return e.tag;
-  if (e && e.request && typeof e.request === 'string') return e.request;
-  if (e && e.data && typeof e.data.tag === 'string') return e.data.tag;
-
-  // 2) Fallback from current player config (may still have raw macros)
-  const cfg = player.getConfig && player.getConfig();
-  const sched = cfg?.advertising?.schedule;
-  const tag = sched?.preroll?.tag || sched?.['0']?.tag || null;
-  if (!tag) return null;
-
-  // 3) Make it more readable by filling a few easy macros
-  let approx = tag;
-  try {
-    const it = player.getPlaylistItem ? player.getPlaylistItem() : null;
-    const page = window.location.href;
-    const ts = Date.now().toString();
-    const dur = Math.round(it?.duration || 0).toString();
-
-    approx = approx
-      .replaceAll('__page-url__', encodeURIComponent(page))
-      .replaceAll('__timestamp__', ts)
-      .replaceAll('__item-duration__', dur);
-    // leave any unknown macros (e.g., __item-Category__) as-is
-  } catch {}
-  return approx;
-}
-
-// Robust pretty logger for JW ad tags (handles relative URLs and no-tag cases)
-function logAdTagReadableFromEvent(player, e, contextLabel = '') {
-  const tagStr = extractPrerollTagFromEventOrConfig(player, e);
-  if (!tagStr) {
-    console.warn('🎯 JW AdRequest', contextLabel ? `(${contextLabel})` : '', '→ preroll: no tag string available');
-    return;
-  }
-
-  // Parse with base to handle relative tags
-  let url;
-  try { url = new URL(tagStr); }
-  catch {
-    try { url = new URL(tagStr, window.location.href); }
-    catch {
-      console.groupCollapsed(`🎯 JW AdRequest ${contextLabel ? `(${contextLabel}) ` : ''}→ preroll`);
-      console.log('Raw tag (unparsed):', tagStr);
-      console.groupEnd();
-      return;
+  // 🔹 Global default config shared by all players
+  defaults: {
+    "abouttext": "© Ringier Sports Media. Todos os direitos reservados.",
+    "advertising": {
+    },
+      "intl": {
+    "pt": {
+      "advertising": {
+        "admessage": "xx",
+        "cuetext": "pub",
+        "skipmessage": "Avançar em xx"
+      }
     }
-  }
+    },
+    horizontalVolumeSlider: true,
+    nextUpDisplay: false,
+    mute: false,
+    volume: 1,
+    floating: {
+      dismissible: true,
+      showTitle: true,
+      mode: "notVisible"
+    },
+    related: {
+      file: 'https://cdn.jwplayer.com/v2/playlists/DTw3rRMO',
+      oncomplete: 'show'
+    }
+  },
 
-  const p = url.searchParams;
-  const top = {
-    iu: p.get('iu') || '',
-    vpos: p.get('vpos') || '',
-    url: p.get('url') || '',
-    description_url: p.get('description_url') || '',
-    sz: p.get('sz') || '',
-    npa: p.get('npa') || '',
-    output: p.get('output') || '',
-    env: p.get('env') || '',
-    vid_d: p.get('vid_d') || '',
-    correlator: p.get('correlator') || ''
-  };
+  // 🔹 Utility to merge per-player custom config with global defaults
+  createConfig(customConfig = {}) {
+    return Object.assign({}, this.defaults, customConfig);
+  },
 
-  // Only show preroll-ish requests
-  const isPreroll =
-    (top.iu && top.iu.includes('/preroll')) ||
-    top.vpos === 'preroll' ||
-    !top.vpos;
-  if (!isPreroll) return;
+  // 🔹 Register each player instance
+  register(player, meta = {}) {
+    this.players.push(player);
+    this.applyGlobalListeners(player, meta);
+  },
 
-  // Decode cust_params nicely (handles 0/1/2 encodes)
-  function tryDecode(s) { try { return decodeURIComponent(s); } catch { return s; } }
-  let cpRaw = p.get('cust_params') || '';
-  if (/%25/i.test(cpRaw)) cpRaw = tryDecode(tryDecode(cpRaw));
-  else if (/%26|%3D/i.test(cpRaw)) cpRaw = tryDecode(cpRaw);
+  // 🔹 Pause all other active players when one plays
+  stopOthers(activePlayer) {
+    this.players.forEach(p => {
+      if (p !== activePlayer) {
+        try {
+          p.pause(true);
+          if (p.getFloating && p.getFloating()) {
+            p.setFloating(false);
+          }
+        } catch (e) {}
+      }
+    });
+  },
 
-  const cust = {};
-  if (cpRaw) {
-    cpRaw.split('&').forEach(pair => {
-      if (!pair) return;
-      const i = pair.indexOf('=');
-      if (i === -1) { cust[pair] = ''; return; }
-      const k = pair.slice(0, i);
-      const v = pair.slice(i + 1).replace(/\+/g, ' ');
-      cust[k] = tryDecode(v);
+  // 🔹 Floating controls
+  enableFloating(player) {
+    try {
+      player.setConfig({ floating: this.defaults.floating });
+    } catch (e) {}
+  },
+  disableFloating(player) {
+    try {
+      player.setFloating(false);
+    } catch (e) {}
+  },
+
+  // 🔹 Attach shared events to all players
+  applyGlobalListeners(player, meta) {
+    // Handle pause: disable floating
+    player.on("pause", () => this.disableFloating(player));
+
+    // Handle ready: restore volume, remove next up button
+    player.on("ready", function () {
+      // Volume persistence
+      const savedVolume = localStorage.getItem("jwplayer_volume");
+      if (savedVolume) this.setVolume(parseInt(savedVolume));
+      this.on("volumeChanged", e => {
+        localStorage.setItem("jwplayer_volume", e.volume);
+      });
+
+      // Remove any Next Up button
+      try { this.removeButton("nextUp"); } catch (e) {}
+    });
+
+    // Handle play: stop other players + enable floating + send analytics
+    player.on("play", () => {
+      JWManager.stopOthers(player);
+      JWManager.enableFloating(player);
+
+      // Analytics (dataLayer + SmartOcto)
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "video_start",
+        video_provider: "JWPlayer",
+        video_title: meta.title,
+        url: meta.url
+      });
+
+      if (window.tentacles?.onVideoPlay) {
+        window.tentacles.onVideoPlay({
+          videoId: meta.id,
+          title: meta.title,
+          pubDate: meta.publishedAt,
+          uri: meta.url,
+          channel: "web"
+        });
+      }
+    });
+
+    // Handle complete
+    player.on("complete", () => {
+      window.dataLayer.push({
+        event: "video_complete",
+        video_provider: "JWPlayer",
+        video_title: meta.title,
+        url: meta.url
+      });
+    });
+
+    // Handle progress milestones
+    player.on("time", (event) => {
+      const pct = event.currentTime / event.duration;
+      let mark = "";
+      if (pct > 0.75) mark = "75";
+      else if (pct > 0.5) mark = "50";
+      else if (pct > 0.25) mark = "25";
+      else if (pct > 0.1) mark = "10";
+
+      const key = "lastMark_" + meta.id;
+      if (mark && mark !== window[key]) {
+        window[key] = mark;
+        window.dataLayer.push({
+          event: "video_progress",
+          video_provider: "JWPlayer",
+          video_title: meta.title,
+          url: meta.url,
+          video_percent: mark
+        });
+      }
     });
   }
-
-  // Any extra params
-  const known = new Set([
-    'iu','url','description_url','npa','sz','cmsid','vid','gdfp_req','output',
-    'env','unviewed_position_start','impl','plcmt','vconp','vpmute','hl','aconp',
-    'vpos','tfcd','vid_d','wta','correlator','cust_params'
-  ]);
-  const extras = {};
-  for (const [k, v] of p.entries()) if (!known.has(k)) extras[k] = v;
-
-  console.groupCollapsed(`🎯 JW AdRequest ${contextLabel ? `(${contextLabel}) ` : ''}→ preroll`);
-  console.log('Full URL:', url.toString());
-  console.table(top);
-  console.log('cust_params:');
-  if (Object.keys(cust).length) console.table(cust); else console.log('(none)');
-  if (Object.keys(extras).length) { console.log('other params:'); console.table(extras); }
-  console.groupEnd();
-}
-
-</script>
-<!-- apagar -->
-
-
-
-<!-- wait for pub.KV so we can add the existing article KV to the video player -->
-<script>
-window.jwDepsReady = window.jwDepsReady || new Promise((resolve) => {
-  var MAX_WAIT_MS = 2000; 
-  var start = Date.now();
-
-  (function check() {
-    if (window.pub && pub.KV) {
-      resolve({ reason: 'pubKV', waited: Date.now() - start });
-      return;
-    }
-    if (Date.now() - start >= MAX_WAIT_MS) {
-      console.warn('No ads fetched - loading JWplayer setup');
-      resolve({ reason: 'timeout', waited: MAX_WAIT_MS });
-      return;
-    }
-    setTimeout(check, 60);
-  })();
-});
+};
 </script>
 
-
-
+<!-- Player 1 -->
 <script>
-jwDepsReady.then(function () {
-
-  // JWplayer ad keyvalues
-  const jwplayerKV =
-  'Category=__item-Category__' +
-  (pub?.KV?.interests?.[0] ? ',' + pub.KV.interests[0] : '') +
-  (pub?.KV?.id ? '&id=' + pub.KV.id : '') +
-  (Array.isArray(pub?.KV?.pageType) && pub.KV.pageType.length
-    ? '&type=' + pub.KV.pageType.join(',')
-    : '') +
-  (Array.isArray(pub?.KV?.meta) && pub.KV.meta.length > 1
-    ? '&subcategory=' + pub.KV.meta.slice(1).join(',')
-    : '') +
-  (Array.isArray(pub?.fEnd) && pub.fEnd.length
-    ? '&end=' + pub.fEnd.join(',')
-    : '');
-
-
-  window.JWManager = {
-    players: [],
-    defaults: {
-      "abouttext": "© Ringier Sports Media. Todos os direitos reservados.",
-      advertising: {
-        client: "googima",
-        "autoplayadsmuted": true,
-        "enablePPS": true,
-        "outstream": false,
-        "vpaidcontrols": true,
-        schedule: {
-      /*   preroll: {
-            tag: `https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/preroll&url=__page-url__&description_url=__page-url__&npa=0&sz=1x1%7C640x360%7C640x360%7C640x480&cmsid=[placeholder]&vid=[placeholder]&gdfp_req=1&output=xml_vast4&env=instream&unviewed_position_start=1&impl=s&plcmt=1&vconp=2&vpmute=1&hl=pt&aconp=0&vpos=preroll&tfcd=0&vid_d=__item-duration__&wta=1&correlator=__timestamp__&cust_params=${encodeURIComponent(jwplayerKV)}`
-          },
-*/
- 
-          preroll: {
-            tag: `https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/preroll&url=__page-url__&description_url=__page-url__&npa=0&sz=1x1%7C640x360%7C640x360%7C640x480&cmsid=[placeholder]&vid=[placeholder]&gdfp_req=1&output=xml_vast4&env=instream&unviewed_position_start=1&impl=s&plcmt=1&vconp=2&vpmute=1&hl=pt&aconp=0&vpos=preroll&tfcd=0&vid_d=__item-duration__&wta=1&correlator=__timestamp__&cust_params=${encodeURIComponent(jwplayerKV)}`
-          },
-            postroll: {
-                tag: `https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/postroll&url=__page-url__&description_url=__page-url__&npa=0&sz=1x1%7C640x360%7C640x360%7C640x480&cmsid=[placeholder]&vid=[placeholder]&gdfp_req=1&output=xml_vast4&env=instream&unviewed_position_start=1&impl=s&plcmt=1&vconp=2&vpmute=1&hl=pt&aconp=0&vpos=preroll&tfcd=0&vid_d=__item-duration__&wta=1&correlator=__timestamp__&cust_params=${encodeURIComponent(jwplayerKV)}`
-          }
-        }
-      },
-      "intl": {
-        "pt": {
-          "advertising": {
-            "admessage": "xx",
-            "cuetext": "pub",
-            "skipmessage": "Avançar em xx"
-          }
-        }
-      },
-      horizontalVolumeSlider: true,
-      nextUpDisplay: false,
-      mute: false,
-      volume: 1,
-      floating: {
-        dismissible: true,
-        showTitle: true,
-        mode: "notVisible"
-      },
-      related: {
-        file: 'https://cdn.jwplayer.com/v2/playlists/DTw3rRMO',
-        oncomplete: 'show'
-      }
-    },
-
-    createConfig(customConfig = {}) {
-      return Object.assign({}, this.defaults, customConfig);
-    },
-
-    register(player, meta = {}) {
-      this.players.push(player);
-      this.applyGlobalListeners(player, meta);
-    },
-
-     jwPlayingCheck(activePlayer) {
-      this.players.forEach(p => {
-        if (p !== activePlayer) {
-          try {
-            p.pause(true);
-            if (p.getFloating && p.getFloating()) {
-              p.setFloating(false);
-            }
-          } catch (e) {}
-        }
-      });
-    },
-
-    jwEnableFloating(player) {
-      try {
-        player.setConfig({ floating: this.defaults.floating });
-      } catch (e) {}
-    },
-    disableFloating(player) {
-      try {
-        player.setFloating(false);
-      } catch (e) {}
-    },
-
-    applyGlobalListeners(player, meta) {
-      player.on("pause", () => this.disableFloating(player));
-      player.on("ready", function () {
-        const savedVolume = localStorage.getItem("jwplayer_volume");
-        if (savedVolume) this.setVolume(parseInt(savedVolume));
-        this.on("volumeChanged", e => {
-          localStorage.setItem("jwplayer_volume", e.volume);
-        });
-        try { this.removeButton("nextUp"); } catch (e) {}
-      });
-
- player.on("adRequest", function (e) {
-  const label = meta?.title || meta?.id || '';
-  logAdTagReadableFromEvent(this, e, label);
-});
-
-
-      player.on("play", () => {
-        JWManager.jwPlayingCheck(player);
-        JWManager.jwEnableFloating(player);
-
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          event: "video_start",
-          video_provider: "JWPlayer",
-          video_title: meta.title,
-          url: meta.url
-        });
-
-        if (window.tentacles?.onVideoPlay) {
-          window.tentacles.onVideoPlay({
-            videoId: meta.id,
-            title: meta.title,
-            pubDate: meta.publishedAt,
-            uri: meta.url,
-            channel: "web"
-          });
-        }
-      });
-
-      player.on("complete", () => {
-        window.dataLayer.push({
-          event: "video_complete",
-          video_provider: "JWPlayer",
-          video_title: meta.title,
-          url: meta.url
-        });
-      });
-
-      player.on("time", (event) => {
-        const pct = event.currentTime / event.duration;
-        let mark = "";
-        if (pct > 0.75) mark = "75";
-        else if (pct > 0.5) mark = "50";
-        else if (pct > 0.25) mark = "25";
-        else if (pct > 0.1) mark = "10";
-
-        const key = "lastMark_" + meta.id;
-        if (mark && mark !== window[key]) {
-          window[key] = mark;
-          window.dataLayer.push({
-            event: "video_progress",
-            video_provider: "JWPlayer",
-            video_title: meta.title,
-            url: meta.url,
-            video_percent: mark
-          });
-        }
-      });
-    }
-  };
-});
-</script>
-
-<!-- Player 1-->
-<script>
-jwDepsReady.then(function () {
+document.addEventListener('DOMContentLoaded', function() {
   const meta = {
     id: 'nOgCKwWx',
     title: 'CONFERENCIA-MOURINHO - Salario De Mourinho',
@@ -9918,14 +9752,12 @@ jwDepsReady.then(function () {
 
   const player = jwplayer('jwPlayer-68e1496ca7c9e').setup(config);
   JWManager.register(player, meta);
-  
 });
 </script>
 
-
 <!-- Player 2 -->
 <script>
-jwDepsReady.then(function () {
+document.addEventListener('DOMContentLoaded', function() {
   const meta = {
     id: 'zxRUXPC3',
     title: 'A resposta de Farioli sobre o comentário de José Mourinho',
@@ -9944,9 +9776,9 @@ jwDepsReady.then(function () {
 });
 </script>
 
-<!-- Player 3  -->
+<!-- Player 3 -->
 <script>
-jwDepsReady.then(function () {
+document.addEventListener('DOMContentLoaded', function() {
   const meta = {
     id: 'TM4l43uA',
     title: 'CONFERENCIA-MOURINHO - ABOLA - Comentarios Sobre Jogadores',
@@ -9963,6 +9795,8 @@ jwDepsReady.then(function () {
   JWManager.register(player, meta);
 });
 </script>
+
+
 
 <!-- end new code -->
 
