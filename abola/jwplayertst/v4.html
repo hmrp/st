@@ -9619,7 +9619,7 @@ window.jwDepsReady = window.jwDepsReady || new Promise((resolve) => {
 });
 </script>
 
-<!-- (Optional) Pretty ad-request logger for debugging -->
+
 <script>
 function buildReadableAdLogger() {
   function extractTagStr(player, e) {
@@ -9636,9 +9636,9 @@ function buildReadableAdLogger() {
     try { url = new URL(raw); }
     catch { try { url = new URL(raw, location.href); } catch { return; } }
 
-    const p = url.searchParams;           // ⬅️ use the standard API
+    const p = url.searchParams;           /
     const vpos = p.get('vpos') || 'preroll';
-    if (p.get('vpos') && !/pre|mid|post/i.test(p.get('vpos'))) return; // ⬅️ allow mid
+    if (p.get('vpos') && !/pre|mid|post/i.test(p.get('vpos'))) return; 
 
     let cp = p.get('cust_params') || '';
     if (/%25/.test(cp)) cp = decodeOnce(decodeOnce(cp));
@@ -9853,7 +9853,7 @@ function jwPlayerAdTag(vpos) {
     }
   };
 
-  // ---------- Convenience: add players with shared config ----------
+
   function addPlayer(elId, meta, overrides = {}) {
     const base = { playlist: `https://cdn.jwplayer.com/v2/media/${meta.id}` };
     const config = JWManager.createConfig(Object.assign(base, overrides));
