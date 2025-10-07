@@ -9659,6 +9659,18 @@ function OptanonWrapper() { }
   .jwplayer .jw-controlbar .jw-button-container .jw-icon-next + * { margin-left: 0 !important; }
 </style>
 
+<style>
+  /* Mobile/touch: when floating (and NOT being dragged), keep it at the top with 100px margin */
+  .jwplayer.jw-flag-touch.jw-flag-floating:not(.jw-flag-dragging) .jw-wrapper {
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top, 0px) + 100px) !important; 
+    bottom: auto !important;
+
+  }
+</style>
+
+
+
 <script>
 window.jwDepsReady = window.jwDepsReady || new Promise((resolve) => {
   const MAX_WAIT_MS = 2000;
@@ -9778,12 +9790,12 @@ jwDepsReady.then(function () {
 
   window.JWManager = {
     players: [],
-    active: null, /* track current active player */
+    active: null,
     defaults: {
       abouttext: '© Ringier Sports Media. Todos os direitos reservados.',
       advertising: {
         client: 'googima',
-        autoplayadsmuted: true,
+        autoplayadsmuted: false,
         enablePPS: true,
         outstream: false,
         vpaidcontrols: true
@@ -9840,22 +9852,37 @@ jwDepsReady.then(function () {
         }
       });
 
-      player.on('ready', function () {
-        // environment-based volume
-        const env = this.getEnvironment?.();
-        const isIOS    = !!(env?.OS?.iOS || env?.OS?.iPad || env?.OS?.iPhone);
-        const isSafari = !!env?.Browser?.safari;
+player.on('ready', function () {
+  const env      = this.getEnvironment?.();
+  const os       = env?.OS || {};
+  const browser  = env?.Browser || {};
 
-        if (isIOS || isSafari) {
-          try { this.setVolume(1); } catch {}
-        } else {
-          const saved = localStorage.getItem('jwplayer_volume');
-          if (saved) this.setVolume(parseInt(saved, 10));
-        }
+  const isIOS     = !!(os.iOS || os.iPad || os.iPhone);
+  const isSafari  = !!browser.safari;
+  const isAndroid = !!(os.android || os.androidNative);
 
-        this.on('volumeChanged', e => localStorage.setItem('jwplayer_volume', e.volume));
-        try { this.removeButton('nextUp'); } catch {}
-      });
+  // Read saved volume (clamped to 0–100)
+  const savedRaw = localStorage.getItem('jwplayer_volume');
+  const savedVol = savedRaw != null ? Math.max(0, Math.min(100, parseInt(savedRaw, 10))) : null;
+
+  if (isIOS || isSafari) {
+    // Lowest possible on iOS/Safari
+    try { this.setVolume(1); } catch {}
+  } else if (isAndroid) {
+    // Android: default to 35%, but respect a saved volume if present
+    try { this.setVolume(savedVol ?? 35); } catch {}
+  } else {
+    // Others: restore saved if available
+    if (savedVol != null) try { this.setVolume(savedVol); } catch {}
+  }
+
+  // Persist changes
+  this.on('volumeChanged', e => {
+    try { localStorage.setItem('jwplayer_volume', e.volume); } catch {}
+  });
+
+  try { this.removeButton('nextUp'); } catch {}
+});
 
       player.on('adRequest', (e) => {
         logAdReadable(player, e, meta?.title || meta?.id || '');
