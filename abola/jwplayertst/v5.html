@@ -9596,112 +9596,158 @@ function OptanonWrapper() { }
 
 
 <!-- new code reference page https://www.abola.pt/noticias/recado-a-selecionador-irritacao-com-pergunta-e-o-desejo-de-ver-o-plantel-feliz-tudo-o-que-disse-mourinho-2025100415274117897 -->
- <!-- JW Player library -->
+<!-- JW Player library -->
 <script src="https://cdn.jwplayer.com/libraries/O1K43iRg.js"></script>
 
-<!-- Device detection (keep simple & compatible) -->
+<!-- Force horizontal volume bar (wider) + hide rewind/next -->
+<style>
+  /* --- Always show JW's horizontal volume slider (mimic jw-open) --- */
+  .jwplayer .jw-controlbar .jw-horizontal-volume-container {
+    display: flex !important;
+    align-items: center !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
 
-<!-- Wait briefly for pub.KV (as in your code) -->
+    /* Wider space for the slider */
+    width: 160px !important;
+    flex: 0 0 160px !important;
+    max-width: none !important;
+
+    transform: none !important;
+    transition: none !important;
+    margin-left: 6px !important;
+  }
+  /* Ensure visible even if skin expects the icon "open" */
+  .jwplayer .jw-controlbar .jw-icon-volume + .jw-horizontal-volume-container {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+  /* Inner slider fills container */
+  .jwplayer .jw-horizontal-volume-container .jw-slider-horizontal,
+  .jwplayer .jw-horizontal-volume-container .jw-slider-container,
+  .jwplayer .jw-horizontal-volume-container .jw-slider-volume {
+    width: 100% !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+  /* Slightly bigger knob (optional) */
+  .jwplayer .jw-horizontal-volume-container .jw-slider-volume .jw-knob {
+    width: 12px !important; height: 12px !important;
+  }
+  /* Hide vertical/tooltip variants */
+  .jwplayer .jw-vertical-volume-container,
+  .jwplayer .jw-tooltip-volume { display: none !important; }
+  /* Responsive widths for small players */
+  .jwplayer.jw-flag-small-player .jw-horizontal-volume-container,
+  .jwplayer[class*="jw-breakpoint-1"] .jw-horizontal-volume-container {
+    width: 88px !important; flex-basis: 88px !important;
+  }
+  .jwplayer[class*="jw-breakpoint-2"] .jw-horizontal-volume-container {
+    width: 120px !important; flex-basis: 120px !important;
+  }
+  /* Hide Rewind and Next buttons everywhere */
+  .jwplayer .jw-controlbar .jw-icon-rewind,
+  .jwplayer .jw-controlbar .jw-icon-next { display: none !important; }
+  .jwplayer .jw-tooltip-rewind,
+  .jwplayer .jw-tooltip-next { display: none !important; }
+  /* Tighten spacing where those buttons were */
+  .jwplayer .jw-controlbar .jw-button-container .jw-icon-rewind + *,
+  .jwplayer .jw-controlbar .jw-button-container .jw-icon-next + * { margin-left: 0 !important; }
+</style>
+
 <script>
-  window.jwDepsReady = window.jwDepsReady || new Promise(function (resolve) {
-    var MAX_WAIT_MS = 2000;
-    var start = Date.now();
-    (function check() {
-      if (window.pub && window.pub.KV) {
-        resolve({ reason: "pubKV", waited: Date.now() - start });
-        return;
-      }
-      if (Date.now() - start >= MAX_WAIT_MS) {
-        console.warn("No ads fetched - loading JWplayer setup");
-        resolve({ reason: "timeout", waited: MAX_WAIT_MS });
-        return;
-      }
-      setTimeout(check, 60);
-    })();
-  });
+window.jwDepsReady = window.jwDepsReady || new Promise((resolve) => {
+  const MAX_WAIT_MS = 2000;
+  const start = Date.now();
+  (function check() {
+    if (window.pub && pub.KV) {
+      resolve({ reason: "pubKV", waited: Date.now() - start });
+      return;
+    }
+    if (Date.now() - start >= MAX_WAIT_MS) {
+      console.warn("No ads fetched - loading JWplayer setup");
+      resolve({ reason: "timeout", waited: MAX_WAIT_MS });
+      return;
+    }
+    setTimeout(check, 60);
+  })();
+});
 </script>
 
 <script>
-  /* --------- Ad logger (compat: no optional chaining) --------- */
-  function buildReadableAdLogger() {
-    function extractTagStr(player, e) {
-      if (e && e.tag) return e.tag;
-      if (e && e.request) return e.request;
-      try {
-        var cfg = player && typeof player.getConfig === 'function' ? player.getConfig() : null;
-        if (cfg && cfg.advertising && cfg.advertising.schedule && cfg.advertising.schedule.preroll) {
-          return cfg.advertising.schedule.preroll.tag || null;
-        }
-      } catch (_) {}
-      return null;
-    }
-    function decodeOnce(s){ try{return decodeURIComponent(s);}catch(_){return s;} }
-    return function logAd(player, e, label) {
-      label = label || '';
-      var raw = extractTagStr(player, e);
-      if (!raw) return;
-      var url = null;
-      try { url = new URL(raw); }
-      catch (_e) { try { url = new URL(raw, location.href); } catch (_e2) { return; } }
-
-      var p = url.searchParams;
-      var vpos = p.get('vpos') || 'preroll';
-      if (p.get('vpos') && !/pre|mid|post/i.test(p.get('vpos'))) return;
-
-      var cp = p.get('cust_params') || '';
-      if (/%25/.test(cp)) cp = decodeOnce(decodeOnce(cp));
-      else if (/%26|%3D/.test(cp)) cp = decodeOnce(cp);
-
-      var table = {
-        iu: p.get('iu') || '',
-        vpos: vpos,
-        sz: p.get('sz') || '',
-        output: p.get('output') || '',
-        env: p.get('env') || '',
-        description_url: p.get('description_url') || '',
-        correlator: p.get('correlator') || ''
-      };
-      console.groupCollapsed("🎯 JW AdRequest " + (label ? '('+label+') ' : '') + "→ " + vpos);
-      console.log(url.toString());
-      console.table(table);
-      console.log('cust_params:', cp || '(none)');
-      console.groupEnd();
-    };
+function buildReadableAdLogger() {
+  function extractTagStr(player, e) {
+    if (e?.tag) return e.tag;
+    if (e?.request) return e.request;
+    const cfg = player.getConfig?.();
+    return cfg?.advertising?.schedule?.preroll?.tag || null;
   }
-  var logAdReadable = buildReadableAdLogger();
+  function decodeOnce(s){ try{return decodeURIComponent(s);}catch{return s;} }
+  return function logAd(player, e, label='') {
+    const raw = extractTagStr(player, e);
+    if (!raw) return;
+    let url;
+    try { url = new URL(raw); }
+    catch { try { url = new URL(raw, location.href); } catch { return; } }
+
+    const p = url.searchParams; /* fixed */
+    const vpos = p.get('vpos') || 'preroll';
+    if (p.get('vpos') && !/pre|mid|post/i.test(p.get('vpos'))) return;
+
+    let cp = p.get('cust_params') || '';
+    if (/%25/.test(cp)) cp = decodeOnce(decodeOnce(cp));
+    else if (/%26|%3D/.test(cp)) cp = decodeOnce(cp);
+
+    const table = {
+      iu: p.get('iu') || '',
+      vpos,
+      sz: p.get('sz') || '',
+      output: p.get('output') || '',
+      env: p.get('env') || '',
+      description_url: p.get('description_url') || '',
+      correlator: p.get('correlator') || ''
+    };
+    console.groupCollapsed(`🎯 JW AdRequest ${label ? '('+label+') ' : ''}→ ${vpos}`);
+    console.log(url.toString());
+    console.table(table);
+    console.log('cust_params:', cp || '(none)');
+    console.groupEnd();
+  };
+}
+const logAdReadable = buildReadableAdLogger();
 </script>
 
 <script>
 jwDepsReady.then(function () {
-  /* --------- Helpers you already had --------- */
   function jwPlayerAdCustParams() {
-    var jwPlayerKV = [];
-    var mainCategoryKV = '';
-    try {
-      if (Array.isArray(window.pub && window.pub.KV && window.pub.KV.interests) && window.pub.KV.interests.length) {
-        mainCategoryKV = String(window.pub.KV.interests[0]).trim();
-      } else if (typeof (window.pub && window.pub.KV && window.pub.KV.interests) === 'string') {
-        mainCategoryKV = window.pub.KV.interests.split(',')[0].trim();
-      }
-      jwPlayerKV.push(['Category', mainCategoryKV ? "__item-Category__," + mainCategoryKV : '__item-Category__']);
-
-      if (window.pub && window.pub.KV && window.pub.KV.id) jwPlayerKV.push(['id', String(window.pub.KV.id)]);
-      if (Array.isArray(window.pub && window.pub.KV && window.pub.KV.pageType) && window.pub.KV.pageType.length) {
-        jwPlayerKV.push(['type', window.pub.KV.pageType.join(',')]);
-      }
-      if (Array.isArray(window.pub && window.pub.KV && window.pub.KV.meta) && window.pub.KV.meta.length > 1) {
-        jwPlayerKV.push(['subcategory', window.pub.KV.meta.slice(1).join(',')]);
-      }
-      if (Array.isArray(window.pub && window.pub.fEnd) && window.pub.fEnd.length) {
-        jwPlayerKV.push(['end', window.pub.fEnd.join(',')]);
-      }
-    } catch(_){}
-    return jwPlayerKV.map(function (kv){ return kv[0] + '=' + kv[1]; }).join('&');
+    const jwPlayerKV = [];
+    let mainCategoryKV = '';
+    if (Array.isArray(pub?.KV?.interests) && pub.KV.interests.length) {
+      mainCategoryKV = String(pub.KV.interests[0]).trim();
+    } else if (typeof pub?.KV?.interests === 'string') {
+      mainCategoryKV = pub.KV.interests.split(',')[0].trim();
+    }
+    jwPlayerKV.push(['Category', mainCategoryKV ? `__item-Category__,${mainCategoryKV}` : '__item-Category__']);
+    if (pub?.KV?.id) jwPlayerKV.push(['id', String(pub.KV.id)]);
+    if (Array.isArray(pub?.KV?.pageType) && pub.KV.pageType.length) {
+      jwPlayerKV.push(['type', pub.KV.pageType.join(',')]);
+    }
+    if (Array.isArray(pub?.KV?.meta) && pub.KV.meta.length > 1) {
+      jwPlayerKV.push(['subcategory', pub.KV.meta.slice(1).join(',')]);
+    }
+    if (Array.isArray(pub?.fEnd) && pub.fEnd.length) {
+      jwPlayerKV.push(['end', pub.fEnd.join(',')]);
+    }
+    return jwPlayerKV.map(([k,v]) => `${k}=${v}`).join('&');
   }
 
   function jwPlayerAdTag(vpos) {
-    var u = new URL('https://pubads.g.doubleclick.net/gampad/ads');
-    var unit = (vpos === 'postroll')
+    const u = new URL('https://pubads.g.doubleclick.net/gampad/ads');
+    const unit = (vpos === 'postroll')
       ? '/417417404/postroll'
       : (vpos === 'midroll')
       ? '/417417404/midroll'
@@ -9718,6 +9764,8 @@ jwDepsReady.then(function () {
     u.searchParams.set('impl', 's');
     u.searchParams.set('plcmt', '1');
     u.searchParams.set('vconp', '1');
+    // u.searchParams.set('vpmute', '1');
+    // u.searchParams.set('hl', 'pt');
     u.searchParams.set('aconp', '0');
     u.searchParams.set('vpos', vpos);
     u.searchParams.set('tfcd', '0');
@@ -9728,39 +9776,9 @@ jwDepsReady.then(function () {
     return u.toString();
   }
 
-  /* --------- Force JW’s own horizontal volume slider open --------- */
-  function keepJWVolumeOpen(player) {
-    try {
-      var container = (player && typeof player.getContainer === 'function') ? player.getContainer() : null;
-      if (!container) return;
-
-      function apply() {
-        try {
-          var volBtn = container.querySelector('.jw-icon-volume');
-          var horiz  = container.querySelector('.jw-horizontal-volume-container');
-          if (volBtn) volBtn.classList.add('jw-flag-horizontal-slider'); // ensure horizontal UI
-          if (volBtn) volBtn.classList.add('jw-open');
-          if (horiz)  horiz.classList.add('jw-open');
-        } catch (_){}
-      }
-
-      apply();
-
-      if (window.MutationObserver) {
-        var mo = new MutationObserver(function(){ apply(); });
-        mo.observe(container, { subtree: true, attributes: true, attributeFilter: ['class'] });
-        player._jwVolObserver = mo;
-      } else {
-        // fallback: nudge a few times
-        var tries = 0;
-        var id = setInterval(function(){ apply(); if (++tries > 40) clearInterval(id); }, 250);
-      }
-    } catch (_){}
-  }
-
-  /* --------- JW Manager (original + volume logic) --------- */
   window.JWManager = {
     players: [],
+    active: null, /* track current active player */
     defaults: {
       abouttext: '© Ringier Sports Media. Todos os direitos reservados.',
       advertising: {
@@ -9774,90 +9792,82 @@ jwDepsReady.then(function () {
       horizontalVolumeSlider: true,
       nextUpDisplay: false,
       mute: false,
-      volume: 1, /* will be overridden */
+      volume: 1,
       floating: { dismissible: true, showTitle: true, mode: 'notVisible' },
       related: { file: 'https://cdn.jwplayer.com/v2/playlists/DTw3rRMO', oncomplete: 'show' }
     },
 
-    createConfig: function (overrides) {
-      overrides = overrides || {};
-      var cfg = {};
-      for (var k in this.defaults) cfg[k] = this.defaults[k];
-      for (var j in overrides) cfg[j] = overrides[j];
-      return cfg;
+    createConfig(overrides = {}) {
+      return Object.assign({}, this.defaults, overrides);
     },
 
-    register: function (player, meta) {
+    register(player, meta) {
       this.players.push(player);
       this.applyGlobalListeners(player, meta);
 
-      var prerollTag  = jwPlayerAdTag('preroll');
-      var postrollTag = jwPlayerAdTag('postroll');
+      const prerollTag  = jwPlayerAdTag('preroll');
+      const postrollTag = jwPlayerAdTag('postroll');
 
-      player.setPlaylistItemCallback(function (item) {
-        var modified = {};
-        for (var k in item) modified[k] = item[k];
-        modified.adschedule = [
-          { offset: 'pre',  tag: prerollTag  },
-          { offset: 'post', tag: postrollTag }
-        ];
+      player.setPlaylistItemCallback((item) => {
+        const modified = Object.assign({}, item, {
+          adschedule: [
+            { offset: 'pre',  tag: prerollTag  },
+            { offset: 'post', tag: postrollTag }
+          ]
+        });
         return Promise.resolve(modified);
       });
     },
 
-    pauseOthers: function (active) {
-      this.players.forEach(function (p) {
+    pauseOthers(active) {
+      this.players.forEach(p => {
         if (p !== active) {
           try {
             p.pause(true);
-            if (p.getFloating && p.getFloating()) p.setFloating(false);
-          } catch (_){}
+            if (p.getFloating && p.getFloating()) p.setFloating(false); // hide floats of other players
+          } catch {}
         }
       });
     },
 
-    enableFloating: function (p) { try { p.setConfig({ floating: this.defaults.floating }); } catch (_){ } },
+    enableFloating(p) { try { p.setConfig({ floating: this.defaults.floating }); } catch {} },
 
-    applyGlobalListeners: function (player, meta) {
-      player.on('pause', function () { try { player.setFloating(false); } catch (_){ } });
-
-      player.on('ready', function () {
-        try {
-          if (window.__FORCE_MAX_VOLUME) {
-            try { player.setMute(false); } catch (_){}
-            try { player.setVolume(100); } catch (_){}
-          } else {
-            var saved = null;
-            try { saved = localStorage.getItem('jwplayer_volume'); } catch(_){}
-            if (saved !== null && saved !== '' && !isNaN(parseInt(saved, 10))) {
-              try { player.setVolume(parseInt(saved, 10)); } catch (_){}
-            }
-          }
-
-          player.on('volumeChanged', function (e) {
-            try {
-              var v = e && typeof e.volume === 'number' ? e.volume : (player.getVolume ? player.getVolume() : null);
-              if (v !== null) localStorage.setItem('jwplayer_volume', String(v));
-            } catch(_){}
-          });
-
-          if (window.__FORCE_OPEN_SLIDER) keepJWVolumeOpen(player);
-
-          try { player.removeButton('nextUp'); } catch (_){}
-        } catch (err) {
-          console.error('JW ready handler error:', err);
+    applyGlobalListeners(player, meta) {
+      // Do NOT auto-hide float when pausing the active player
+      player.on('pause', () => {
+        if (JWManager.active && JWManager.active !== player) {
+          try { player.setFloating(false); } catch {}
         }
       });
 
-      player.on('adRequest', function (e) {
-        var lbl = (meta && (meta.title || meta.id)) ? (meta.title || meta.id) : '';
-        logAdReadable(player, e, lbl);
+      player.on('ready', function () {
+        // environment-based volume
+        const env = this.getEnvironment?.();
+        const isIOS    = !!(env?.OS?.iOS || env?.OS?.iPad || env?.OS?.iPhone);
+        const isSafari = !!env?.Browser?.safari;
+
+        if (isIOS || isSafari) {
+          try { this.setVolume(1); } catch {}
+        } else {
+          const saved = localStorage.getItem('jwplayer_volume');
+          if (saved) this.setVolume(parseInt(saved, 10));
+        }
+
+        this.on('volumeChanged', e => localStorage.setItem('jwplayer_volume', e.volume));
+        try { this.removeButton('nextUp'); } catch {}
       });
 
-      player.on('play', function () {
-        window.JWManager.pauseOthers(player);
-        window.JWManager.enableFloating(player);
+      player.on('adRequest', (e) => {
+        logAdReadable(player, e, meta?.title || meta?.id || '');
+      });
 
+      player.on('play', () => {
+        // mark active, then pause/hide floats for the rest
+        JWManager.active = player;
+        JWManager.pauseOthers(player);
+        JWManager.enableFloating(player);
+
+        // analytics (unchanged)
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event: 'video_start',
@@ -9866,14 +9876,14 @@ jwDepsReady.then(function () {
           url: meta.url
         });
 
-        if (window.tentacles && typeof window.tentacles.onVideoPlay === 'function') {
+        if (window.tentacles?.onVideoPlay) {
           window.tentacles.onVideoPlay({
             videoId: meta.id, title: meta.title, pubDate: meta.publishedAt, uri: meta.url, channel: 'web'
           });
         }
       });
 
-      player.on('complete', function () {
+      player.on('complete', () => {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event: 'video_complete',
@@ -9883,16 +9893,16 @@ jwDepsReady.then(function () {
         });
       });
 
-      player.on('time', function (ev) {
-        var pct = ev.duration ? (ev.currentTime / ev.duration) : 0;
-        var mark = '';
+      player.on('time', (ev) => {
+        const pct = ev.currentTime / ev.duration;
+        let mark = '';
         if (pct > 0.75) mark = '75';
         else if (pct > 0.5) mark = '50';
         else if (pct > 0.25) mark = '25';
         else if (pct > 0.1) mark = '10';
 
-        var key = 'lastMark_' + meta.id;
-        if (mark && window[key] !== mark) {
+        const key = 'lastMark_' + meta.id;
+        if (mark && mark !== window[key]) {
           window[key] = mark;
           window.dataLayer.push({
             event: 'video_progress',
@@ -9906,16 +9916,15 @@ jwDepsReady.then(function () {
     }
   };
 
-  function addPlayer(elId, meta, overrides) {
-    overrides = overrides || {};
-    var base = { playlist: "https://cdn.jwplayer.com/v2/media/" + meta.id };
-    var merged = window.JWManager.createConfig(Object.assign({}, base, overrides));
-    var player = jwplayer(elId).setup(merged);
-    window.JWManager.register(player, meta);
+  function addPlayer(elId, meta, overrides = {}) {
+    const base = { playlist: `https://cdn.jwplayer.com/v2/media/${meta.id}` };
+    const config = JWManager.createConfig(Object.assign(base, overrides));
+    const player = jwplayer(elId).setup(config);
+    JWManager.register(player, meta);
     return player;
   }
 
-  /* ---- your players (same ids as before) ---- */
+  /* Your three players */
   addPlayer('jwPlayer-68e1496ca7c9e', {
     id: 'nOgCKwWx',
     title: 'CONFERENCIA-MOURINHO - Salario De Mourinho',
@@ -9938,7 +9947,6 @@ jwDepsReady.then(function () {
   }, { autostart: false });
 });
 </script>
-
 
 <!-- end new code -->
 
