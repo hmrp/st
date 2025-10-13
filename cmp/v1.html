@@ -10553,59 +10553,99 @@ function OptanonWrapper() { }
 
 
 <script>
-(function(){
-  try {
-    var ak = (typeof window.adsKeywords !== 'undefined') ? window.adsKeywords : (typeof adsKeywords !== 'undefined' ? adsKeywords : undefined);
-    var arr = [];
-    if (ak && typeof ak === 'object' && !Array.isArray(ak)) {
-      Object.keys(ak).forEach(function(k){
-        var v = ak[k];
-        if (v != null) arr[k] = v;
-      });
-    } else if (Array.isArray(ak)) {
-      arr = ak;
-    }
-    window.adsKeywords = arr;
-  } catch {
-    window.adsKeywords = [];
-  }
-})();
-
 (function () {
+  // ---- CMP constants and helpers -------------------------------------------------
+
+  // Consent group IDs used to decide the ad request posture.
+  // - C0001 only => Limited Ads (LA)
+  // - C0004 + V2STACK42 present => Personalized Ads (PA)
+  // - otherwise => Non‑Personalized Ads (NPA)
   const CMP_ID = ['C0004', 'V2STACK42'];
-  const PRESENCE_TIMEOUT = 2000; // after 2 seconds if there was no CMP loaded, deliver ads as Non Personalized request
+
+  // Fail‑open timer: if CMP isn't present/ready after 2s, proceed as NPA to avoid blank ads.
+  const PRESENCE_TIMEOUT = 2000;
+
+  // GPT script sources. In LA mode we load the Limited Ads host; otherwise the standard host.
   const GPT_SRC = {
-    la:  'https://pagead2.googlesyndication.com/tag/js/gpt.js',
-    std: 'https://securepubads.g.doubleclick.net/tag/js/gpt.js'
+    la:  'https://pagead2.googlesyndication.com/tag/js/gpt.js',   // LA endpoint
+    std: 'https://securepubads.g.doubleclick.net/tag/js/gpt.js'   // Standard GPT endpoint
   };
-  function groups(){ return (window.OnetrustActiveGroups || '').split(',').map(s=>s.trim()).filter(Boolean); }
+
+  // Read active OneTrust groups as an array of trimmed tokens, e.g. ["C0001", "C0004", ...]
+  function groups(){
+    return (window.OnetrustActiveGroups || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+
+  // Derive a *mode* from CMP groups:
+  // - If the ONLY group is C0001 => 'la' (Limited Ads)
+  // - If ALL CMP_IDs are present => 'pa' (Personalized Ads)
+  // - Else => 'npa' (Non‑Personalized Ads)
   function computeMode(){
     const g = groups();
     if (g.length === 1 && g[0] === 'C0001') return 'la';
     return CMP_ID.every(id => g.includes(id)) ? 'pa' : 'npa';
   }
+
+  // Pick GPT host by mode (LA vs Standard). This keeps the runtime consistent with privacy posture.
   function pickGptSrc(mode){ return mode === 'la' ? GPT_SRC.la : GPT_SRC.std; }
+
+  // Public one‑shot hook. Calls cb({ mode, gptSrc, reason }) exactly once when:
+  //  - CMP is present and alert is closed (reason: 'cmp-ready'), OR
+  //  - CMP is absent after PRESENCE_TIMEOUT (reason: 'cmp-absent').
   window.onCMPReady = function (cb) {
-    let fired = false, bootedMode = null;
-    function fire(mode, reason){ if (!fired){ fired = true; bootedMode = mode; try{ cb({mode, gptSrc: pickGptSrc(mode), reason}); }catch{} } }
+    let cmpInitiated = false, bootedMode = null;
+
+    // Internal helper to cmpInit the callback once with the resolved mode.
+    function cmpInit(mode, reason){
+      if (!cmpInitiated){
+        cmpInitiated = true;
+        bootedMode = mode;
+        try{ cb({mode, gptSrc: pickGptSrc(mode), reason}); }catch{}
+      }
+    }
+
+    // If OneTrust isn't ready in time, fail‑open to NPA to avoid blocking ad delivery.
     const presenceTimer = setTimeout(() => {
-      if (!window.OneTrust || typeof OneTrust.IsAlertBoxClosed !== 'function') fire('npa', 'cmp-absent');
+      if (!window.OneTrust || typeof OneTrust.IsAlertBoxClosed !== 'function')
+        cmpInit('npa', 'cmp-absent');
     }, PRESENCE_TIMEOUT);
+
+    // Called once we detect OneTrust presence (API available).
     function whenCMPPresent(){
       clearTimeout(presenceTimer);
-      function maybeBoot(){ if (OneTrust.IsAlertBoxClosed && OneTrust.IsAlertBoxClosed()) fire(computeMode(), 'cmp-ready'); }
-      maybeBoot();
+
+      // Only cmpInit after the consent banner has been closed (user has interacted or pre‑given consent).
+      function cmpBoot(){
+        if (OneTrust.IsAlertBoxClosed && OneTrust.IsAlertBoxClosed())
+          cmpInit(computeMode(), 'cmp-ready');
+      }
+      // Attempt an immediate boot if the alert is already closed.
+      cmpBoot();
+
+      // Patch OptanonWrapper so we re‑check boot conditions when OneTrust finishes initializing.
       const prev = window.OptanonWrapper;
-      window.OptanonWrapper = function(){ try{ if (typeof prev === 'function') prev(); }catch{} maybeBoot(); };
+      window.OptanonWrapper = function(){
+        try{ if (typeof prev === 'function') prev(); }catch{}
+        cmpBoot();
+      };
+
+      // React to consent changes:
+      // If the newly computed mode differs from the bootedMode, reload to re‑bootstrap in a clean state.
       if (typeof OneTrust.OnConsentChanged === 'function') {
         try {
           OneTrust.OnConsentChanged(() => {
             const m = computeMode();
-            if (bootedMode && m !== bootedMode) location.reload(); else maybeBoot();
+            if (bootedMode && m !== bootedMode) location.reload();
+            else cmpBoot();
           });
         } catch {}
       }
     }
+
+    // Poll for OneTrust presence. We wait for the API function to exist.
     (function pollPresence(){
       if (window.OneTrust && typeof OneTrust.IsAlertBoxClosed === 'function') whenCMPPresent();
       else setTimeout(pollPresence, 50);
@@ -10613,8 +10653,11 @@ function OptanonWrapper() { }
   };
 })();
 
+
+
 window.googletag = window.googletag || { cmd: [] };
 
+// Load a script once by id; call onload when available (even if already present).
 function loadScript(src, id, onload){
   if (id && document.getElementById(id)) { onload && onload(); return; }
   const s = document.createElement('script');
@@ -10624,15 +10667,21 @@ function loadScript(src, id, onload){
   s.onload = onload;
   document.head.appendChild(s);
 }
+
+// Find a pubads Slot by its div id (returns null on error or not found).
 function getSlotByDiv(id){
   try { return googletag.pubads().getSlots().find(s => s.getSlotElementId && s.getSlotElementId() === id) || null; }
   catch { return null; }
 }
+
+// Define an Out‑of‑Page slot safely:
+// - If idOrEnum is a string, require that element to exist and avoid redefining an existing slot.
+// - If idOrEnum is googletag.enums.OutOfPageFormat.*, define using that enum (no DOM element required).
 function safeDefineOOP(path, idOrEnum){
   if (typeof idOrEnum === 'string') {
-    if (!document.getElementById(idOrEnum)) return null;
+    if (!document.getElementById(idOrEnum)) return null;           // don't create if anchor element absent
     const existing = getSlotByDiv(idOrEnum);
-    if (existing) return existing;
+    if (existing) return existing;                                 // avoid duplicate definition
   }
   const slot = googletag.defineOutOfPageSlot(path, idOrEnum);
   if (slot) slot.addService(googletag.pubads());
@@ -10641,16 +10690,23 @@ function safeDefineOOP(path, idOrEnum){
 
 onCMPReady(({ mode, gptSrc }) => {
   function start() {
+    // load GPT library
     loadScript(gptSrc, 'gpt-js', function () {
-      googletag = window.googletag || { cmd: [] };
+
+
+
       googletag.cmd.push(function () {
         const pubads = googletag.pubads();
+        //  setTargeting ignore null/empty values so google console doesnt give warning messages for Keyvalues if they dont exist
         (function(){
           const orig = pubads.setTargeting.bind(pubads);
           pubads.setTargeting = function(key, val){
             if (val == null) return this;
             if (Array.isArray(val)) {
-              const cleaned = val.map(v => v == null ? '' : String(v)).map(s => s.trim()).filter(Boolean);
+              const cleaned = val
+                .map(v => v == null ? '' : String(v))
+                .map(s => s.trim())
+                .filter(Boolean);
               if (!cleaned.length) return this;
               return orig(key, cleaned);
             }
@@ -10662,11 +10718,19 @@ onCMPReady(({ mode, gptSrc }) => {
             return orig(key, String(val));
           };
         })();
+
+        // --- THE PRIVACY GATE: apply mode before any requests/services are enabled ---
+        // Added Keyvalue Mapping so we can check through Admanager reporting as 'adReq'
+        //   la  => limitedAds: true,  nonPersonalizedAds: false
+        //   npa => limitedAds: false, nonPersonalizedAds: true
+        //   pa  => limitedAds: false, nonPersonalizedAds: false
         pubads.setPrivacySettings({
           limitedAds: (mode === 'la'),
           nonPersonalizedAds: (mode === 'npa')
         });
+
         pubads.setTargeting('adReq', [mode]);
+
         pubads.enableSingleRequest();
         pubads.collapseEmptyDivs();
         pubads.setCentering(true);
@@ -10732,16 +10796,23 @@ onCMPReady(({ mode, gptSrc }) => {
           ["/34550012/Sportal/In_Text_3",    [[728,90],[728,250],[728,280],[640,360],[580,280],[200,200],[250,250],[300,250],[320,250],[320,240],[336,280],"fluid"], "div-gpt-ad-1745331569000-0", mapping6],
         ];
 
+        // Define all declared slots whose containers exist (id present in DOM) and are not already defined.
         (window.slots || []).forEach(([path, sizes, divId, mapping]) => {
-          if (!document.getElementById(divId)) return;
-          if (getSlotByDiv(divId)) return;
-          googletag.defineSlot(path, sizes, divId).defineSizeMapping(mapping).addService(pubads);
+          if (!document.getElementById(divId)) return;  
+          if (getSlotByDiv(divId)) return;              
+          googletag.defineSlot(path, sizes, divId)
+                   .defineSizeMapping(mapping)
+                   .addService(pubads);
         });
 
+        // OOP slots:
+        // - Interstitial and Sticky require anchor elements by id (string). (Note: unit path string 'Interstital' appears misspelled but preserved.)
+        // - Anchor uses the enum format and doesn't need a DOM element.
         safeDefineOOP("/34550012/Sportal/Interstital", "div-gpt-ad-1745330985782-0");
         safeDefineOOP("/34550012/Sportal/Sticky",      "div-gpt-ad-1745331175002-0");
         safeDefineOOP("/34550012/Sportal/Anchor",       googletag.enums.OutOfPageFormat.BOTTOM_ANCHOR);
 
+        // Pull page‑level key‑values from window.adsKeywords
         (function(){
           var ak = window.adsKeywords || [];
           var keys = Object.keys(ak).filter(function(k){ return isNaN(Number(k)); });
@@ -10749,7 +10820,10 @@ onCMPReady(({ mode, gptSrc }) => {
             var val = ak[key];
             if (val == null) return;
             if (Array.isArray(val)) {
-              var cleaned = val.map(function(v){ return v == null ? '' : String(v); }).map(function(s){ return s.trim(); }).filter(Boolean);
+              var cleaned = val
+                .map(function(v){ return v == null ? '' : String(v); })
+                .map(function(s){ return s.trim(); })
+                .filter(Boolean);
               if (cleaned.length) pubads.setTargeting(key, cleaned);
               return;
             }
@@ -10762,14 +10836,13 @@ onCMPReady(({ mode, gptSrc }) => {
         })();
 
         googletag.enableServices();
-
         const defined = {};
         window.defineAndPush = (id, medium) => {
-          const key = `${id}-${medium}`;
+          const key = `${id}-${medium}`;                       
           const el = document.querySelector(`#${key}`);
-          if (!el || !el.checkVisibility || !el.checkVisibility()) return;
+          if (!el || !el.checkVisibility || !el.checkVisibility()) return; 
           const details = (window.slots || []).find((next) => next[2] === id);
-          if (!details) return;
+          if (!details) return;                             
           if (!defined[key]) {
             window.googletag.cmd.push(function() {
               window.googletag
@@ -10784,12 +10857,15 @@ onCMPReady(({ mode, gptSrc }) => {
       });
     });
   }
+
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
     start();
   }
 });
+
 </script>
 
 
