@@ -1,0 +1,159 @@
+
+
+
+
+
+exemplos https://www.abola.pt/noticias/onde-da-bola-na-tv-hoje-pode-ver-em-direto-na-tv-2024112318560237896 
+<style>
+/* pub reference classic-quiz */
+[data-fu-widget="classic-quiz"]{
+  position: relative;
+}
+
+[data-fu-widget="classic-quiz"]:has(.fu-r-classic-quiz-splash__logo, .fu-r-widget__branding-logo)::after{
+  content: "CONTEÚDO PATROCINADO";
+  position: absolute;
+  left: 0.1rem;     
+  top: -1rem;   
+  z-index: 2;
+  color: #000;
+  font-size: 7px;
+  font-family: sans-serif;
+  letter-spacing: 0.1em;
+  padding: 1px 1px;
+  pointer-events: none;
+  background: rgb(255 255 255 / 75%);
+}
+</style>
+
+
+
+<style>
+/* pub reference fu-widget */
+[data-component="fu-widget"]{position: relative;}:is( [data-component="fu-widget"][data-branded-area-image],
+  [data-component="fu-widget"]:has([data-branded-area-image]))::after{
+  content: "CONTEÚDO PATROCINADO";
+  position: absolute;
+  left: 0.1rem;   
+  top: -1rem;
+  z-index: 2;
+  color: #000;
+  font-size: 7px;
+  font-family: sans-serif;
+  letter-spacing: 0.1em;
+  padding: 1px 1px;
+  pointer-events: none;
+  background: rgb(255 255 255 / 75%);
+}
+</style>
+
+
+
+
+
+exemplo https://www.abola.pt/futebol/jogo/tondela-sporting-8047234 
+<style>
+/* pub reference data-widget: football-single-event */
+div[data-odds-betting-id]{ position: relative; }
+div[data-odds-betting-id]::before{
+  content:"PUB";
+  position:absolute;
+  top:205px; left:15px;
+  z-index:2; color:#000; font-size:7px; font-family:sans-serif;
+  letter-spacing:.1em; padding:1px 1px; pointer-events:none;
+  background: rgb(255 255 255 / 75%);
+}
+@media (min-width: 1260px){
+  div[data-odds-betting-id]::before{
+    top:180px; left:90px;
+  }
+}
+</style>
+
+
+
+
+
+
+almost there - odds, not working good yet for below min-width:1260px) 
+<style>
+div[data-odds-betting-id]{
+  position: relative;
+}
+
+div[data-odds-betting-id]::before{
+  content:"PUB";
+  position:absolute;
+  top:0; bottom:0; left:0;   
+  right:auto;
+  display:block;
+  width:max-content;
+  overflow:hidden;       
+
+  padding-top: 136px;        
+  transform: translateY(69px);   
+  margin-left: 15px;           
+
+  background:none !important;
+  opacity:1 !important;
+  mix-blend-mode:normal;
+  pointer-events:none;
+  z-index:2;
+
+  font-size: 7px;
+  font-family: sans-serif;
+  letter-spacing: 0.1em;
+  color:#000;
+  text-shadow:0 0 2px #fff, 0 0 2px #fff;
+}
+
+@media (min-width:1260px){
+  div[data-odds-betting-id]::before{
+    margin-left: 90px;     
+    transform: translateY(44px);
+  }
+}
+</style>
+
+
+
+almost but worst, it hides pub when necessary but also hides it when it should show on less than 1260px
+<style>
+
+div[data-odds-betting-id]{
+  position: relative;
+  overflow: hidden;         
+}
+div[data-odds-betting-id]::before{
+  content:"PUB";
+  position:absolute;
+  left:15px;
+  bottom: calc(100% - 270px);
+
+  display:block;
+  width:max-content;
+  pointer-events:none;
+  z-index:2;
+  background:none !important;
+  opacity:1 !important;
+  mix-blend-mode:normal;
+
+  font-size:7px;
+  font-family:sans-serif;
+  letter-spacing:.1em;
+  color:#000;
+  text-shadow:0 0 2px #fff, 0 0 2px #fff;
+}
+
+
+@media (min-width:1260px){
+  div[data-odds-betting-id]{ overflow: visible; }
+  div[data-odds-betting-id]::before{
+    bottom:auto;    
+    top:0; left:0;
+    margin-left:90px;
+    transform: translateY(44px);  
+  }
+}
+</style>
+
