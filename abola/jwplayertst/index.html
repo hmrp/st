@@ -9441,7 +9441,8 @@ function OptanonWrapper() { }
                                             </div>
 
     
-    <script data-navigate-once="true">window.livewireScriptConfig = {"csrf":"UEx5qSK8TxvxucVv5L5ELmDvgTMIfdHP2HhdNnjR","uri":"\/livewire\/update","progressBar":"","nonce":""};</script>
+                                            <!--
+    <script data-navigate-once="true">window.livewireScriptConfig = {"csrf":"UEx5qSK8TxvxucVv5L5ELmDvgTMIfdHP2HhdNnjR","uri":"\/livewire\/update","progressBar":"","nonce":""};</script>-->
     <link rel="modulepreload" as="script" href="https://cdn.abola.pt/b9944d21-62c9-4740-a164-b9cd24f7f8d2/theme/pt/assets/app-BK5J7AzE.js" /><script type="module" src="https://cdn.abola.pt/b9944d21-62c9-4740-a164-b9cd24f7f8d2/theme/pt/assets/app-BK5J7AzE.js" data-navigate-track="reload"></script>                    
     
     
@@ -9530,13 +9531,9 @@ function OptanonWrapper() { }
 
 
 
-        
+       <script src="https://cdn.jwplayer.com/libraries/O1K43iRg.js"></script>
 
-<!-- new code reference page https://www.abola.pt/noticias/recado-a-selecionador-irritacao-com-pergunta-e-o-desejo-de-ver-o-plantel-feliz-tudo-o-que-disse-mourinho-2025100415274117897 -->
-<!-- JW Player library -->
-<script src="https://cdn.jwplayer.com/libraries/O1K43iRg.js"></script>
-
-
+<!--first / main player request-->
 <style>
   .jwplayer .jw-controlbar .jw-horizontal-volume-container {
     display: flex !important;
@@ -9593,9 +9590,6 @@ function OptanonWrapper() { }
 
   }
 </style>
-
-
-
 
   <script>
  document.addEventListener('DOMContentLoaded', function() {
@@ -9709,7 +9703,7 @@ function OptanonWrapper() { }
         abouttext: '© Ringier Sports Media. Todos os direitos reservados.',
         advertising: {
           client: 'googima',
-          autoplayadsmuted: false, // autoplay trigger
+          autoplayadsmuted: false,
           enablePPS: true,
           outstream: false,
           vpaidcontrols: true
@@ -9737,7 +9731,7 @@ initPlayerAdScheduling(player, meta) {
     const playTypeKV = { type: isFirstPlayer ? 'autoplay' : 'clickplay' };
 
     function computeMidrollOffsets(durationSec) {
-        const MIN_BLOCK = 150; // 2:30
+        const MIN_BLOCK = 150; 
         const n = Math.floor(durationSec / MIN_BLOCK);
         if (!Number.isFinite(durationSec) || durationSec <= 0 || n <= 0) return [];
         const offsets = [];
@@ -9797,9 +9791,6 @@ initPlayerAdScheduling(player, meta) {
                 try { player.setConfig({ floating: false }); } catch {}
             }
         });
-
-       // player.on('adRequest', e => console.log('adRequest', e));
-       // player.on('adError',   e => console.warn('adError', e));
 
     player.on('ready', function () {
         const env = this.getEnvironment?.();
@@ -9872,9 +9863,7 @@ initPlayerAdScheduling(player, meta) {
     });
     }
 };
-
-
-    function jwPlayerGenerator(elId, meta, overrides = {}) {
+   function jwPlayerGenerator(elId, meta, overrides = {}) {
       if (typeof jwplayer !== 'function') {
         console.error('jwplayer library not loaded');
         return null;
@@ -9888,7 +9877,7 @@ initPlayerAdScheduling(player, meta) {
 
     window.jwPlayerGenerator = jwPlayerGenerator;
 
-    jwPlayerGenerator('jwPlayer-68e1496ca7c9e', {
+    jwPlayerGenerator('jwPlayer-68f7614a14801', {
       id: 'nOgCKwWx',
       title: 'CONFERENCIA-MOURINHO - Salario De Mourinho',
       url: 'https://www.abola.pt/noticias/recado-a-selecionador-irritacao-com-pergunta-e-o-desejo-de-ver-o-plantel-feliz-tudo-o-que-disse-mourinho-2025100415274117897',
@@ -9898,13 +9887,14 @@ initPlayerAdScheduling(player, meta) {
 
 });
 </script>
+<!-- end first / main player request-->
 
 
-
+<!-- 2nd player request -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   jwDepsReady.then(function () {
-    window.jwPlayerGenerator('jwPlayer-68e1496cb4dbf', {
+    window.jwPlayerGenerator('jwPlayer-68f7614a1f2f7', {
       id: 'zxRUXPC3',
       title: 'A resposta de Farioli sobre o comentário de José Mourinho',
       url: 'https://www.abola.pt/noticias/recado-a-selecionador-irritacao-com-pergunta-e-o-desejo-de-ver-o-plantel-feliz-tudo-o-que-disse-mourinho-2025100415274117897',
@@ -9914,10 +9904,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
+<!-- 3rd player request -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   jwDepsReady.then(function () {
-    window.jwPlayerGenerator('jwPlayer-68e1496cb5712', {
+    window.jwPlayerGenerator('jwPlayer-68f7614a1f9bf', {
       id: 'TM4l43uA',
       title: 'CONFERENCIA-MOURINHO - ABOLA - Comentarios Sobre Jogadores',
       url: 'https://www.abola.pt/noticias/recado-a-selecionador-irritacao-com-pergunta-e-o-desejo-de-ver-o-plantel-feliz-tudo-o-que-disse-mourinho-2025100415274117897',
@@ -9926,8 +9918,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-
-
 
 
             <script src="https://cdn.jsdelivr.net/npm/fansunited-widgets-cdn@0.0.79-RC1/fu-widgets.iife.js"></script>
