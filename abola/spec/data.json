@@ -36,7 +36,7 @@
       "Tamanho máx.": "480 KB",
       "Peças Criativas": "3 min - 12 max",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "ARTIGOS 240 €"
+      "CPM": "ARTIGOS ROS 230 € · CANAIS 250 €"
     }
   },
   {
@@ -55,7 +55,7 @@
       "Tipos de ficheiro": "JPG / PNG / MP4",
       "Tamanho máx.": "950 KB",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "HP / ROS 320 €"
+      "CPM": "HP / ROS 320 € · CANAIS 350 €"
     }
   },
   {
@@ -73,7 +73,8 @@
       "Dimensões": "1920×1080 px · 1080×1920 px",
       "Tipos de ficheiro": "JPG / PNG",
       "Tamanho máx.": "950 KB",
-      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE"
+      "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
+      "CPM": "ROS 230 € · CANAIS 250 €"
     }
   },
   {
@@ -92,7 +93,7 @@
       "Tipos de ficheiro": "JPG / PNG / MP4",
       "Tamanho máx.": "950 KB",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "ARTIGOS 260 €"
+      "CPM": "ARTIGOS ROS 240 € · CANAIS 260 €"
     }
   },
   {
@@ -112,7 +113,7 @@
       "Tamanho máx.": "480 KB",
       "Peças Criativas": "1 min - 6 max",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "ROS 170 €"
+      "CPM": "ROS 170 € · CANAIS 190 €"
     }
   },
   {
@@ -131,7 +132,7 @@
       "Tipos de ficheiro": "JPG / PNG / GIF / HTML5",
       "Tamanho máx.": "120 KB",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "ROS 190 €"
+      "CPM": "ROS 210 € · CANAIS 230 €"
     }
   },
   {
@@ -143,14 +144,15 @@
     "art": "digital/billboardXXL.png",
     "videos": {
       "desktop": "digital/billboardxxl.mp4",
-      "mobile": "digital/billboardxxl_mobile.mp4"
+      "mobile": "digital/billboardxxl_mobile.mp4",
+      "CPM": "HP / ROS 240 € · CANAIS 260 €"
     },
     "specs": {
       "Dimensões": "<a href=\"digital/template_billboard_xxl_abola.zip\" target=\"_blank\" download>TEMPLATE</a>",
       "Tipos de ficheiro": "JPG / PNG / GIF / MP4",
       "Tamanho máx.": "500 KB",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "HP 230 €"
+      "CPM": "HP 240 €"
     }
   },
   {
@@ -168,7 +170,8 @@
       "Tipo de ficheiro BILLBOARD": "JPG / PNG / GIF / HTML5",
       "Tamanho máx.": "800 KB",
       "Observação": "Utilizar texto e logos apenas na área do billboard. Para garantir integração entre a camada do billboard sob o da moldura, este deverá ser enviado com o fundo transparente",
-      "Dispositivos": "DESKTOP"
+      "Dispositivos": "DESKTOP",
+      "CPM": "HP / ROS 400 € · CANAIS 240 €"
     }
   },
   {
@@ -266,7 +269,7 @@
       "Tipos de ficheiro": "MP4",
       "Tamanho máx.": "10 MB",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "ROS 240 € · CANAIS 260 €"
+      "CPM": "ROS 280 € · CANAIS 300 €"
     }
   },
   {
@@ -281,7 +284,8 @@
       "Dimensões": "120×600 px / 160x600 px",
       "Tipos de ficheiro": "JPG / PNG / GIF / HTML5",
       "Tamanho máx.": "200 KB",
-      "Dispositivos": "DESKTOP · TABLET"
+      "Dispositivos": "DESKTOP · TABLET",
+      "CPM": "HP / ROS 100 € · CANAIS 120 €"
     }
   },
   {
@@ -300,7 +304,7 @@
       "Tipos de ficheiro": "MP4",
       "Tamanho máx.": "950 KB",
       "Dispositivos": "DESKTOP · TABLET · SMARTPHONE",
-      "CPM": "ARTIGOS 160 €"
+      "CPM": "ARTIGOS ROS 210 € · CANAIS 230 €"
     }
   }
 ],
