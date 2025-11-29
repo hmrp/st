@@ -9921,6 +9921,11 @@ function OptanonWrapper() { }
                     
                     "author":"Pascoal Sousa","article_title":"Plantel do FC Porto recebido por lendas no Museu (com galeria)","article_pubdate":"2025-09-17T18:40:17Z","article_related_tags":"FC Porto,Liga Portugal Betclic","os_tags":["nacional","futebol","fc-porto"],"tags_extra":[],"content_category3":"Nacional","os_sub_cat":"nacional","content_id":"2025091718401721511","content_type":"article","content_accessibility":"free","lifetime":"evergreen","publication_reason":"editorial","source_type":"original"});
             </script>
+
+
+
+
+
 <script>
 console.log("codigo NOVO");
 
@@ -9979,7 +9984,6 @@ function stickyAd() {
   container.appendChild(adWrapper);
   document.body.appendChild(container);
 
-  // For YL/GPT later: pub.adLoader will be an IntersectionObserver
   if (pub.adLoader && pub.adLoader.observe) {
     pub.adLoader.observe(stickyAdDiv);
   }
@@ -10005,12 +10009,10 @@ function detectCountryFromDataLayer() {
     const dl = window.dataLayer;
     if (!Array.isArray(dl)) return null;
 
-    // Explicit index [1] as you mentioned
     if (dl[1] && typeof dl[1] === 'object' && dl[1].cf_country_code) {
       return dl[1].cf_country_code;
     }
 
-    // Fallback: scan whole dataLayer
     for (let i = 0; i < dl.length; i++) {
       const o = dl[i];
       if (o && typeof o === 'object' && o.cf_country_code) {
@@ -10068,11 +10070,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   pub.KV = {};
   pub.exclusiveContent = ['noticia-patrocinada', 'livescore', 'mercado', 'matchhub'];
-  // OneTrust group IDs for ads
   pub.consent = ['C0004', 'V2STACK42'];
   pub.lastAdReqMode = null;
 
-  // SLOT DIMENSIONS (your config)
+  // SLOT DIMENSIONS (inline slots only)
   pub.slotDimensions = {
     horz: [
       [1260, 220],
@@ -10199,7 +10200,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return eligible.find((t) => el.classList.contains(t)) || null;
   }
 
-  // Visibility check: element + parents must not be display:none / hidden
+  // Visibility check
   function pubDisplay(el) {
     if (!el) return false;
 
@@ -10220,13 +10221,11 @@ document.addEventListener('DOMContentLoaded', function () {
     return true;
   }
 
-  // Assign IDs & pos by DOM order, but ONLY for visible elements
+  // Assign IDs & pos by DOM order (only visible)
   function assignInitialIds() {
     document.querySelectorAll('.ad').forEach((el) => {
       const type = getSlotType(el);
       if (!type) return;
-
-      // skip hidden ones completely (they don't count)
       if (!pubDisplay(el)) return;
 
       if (!el.dataset.pos || isNaN(parseInt(el.dataset.pos, 10))) {
@@ -10235,7 +10234,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       if (!el.id) {
-        el.id = type + el.dataset.pos; // horz1, vert1, inline1, mrec1...
+        el.id = type + el.dataset.pos;
       }
 
       el.dataset.slotType = type;
@@ -10243,8 +10242,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ---------------------
-  // SIZE MAPPING (buildSizeMapping as you had: (el, slotName))
-// ---------------------
+  // SIZE MAPPING
+  // ---------------------
   function buildSizeMapping(el, slotName) {
     if (!window.googletag || !googletag.sizeMapping) return null;
 
@@ -10434,8 +10433,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ---------------------
-  // Helpers for defineSlot (from your old code)
-// ---------------------
+  // Helpers for defineSlot
+  // ---------------------
   function isValidPos(v) {
     const n = parseInt(v, 10);
     return !isNaN(n) && n > 0;
@@ -10455,14 +10454,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function isGallery(el) {
     if (!el) return false;
-    // tweak this to your real gallery markup if needed
     if (el.closest && el.closest('.gallery, .ad-gallery')) return true;
     return false;
   }
 
   // ---------------------
-  // defineSlot – adapted from your previous version
-  // ---------------------
+  // defineSlot – GPT/YL (inline / horz / vert / etc., NOT OOP)
+// ---------------------
   function defineSlot(el, slotName, slotId) {
     if (!document.getElementById(slotId)) return null;
     el.id = slotId;
@@ -10474,7 +10472,6 @@ document.addEventListener('DOMContentLoaded', function () {
       try {
         if (gallery) {
           existing.setTargeting('pos', ['gallery']);
-          existing.setTargeting('placement', ['gallery']);
         } else {
           const curr = existing.getTargeting && existing.getTargeting('pos');
           const hasCurr = Array.isArray(curr) && curr.length && isValidPos(curr[0]);
@@ -10512,19 +10509,268 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ---------------------
-  // ONETRUST / CONSENT GATING
+  // RINGIER HELPERS
+  // ---------------------
+  const ringierMap = {
+    desktop: {
+      mrec: 'side-right_ad_2',
+      inline: 'details_ad_1',
+      vert: 'side-right_ad_1',
+      horz: (pos) => (pos === 1 ? 'top_ad_1' : 'index_ad_1'),
+      footersticky: 'sticky_ad_1',
+      oop: 'top_special_1'
+    },
+    mobile: {
+      mrec: 'details_ad_3',
+      inline: 'details_ad_2',
+      vert: 'details_ad_1',
+      horz: 'top_ad_1',
+      footersticky: 'sticky_ad_1',
+      oop: 'top_special_1'
+    }
+  };
+
+  function ringierSlotName(type, pos) {
+    const profile =
+      pub.currentBP >= 3 ? ringierMap.desktop : ringierMap.mobile;
+
+    const entry = profile[type];
+    if (!entry) return null;
+    return typeof entry === 'function' ? entry(pos) : entry;
+  }
+
+  function ringierRegisterSlotForElement(el) {
+    const type = el.dataset.slotType || getSlotType(el);
+    if (!type) return;
+
+    const pos = parseInt(el.dataset.pos, 10);
+    if (!pos || isNaN(pos)) return;
+
+    const id = el.id;
+    if (!id) return;
+
+    if (registered[id]) return;
+
+    const slot = ringierSlotName(type, pos);
+    if (!slot) return;
+
+    console.log('[Ringier] register', {
+      id,
+      type,
+      pos,
+      slot,
+      bpIndex: pub.currentBP,
+      bpLabel: pub.currentBPLabel
+    });
+
+    admTagMan.registerSlot({
+      slot: slot,
+      container: id,
+      events: {
+        adLoaded: (d) => console.log(id, slot, 'LOADED', d),
+        adEmpty:  (d) => console.warn(id, slot, 'EMPTY', d),
+        adError:  (d) => console.error(id, slot, 'ERROR', d),
+        adStatus: (d) => console.log(id, slot, 'STATUS', d)
+      }
+    });
+
+    registered[id] = true;
+  }
+
+  function ringierLoadOOP() {
+    const oopEl = document.querySelector('.ad.oop');
+    if (!oopEl || !pubDisplay(oopEl)) return;
+    ringierRegisterSlotForElement(oopEl);
+    if (window.admTagMan && admTagMan.loadSlots) {
+      admTagMan.loadSlots();
+    }
+  }
+
+  function ringierSetupIntersectionObserver() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const el = entry.target;
+          observer.unobserve(el);
+
+          if (!pubDisplay(el)) {
+            console.log('[Ringier] skip hidden', el.id);
+            return;
+          }
+
+          ringierRegisterSlotForElement(el);
+          if (window.admTagMan && admTagMan.loadSlots) {
+            admTagMan.loadSlots();
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: `0px 0px ${pub.fetchDistance}px 0px`,
+        threshold: 0
+      }
+    );
+
+    document.querySelectorAll('.ad').forEach(function (el) {
+      const type = getSlotType(el);
+      if (!type) return;
+      if (!pubDisplay(el)) return;
+      if (type === 'oop') return;
+      observer.observe(el);
+    });
+  }
+
+  // ---------------------
+  // Yieldlove helper – attach cloneUnit once
+  // ---------------------
+  function attachYieldloveToSlot(slotObj, slotId) {
+    if (!slotObj || slotObj.__ylAttached || !window.yieldlove_cmd) return;
+    slotObj.__ylAttached = true;
+
+    (function (so, sid) {
+      window.yieldlove_cmd.push(function () {
+        try {
+          if (so.YLtimeout) clearTimeout(so.YLtimeout);
+        } catch (_) {}
+
+        if (so.__requested) return;
+        if (so.setTargeting) {
+          so.setTargeting('tl', 'yl');
+        }
+        so.__requested = true;
+
+        try {
+          const path = so.getAdUnitPath && so.getAdUnitPath();
+          if (path && window.YLHH && YLHH.bidder && YLHH.bidder.cloneUnit) {
+            console.log('[YL] cloneUnit for', sid, 'path:', path);
+            YLHH.bidder.cloneUnit(path, sid, { startAuction: true });
+          } else {
+            console.log('[YL] YLHH not ready yet for', sid);
+          }
+        } catch (e) {
+          console.warn('[YL] error in cloneUnit for', sid, e);
+        }
+      });
+    })(slotObj, slotId);
+  }
+
+  // ---------------------
+  // GALLERY AD REQUEST (shared Ringier + YL)
+  // ---------------------
+  pub.requestGalleryAd = function () {
+    setTimeout(function () {
+      const candidates = document.querySelectorAll(
+        '.ad.horz[data-slot-name="gallery"]'
+      );
+      if (!candidates.length) {
+        console.log('[GalleryAd] no gallery ad container found.');
+        return;
+      }
+
+      let el = null;
+      for (const c of candidates) {
+        if (pubDisplay(c)) {
+          el = c;
+          break;
+        }
+      }
+      if (!el) {
+        el = candidates[0];
+        console.log('[GalleryAd] no visible gallery slot, using first candidate:', el.id || '(no id)');
+      }
+
+      let type = el.dataset.slotType || getSlotType(el) || 'horz';
+
+      if (!el.dataset.pos || isNaN(parseInt(el.dataset.pos, 10))) {
+        slotPos[type] = (slotPos[type] || 0) + 1;
+        el.dataset.pos = String(slotPos[type]);
+      }
+      if (!el.id) {
+        el.id = type + el.dataset.pos;
+      }
+      el.dataset.slotType = type;
+
+      console.log('[GalleryAd] using element', {
+        id: el.id,
+        type,
+        pos: el.dataset.pos,
+        visible: pubDisplay(el)
+      });
+
+      if (pub.country === 'CH') {
+        try {
+          ringierRegisterSlotForElement(el);
+          if (window.admTagMan && admTagMan.loadSlots) {
+            admTagMan.loadSlots();
+          }
+        } catch (e) {
+          console.warn('[GalleryAd][Ringier] error registering gallery slot', e);
+        }
+      } else {
+        if (!window.googletag || !googletag.cmd) {
+          console.warn('[GalleryAd][YL] googletag not ready yet.');
+          return;
+        }
+
+        const slotId = el.id;
+
+        googletag.cmd.push(function () {
+          const slotObj = defineSlot(el, type, slotId);
+          if (!slotObj) {
+            console.warn('[GalleryAd][YL] defineSlot failed for', slotId);
+            return;
+          }
+
+          try {
+            if (slotObj.setTargeting) {
+              slotObj.setTargeting('pos', ['gallery']);
+              slotObj.setTargeting('placement', ['gallery']);
+            }
+          } catch (_) {}
+
+          attachYieldloveToSlot(slotObj, slotId);
+
+          console.log('[GalleryAd] googletag.display', slotId);
+          googletag.display(slotId);
+        });
+      }
+    }, 0);
+  };
+
+  // ---------------------
+  // GALLERY CLICK HOOK
+  // ---------------------
+  function setupGalleryClickHandler() {
+    const triggers = document.querySelectorAll(
+      '[x-on\\:click*="imageGalleryOpen"]'
+    );
+    if (!triggers.length) return;
+
+    triggers.forEach((btn) => {
+      if (btn.dataset.galleryClickAttached === '1') return;
+      btn.dataset.galleryClickAttached = '1';
+
+      btn.addEventListener('click', function () {
+        if (window.pub && typeof pub.requestGalleryAd === 'function') {
+          pub.requestGalleryAd();
+        }
+      });
+    });
+  }
+
+  // ---------------------
+  // ONETRUST / CONSENT
   // ---------------------
   function getActiveConsentGroups() {
     try {
-      // Newer OneTrust
       if (typeof window.OnetrustActiveGroups === 'string') {
         return window.OnetrustActiveGroups.split(',');
       }
-      // Older Optanon variable
       if (typeof window.OptanonActiveGroups === 'string') {
         return window.OptanonActiveGroups.split(',');
       }
-      // Fallback to API if available
       if (window.OneTrust && typeof OneTrust.GetActiveGroupIds === 'function') {
         var ids = OneTrust.GetActiveGroupIds();
         if (Array.isArray(ids)) return ids;
@@ -10538,22 +10784,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function hasAdConsent() {
     const required = pub.consent || [];
-    if (!required.length) return true; // if nothing configured, don't block
+    if (!required.length) return true;
     const active = getActiveConsentGroups();
     if (!active) return false;
     return required.every((id) => active.indexOf(id) !== -1);
   }
 
-  // callback receives: { mode: 'full'|'limited', fullAds: boolean, activeGroups: [...] }
   function waitForAdConsent(callback) {
     let done = false;
     const start = Date.now();
-    const maxWait = 10000; // 10s max wait
+    const maxWait = 10000;
 
     function buildConsentState() {
       const active = getActiveConsentGroups() || [];
       const full = hasAdConsent();
-      const mode = full ? 'full' : 'limited'; // "limited" = limited ads or reject
+      const mode = full ? 'full' : 'limited';
       return { mode, fullAds: full, activeGroups: active };
     }
 
@@ -10576,13 +10821,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (Date.now() - start > maxWait) {
         console.log('[Consent] timeout waiting for OneTrust, will rely on OnConsentChanged only.');
-        return; // no callback here; we still may get event later
+        return;
       }
 
       setTimeout(check, 250);
     }
 
-    // If OneTrust has an event API, hook it
     try {
       if (window.OneTrust && typeof OneTrust.OnConsentChanged === 'function') {
         OneTrust.OnConsentChanged(function () {
@@ -10596,17 +10840,15 @@ document.addEventListener('DOMContentLoaded', function () {
       console.warn('[Consent] error attaching OneTrust.OnConsentChanged', e);
     }
 
-    // Start polling
     check();
   }
 
   // ---------------------
-  // RINGIER IMPLEMENTATION (CH ONLY)
+  // RINGIER IMPLEMENTATION
   // ---------------------
   function initRingier() {
     console.log('[Ringier] initRingier() start');
 
-    // Load Ringier atm.js
     (function (r, i, a, d, s) {
       r.admTagMan = r.admTagMan || {};
       r.admTagMan.q = r.admTagMan.q || [];
@@ -10625,121 +10867,8 @@ document.addEventListener('DOMContentLoaded', function () {
       r.document.head.appendChild(e);
     })(window, 'abola.pt', 'de', 'latest');
 
-    // Slot naming table: desktop vs mobile, decided by pub.currentBP
-    const ringierMap = {
-      desktop: {
-        mrec: 'side-right_ad_2',
-        inline: 'details_ad_1',
-        vert: 'side-right_ad_1',
-        horz: (pos) => (pos === 1 ? 'top_ad_1' : 'index_ad_1'),
-        footersticky: 'sticky_ad_1',
-        oop: 'top_special_1'
-      },
-      mobile: {
-        mrec: 'details_ad_3',
-        inline: 'details_ad_2',
-        vert: 'details_ad_1',
-        horz: 'top_ad_1',
-        footersticky: 'sticky_ad_1',
-        oop: 'top_special_1'
-      }
-    };
-
-    function ringierSlotName(type, pos) {
-      const profile =
-        pub.currentBP >= 3 ? ringierMap.desktop : ringierMap.mobile;
-
-      const entry = profile[type];
-      if (!entry) return null;
-      return typeof entry === 'function' ? entry(pos) : entry;
-    }
-
-    function registerSlotForElement(el) {
-      const type = el.dataset.slotType || getSlotType(el);
-      if (!type) return;
-
-      const pos = parseInt(el.dataset.pos, 10);
-      if (!pos || isNaN(pos)) return;
-
-      const id = el.id;
-      if (!id) return;
-
-      if (registered[id]) return;
-
-      const slot = ringierSlotName(type, pos);
-      if (!slot) return;
-
-      console.log('[Ringier] register', {
-        id,
-        type,
-        pos,
-        slot,
-        bpIndex: pub.currentBP,
-        bpLabel: pub.currentBPLabel
-      });
-
-      admTagMan.registerSlot({
-        slot: slot,
-        container: id,
-        events: {
-          adLoaded: (d) => console.log(id, slot, 'LOADED', d),
-          adEmpty:  (d) => console.warn(id, slot, 'EMPTY', d),
-          adError:  (d) => console.error(id, slot, 'ERROR', d),
-          adStatus: (d) => console.log(id, slot, 'STATUS', d)
-        }
-      });
-
-      registered[id] = true;
-    }
-
-    // Load OOP immediately (no observer)
-    function loadOOP() {
-      const oopEl = document.querySelector('.ad.oop');
-      if (!oopEl || !pubDisplay(oopEl)) return;
-      registerSlotForElement(oopEl);
-      if (window.admTagMan && admTagMan.loadSlots) {
-        admTagMan.loadSlots();
-      }
-    }
-
-    function setupIntersectionObserver() {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-
-            const el = entry.target;
-            observer.unobserve(el);
-
-            if (!pubDisplay(el)) {
-              console.log('[Ringier] skip hidden', el.id);
-              return;
-            }
-
-            registerSlotForElement(el);
-            admTagMan.loadSlots();
-          });
-        },
-        {
-          root: null,
-          rootMargin: `0px 0px ${pub.fetchDistance}px 0px`,
-          threshold: 0
-        }
-      );
-
-      document.querySelectorAll('.ad').forEach(function (el) {
-        const type = getSlotType(el);
-        if (!type) return;
-        if (!pubDisplay(el)) return;
-        if (type === 'oop') return;
-        observer.observe(el);
-      });
-    }
-
-    // Initial ID assignment for Ringier
     assignInitialIds();
 
-    // Queue Ringier init; atm.js will execute this once it has loaded
     window.admTagMan = window.admTagMan || {};
     window.admTagMan.q = window.admTagMan.q || [];
 
@@ -10748,30 +10877,26 @@ document.addEventListener('DOMContentLoaded', function () {
         platform: pub.currentBP >= 3 ? 'Desktop' : 'Mobile',
         channel: 'ROS',
         targeting: {
-          admforce: 'qa' // QA targeting
+          admforce: 'qa'
         }
       });
 
-      setupIntersectionObserver();
-      loadOOP(); // load OOP asap
+      ringierSetupIntersectionObserver();
+      ringierLoadOOP(); // Ringier OOP asap
     });
   }
 
   // ---------------------
-  // YIELDLOVE / GPT IMPLEMENTATION (NON-CH)
-// ---------------------
-
-  // FULL CONSENT: securepubads GPT + Yieldlove
+  // YIELDLOVE / GPT FULL CONSENT
+  // ---------------------
   function initYieldloveFull() {
     console.log('[YL] initYieldloveFull() – full ads consent.');
-    
+
     window.yieldlove_prevent_autostart = true;
     window.yieldlove_cmd = window.yieldlove_cmd || [];
 
-
     assignInitialIds();
 
-    window.yieldlove_cmd = window.yieldlove_cmd || [];
     window.googletag = window.googletag || { cmd: [] };
 
     loadScriptOnce('gpt-tag', 'https://securepubads.g.doubleclick.net/tag/js/gpt.js');
@@ -10784,7 +10909,7 @@ document.addEventListener('DOMContentLoaded', function () {
       pub.ads.disableInitialLoad();
       googletag.enableServices();
 
-      // Lazy loader for GPT+YL slots
+      // Lazy loader for inline/in-view slots (NOT oop)
       pub.adLoader = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -10805,32 +10930,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const slotObj = defineSlot(el, type, slotId);
             if (!slotObj) return;
 
-            // Attach Yieldlove logic once per slot
-            if (!slotObj.__ylAttached) {
-              slotObj.__ylAttached = true;
-              (function (so, sid) {
-                window.yieldlove_cmd.push(function () {
-                  try {
-                    if (so.YLtimeout) clearTimeout(so.YLtimeout);
-                  } catch (_) {}
-                  if (so.__requested) return;
-                  if (so.setTargeting) so.setTargeting('tl', 'yl');
-                  so.__requested = true;
-
-                  try {
-                    const path = so.getAdUnitPath && so.getAdUnitPath();
-                    if (path && window.YLHH && YLHH.bidder && YLHH.bidder.cloneUnit) {
-                      console.log('[YL] cloneUnit for', sid, 'path:', path);
-                      YLHH.bidder.cloneUnit(path, sid, { startAuction: true });
-                    } else {
-                      console.log('[YL] YLHH not ready yet for', sid);
-                    }
-                  } catch (e) {
-                    console.warn('[YL] error in cloneUnit for', sid, e);
-                  }
-                });
-              })(slotObj, slotId);
-            }
+            attachYieldloveToSlot(slotObj, slotId);
 
             console.log('[YL] display slot', slotId);
             googletag.display(slotId);
@@ -10843,7 +10943,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       );
 
-      // Observe all .ad except OOP for now
       document.querySelectorAll('.ad').forEach((el) => {
         const type = getSlotType(el);
         if (!type) return;
@@ -10851,10 +10950,38 @@ document.addEventListener('DOMContentLoaded', function () {
         if (type === 'oop') return;
         pub.adLoader.observe(el);
       });
+
+      // ---- OOP for YL (real out-of-page, no mapping) ----
+      const oopEl = document.getElementById('oop');
+      if (oopEl && pubDisplay(oopEl) && googletag.defineOutOfPageSlot) {
+        const slotId = oopEl.id; // "oop"
+        if (!pub.oopSlot) {
+          const oopSlot = googletag.defineOutOfPageSlot('/417417404/oop', slotId);
+          if (oopSlot) {
+            oopSlot.addService(pub.ads);
+            // Optional targeting:
+            try {
+              oopSlot.setTargeting('pos', ['oop']);
+            } catch (_) {}
+
+            pub.oopSlot = oopSlot;
+            attachYieldloveToSlot(oopSlot, slotId);
+
+            console.log('[YL][OOP] display out-of-page slot', slotId);
+            googletag.display(slotId);
+          } else {
+            console.warn('[YL][OOP] defineOutOfPageSlot returned null.');
+          }
+        }
+      } else {
+        console.log('[YL][OOP] no visible OOP element or defineOutOfPageSlot missing, skipping.');
+      }
     });
   }
 
-  // LIMITED / REJECTED: limited ads GPT only, no Yieldlove
+  // ---------------------
+  // LIMITED / REJECTED CONSENT (pagead2 GPT, no YL)
+// ---------------------
   function initLimitedAdsGPT() {
     console.log('[Ads] initLimitedAdsGPT() – limited/rejected consent, loading pagead2 GPT only.');
 
@@ -10907,30 +11034,53 @@ document.addEventListener('DOMContentLoaded', function () {
         if (type === 'oop') return;
         pub.adLoader.observe(el);
       });
+
+      // ---- OOP for limited GPT (no YL) ----
+      const oopEl = document.getElementById('oop');
+      if (oopEl && pubDisplay(oopEl) && googletag.defineOutOfPageSlot) {
+        const slotId = oopEl.id;
+        if (!pub.oopSlot) {
+          const oopSlot = googletag.defineOutOfPageSlot('/417417404/oop', slotId);
+          if (oopSlot) {
+            oopSlot.addService(pub.ads);
+            try {
+              oopSlot.setTargeting('pos', ['oop']);
+            } catch (_) {}
+
+            pub.oopSlot = oopSlot;
+
+            console.log('[Ads][OOP] display out-of-page limited-ads slot', slotId);
+            googletag.display(slotId);
+          } else {
+            console.warn('[Ads][OOP] defineOutOfPageSlot returned null.');
+          }
+        }
+      } else {
+        console.log('[Ads][OOP] no visible OOP element or defineOutOfPageSlot missing, skipping.');
+      }
     });
   }
 
   // ---------------------
-  // PLACEHOLDER FOR JW PLAYER INIT (ALSO GATED BY CONSENT)
+  // JW PLAYER INIT (GATED BY CONSENT)
   // ---------------------
   function initJWPlayerIfNeeded(consentState) {
-    // Example policy: only run JW when full ads consent is given
     if (!consentState || consentState.mode !== 'full') {
       console.log('[JW] Skipping JW init – not full consent.');
       return;
     }
-
-    // TODO: move your jwplayer setup into this function.
-    // if (window.jwplayer) {
-    //   jwplayer("my-player").setup({ ... });
-    // }
-
     console.log('[JW] initJWPlayerIfNeeded() – put JW init code here.');
+    // if (window.jwplayer) { ... }
   }
 
   // ---------------------
-  // COUNTRY-BASED DISPATCH, GATED BY ONETRUST
+  // HOOK GALLERY CLICKS
   // ---------------------
+  setupGalleryClickHandler();
+
+  // ---------------------
+  // COUNTRY-BASED DISPATCH (AFTER CONSENT)
+// ---------------------
   waitForAdConsent(function (consentState) {
     console.log('[Consent] final mode for dispatch:', consentState.mode);
 
@@ -10947,18 +11097,11 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    // JW Player gated as well
     initJWPlayerIfNeeded(consentState);
-
-    // Example: sticky only after ad system is live
     // if (setSticky()) stickyAd();
   });
 });
 </script>
-
-
-
-
 
 
 
