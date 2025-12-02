@@ -10654,9 +10654,15 @@ document.addEventListener('DOMContentLoaded', function () {
   function triggerInterstitialFromOOP(reason) {
     try {
       // Interstitial is blocked ONLY by exclusive content, not by cap.
-      if (window.pub && typeof pub.isFooterStickyBlockedByContent === 'function' &&
-          pub.isFooterStickyBlockedByContent()) {
-        console.log('[OOP][Interstitial] blocked by exclusiveContent – not requesting. reason =', reason);
+      if (
+        window.pub &&
+        typeof pub.isFooterStickyBlockedByContent === 'function' &&
+        pub.isFooterStickyBlockedByContent()
+      ) {
+        console.log(
+          '[OOP][Interstitial] blocked by exclusiveContent – not requesting. reason =',
+          reason
+        );
         return;
       }
 
@@ -10676,17 +10682,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // If GPT not loaded yet (Ringier-only stack), load pagead2 GPT
       if (!document.getElementById('gpt-tag')) {
-        loadScriptOnce('gpt-tag', 'https://pagead2.googlesyndication.com/tag/js/gpt.js');
+        loadScriptOnce(
+          'gpt-tag',
+          'https://pagead2.googlesyndication.com/tag/js/gpt.js'
+        );
       }
 
       googletag.cmd.push(function () {
         try {
+          // Ensure pub.ads exists
           if (!pub.ads) {
             pub.ads = googletag.pubads();
-            // apply global KVs for this new ads object
+            // Make sure global KVs are applied for this ads object
             applyGlobalTargeting();
           }
 
+          // Make sure services are enabled at least once
           if (!pub.servicesEnabled) {
             googletag.enableServices();
             pub.servicesEnabled = true;
@@ -10695,7 +10706,9 @@ document.addEventListener('DOMContentLoaded', function () {
           // Destroy OOP slot before requesting interstitial
           try {
             if (pub.oopSlot && googletag.destroySlots) {
-              console.log('[OOP][Interstitial] destroying OOP slot before interstitial.');
+              console.log(
+                '[OOP][Interstitial] destroying OOP slot before interstitial.'
+              );
               googletag.destroySlots([pub.oopSlot]);
               pub.oopSlot = null;
             }
@@ -10703,41 +10716,56 @@ document.addEventListener('DOMContentLoaded', function () {
             console.warn('[OOP][Interstitial] error destroying OOP slot', e);
           }
 
+          // Make sure INTERSTITIAL format is available
           if (
-            !googletag.defineOutOfPageSlot ||
             !googletag.enums ||
             !googletag.enums.OutOfPageFormat ||
             !googletag.enums.OutOfPageFormat.INTERSTITIAL
           ) {
-            console.warn('[OOP][Interstitial] INTERSTITIAL format not supported.');
+            console.warn(
+              '[OOP][Interstitial] INTERSTITIAL format not supported on googletag.enums.'
+            );
             return;
           }
 
+          // *** Pattern identical to your working snippet ***
           const inter = googletag.defineOutOfPageSlot(
             '/417417404/Interstitial',
             googletag.enums.OutOfPageFormat.INTERSTITIAL
           );
 
-          if (!inter) {
-            console.warn('[OOP][Interstitial] defineOutOfPageSlot returned null.');
-            return;
-          }
-
-          inter
-            .setTargeting('pos', 'gaminterstitial')
-            .addService(pub.ads)
-            .setConfig({
-              interstitial: {
-                triggers: {
-                  unhideWindow: true
+          if (inter) {
+            inter
+              .setTargeting('pos', 'gaminterstitial')
+              .addService(pub.ads)
+              .setConfig({
+                interstitial: {
+                  triggers: {
+                    unhideWindow: true
+                  }
                 }
-              }
-            });
+              });
 
-          console.log('[OOP][Interstitial] display GAM interstitial');
-          googletag.display(inter);
+            console.log('[OOP][Interstitial] display GAM interstitial');
+            googletag.display(inter);
+
+            // In the YL stack we used disableInitialLoad(),
+            // so we also force a refresh to actually fetch the ad.
+            try {
+              if (pub.ads && typeof pub.ads.refresh === 'function') {
+                pub.ads.refresh([inter]);
+              }
+            } catch (e) {
+              console.warn('[OOP][Interstitial] error calling refresh([inter])', e);
+            }
+          } else {
+            console.warn('[OOP][Interstitial] defineOutOfPageSlot returned null.');
+          }
         } catch (e) {
-          console.warn('[OOP][Interstitial] error while creating/displaying interstitial', e);
+          console.warn(
+            '[OOP][Interstitial] error while creating/displaying interstitial',
+            e
+          );
         }
       });
     } catch (e) {
@@ -11895,8 +11923,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
-
-
 
 
 
