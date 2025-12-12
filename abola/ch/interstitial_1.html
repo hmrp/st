@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="robots" content="noindex">
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Ringier Tag Manager - abola.pt - interstitial_1 only</title>
+
+  <style>
+    .unselectable { -ms-user-select:none; -webkit-user-select:none; -moz-user-select:-moz-none; user-select:none; -webkit-tap-highlight-color:transparent; outline:none !important; }
+    .content-outer-wrapper { display:block; margin:0 auto; max-width:1060px; }
+    .content-inner-wrapper { display:block; position:relative; width:1060px; }
+    .content-placeholder { display:block; position:relative; margin:10px; }
+    .content-color-light { background-color: rgba(225, 220, 220, 1.0); }
+    .content-color-lighter { background-color: rgba(240, 235, 235, 1.0); }
+    .ad-container { text-align:center; }
+  </style>
+
+  <script src="https://cmp-cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+          type="text/javascript" charset="UTF-8"
+          data-cmp-builder-version="2.0.0"
+          data-domain-script="center-center-dark-global"></script>
+
+  <script>
+    function OptanonWrapper() {
+      var existing = document.getElementById('cmp-builder-features-script');
+      if (!existing) {
+        var s = document.createElement('script');
+        s.src = "https://cmp-cdn.cookielaw.org/consent/cmp-features/cmp-features.js";
+        s.setAttribute('id', 'cmp-builder-features-script');
+        s.async = false;
+        s.type = 'text/javascript';
+        var first = document.getElementsByTagName('script')[0];
+        first.parentNode.insertBefore(s, first);
+      }
+    }
+  </script>
+</head>
+
+<body class="unselectable">
+  <div id="contentOuterWrapper" class="content-outer-wrapper">
+    <div id="contentInnerWrapper" class="content-inner-wrapper">
+      <div style="max-width:1060px;height:50px;" class="content-placeholder content-color-light"></div>
+
+      <div id="apn-ad-slot-wb1"
+           class="ad-container"
+           style="display:block;width:1px;height:1px;position:fixed;left:0;top:0;z-index:2147483646;"></div>
+
+      <div style="max-width:1060px;height:50px;" class="content-placeholder content-color-lighter"></div>
+      <div style="max-width:1060px;height:20px;" class="content-placeholder content-color-lighter"></div>
+      <div style="width:300px;height:300px;float:left;" class="content-placeholder content-color-lighter"></div>
+      <div style="width:300px;height:300px;float:left;" class="content-placeholder content-color-lighter"></div>
+      <div style="max-width:1060px;height:150px;float:left;" class="content-placeholder content-color-lighter"></div>
+    </div>
+  </div>
+
+  <script>
+    (function(r,i,a,d,s) {
+      r.admTagMan = r.admTagMan || {};
+      r.admTagMan.q = r.admTagMan.q || [];
+      r.admTagMan.cq = r.admTagMan.cq || [];
+      var e = r.document.createElement('script');
+      e.src = 'https://cdn.ringier-advertising.ch/' + (s || 'prod') + '/tagmanager/' + i.toLowerCase() + '_' + a.toLowerCase() + '/' + d + '/atm.js';
+      r.document.head.appendChild(e);
+    })(window, 'abola.pt', 'de', 'latest');
+
+    (function() {
+      function platform() {
+        return window.innerWidth >= 1025 ? 'Desktop' : 'MobileWeb';
+      }
+
+      var shown = false;
+
+      admTagMan.q.push(function() {
+        admTagMan.init({
+          platform: platform(),
+          channel: 'ROS',
+          targeting: {
+            tl: 'ringier',
+            admforce: 'qa'
+          }
+        });
+      });
+
+      admTagMan.q.push(function() {
+        admTagMan.registerSlot({
+          slot: 'interstitial_1',
+          container: 'apn-ad-slot-wb1',
+          targeting: {
+            ri_slot: 'interstitial_1',
+            ri_type: 'interstitial',
+            ri_pos: 'interstitial'
+          },
+          events: {
+            adReady: function(data) {
+              if (shown) return;
+              shown = true;
+              try { admTagMan.showSlot('apn-ad-slot-wb1'); } catch (e) {}
+              console.log('interstitial_1 - adReady', data);
+            },
+            adLoaded: function(data) {
+              console.log('interstitial_1 - adLoaded', data);
+            },
+            adEmpty: function(data) {
+              console.log('interstitial_1 - adEmpty', data);
+            },
+            adError: function(data) {
+              console.log('interstitial_1 - adError', data);
+            },
+            adStatus: function(data) {
+              console.log('interstitial_1 - adStatus', data);
+            }
+          }
+        });
+
+        admTagMan.loadSlots();
+      });
+    })();
+  </script>
+</body>
+</html>
