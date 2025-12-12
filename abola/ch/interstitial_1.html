@@ -48,11 +48,18 @@
            class="ad-container"
            style="display:block;width:1px;height:1px;position:fixed;left:0;top:0;z-index:2147483646;"></div>
 
+
+
+
       <div style="max-width:1060px;height:50px;" class="content-placeholder content-color-lighter"></div>
       <div style="max-width:1060px;height:20px;" class="content-placeholder content-color-lighter"></div>
       <div style="width:300px;height:300px;float:left;" class="content-placeholder content-color-lighter"></div>
-      <div style="width:300px;height:300px;float:left;" class="content-placeholder content-color-lighter"></div>
-      <div style="max-width:1060px;height:150px;float:left;" class="content-placeholder content-color-lighter"></div>
+      <div style="width:300px;height:300px;float:left;" class="content-placeholder content-color-lighter"> </div>
+
+
+      <div style="max-width:1060px;height:150px;float:left;" class="content-placeholder content-color-lighter">           <div id="apn-ad-slot-mr1" class="ad-container"
+             style="display: inline-block; width: 300px; height:300px; margin: 10px;">
+        </div></div>
     </div>
   </div>
 
@@ -84,7 +91,41 @@
         });
       });
 
+
       admTagMan.q.push(function() {
+                admTagMan.registerSlot({
+          slot: 'side-right_ad_2',
+          container: 'apn-ad-slot-mr1',
+          targeting: {
+            slot: '1',
+            type: 'special',
+            position: 'interstitial'
+          },
+          events: {
+            adReady: function(data) {
+              if (shown) return;
+              shown = true;
+              try { admTagMan.showSlot('apn-ad-slot-wb1'); } catch (e) {}
+              console.log('just testing side-right_ad_2 - adReady', data);
+            },
+            adLoaded: function(data) {
+              console.log('just testing side-right_ad_2 - adLoaded', data);
+            },
+            adEmpty: function(data) {
+              console.log('just testing side-right_ad_2 - adEmpty', data);
+            },
+            adError: function(data) {
+              console.log('just testing side-right_ad_2 - adError', data);
+            },
+            adStatus: function(data) {
+              console.log('just testing side-right_ad_2 - adStatus', data);
+            }
+          }
+        });
+
+
+
+
         admTagMan.registerSlot({
           slot: 'interstitial_1',
           container: 'apn-ad-slot-wb1',
