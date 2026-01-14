@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ringier ATM - Test</title>
+  <style>
+    .adbox { border: 1px dashed #999; margin: 16px 0; display:flex; justify-content:center; align-items:center; }
+    #apn-top { min-height: 250px; }
+    #apn-vert { min-height: 600px; width: 300px; }
+  </style>
+
+  <script>
+    (function (r, i, a, d, s) {
+      r.admTagMan = r.admTagMan || {};
+      r.admTagMan.q = r.admTagMan.q || [];
+      r.admTagMan.cq = r.admTagMan.cq || [];
+      const e = r.document.createElement('script');
+      e.src =
+        'https://cdn.ringier-advertising.ch/' +
+        (s || 'prod') +
+        '/tagmanager/' +
+        i.toLowerCase() + '_' + a.toLowerCase() +
+        '/' + d +
+        '/atm.js';
+      r.document.head.appendChild(e);
+    })(window, 'abola.pt', 'de', 'latest');
+  </script>
+</head>
+
+<body>
+  <!-- Containers são seus (DOM). Podem chamar-se horz1/vert1/etc. -->
+  <div id="apn-top" class="adbox">top container</div>
+
+  <div style="display:flex; gap:24px;">
+    <div style="flex:1;">conteúdo</div>
+    <div id="apn-vert" class="adbox">vert container</div>
+  </div>
+
+  <script>
+    // 1) init
+    admTagMan.q.push(function () {
+      admTagMan.init({
+        platform: 'Desktop',   // ou 'MobileWeb'
+        channel: 'ROS',        // ou 'home' conforme setup deles
+        targeting: {
+          // use apenas se precisar para QA/debug
+          // admforce: 'qa'
+        }
+      });
+    });
+
+    // 2) register + load
+    admTagMan.q.push(function () {
+
+      // RiAd slot name direto (sem conversão)
+      admTagMan.registerSlot({
+        slot: 'top_ad_1',
+        container: 'apn-top',
+        events: {
+          adLoaded: function (d) { console.log('top_ad_1 loaded', d); },
+          adEmpty:  function (d) { console.log('top_ad_1 empty', d); },
+          adError:  function (d) { console.log('top_ad_1 error', d); },
+        }
+      });
+
+      admTagMan.registerSlot({
+        slot: 'side-right_ad_1',
+        container: 'apn-vert',
+        events: {
+          adLoaded: function (d) { console.log('side-right_ad_1 loaded', d); },
+          adEmpty:  function (d) { console.log('side-right_ad_1 empty', d); },
+          adError:  function (d) { console.log('side-right_ad_1 error', d); },
+        }
+      });
+
+      admTagMan.loadSlots();
+    });
+  </script>
+</body>
+</html>
