@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Abrir a app A BOLA…</title>
+  <meta name="robots" content="noindex" />
+</head>
+
+<body>
+  <p>A redirecionar…</p>
+
+  <noscript>
+    <p>
+      JavaScript está desativado.
+      <a href="https://www.abola.pt/noticias/a-bola-tem-uma-nova-app-descarregue-ja-2024060615160648532">
+        Continuar
+      </a>
+    </p>
+  </noscript>
+
+  <script>
+    (function () {
+      const PLAY_STORE_URL =
+        "https://play.google.com/store/apps/details?id=com.tickaroo.rsa.android.pt";
+
+      const APP_STORE_URL =
+        "https://apps.apple.com/pt/app/a-bola/id6498628745";
+
+      const DESKTOP_URL =
+        "https://www.abola.pt/noticias/a-bola-tem-uma-nova-app-descarregue-ja-2024060615160648532";
+
+      const IOS_DEEP_LINK = "abola://open";
+
+      const ANDROID_DEEP_LINK =
+        "intent://open#Intent;scheme=abola;package=com.tickaroo.rsa.android.pt;end;";
+
+      const FALLBACK_DELAY_MS = 1400;
+
+      const ua = navigator.userAgent || "";
+      const platform = navigator.platform || "";
+      const maxTouchPoints = navigator.maxTouchPoints || 0;
+
+      const isIPadOS = platform === "MacIntel" && maxTouchPoints > 1;
+      const isIOS = /iPhone|iPod/i.test(ua) || isIPadOS;
+      const isAndroid = /Android/i.test(ua);
+
+      if (!isAndroid && !isIOS) {
+        window.location.replace(DESKTOP_URL);
+        return;
+      }
+
+      let fallbackTimer = null;
+      const start = Date.now();
+
+      const cancelFallback = () => {
+        if (fallbackTimer) {
+          clearTimeout(fallbackTimer);
+          fallbackTimer = null;
+        }
+      };
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) cancelFallback();
+      });
+      window.addEventListener("pagehide", cancelFallback);
+      window.addEventListener("blur", cancelFallback);
+
+      if (isAndroid) {
+        fallbackTimer = setTimeout(() => {
+          if (!document.hidden && Date.now() - start >= FALLBACK_DELAY_MS) {
+            window.location.replace(PLAY_STORE_URL);
+          }
+        }, FALLBACK_DELAY_MS);
+
+        window.location.href = ANDROID_DEEP_LINK;
+        return;
+      }
+
+      if (isIOS) {
+        fallbackTimer = setTimeout(() => {
+          if (!document.hidden && Date.now() - start >= FALLBACK_DELAY_MS) {
+            window.location.replace(APP_STORE_URL);
+          }
+        }, FALLBACK_DELAY_MS);
+
+        window.location.href = IOS_DEEP_LINK;
+        return;
+      }
+    })();
+  </script>
+</body>
+</html>
