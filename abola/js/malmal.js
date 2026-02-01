@@ -2,7 +2,7 @@
 // @name         Maltrace (GAM + HB/YLHH + Taboola) - PCAPdroid JS Injector (Taboola loader blocked)
 // @description  Captura IDs de GAM (lineItemId/creativeId), targeting hb_*, eventos YLHH, inserções de scripts/iframes (marca Taboola), scroll timeline, e tentativas de redirect (window.open, location.assign/replace, beforeunload, visibility:hidden). + BLOQUEIA apenas cdn.taboola.com/libtrc/.../loader.js. Persiste incidente/checkpoints em localStorage/window.name e mostra overlay para copiar.
 // @author       HP
-// @version      1.3
+// @version      1.4
 // @match        *://www.abola.pt/*
 // @match        *://*.abola.pt/*
 // @match        *://*.hugopedroso.com/*
