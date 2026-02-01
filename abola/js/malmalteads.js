@@ -1,12 +1,10 @@
-// @name Isolation test: block Yieldlove + Taboola CDN (allow Teads analytics only)
-// @description Blocks Yieldlove + Taboola CDN requests and DOM injections; keeps Teads analytics allowed; blue background indicator.
+// @name Isolation test: block Yieldlove + Taboola CDN (force-load Teads analytics)
+// @description Blocks Yieldlove + Taboola CDN requests and DOM injections; FORCE loads Teads analytics and logs success/failure; blue background indicator.
 // @author HP
-// @version 1.2
+// @version 1.3
 // @match *://www.abola.pt/*
 // @match *://*.abola.pt/*
 // @match *://*.hugopedroso.com/*
-
-
 
 (() => {
   'use strict';
@@ -21,9 +19,10 @@
   } catch (e) {}
 
   // -------- Config --------
-  // Only Teads analytics is explicitly allowed (everything else matched by block rules is blocked).
+  // Allow Teads analytics broadly (real-world URLs may include query params, versioning, etc.)
   const ALLOWLIST = [
-    /^https:\/\/a\.teads\.tv\/analytics\/tag\.js(\?|#|$)/i,
+    /^https:\/\/a\.teads\.tv\/analytics\/.*$/i,
+    /^http:\/\/a\.teads\.tv\/analytics\/.*$/i, // fallback, rare
   ];
 
   // Blocklist: requested by you
@@ -48,12 +47,12 @@
     'yld.io',
   ];
 
-  // Optional: make the Teads test "clean" by blocking Teads ad-delivery endpoints (NOT analytics).
-  // If you want to allow full Teads delivery, set this to false.
+  // Keep Teads unblocked (you set this already)
   const BLOCK_TEADS_AD_DELIVERY = false;
 
+  // (Only used if BLOCK_TEADS_AD_DELIVERY=true)
   const TEADS_AD_HOST_PATTERNS = [
-    /(^|\.)a\.teads\.tv$/i,       // contains both analytics + page tag; allowlist above exempts analytics/tag.js
+    /(^|\.)a\.teads\.tv$/i,
     /(^|\.)static\.teads\.tv$/i,
     /(^|\.)sync\.teads\.tv$/i,
   ];
@@ -61,6 +60,10 @@
   // -------- Helpers --------
   function logBlock(kind, detail) {
     try { console.warn('[MITM-BLOCK]', kind, detail); } catch (_) {}
+  }
+
+  function logInfo(kind, detail) {
+    try { console.warn('[MITM]', kind, detail); } catch (_) {}
   }
 
   function toUrl(u) {
@@ -201,7 +204,7 @@
         if (urlBlocked(input)) {
           const u = toUrl(input);
           logBlock('fetch', u ? u.href : String(input));
-          return Promise.reject(new Error('Blocked by MITM injector (Yieldlove/Taboola/Teads-ad)'));
+          return Promise.reject(new Error('Blocked by MITM injector (Yieldlove/Taboola)'));
         }
       } catch (_) {}
       return _fetch.call(this, input, init);
@@ -262,5 +265,47 @@
   try { purgeExisting(); } catch (_) {}
   try { document.addEventListener('DOMContentLoaded', purgeExisting, { once: true }); } catch (_) {}
 
-  logBlock('active', 'Blocking Yieldlove + cdn.taboola.com; allowing only Teads analytics tag.js');
+  // -------- 4) Force-load Teads analytics to validate it shows up in PCAP --------
+  function forceLoadTeadsAnalytics() {
+    try {
+      // Avoid duplicates
+      if (document.querySelector('script[data-mitm-teads-analytics="1"]')) return;
+
+      // Ensure the config object exists (matches your site snippet)
+      window.teads_analytics = window.teads_analytics || {};
+      if (!window.teads_analytics.analytics_tag_id) {
+        window.teads_analytics.analytics_tag_id = 'PUB_27904';
+      }
+      window.teads_analytics.share = window.teads_analytics.share || function() {
+        (window.teads_analytics.shared_data = window.teads_analytics.shared_data || []).push(arguments);
+      };
+
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://a.teads.tv/analytics/tag.js';
+      s.setAttribute('data-mitm-teads-analytics', '1');
+
+      s.onload = () => {
+        logInfo('Teads analytics loaded OK', s.src);
+        // Optional visible marker: green outline means Teads analytics executed
+        try { document.documentElement.style.outline = '6px solid #00ff00'; } catch (_) {}
+      };
+      s.onerror = (e) => {
+        logInfo('Teads analytics FAILED to load', { src: s.src, err: String(e && e.message || e) });
+        // Optional visible marker: red outline means it failed
+        try { document.documentElement.style.outline = '6px solid #ff0000'; } catch (_) {}
+      };
+
+      (document.head || document.documentElement).appendChild(s);
+      logInfo('Injected Teads analytics script', s.src);
+    } catch (e) {
+      logInfo('Could not inject Teads analytics', String(e && e.message || e));
+    }
+  }
+
+  // Try immediately and again after DOM ready
+  forceLoadTeadsAnalytics();
+  try { document.addEventListener('DOMContentLoaded', forceLoadTeadsAnalytics, { once: true }); } catch (_) {}
+
+  logInfo('active', 'Blocking Yieldlove + cdn.taboola.com; force-loading Teads analytics (tag.js)');
 })();
