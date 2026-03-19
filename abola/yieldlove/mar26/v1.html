@@ -12701,13 +12701,11 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
 
 
 
-<script>
-(function () {
+<script>(function () {
   'use strict';
 
   window.pub = window.pub || {};
   const pub = window.pub;
-
 
   pub.config = {
     networkCode: '417417404',
@@ -12715,12 +12713,8 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     BP: [0, 640, 768, 1025, 1260],
     BPLabels: ['mobile', 'phablet', 'tablet', 'smalldesktop', 'widedesktop'],
 
-    stage1ViewportOffset: 1.5,
-    stage2ScrollOffset: 2.5,
-
     timeout: {
-      stage1: 1500,
-      stage2: 3500
+      all: 1500
     },
 
     lazyLoad: {
@@ -12733,8 +12727,7 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
 
     aps: {
       pubID: '7046d657-31ef-4394-964e-805033a84142',
-      timeoutStage1: 1500,
-      timeoutStage2: 3500
+      timeoutAll: 1500
     },
 
     taboola: {
@@ -12769,7 +12762,7 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     hbAllowed: false,
     storageAllowed: false,
     interstitialAllowed: false,
-    gamMode: 'blocked', 
+    gamMode: 'blocked',
     adReq: 'blocked'
   };
 
@@ -12779,10 +12772,7 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     cmpReady: false,
     stackReady: false,
     schemeReady: false,
-
-    stage1Started: false,
-    stage2Started: false,
-
+    mainRequestStarted: false,
     gptReady: false,
     prebidReady: false,
     apsReady: false,
@@ -12792,10 +12782,6 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
   pub.scheme = {
     slots: [],
     byId: {},
-    batches: {
-      1: [],
-      2: []
-    },
     counters: {
       horz: 0,
       vert: 0,
@@ -12806,14 +12792,12 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
 
   pub.stacks = {
     main: {
-      mode: 'staged'
+      mode: 'all'
     },
     ringier: {
       mode: 'all'
     }
   };
-
-
 
   pub.log = function (label, data) {
     console.log('[PUB]', label, data || '');
@@ -13003,11 +12987,6 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     return rect.top + window.scrollY;
   };
 
-  pub.getBatch = function (topAbs) {
-    const cutoff = window.innerHeight * pub.config.stage1ViewportOffset;
-    return topAbs <= cutoff ? 1 : 2;
-  };
-
   pub.getSlotPath = function (format, index) {
     if (pub.context.stack !== 'main') return null;
 
@@ -13117,14 +13096,11 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     pub.log('Page context built', pub.pageContext);
   };
 
-
-
   pub.collectSlots = function () {
     const els = document.querySelectorAll('.ad');
 
     pub.scheme.slots = [];
     pub.scheme.byId = {};
-    pub.scheme.batches = { 1: [], 2: [] };
     pub.scheme.counters = {
       horz: 0,
       vert: 0,
@@ -13148,45 +13124,31 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
       const divId = pub.getSlotId(format, index);
       if (!el.id) el.id = divId;
 
-      const topAbs = pub.getPosition(el);
-      let batch = pub.getBatch(topAbs);
-
-      if (format === 'oop') batch = 1;
-
       const slot = {
         format,
         index,
         divId,
         isSingleton,
-
         element: el,
-        topAbs,
-
-        batch,
-
+        topAbs: pub.getPosition(el),
         gamPath: pub.getSlotPath(format, index),
         sizesAtBP: pub.getSizes(format),
-
         hbEligible: ['horz', 'vert', 'inline', 'mrec', 'footersticky'].includes(format),
         apsEligible: ['horz', 'vert', 'inline', 'mrec', 'footersticky'].includes(format),
         gamEligible: true,
-
         requested: false,
         rendered: false,
         empty: null,
-
         gamSlot: null
       };
 
       pub.scheme.slots.push(slot);
       pub.scheme.byId[divId] = slot;
-      pub.scheme.batches[batch].push(slot);
     });
 
     pub.state.schemeReady = true;
     pub.log('Slots collected', pub.scheme);
   };
-
 
   pub.ensureGPT = function () {
     window.googletag = window.googletag || { cmd: [] };
@@ -13472,25 +13434,14 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     }, timeout + 50);
   };
 
-  pub.stage1 = function () {
-    if (pub.state.stage1Started) return;
-    pub.state.stage1Started = true;
+  pub.requestAll = function () {
+    if (pub.state.mainRequestStarted) return;
+    pub.state.mainRequestStarted = true;
 
-    const slots = pub.scheme.batches[1] || [];
-    pub.log('Stage1 start', slots);
-    pub.requestMain(slots, pub.config.timeout.stage1);
+    const slots = pub.scheme.slots || [];
+    pub.log('Request all start', slots);
+    pub.requestMain(slots, pub.config.timeout.all);
   };
-
-  pub.stage2 = function () {
-    if (pub.state.stage2Started) return;
-    pub.state.stage2Started = true;
-
-    const slots = pub.scheme.batches[2] || [];
-    pub.log('Stage2 start', slots);
-    pub.requestMain(slots, pub.config.timeout.stage2);
-  };
-
-
 
   pub.initRingierStack = function () {
     pub.state.ringierReady = true;
@@ -13500,8 +13451,6 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
   pub.loadAll = function () {
     pub.log('Ringier loadAll', pub.scheme.slots);
   };
-
-
 
   pub.initStack = function () {
     if (pub.context.stack === 'main') {
@@ -13515,8 +13464,6 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     }
   };
 
-  
-
   pub.maybeStart = function () {
     if (!pub.state.schemeReady) return;
     if (!pub.state.cmpReady) return;
@@ -13526,26 +13473,11 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
     pub.initStack();
 
     if (pub.context.stack === 'main') {
-      pub.stage1();
-
-      const threshold = window.innerHeight * pub.config.stage2ScrollOffset;
-      if (window.scrollY >= threshold) {
-        pub.stage2();
-      }
+      pub.requestAll();
     }
 
     if (pub.context.stack === 'ringier') {
       pub.loadAll();
-    }
-  };
-
-  pub.onScroll = function () {
-    if (pub.context.stack !== 'main') return;
-    if (pub.state.stage2Started) return;
-
-    const threshold = window.innerHeight * pub.config.stage2ScrollOffset;
-    if (window.scrollY >= threshold) {
-      pub.stage2();
     }
   };
 
@@ -13585,8 +13517,6 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
       pub.maybeStart();
     }, 0);
 
-    window.addEventListener('scroll', pub.onScroll, { passive: true });
-
     pub.log('Boot started', {
       bp: pub.context.currentBP,
       bpLabel: pub.context.currentBPLabel,
@@ -13596,7 +13526,6 @@ if (typeof pub.ads.addEventListener === 'function' && !pub.__impressionViewableA
   };
 
   pub.boot();
-
 })();
 </script>
 
