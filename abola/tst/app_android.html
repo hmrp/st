@@ -19,7 +19,7 @@
       margin-top: 0;
       margin-bottom: 24px;
     }
-    .slot-wrap {
+    .slot-wrap, .video-wrap {
       background: #fff;
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -66,11 +66,33 @@
       border: 1px dashed #bbb;
       overflow: hidden;
     }
+    .video-link {
+      display: inline-block;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .tag-box {
+      background: #fafafa;
+      border: 1px dashed #bbb;
+      padding: 12px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
   <h1>Ad Manager Android Slot Fill Test</h1>
   <p>Network code: <strong>417417404</strong></p>
+
+  <div class="video-wrap">
+    <div class="slot-title">preroll_Android</div>
+    <div class="slot-meta">Video preroll test link and VAST tag</div>
+    <a class="video-link" href="https://googleads.github.io/googleads-ima-html5/vsi/?tag=https%253A%252F%252Fpubads.g.doubleclick.net%252Fgampad%252Fads%253Fiu%253D%252F417417404%252Fpreroll_Android%2526url%253D__page-url__%2526description_url%253D__page-url__%2526npa%253D0%2526sz%253D1x1%25257C640x360%25257C640x360%25257C640x480%2526gdfp_req%253D1%2526output%253Dxml_vast4%2526env%253Dinstream%2526unviewed_position_start%253D1%2526impl%253Ds%2526plcmt%253D1%2526vconp%253D1%2526vpmute%253D0%2526hl%253Dpt%2526aconp%253D0%2526vpos%253Dpreroll%2526tfcd%253D0%2526vid_d%253D__item-duration__%2526wta%253D1%2526correlator%253D__timestamp__" target="_blank" rel="noopener noreferrer">Open Google IMA Video Suite Inspector</a>
+    <div class="tag-box">https://pubads.g.doubleclick.net/gampad/ads?iu=/417417404/preroll_Android&url=__page-url__&description_url=__page-url__&npa=0&sz=1x1%7C640x360%7C640x360%7C640x480&gdfp_req=1&output=xml_vast4&env=instream&unviewed_position_start=1&impl=s&plcmt=1&vconp=1&vpmute=0&hl=pt&aconp=0&vpos=preroll&tfcd=0&vid_d=__item-duration__&wta=1&correlator=__timestamp__</div>
+  </div>
 
   <div class="slot-wrap">
     <div class="slot-title">horz_latestnews_1</div>
