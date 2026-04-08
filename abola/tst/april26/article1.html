@@ -11385,7 +11385,7 @@ function applyGlobalPubadsTargeting(consentState) {
 
 function getIndexedAdUnitPath(slotName, el) {
   const pos = el && el.dataset && el.dataset.pos ? String(el.dataset.pos) : "1";
-  return "/417417404/" + slotName + "/" + pos;
+  return "/417417404/" + slotName + "/position" + pos;
 }
 
 function defineSlot(el, slotName, slotId, adUnitPath) {
