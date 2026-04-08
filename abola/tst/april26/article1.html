@@ -12473,12 +12473,39 @@ if (document.readyState === "loading") {
 }
 
 </script>
-<!--end added replaced-->
+
+
+            <div id="oop" class="ad oop" data-slot-name="OOP" style="position:fixed;left:0;top:0;z-index:2147483645;width:1px;height:1px;"></div>
+            <script>
+                (function() {
+                    var el = document.currentScript.previousElementSibling;
+                    window.waitForCmd().then(function() {
+                        window.defineAndPush(el);
+                    });
+                }
+                )();
+            </script>
+            <div id="footersticky" class="ad footersticky">
+                <div id="footersticky-wrapper">
+                    <div class="ad-inner"></div>
+                    <button id="footersticky-close" type="button" title="Close Ad">×</button>
+                </div>
+            </div>
+            <script>
+                (function() {
+                    var el = document.currentScript.previousElementSibling;
+                    window.waitForCmd().then(function() {
+                        window.defineAndPush(el);
+                    });
+                }
+                )();
+            </script>
 
 
 
+<!-- end added replaced-->
 
-
+<!-- 
             <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js')
@@ -12490,6 +12517,8 @@ if (document.readyState === "loading") {
             });
     }
 </script>
+
+-->
     
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"f66746b0b4024753ad5a08925f27617e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
