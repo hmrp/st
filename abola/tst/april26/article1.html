@@ -10974,6 +10974,7 @@
 
 <!--added replaced-->
 <script>
+
     window.googletag = window.googletag || { cmd: [] };
 window.pub = window.pub || {};
 
@@ -11049,7 +11050,6 @@ function adAppend(parent, el) {
   target.appendChild(el);
   return el;
 }
-
 
 function objEntries(obj) {
   if (!obj || typeof obj !== "object") return [];
@@ -11377,7 +11377,6 @@ function adKVtargeting() {
   });
 }
 
-
 function applyGlobalPubadsTargeting(consentState) {
   if (!pub.ads || typeof pub.ads.setTargeting !== "function") return;
   cmpReqTargeting(consentState || pub.consentState);
@@ -11431,7 +11430,6 @@ function cmpReqTargeting(consentState) {
     pub.ads.setTargeting("adReq", [val]);
   } catch (e) {}
 }
-
 
 function cmpConsentGroup() {
   try {
@@ -11566,7 +11564,6 @@ function cmpConsentReload() {
   } catch (e) {}
 }
 
-
 function resolveRingierSlot(el) {
   try {
     if (!el || !el.dataset) return null;
@@ -11578,7 +11575,6 @@ function resolveRingierSlot(el) {
     return null;
   }
 }
-
 
 const ONEID_VENDOR_ID = 1269;
 const ONEID_SDK_SRC = "https://cdn.oneid.live/sdk/oneIDSDK.js";
@@ -11797,7 +11793,6 @@ function ringierOneIdInitAndGetId(timeoutMs) {
 
   return pub.__oneidIdPromise;
 }
-
 
 function requestSpecialGptSlot(slot, displayRef) {
   if (!slot || !pub || !pub.ads) return;
@@ -12045,7 +12040,6 @@ function initRingier() {
       });
   });
 }
-
 
 function initInjectedAds(consentState) {
   initSpecialPlacements();
@@ -12379,46 +12373,10 @@ function initInjectedAds(consentState) {
   });
 }
 
-
-function disableAPSInYL() {
-  try {
-    if (!window.apstag) {
-      window.apstag = {
-        init: function () {},
-        fetchBids: function (cfg, cb) {
-          if (typeof cb === "function") cb([]);
-        },
-        setDisplayBids: function () {},
-        targetingKeys: function () {
-          return [];
-        }
-      };
-      return;
-    }
-
-    if (typeof window.apstag.fetchBids === "function") {
-      window.apstag.fetchBids = function (cfg, cb) {
-        if (typeof cb === "function") cb([]);
-      };
-    }
-
-    if (typeof window.apstag.setDisplayBids === "function") {
-      window.apstag.setDisplayBids = function () {};
-    }
-
-    if (typeof window.apstag.targetingKeys === "function") {
-      window.apstag.targetingKeys = function () {
-        return [];
-      };
-    }
-  } catch (e) {}
-}
-
 function initYL(consentState) {
   initSpecialPlacements();
   window.yieldlove_prevent_autostart = true;
   window.yieldlove_cmd = window.yieldlove_cmd || [];
-  disableAPSInYL();
 
   if (!document.getElementById("yl-tag")) {
     const s = document.createElement("script");
@@ -12586,7 +12544,6 @@ function initYL(consentState) {
   }
 }
 
-
 function bootAds() {
   window.pub = window.pub || {};
   if (pub._initialized || pub._booting) return;
@@ -12637,7 +12594,7 @@ function bootAds() {
     }
   };
   if (location.search.length > 1) {
-    pub.fEnd = [encodeURIComponent(decodeURIComponent(location.search.slice(1).replace(/\+/g, " ")))];
+    pub.fEnd = [encodeURIComponent(decodeURIComponent(location.search.slice(1).replace(/\+/g, " ")))]
   }
   cmpGate(function (consentState) {
     pub.consentState = consentState;
