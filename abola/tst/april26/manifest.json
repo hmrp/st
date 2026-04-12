@@ -1,0 +1,26 @@
+{
+    "name": "A Bola",
+    "short_name": "A Bola",
+    "start_url": "/",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "https://cdn.abola.pt/186c8d76-d53a-4fb8-9046-2ecd42752686/theme/pt/assets/web-app-manifest-192x192-DIR9_CGD.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://cdn.abola.pt/186c8d76-d53a-4fb8-9046-2ecd42752686/theme/pt/assets/web-app-manifest-512x512-xJ1cyI8m.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "prefer_related_applications": true,
+    "related_applications": [
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=com.tickaroo.rsa.android.pt&hl=pt_PT",
+            "id": "com.tickaroo.rsa.android.pt"
+        }
+    ]
+}
