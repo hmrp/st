@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yieldlove barebones desktop test</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 24px; background: #f5f5f5; }
+    .wrap { max-width: 1260px; margin: 0 auto; }
+    .slot { margin: 24px auto; background: #fff; border: 1px dashed #bbb; display: flex; align-items: center; justify-content: center; min-height: 250px; }
+    #horz1 { min-height: 250px; }
+    #inline1, #inline2, #vert1, #vert2, #mrec2 { min-height: 250px; }
+    .label { font-size: 12px; color: #666; margin-bottom: 6px; }
+  </style>
+  <script>
+    window.googletag = window.googletag || { cmd: [] };
+    window.yieldlove_cmd = window.yieldlove_cmd || [];
+    window.yieldlove_prevent_autostart = true;
+  </script>
+  <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
+  <script async src="https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt"></script>
+
+</head>
+<body>
+  <div class="wrap">
+    <h1>Yieldlove barebones desktop test</h1>
+    <p>Sem CMP, sem targeting, sem lógica custom. Só GPT + Yieldlove direto por slot.</p>
+
+    <div class="label">horz1 → /417417404/horz</div>
+    <div id="horz1" class="slot"></div>
+    <script>
+      googletag.cmd.push(function() {
+        googletag.defineSlot('/417417404/horz', [[1260,220],[1150,250],[970,250],[970,90],[728,90],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1]], 'horz1').addService(googletag.pubads());
+        googletag.display('horz1');
+      });
+      yieldlove_cmd.push(function () {
+        YLHH.utils.lazyLoad('horz1', function () {
+          YLHH.bidder.cloneUnit('/417417404/horz', 'horz1', true);
+        });
+      });
+    </script>
+
+    <div class="label">inline1 → /417417404/inline</div>
+    <div id="inline1" class="slot"></div>
+    <script>
+      googletag.cmd.push(function() {
+        googletag.defineSlot('/417417404/inline', [[300,250],[336,320],[336,280],[250,250],[200,200],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'inline1').addService(googletag.pubads());
+        googletag.display('inline1');
+      });
+      yieldlove_cmd.push(function () {
+        YLHH.utils.lazyLoad('inline1', function () {
+          YLHH.bidder.cloneUnit('/417417404/inline', 'inline1', true);
+        });
+      });
+    </script>
+
+    <div class="label">inline2 → /417417404/inline</div>
+    <div id="inline2" class="slot"></div>
+    <script>
+      googletag.cmd.push(function() {
+        googletag.defineSlot('/417417404/inline', [[300,250],[336,320],[336,280],[250,250],[200,200],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'inline2').addService(googletag.pubads());
+        googletag.display('inline2');
+      });
+      yieldlove_cmd.push(function () {
+        YLHH.utils.lazyLoad('inline2', function () {
+          YLHH.bidder.cloneUnit('/417417404/inline', 'inline2', true);
+        });
+      });
+    </script>
+
+    <div class="label">vert1 → /417417404/vert</div>
+    <div id="vert1" class="slot"></div>
+    <script>
+      googletag.cmd.push(function() {
+        googletag.defineSlot('/417417404/vert', [[300,600],[300,250],[336,600],[336,320],[336,280],[160,600],[120,600],[250,250],[200,200],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'vert1').addService(googletag.pubads());
+        googletag.display('vert1');
+      });
+      yieldlove_cmd.push(function () {
+        YLHH.utils.lazyLoad('vert1', function () {
+          YLHH.bidder.cloneUnit('/417417404/vert', 'vert1', true);
+        });
+      });
+    </script>
+
+    <div class="label">vert2 → /417417404/vert</div>
+    <div id="vert2" class="slot"></div>
+    <script>
+      googletag.cmd.push(function() {
+        googletag.defineSlot('/417417404/vert', [[300,600],[300,250],[336,600],[336,320],[336,280],[160,600],[120,600],[250,250],[200,200],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'vert2').addService(googletag.pubads());
+        googletag.display('vert2');
+      });
+      yieldlove_cmd.push(function () {
+        YLHH.utils.lazyLoad('vert2', function () {
+          YLHH.bidder.cloneUnit('/417417404/vert', 'vert2', true);
+        });
+      });
+    </script>
+
+    <div class="label">mrec2 → /417417404/mrec</div>
+    <div id="mrec2" class="slot"></div>
+    <script>
+      googletag.cmd.push(function() {
+        googletag.defineSlot('/417417404/mrec', [[300,250],[320,100],[250,250],[200,200],[1,1],'fluid'], 'mrec2').addService(googletag.pubads());
+        googletag.display('mrec2');
+      });
+      yieldlove_cmd.push(function () {
+        YLHH.utils.lazyLoad('mrec2', function () {
+          YLHH.bidder.cloneUnit('/417417404/mrec', 'mrec2', true);
+        });
+      });
+    </script>
+
+      <script>
+    googletag.cmd.push(function() {
+     // googletag.pubads().enableSingleRequest();
+      googletag.enableServices();
+    });
+  </script>
+  </div>
+</body>
+</html>
