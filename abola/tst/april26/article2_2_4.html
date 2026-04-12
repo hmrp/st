@@ -6672,11 +6672,17 @@ function defineSlot(el, slotName, slotId, adUnitPath) {
         pub.adSlots[storageKey] = existing;
         return existing;
     }
-    const mapping = getSizeMapping(slotName);
-    if (!mapping || !pub.slotDimensions[slotName]) return null;
-    const slotObj = googletag.defineSlot(adUnitPath || "/417417404/" + slotName, pub.slotDimensions[slotName], slotId);
+    const sizes = pub.slotDimensions[slotName];
+    if (!sizes) return null;
+    const slotObj = googletag.defineSlot(adUnitPath || "/417417404/" + slotName, sizes, slotId);
     if (!slotObj) return null;
-    slotObj.defineSizeMapping(mapping).addService(pub.ads);
+    if (pub.adMode !== "yieldlove") {
+        const mapping = getSizeMapping(slotName);
+        if (mapping && typeof slotObj.defineSizeMapping === "function") {
+            slotObj.defineSizeMapping(mapping);
+        }
+    }
+    slotObj.addService(pub.ads);
     if (el.dataset && el.dataset.slotPosition) slotObj.setTargeting("pos", [String(el.dataset.slotPosition)]);
     pub.adSlots[storageKey] = slotObj;
     pub.slotById[slotId] = slotObj;
@@ -7655,6 +7661,7 @@ function initYL(consentState) {
                 });
             }
             adKVtargeting();
+            googletag.setConfig({ disableInitialLoad: true });
             if (typeof pub.ads.addEventListener === "function" && !pub.__slotRenderEndedAttached) {
                 pub.__slotRenderEndedAttached = true;
                 pub.ads.addEventListener("slotRenderEnded", function(event) {
