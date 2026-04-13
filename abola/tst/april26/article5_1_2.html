@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A BOLA - YL TV CLEAN DEBUG RETRY</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #efefef; }
+    header { background: #d71920; color: #fff; padding: 14px 20px; font-weight: bold; font-size: 20px; }
+    .wrap { max-width: 1260px; margin: 0 auto; padding: 16px; }
+    .label { margin: 20px 0 6px; color: #555; font-size: 14px; }
+    .slot { background: #fff; border: 1px dashed #bbb; display: flex; align-items: center; justify-content: center; min-height: 250px; }
+    #horz1 { min-height: 250px; }
+    #inline1, #inline2, #vert1, #vert2, #mrec1, #mrec2 { min-height: 250px; }
+    .grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+    #yl-debug-overlay {
+      position: fixed; left: 8px; bottom: 8px; z-index: 2147483647;
+      width: min(92vw, 760px); max-height: 65vh; overflow: auto;
+      background: rgba(0,0,0,.92); color: #0f0; font: 12px/1.35 monospace;
+      padding: 8px; border: 1px solid #0f0; white-space: pre-wrap; word-break: break-word;
+    }
+    #yl-debug-overlay .title { color: #fff; font-weight: bold; margin-bottom: 6px; }
+  </style>
+  <script>
+    window.googletag = window.googletag || { cmd: [] };
+    window.yieldlove_cmd = window.yieldlove_cmd || [];
+    window.yieldlove_prevent_autostart = true;
+
+    function dbg(label, payload) {
+      try {
+        var body = document.getElementById('yl-debug-body');
+        if (!body) return;
+        var line = document.createElement('div');
+        var ts = new Date().toISOString().slice(11, 23);
+        var text = '[' + ts + '] ' + label;
+        if (payload !== undefined) {
+          try { text += ' ' + JSON.stringify(payload); }
+          catch (e) { text += ' ' + String(payload); }
+        }
+        line.textContent = text;
+        body.appendChild(line);
+        while (body.childNodes.length > 220) body.removeChild(body.firstChild);
+      } catch (e) {}
+    }
+
+    function ensureDebug() {
+      if (document.getElementById('yl-debug-overlay')) return;
+      var box = document.createElement('div');
+      box.id = 'yl-debug-overlay';
+      box.innerHTML = '<div class="title">YL / GPT DEBUG</div><div id="yl-debug-body"></div>';
+      document.body.appendChild(box);
+      dbg('debug.install.start');
+    }
+
+    function elState(id) {
+      var el = document.getElementById(id);
+      if (!el) return { exists: false };
+      var r = el.getBoundingClientRect();
+      return { exists: true, width: Math.round(r.width), height: Math.round(r.height) };
+    }
+
+    function hasBaseCode(baseCode) {
+      try {
+        var bidder = window.YLHH && YLHH.bidder;
+        if (!bidder) return false;
+        if (bidder.adUnitsMap && bidder.adUnitsMap[baseCode]) return true;
+        if (bidder.pbjs && Array.isArray(bidder.pbjs.adUnits)) {
+          return bidder.pbjs.adUnits.some(function(u){ return u && u.code === baseCode; });
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function bidderState(baseCode) {
+      try {
+        var bidder = window.YLHH && YLHH.bidder;
+        return {
+          hasYLHH: !!window.YLHH,
+          hasBidder: !!bidder,
+          hasUtils: !!(window.YLHH && YLHH.utils),
+          hasAdUnitsMap: !!(bidder && bidder.adUnitsMap),
+          hasBaseCode: hasBaseCode(baseCode),
+          activeUnits: bidder && Array.isArray(bidder.activeUnits) ? bidder.activeUnits.slice(0, 12) : [],
+          pbjsAdUnitsCount: bidder && bidder.pbjs && Array.isArray(bidder.pbjs.adUnits) ? bidder.pbjs.adUnits.length : 0
+        };
+      } catch (e) {
+        return { error: String(e) };
+      }
+    }
+
+    function cloneWithRetry(baseCode, slotId, attempt) {
+      attempt = attempt || 1;
+      var state = bidderState(baseCode);
+      dbg('yl.clone.attempt', { slotId: slotId, baseCode: baseCode, attempt: attempt, state: state });
+
+      try {
+        YLHH.bidder.cloneUnit(baseCode, slotId, true);
+        dbg('yl.clone.success', { slotId: slotId, baseCode: baseCode, attempt: attempt });
+        return;
+      } catch (e) {
+        var msg = e && e.message ? e.message : String(e);
+        dbg('yl.clone.error', { slotId: slotId, baseCode: baseCode, attempt: attempt, message: msg });
+
+        if (attempt >= 12) return;
+
+        setTimeout(function() {
+          cloneWithRetry(baseCode, slotId, attempt + 1);
+        }, attempt < 4 ? 250 : 500);
+      }
+    }
+
+    function attachYL(slotId, baseCode) {
+      dbg('yl.attach.call', { slotId: slotId, baseCode: baseCode, state: elState(slotId) });
+
+      window.yieldlove_cmd.push(function() {
+        dbg('yieldlove.cmd.exec', bidderState(baseCode));
+
+        if (!window.YLHH || !YLHH.utils || typeof YLHH.utils.lazyLoad !== 'function') {
+          dbg('yl.lazyload.missing', { slotId: slotId });
+          cloneWithRetry(baseCode, slotId, 1);
+          return;
+        }
+
+        dbg('yl.lazyload.attach', { slotId: slotId, state: elState(slotId) });
+        YLHH.utils.lazyLoad(slotId, function() {
+          dbg('yl.lazyload.fire', { slotId: slotId, state: elState(slotId) });
+          cloneWithRetry(baseCode, slotId, 1);
+        });
+      });
+    }
+
+    function defineSlot(path, sizes, slotId) {
+      googletag.cmd.push(function() {
+        try {
+          dbg('defineSlot.call', { slotId: slotId, adUnitPath: path, state: elState(slotId) });
+          var slot = googletag.defineSlot(path, sizes, slotId).addService(googletag.pubads());
+          dbg('defineSlot.return', { ok: !!slot, slotId: slotId, path: path });
+          googletag.display(slotId);
+          dbg('gpt.display.call', { slotId: slotId });
+          attachYL(slotId, path);
+        } catch (e) {
+          dbg('defineSlot.error', { slotId: slotId, message: e && e.message ? e.message : String(e) });
+        }
+      });
+    }
+
+    function installGptListeners() {
+      googletag.cmd.push(function() {
+        try {
+          var pubads = googletag.pubads();
+          pubads.addEventListener('slotRequested', function(event) {
+            var slot = event.slot;
+            dbg('gpt.slotRequested', { id: slot.getSlotElementId(), path: slot.getAdUnitPath() });
+          });
+          pubads.addEventListener('slotResponseReceived', function(event) {
+            var slot = event.slot;
+            dbg('gpt.slotResponseReceived', { id: slot.getSlotElementId(), path: slot.getAdUnitPath() });
+          });
+          pubads.addEventListener('slotRenderEnded', function(event) {
+            var slot = event.slot;
+            dbg('gpt.slotRenderEnded', {
+              id: slot.getSlotElementId(),
+              path: slot.getAdUnitPath(),
+              isEmpty: !!event.isEmpty,
+              size: event.size || null,
+              lineItemId: event.lineItemId || null,
+              creativeId: event.creativeId || null
+            });
+          });
+          dbg('gpt.pubads.listeners_installed');
+        } catch (e) {
+          dbg('gpt.listeners.error', { message: e && e.message ? e.message : String(e) });
+        }
+      });
+    }
+
+    function installYieldloveListeners() {
+      window.addEventListener('yieldlove.auctionStarted', function(ev) {
+        dbg('yieldlove.auctionStarted', ev && ev.detail ? ev.detail : {});
+      });
+      window.addEventListener('yieldlove.auctionEnded', function(ev) {
+        dbg('yieldlove.auctionEnded', ev && ev.detail ? ev.detail : {});
+      });
+      window.addEventListener('yieldlove.bidWon', function(ev) {
+        dbg('yieldlove.bidWon', ev && ev.detail ? ev.detail : {});
+      });
+    }
+
+    function heartbeat() {
+      setInterval(function() {
+        try {
+          var slots = [];
+          if (window.googletag && googletag.pubads && typeof googletag.pubads === 'function') {
+            googletag.pubads().getSlots().forEach(function(s) {
+              slots.push({ id: s.getSlotElementId(), path: s.getAdUnitPath() });
+            });
+          }
+          dbg('heartbeat', {
+            readyState: document.readyState,
+            hasGoogletag: !!window.googletag,
+            hasCmd: !!(window.googletag && googletag.cmd),
+            hasYLHH: !!window.YLHH,
+            hasBidder: !!(window.YLHH && YLHH.bidder),
+            slots: slots
+          });
+        } catch (e) {}
+      }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      ensureDebug();
+      installYieldloveListeners();
+      heartbeat();
+
+      var gpt = document.createElement('script');
+      gpt.async = true;
+      gpt.src = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
+      gpt.onload = function() {
+        dbg('gpt.script.loaded');
+        googletag.cmd.push(function() {
+          googletag.setConfig({ disableInitialLoad: true });
+          googletag.enableServices();
+          dbg('gpt.enableServices');
+        });
+        installGptListeners();
+
+        defineSlot('/417417404/horz', [[1260,220],[1150,250],[970,250],[970,90],[728,90],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1]], 'horz1');
+        defineSlot('/417417404/inline', [[300,250],[336,320],[336,280],[250,250],[200,200],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'inline1');
+        defineSlot('/417417404/inline', [[300,250],[336,320],[336,280],[250,250],[200,200],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'inline2');
+        defineSlot('/417417404/vert', [[300,600],[300,250],[336,600],[336,320],[336,280],[160,600],[120,600],[250,250],[200,200],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'vert1');
+        defineSlot('/417417404/vert', [[300,600],[300,250],[336,600],[336,320],[336,280],[160,600],[120,600],[250,250],[200,200],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], 'vert2');
+        defineSlot('/417417404/mrec', [[300,250],[320,100],[250,250],[200,200],[1,1],'fluid'], 'mrec1');
+        defineSlot('/417417404/mrec', [[300,250],[320,100],[250,250],[200,200],[1,1],'fluid'], 'mrec2');
+      };
+      gpt.onerror = function() { dbg('gpt.script.error'); };
+      document.head.appendChild(gpt);
+
+      var yl = document.createElement('script');
+      yl.async = true;
+      yl.src = 'https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt';
+      yl.onload = function() { dbg('yl.script.loaded'); };
+      yl.onerror = function() { dbg('yl.script.error'); };
+      document.head.appendChild(yl);
+    });
+  </script>
+</head>
+<body>
+  <header>A BOLA - YL TV CLEAN DEBUG RETRY</header>
+  <div class="wrap">
+    <div class="label">horz1 → /417417404/horz</div>
+    <div id="horz1" class="slot"></div>
+
+    <div class="grid">
+      <div>
+        <div class="label">inline1 → /417417404/inline</div>
+        <div id="inline1" class="slot"></div>
+
+        <div class="label">inline2 → /417417404/inline</div>
+        <div id="inline2" class="slot"></div>
+
+        <div class="label">mrec1 → /417417404/mrec</div>
+        <div id="mrec1" class="slot"></div>
+
+        <div class="label">mrec2 → /417417404/mrec</div>
+        <div id="mrec2" class="slot"></div>
+      </div>
+      <div>
+        <div class="label">vert1 → /417417404/vert</div>
+        <div id="vert1" class="slot"></div>
+
+        <div class="label">vert2 → /417417404/vert</div>
+        <div id="vert2" class="slot"></div>
+      </div>
+    </div>
+  </div>
+  <div id="yl-debug-overlay"><div class="title">YL / GPT DEBUG</div><div id="yl-debug-body"></div></div>
+</body>
+</html>
