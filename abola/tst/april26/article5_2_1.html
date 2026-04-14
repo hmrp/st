@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>article2 direct YL + footersticky</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 24px; background: #f5f5f5; }
+    .wrap { max-width: 1260px; margin: 0 auto; }
+    .slot { margin: 24px auto; background: #fff; border: 1px dashed #bbb; display: flex; align-items: center; justify-content: center; min-height: 250px; }
+    #horz1 { min-height: 250px; }
+    #inline1, #inline2, #vert1, #vert2, #mrec2 { min-height: 250px; }
+    .label { font-size: 12px; color: #666; margin-bottom: 6px; }
+
+    #footersticky {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      background: transparent;
+      z-index: 98;
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .5s cubic-bezier(.18,1.15,.73,1.02), opacity .5s;
+    }
+
+    #footersticky.footerstickyFX {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #footersticky-wrapper {
+      position: relative;
+      pointer-events: auto;
+      background: #fff;
+      box-shadow: 0 -2px 8px rgba(0,0,0,.12);
+      border-radius: 10px 10px 0 0;
+      margin-bottom: 0;
+      min-width: 300px;
+      min-height: 50px;
+      max-width: 100vw;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #footersticky .ad-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 300px;
+      min-height: 50px;
+    }
+
+    #footersticky-close {
+      position: absolute;
+      top: -1.8rem;
+      right: 0;
+      width: 25px;
+      height: 25px;
+      background: #fafafa;
+      color: #ad1421;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2147483648;
+      border: 1px solid #e9e9e9;
+      line-height: 1;
+      margin-top: -2px;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    #yl-debug-overlay {
+      position: fixed;
+      left: 8px;
+      bottom: 8px;
+      z-index: 2147483647;
+      width: min(94vw, 860px);
+      max-height: 62vh;
+      overflow: auto;
+      background: rgba(0,0,0,.92);
+      color: #0f0;
+      font: 12px/1.35 monospace;
+      padding: 8px;
+      border: 1px solid #0f0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    #yl-debug-overlay .title { color: #fff; font-weight: bold; margin-bottom: 6px; }
+  </style>
+
+  <script>
+    window.googletag = window.googletag || { cmd: [] };
+    window.yieldlove_cmd = window.yieldlove_cmd || [];
+    window.yieldlove_prevent_autostart = true;
+    window.__slotMap = {};
+    window.__refreshDone = {};
+
+    function dbg(label, payload) {
+      try {
+        var body = document.getElementById('yl-debug-body');
+        if (!body) return;
+        var line = document.createElement('div');
+        var ts = new Date().toISOString().slice(11, 23);
+        var text = '[' + ts + '] ' + label;
+        if (payload !== undefined) {
+          try { text += ' ' + JSON.stringify(payload); }
+          catch (e) { text += ' ' + String(payload); }
+        }
+        line.textContent = text;
+        body.appendChild(line);
+        while (body.childNodes.length > 280) body.removeChild(body.firstChild);
+      } catch (e) {}
+    }
+
+    function makeMappings() {
+      return {
+        horz: googletag.sizeMapping()
+          .addSize([1025, 0], [[1260,220],[1150,250],[970,250],[970,90],[728,90],[640,100],[468,60],[460,60]])
+          .addSize([768, 0], [[728,90],[640,100],[468,60],[460,60]])
+          .addSize([0, 0], [[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1]])
+          .build(),
+        inline: googletag.sizeMapping()
+          .addSize([1025, 0], [[300,250],[336,320],[336,280],[250,250],[200,200],[640,100],[468,60],[460,60],'fluid'])
+          .addSize([768, 0], [[300,250],[336,320],[336,280],[250,250],[200,200],[468,60],[460,60]])
+          .addSize([0, 0], [[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[300,250],[1,1]])
+          .build(),
+        vert: googletag.sizeMapping()
+          .addSize([1025, 0], [[300,600],[300,250],[336,600],[336,320],[336,280],[160,600],[120,600],[250,250],[200,200],'fluid'])
+          .addSize([768, 0], [[300,600],[300,250],[336,320],[336,280],[250,250],[200,200]])
+          .addSize([0, 0], [[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[300,250],[1,1]])
+          .build(),
+        footersticky: googletag.sizeMapping()
+          .addSize([1025, 0], [[970,90],[728,90],[640,100],[468,60],[460,60]])
+          .addSize([768, 0], [[728,90],[640,100],[468,60],[460,60]])
+          .addSize([0, 0], [[360,100],[360,50],[320,160],[300,120],[320,100],[320,50],[300,100],[300,75],[300,50],[1,1]])
+          .build(),
+        mrec: googletag.sizeMapping()
+          .addSize([1025, 0], [[300,250],[320,100],[250,250],[200,200],[1,1],'fluid'])
+          .addSize([768, 0], [[300,250],[320,100],[250,250],[200,200]])
+          .addSize([0, 0], [[320,100],[300,250],[250,250],[200,200],[1,1]])
+          .build()
+      };
+    }
+
+    function showFooterSticky() {
+      try {
+        var sticky = document.getElementById('footersticky');
+        var closeBtn = document.getElementById('footersticky-close');
+        if (sticky) sticky.classList.add('footerstickyFX');
+        if (closeBtn) closeBtn.style.display = 'flex';
+      } catch (e) {}
+    }
+
+    function refreshSlot(displayId) {
+      googletag.cmd.push(function() {
+        try {
+          var slot = window.__slotMap[displayId];
+          if (!slot) {
+            dbg('gpt.refresh.skip_missing_slot', { displayId: displayId });
+            return;
+          }
+          if (window.__refreshDone[displayId]) {
+            dbg('gpt.refresh.skip_already_done', { displayId: displayId });
+            return;
+          }
+          window.__refreshDone[displayId] = true;
+          dbg('gpt.refresh.call', { displayId: displayId, path: slot.getAdUnitPath() });
+          googletag.pubads().refresh([slot]);
+        } catch (e) {
+          dbg('gpt.refresh.error', { displayId: displayId, message: e && e.message ? e.message : String(e) });
+        }
+      });
+    }
+
+    function attachYL(baseCode, slotId, displayId) {
+      window.yieldlove_cmd.push(function() {
+        dbg('yl.lazyload.attach', { slotId: slotId, displayId: displayId, path: baseCode });
+        YLHH.utils.lazyLoad(displayId, function() {
+          dbg('yl.lazyload.fire', { slotId: slotId, displayId: displayId, path: baseCode });
+          try {
+            YLHH.bidder.cloneUnit(baseCode, displayId, true);
+            dbg('yl.clone.success', { slotId: slotId, displayId: displayId, path: baseCode });
+          } catch (e) {
+            dbg('yl.clone.error', {
+              slotId: slotId,
+              displayId: displayId,
+              path: baseCode,
+              message: e && e.message ? e.message : String(e)
+            });
+          }
+          setTimeout(function() { refreshSlot(displayId); }, 0);
+          setTimeout(function() { refreshSlot(displayId); }, 250);
+        });
+      });
+    }
+
+    function defineAndAttach(baseCode, sizes, mapping, slotId, displayId) {
+      googletag.cmd.push(function() {
+        try {
+          var slot = googletag.defineSlot(baseCode, sizes, displayId)
+            .defineSizeMapping(mapping)
+            .addService(googletag.pubads());
+
+          window.__slotMap[displayId] = slot;
+
+          dbg('defineSlot.return', {
+            slotId: slotId,
+            displayId: displayId,
+            path: baseCode,
+            ok: !!slot
+          });
+
+          googletag.display(displayId);
+          dbg('gpt.display.call', { slotId: slotId, displayId: displayId });
+
+          attachYL(baseCode, slotId, displayId);
+        } catch (e) {
+          dbg('defineSlot.error', {
+            slotId: slotId,
+            displayId: displayId,
+            path: baseCode,
+            message: e && e.message ? e.message : String(e)
+          });
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var closeBtn = document.getElementById('footersticky-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+          var sticky = document.getElementById('footersticky');
+          if (sticky) sticky.remove();
+        });
+      }
+
+      dbg('env', {
+        ua: navigator.userAgent,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        dpr: window.devicePixelRatio || 1
+      });
+
+      window.addEventListener('yieldlove.auctionStarted', function(ev) {
+        dbg('yieldlove.auctionStarted', ev && ev.detail ? ev.detail : {});
+      });
+      window.addEventListener('yieldlove.auctionEnded', function(ev) {
+        dbg('yieldlove.auctionEnded', ev && ev.detail ? ev.detail : {});
+      });
+      window.addEventListener('yieldlove.bidWon', function(ev) {
+        dbg('yieldlove.bidWon', ev && ev.detail ? ev.detail : {});
+      });
+
+      var gpt = document.createElement('script');
+      gpt.async = true;
+      gpt.src = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
+      gpt.crossOrigin = 'anonymous';
+      gpt.onload = function() {
+        dbg('gpt.script.loaded');
+
+        googletag.cmd.push(function() {
+          googletag.setConfig({ disableInitialLoad: true });
+          googletag.pubads().enableSingleRequest();
+          googletag.enableServices();
+          dbg('gpt.enableServices');
+
+          var pubads = googletag.pubads();
+          pubads.addEventListener('slotRequested', function(event) {
+            var slot = event.slot;
+            dbg('gpt.slotRequested', { id: slot.getSlotElementId(), path: slot.getAdUnitPath() });
+          });
+          pubads.addEventListener('slotResponseReceived', function(event) {
+            var slot = event.slot;
+            dbg('gpt.slotResponseReceived', { id: slot.getSlotElementId(), path: slot.getAdUnitPath() });
+          });
+          pubads.addEventListener('slotRenderEnded', function(event) {
+            var slot = event.slot;
+            dbg('gpt.slotRenderEnded', {
+              id: slot.getSlotElementId(),
+              path: slot.getAdUnitPath(),
+              isEmpty: !!event.isEmpty,
+              size: event.size || null,
+              lineItemId: event.lineItemId || null,
+              creativeId: event.creativeId || null
+            });
+            if (slot.getSlotElementId() === 'footersticky' && !event.isEmpty) {
+              showFooterSticky();
+            }
+          });
+
+          var mappings = makeMappings();
+          defineAndAttach('/417417404/horz', [[1260,220],[1150,250],[970,250],[970,90],[728,90],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1]], mappings.horz, 'horz1', 'horz1');
+          defineAndAttach('/417417404/inline', [[300,250],[336,320],[336,280],[250,250],[200,200],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], mappings.inline, 'inline1', 'inline1');
+          defineAndAttach('/417417404/inline', [[300,250],[336,320],[336,280],[250,250],[200,200],[640,100],[468,60],[460,60],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], mappings.inline, 'inline2', 'inline2');
+          defineAndAttach('/417417404/vert', [[300,600],[300,250],[336,600],[336,320],[336,280],[160,600],[120,600],[250,250],[200,200],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], mappings.vert, 'vert1', 'vert1');
+          defineAndAttach('/417417404/vert', [[300,600],[300,250],[336,600],[336,320],[336,280],[160,600],[120,600],[250,250],[200,200],[320,100],[320,160],[300,120],[320,50],[300,100],[300,75],[300,50],[1,1],'fluid'], mappings.vert, 'vert2', 'vert2');
+          defineAndAttach('/417417404/mrec', [[300,250],[320,100],[250,250],[200,200],[1,1],'fluid'], mappings.mrec, 'mrec2', 'mrec2');
+          defineAndAttach('/417417404/footersticky', [[970,90],[728,90],[640,100],[468,60],[460,60],[360,100],[360,50],[320,160],[300,120],[320,100],[320,50],[300,100],[300,75],[300,50],[1,1]], mappings.footersticky, 'footersticky', 'footersticky');
+        });
+      };
+      gpt.onerror = function() { dbg('gpt.script.error'); };
+      document.head.appendChild(gpt);
+
+      var yl = document.createElement('script');
+      yl.async = true;
+      yl.src = 'https://cdn-a.yieldlove.com/v2/yieldlove.js?abola.pt';
+      yl.onload = function() { dbg('yl.script.loaded'); };
+      yl.onerror = function() { dbg('yl.script.error'); };
+      document.head.appendChild(yl);
+    });
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <h1>article2 direct YL + footersticky</h1>
+    <p>Sem interstitial, sem oop. Slots normais e footersticky no mesmo stack YL direto.</p>
+
+    <div class="label">horz1 → /417417404/horz</div>
+    <div id="horz1" class="slot"></div>
+
+    <div class="label">inline1 → /417417404/inline</div>
+    <div id="inline1" class="slot"></div>
+
+    <div class="label">inline2 → /417417404/inline</div>
+    <div id="inline2" class="slot"></div>
+
+    <div class="label">vert1 → /417417404/vert</div>
+    <div id="vert1" class="slot"></div>
+
+    <div class="label">vert2 → /417417404/vert</div>
+    <div id="vert2" class="slot"></div>
+
+    <div class="label">mrec2 → /417417404/mrec</div>
+    <div id="mrec2" class="slot"></div>
+  </div>
+
+  <div id="footersticky">
+    <div id="footersticky-wrapper">
+      <div class="ad-inner" id="footersticky"></div>
+      <button id="footersticky-close" type="button" title="Close Ad">×</button>
+    </div>
+  </div>
+
+  <div id="yl-debug-overlay">
+    <div class="title">YL / GPT DEBUG</div>
+    <div id="yl-debug-body"></div>
+  </div>
+</body>
+</html>
