@@ -3812,27 +3812,44 @@
         }" x-on:image-gallery-next.window="imageGalleryNext()" x-on:image-gallery-prev.window="imageGalleryPrev()" x-on:keyup.right.window="imageGalleryNext()" x-on:keyup.left.window="imageGalleryPrev()">
                                     <script>
                                         previousGalleryTarget = null;
-                                        const observer = new IntersectionObserver( (entries) => {
-                                            entries.forEach(entry => {
-                                                if (entry.isIntersecting && entry.target !== previousGalleryTarget) {
-                                                    if (previousGalleryTarget !== true) {
-                                                        dataLayer.push({
-                                                            'event': 'embedded-gallery-view'
-                                                        });
-                                                        pp_gemius_hit('cis66Asd55fziG1pssa8EJPaHSbu_vtBDuUrhm6nUQf.D7');
-                                                        if (typeof _ain === 'object' && typeof _ain.track === 'function') {
-                                                            _ain.track();
-                                                            window.postMessage('activateTentacles');
+                                        if ("IntersectionObserver" in window) {
+                                            const observer = new IntersectionObserver( (entries) => {
+                                                entries.forEach(entry => {
+                                                    if (entry.isIntersecting && entry.target !== previousGalleryTarget) {
+                                                        if (previousGalleryTarget !== true) {
+                                                            dataLayer.push({
+                                                                'event': 'embedded-gallery-view'
+                                                            });
+                                                            pp_gemius_hit('cis66Asd55fziG1pssa8EJPaHSbu_vtBDuUrhm6nUQf.D7');
+                                                            if (typeof _ain === 'object' && typeof _ain.track === 'function') {
+                                                                _ain.track();
+                                                                window.postMessage('activateTentacles');
+                                                            }
                                                         }
+                                                        previousGalleryTarget = entry.target;
                                                     }
-                                                    previousGalleryTarget = entry.target;
                                                 }
+                                                );
                                             }
-                                            );
+                                            ,{
+                                                threshold: 0.8
+                                            });
+                                            const gallery = document.getElementById('gallery');
+                                            if (gallery) observer.observe(gallery);
+                                        } else {
+                                            const gallery = document.getElementById('gallery');
+                                            if (gallery) {
+                                                dataLayer.push({
+                                                    'event': 'embedded-gallery-view'
+                                                });
+                                                pp_gemius_hit('cis66Asd55fziG1pssa8EJPaHSbu_vtBDuUrhm6nUQf.D7');
+                                                if (typeof _ain === 'object' && typeof _ain.track === 'function') {
+                                                    _ain.track();
+                                                    window.postMessage('activateTentacles');
+                                                }
+                                                previousGalleryTarget = true;
+                                            }
                                         }
-                                        ,{
-                                            threshold: 0.8
-                                        });
                                     </script>
                                     <div class="ease animate-fade-in-view mx-auto select-none opacity-0 delay-300 duration-1000" style="translate: none; rotate: none; scale: none; opacity: 1; transform: translate(0px, 0px);">
                                         <ul class="sm:min-h-107.5 grid min-h-40 grid-cols-8 grid-rows-6 gap-2" id="gallery" x-ref="gallery">
@@ -7212,15 +7229,32 @@ function ringierLoadInterstitial() {
 }
 
 function ylSlot(slotObj, slotId) {
-    if (!slotObj || slotObj.__ylAttached || !window.yieldlove_cmd) return;
+    if (!slotObj || slotObj.__ylAttached || !window.yieldlove_cmd) return false;
     try {
         const path = slotObj.getAdUnitPath && slotObj.getAdUnitPath();
-        if (slotId === "oop" || (typeof path === "string" && /\/oop$/.test(path))) return;
+        if (slotId === "oop" || (typeof path === "string" && /\/oop$/.test(path))) return false;
     } catch (e) {}
     slotObj.__ylAttached = true;
+    slotObj.__ab_fallback_timer = null;
+    function markRequested() {
+        slotObj.__ab_requested = true;
+    }
+    function clearFallback() {
+        if (slotObj.__ab_fallback_timer) {
+            clearTimeout(slotObj.__ab_fallback_timer);
+            slotObj.__ab_fallback_timer = null;
+        }
+    }
+    function fallbackRefresh() {
+        if (slotObj.__ab_requested) return;
+        try {
+            googletag.pubads().refresh([slotObj]);
+            markRequested();
+        } catch (e) {}
+    }
     window.yieldlove_cmd.push(function() {
         function runCloneUnit() {
-            if (slotObj.__requested) return;
+            if (slotObj.__ab_requested) return;
             if (!document.getElementById(slotId)) return;
             try {
                 if (slotObj.setTargeting) slotObj.setTargeting("tl", "yl");
@@ -7228,18 +7262,28 @@ function ylSlot(slotObj, slotId) {
             try {
                 const path = slotObj.getAdUnitPath && slotObj.getAdUnitPath();
                 if (path && window.YLHH && YLHH.bidder && typeof YLHH.bidder.cloneUnit === "function") {
-                    slotObj.__requested = true;
+                    clearFallback();
+                    markRequested();
                     YLHH.bidder.cloneUnit(path, slotId, true);
+                    return;
                 }
             } catch (e) {}
+            fallbackRefresh();
         }
         try {
-            if (window.YLHH && YLHH.utils && typeof YLHH.utils.lazyLoad === "function") YLHH.utils.lazyLoad(slotId, runCloneUnit);
-            else runCloneUnit();
+            if (window.YLHH && YLHH.utils && typeof YLHH.utils.lazyLoad === "function") {
+                YLHH.utils.lazyLoad(slotId, runCloneUnit);
+            } else {
+                runCloneUnit();
+            }
         } catch (e) {
             runCloneUnit();
         }
     });
+    slotObj.__ab_fallback_timer = setTimeout(function() {
+        fallbackRefresh();
+    }, 2000);
+    return true;
 }
 
 function initRingier() {
@@ -7763,9 +7807,6 @@ function initYL(consentState) {
                 }
                 if (!slotObj.__ylAttached) {
                     ylSlot(slotObj, slotId);
-                }
-                if (!slotObj.__ab_requested) {
-                    slotObj.__ab_requested = true;
                 }
                 return true;
             };
