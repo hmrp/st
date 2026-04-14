@@ -3462,12 +3462,12 @@
      style="min-height: 100px" ></div>
    
 -->
-                        <div class="ad horz" data-slot-name="Billboard" data-slot-adunit="horz" data-slot-position="1" data-medium="mobile" style="min-height: 100px"></div>
+                        <div class="ad horz" data-slot-name="Billboard" data-slot-adunit="horz" data-medium="mobile" style="min-height: 100px"></div>
                         <script>
                             (function() {
                                 var el = document.currentScript.previousElementSibling;
                                 window.waitForCmd().then(function() {
-                                    window.defineAndPush("horz", "1", "mobile");
+                                    window.defineAndPush(el);
                                 });
                             }
                             )();
@@ -3482,12 +3482,12 @@
      style="min-height: 250px" ></div>
    
 -->
-                        <div class="ad horz" data-slot-name="Billboard" data-slot-adunit="horz" data-slot-position="1" data-medium="desktop" style="min-height: 250px"></div>
+                        <div class="ad horz" data-slot-name="Billboard" data-slot-adunit="horz" data-medium="desktop" style="min-height: 250px"></div>
                         <script>
                             (function() {
                                 var el = document.currentScript.previousElementSibling;
                                 window.waitForCmd().then(function() {
-                                    window.defineAndPush("horz", "1", "desktop");
+                                    window.defineAndPush(el);
                                 });
                             }
                             )();
@@ -3685,12 +3685,12 @@
     data-slot-name="P1"
      style="min-height: 250px" ></div>
 -->
-                                <div class="ad vert" data-slot-name="P1" data-slot-adunit="vert" data-slot-position="1" data-medium="mobile" style="min-height: 250px"></div>
+                                <div class="ad vert" data-slot-name="P1" data-slot-adunit="vert" data-medium="mobile" style="min-height: 250px"></div>
                                 <script>
                                     (function() {
                                         var el = document.currentScript.previousElementSibling;
                                         window.waitForCmd().then(function() {
-                                            window.defineAndPush("vert", "1", "mobile");
+                                            window.defineAndPush(el);
                                         });
                                     }
                                     )();
@@ -3713,12 +3713,12 @@
     data-slot-name="In_Text_1"
      style="min-height: 250px" ></div> -->
                                     <!-- end added or replaced -->
-                                    <div class="ad inline" data-slot-name="In_Text_1" data-slot-adunit="inline" data-slot-position="1" data-medium="mobile" style="min-height: 250px"></div>
+                                    <div class="ad inline" data-slot-name="In_Text_1" data-slot-adunit="inline" data-medium="mobile" style="min-height: 250px"></div>
                                     <script>
                                         (function() {
                                             var el = document.currentScript.previousElementSibling;
                                             window.waitForCmd().then(function() {
-                                                window.defineAndPush("inline", "1", "mobile");
+                                                window.defineAndPush(el);
                                             });
                                         }
                                         )();
@@ -3729,12 +3729,12 @@
     class="ad inline"
     data-slot-name="In_Text_1"
      style="min-height: 250px" ></div>-->
-                                    <div class="ad inline" data-slot-name="In_Text_1" data-slot-adunit="inline" data-slot-position="1" data-medium="desktop" style="min-height: 250px"></div>
+                                    <div class="ad inline" data-slot-name="In_Text_1" data-slot-adunit="inline" data-medium="desktop" style="min-height: 250px"></div>
                                     <script>
                                         (function() {
                                             var el = document.currentScript.previousElementSibling;
                                             window.waitForCmd().then(function() {
-                                                window.defineAndPush("inline", "1", "desktop");
+                                                window.defineAndPush(el);
                                             });
                                         }
                                         )();
@@ -3812,44 +3812,27 @@
         }" x-on:image-gallery-next.window="imageGalleryNext()" x-on:image-gallery-prev.window="imageGalleryPrev()" x-on:keyup.right.window="imageGalleryNext()" x-on:keyup.left.window="imageGalleryPrev()">
                                     <script>
                                         previousGalleryTarget = null;
-                                        if ("IntersectionObserver" in window) {
-                                            const observer = new IntersectionObserver( (entries) => {
-                                                entries.forEach(entry => {
-                                                    if (entry.isIntersecting && entry.target !== previousGalleryTarget) {
-                                                        if (previousGalleryTarget !== true) {
-                                                            dataLayer.push({
-                                                                'event': 'embedded-gallery-view'
-                                                            });
-                                                            pp_gemius_hit('cis66Asd55fziG1pssa8EJPaHSbu_vtBDuUrhm6nUQf.D7');
-                                                            if (typeof _ain === 'object' && typeof _ain.track === 'function') {
-                                                                _ain.track();
-                                                                window.postMessage('activateTentacles');
-                                                            }
+                                        const observer = new IntersectionObserver( (entries) => {
+                                            entries.forEach(entry => {
+                                                if (entry.isIntersecting && entry.target !== previousGalleryTarget) {
+                                                    if (previousGalleryTarget !== true) {
+                                                        dataLayer.push({
+                                                            'event': 'embedded-gallery-view'
+                                                        });
+                                                        pp_gemius_hit('cis66Asd55fziG1pssa8EJPaHSbu_vtBDuUrhm6nUQf.D7');
+                                                        if (typeof _ain === 'object' && typeof _ain.track === 'function') {
+                                                            _ain.track();
+                                                            window.postMessage('activateTentacles');
                                                         }
-                                                        previousGalleryTarget = entry.target;
                                                     }
+                                                    previousGalleryTarget = entry.target;
                                                 }
-                                                );
                                             }
-                                            ,{
-                                                threshold: 0.8
-                                            });
-                                            const gallery = document.getElementById('gallery');
-                                            if (gallery) observer.observe(gallery);
-                                        } else {
-                                            const gallery = document.getElementById('gallery');
-                                            if (gallery) {
-                                                dataLayer.push({
-                                                    'event': 'embedded-gallery-view'
-                                                });
-                                                pp_gemius_hit('cis66Asd55fziG1pssa8EJPaHSbu_vtBDuUrhm6nUQf.D7');
-                                                if (typeof _ain === 'object' && typeof _ain.track === 'function') {
-                                                    _ain.track();
-                                                    window.postMessage('activateTentacles');
-                                                }
-                                                previousGalleryTarget = true;
-                                            }
+                                            );
                                         }
+                                        ,{
+                                            threshold: 0.8
+                                        });
                                     </script>
                                     <div class="ease animate-fade-in-view mx-auto select-none opacity-0 delay-300 duration-1000" style="translate: none; rotate: none; scale: none; opacity: 1; transform: translate(0px, 0px);">
                                         <ul class="sm:min-h-107.5 grid min-h-40 grid-cols-8 grid-rows-6 gap-2" id="gallery" x-ref="gallery">
@@ -4216,22 +4199,24 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-center sm:hidden">
-                                <div class="ad inline" data-slot-name="Under_Article" data-slot-adunit="inline" data-slot-position="2" data-medium="mobile" style="min-height: 250px"></div>
+                                <div class="ad inline" data-slot-name="Under_Article" data-slot-adunit="inline" data-medium="mobile" style="min-height: 250px"></div>
                                 <script>
                                     (function() {
+                                        var el = document.currentScript.previousElementSibling;
                                         window.waitForCmd().then(function() {
-                                            window.defineAndPush("inline", "2", "mobile");
+                                            window.defineAndPush(el);
                                         });
                                     }
                                     )();
                                 </script>
                             </div>
                             <div class="max-w-155 mx-auto hidden items-center justify-center sm:flex">
-                                <div class="ad inline" data-slot-name="Under_Article" data-slot-adunit="inline" data-slot-position="2" data-medium="desktop" style="min-height: 250px"></div>
+                                <div class="ad inline" data-slot-name="Under_Article" data-slot-adunit="inline" data-medium="desktop" style="min-height: 250px"></div>
                                 <script>
                                     (function() {
+                                        var el = document.currentScript.previousElementSibling;
                                         window.waitForCmd().then(function() {
-                                            window.defineAndPush("inline", "2", "desktop");
+                                            window.defineAndPush(el);
                                         });
                                     }
                                     )();
@@ -4492,12 +4477,12 @@
     data-slot-name="P1"
      style="min-height: 250px" ></div>
 -->
-                                            <div class="ad vert" data-slot-name="P1" data-slot-adunit="vert" data-slot-position="1" data-medium="desktop" style="min-height: 250px"></div>
+                                            <div class="ad vert" data-slot-name="P1" data-slot-adunit="vert" data-medium="desktop" style="min-height: 250px"></div>
                                             <script>
                                                 (function() {
                                                     var el = document.currentScript.previousElementSibling;
                                                     window.waitForCmd().then(function() {
-                                                        window.defineAndPush("vert", "1", "desktop");
+                                                        window.defineAndPush(el);
                                                     });
                                                 }
                                                 )();
@@ -4567,12 +4552,12 @@
 						data-slot-name="P2"
 						style="min-height: 250px" ></div>
 						-->
-                                            <div class="ad mrec" data-slot-name="P2" data-slot-adunit="mrec" data-slot-position="1" data-medium="desktop" style="min-height: 250px"></div>
+                                            <div class="ad mrec" data-slot-name="P2" data-slot-adunit="mrec" data-medium="desktop" style="min-height: 250px"></div>
                                             <script>
                                                 (function() {
                                                     var el = document.currentScript.previousElementSibling;
                                                     window.waitForCmd().then(function() {
-                                                        window.defineAndPush("mrec", "1", "desktop");
+                                                        window.defineAndPush(el);
                                                     });
                                                 }
                                                 )();
@@ -4751,12 +4736,12 @@
 							data-slot-name="P3"
 							style="min-height: 250px" ></div>
 						-->
-                                                            <div class="ad mrec" data-slot-name="P3" data-slot-adunit="mrec" data-slot-position="2" data-medium="desktop" style="min-height: 250px"></div>
+                                                            <div class="ad mrec" data-slot-name="P3" data-slot-adunit="mrec" data-medium="desktop" style="min-height: 250px"></div>
                                                             <script>
                                                                 (function() {
                                                                     var el = document.currentScript.previousElementSibling;
                                                                     window.waitForCmd().then(function() {
-                                                                        window.defineAndPush("mrec", "2", "desktop");
+                                                                        window.defineAndPush(el);
                                                                     });
                                                                 }
                                                                 )();
@@ -5093,12 +5078,12 @@
 						data-slot-name="P2"
 						style="min-height: 250px" ></div>
 						-->
-                                    <div class="ad mrec" data-slot-name="P2" data-slot-adunit="mrec" data-slot-position="1" data-medium="mobile" style="min-height: 250px"></div>
+                                    <div class="ad mrec" data-slot-name="P2" data-slot-adunit="mrec" data-medium="mobile" style="min-height: 250px"></div>
                                     <script>
                                         (function() {
                                             var el = document.currentScript.previousElementSibling;
                                             window.waitForCmd().then(function() {
-                                                window.defineAndPush("mrec", "1", "mobile");
+                                                window.defineAndPush(el);
                                             });
                                         }
                                         )();
@@ -5508,11 +5493,12 @@
                                     </section>
                                 </div>
                                 <div class="flex items-center justify-center sm:hidden">
-                                    <div class="ad mrec" data-slot-name="P3" data-slot-adunit="mrec" data-slot-position="2" data-medium="mobile" style="min-height: 250px"></div>
+                                    <div class="ad mrec" data-slot-name="P3" data-slot-adunit="mrec" data-medium="mobile" style="min-height: 250px"></div>
                                     <script>
                                         (function() {
+                                        var el = document.currentScript.previousElementSibling;
                                             window.waitForCmd().then(function() {
-                                                window.defineAndPush("mrec", "2", "mobile");
+                                                window.defineAndPush(el);
                                             });
                                         }
                                         )();
@@ -5632,12 +5618,12 @@
 							data-slot-name="P4"
 							style="min-height: 250px" ></div>
 						-->
-                                                <div class="ad vert" data-slot-name="P4" data-slot-adunit="vert" data-slot-position="2" data-medium="desktop" style="min-height: 250px"></div>
+                                                <div class="ad vert" data-slot-name="P4" data-slot-adunit="vert" data-medium="desktop" style="min-height: 250px"></div>
                                                 <script>
                                                     (function() {
                                                         var el = document.currentScript.previousElementSibling;
                                                         window.waitForCmd().then(function() {
-                                                            window.defineAndPush("vert", "2", "desktop");
+                                                            window.defineAndPush(el);
                                                         });
                                                     }
                                                     )();
@@ -6396,7 +6382,16 @@ function getGeo() {
 
 function getStackOverride() {
     try {
-        const raw = window.location.search.slice(1).trim().toUpperCase();
+        let raw = null;
+        if (window.URLSearchParams) {
+            const params = new URLSearchParams(window.location.search || "");
+            raw = params.get("geo");
+        }
+        if (!raw && window.location.search) {
+            const match = window.location.search.match(/[?&]geo=([^&#]+)/i);
+            if (match && match[1]) raw = decodeURIComponent(match[1].replace(/\+/g, " "));
+        }
+        raw = raw ? String(raw).trim().toUpperCase() : "";
         if (!raw) return null;
         if (raw === "CH" || raw === "BR" || raw === "FR") return raw;
     } catch (e) {}
@@ -6409,6 +6404,7 @@ function getGeoOverride() {
 
 function getCurrentGeo() {
     try {
+        if (pub.geoOverride) return String(pub.geoOverride).toUpperCase();
         if (pub.geo) return String(pub.geo).toUpperCase();
     } catch (e) {}
     return null;
@@ -6529,11 +6525,75 @@ function getCategoryValues() {
 }
 
 function footerBeacon() {
-    if (document.getElementById("footersticky-beacon-style")) return;
-    const st = document.createElement("style");
-    st.id = "footersticky-beacon-style";
-    st.textContent = "#footersticky.footerstickyBeacon{transition:none!important;transform:translateY(0)!important;opacity:.01!important;pointer-events:none!important;position:fixed!important;left:0!important;right:auto!important;top:auto!important;bottom:env(safe-area-inset-bottom,0px)!important;width:1px!important;height:1px!important;background:transparent!important;z-index:2147483647!important;justify-content:flex-start!important;align-items:flex-end!important}#footersticky.footerstickyBeacon #footersticky-wrapper{width:1px!important;height:1px!important;min-width:1px!important;min-height:1px!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;overflow:hidden!important;margin:0!important;display:block!important}#footersticky.footerstickyBeacon .ad-inner{width:1px!important;height:1px!important;overflow:hidden!important}";
-    adAppend(document.head, st);
+    return true;
+}
+
+function hideFooterStickyClose() {
+    try {
+        const closeBtn = document.getElementById("footersticky-close");
+        if (!closeBtn) return;
+        closeBtn.style.display = "none";
+        closeBtn.style.visibility = "hidden";
+        closeBtn.style.opacity = "0";
+        closeBtn.style.pointerEvents = "none";
+    } catch (e) {}
+}
+
+function destroyFooterSticky() {
+    const el = document.getElementById("footersticky");
+    try {
+        if (window.pub && pub.footerstickyObserver && typeof pub.footerstickyObserver.disconnect === "function") {
+            pub.footerstickyObserver.disconnect();
+        }
+    } catch (e) {}
+    try {
+        if (window.pub) delete pub.footerstickyObserver;
+    } catch (e) {}
+    try {
+        if (window.pub && pub.adSlots && pub.adSlots.footersticky && window.googletag && typeof googletag.destroySlots === "function") {
+            googletag.destroySlots([pub.adSlots.footersticky]);
+        }
+    } catch (e) {}
+    try {
+        if (window.pub && pub.adSlots) delete pub.adSlots.footersticky;
+    } catch (e) {}
+    try {
+        if (window.pub && pub.slotById) delete pub.slotById["footersticky-slot"];
+    } catch (e) {}
+    try {
+        if (window.pub && pub.slotRequestLocks) delete pub.slotRequestLocks["footersticky-slot"];
+    } catch (e) {}
+    try {
+        if (window.pub && pub.footerstickyWL) delete pub.footerstickyWL;
+    } catch (e) {}
+    try {
+        if (el) el.remove();
+    } catch (e) {}
+}
+
+function onPubSlotRenderEnded(event) {
+    try {
+        if (!event || !event.slot || typeof event.slot.getSlotElementId !== "function") return;
+        const slotElementId = event.slot.getSlotElementId();
+        if (slotElementId === "oop" || event.isEmpty) return;
+        if (slotElementId === "footersticky-slot") {
+            const wl = pub.footerstickyWL;
+            const isWLGhost = wl && event.campaignId && wl[event.campaignId] && event.size && event.size[0] === 1 && event.size[1] === 1;
+            if (isWLGhost) {
+                footerBeacon();
+                const sticky = document.getElementById("footersticky");
+                if (sticky) {
+                    sticky.classList.remove("footerstickyFX");
+                    sticky.classList.add("footerstickyBeacon");
+                }
+                hideFooterStickyClose();
+                return;
+            }
+            handleFooterStickyRendered();
+            return;
+        }
+        adTxt(slotElementId);
+    } catch (e) {}
 }
 
 
@@ -6570,9 +6630,6 @@ function pubDisplay(el) {
         if (window.getComputedStyle) cs = window.getComputedStyle(el);
     } catch (e) {}
     if (cs && (cs.display === "none" || cs.visibility === "hidden")) return false;
-    try {
-        if (typeof el.checkVisibility === "function" && el.checkVisibility({ contentVisibilityAuto: false })) return true;
-    } catch (e) {}
     try {
         if (el.getClientRects && el.getClientRects().length) return true;
     } catch (e) {}
@@ -6651,26 +6708,45 @@ function adKVtargeting() {
 }
 
 
+function assignSequentialSlotPositions() {
+    const counters = {};
+    const nodes = Array.prototype.slice.call(document.querySelectorAll('.ad[data-slot-adunit]'));
+    for (let i = 0; i < nodes.length; i++) {
+        const el = nodes[i];
+        if (!el || !el.dataset) continue;
+        if (el.id === 'oop' || el.id === 'footersticky' || el.id === 'interstitial') continue;
+        if (!pubDisplay(el)) continue;
+        const root = (el.dataset.slotAdunit || '').trim();
+        if (!root) continue;
+        const medium = (el.dataset.medium || '').trim().toLowerCase();
+        const key = root + '|' + medium;
+        counters[key] = (counters[key] || 0) + 1;
+        el.__slotPosition = counters[key];
+    }
+}
+
 function getSlotPosition(el) {
-    if (!el || !el.dataset) return null;
-    const raw = el.dataset.slotPosition;
-    const pos = raw ? parseInt(raw, 10) : NaN;
-    return Number.isInteger(pos) ? pos : null;
+    if (!el) return null;
+    if (Number.isInteger(el.__slotPosition)) return el.__slotPosition;
+    return null;
 }
 
 function resolveSlotElement(slotRoot, position, medium) {
     const pos = Number.isInteger(position) ? position : parseInt(position, 10);
     if (!slotRoot || !Number.isInteger(pos)) return null;
-    const candidates = Array.prototype.slice.call(document.querySelectorAll('.ad[data-slot-adunit="' + slotRoot + '"][data-slot-position="' + String(pos) + '"]'));
+    const candidates = Array.prototype.slice.call(document.querySelectorAll('.ad[data-slot-adunit="' + slotRoot + '"]'));
     if (!candidates.length) return null;
     const filtered = medium ? candidates.filter(function(el) {
         return !el.dataset || !el.dataset.medium || el.dataset.medium === medium;
     }) : candidates;
     const pool = filtered.length ? filtered : candidates;
     for (let i = 0; i < pool.length; i++) {
-        if (pubDisplay(pool[i])) return pool[i];
+        if (getSlotPosition(pool[i]) === pos && pubDisplay(pool[i])) return pool[i];
     }
-    return pool[0] || null;
+    for (let i = 0; i < pool.length; i++) {
+        if (getSlotPosition(pool[i]) === pos) return pool[i];
+    }
+    return null;
 }
 
 function getIndexedAdUnitPath(el) {
@@ -6694,7 +6770,8 @@ function defineSlot(el, slotName, slotId, adUnitPath) {
     const slotObj = googletag.defineSlot(adUnitPath || "/417417404/" + slotName, pub.slotDimensions[slotName], slotId);
     if (!slotObj) return null;
     slotObj.defineSizeMapping(mapping).addService(pub.ads);
-    if (el.dataset && el.dataset.slotPosition) slotObj.setTargeting("pos", [String(el.dataset.slotPosition)]);
+    const pos = getSlotPosition(el);
+    if (Number.isInteger(pos)) slotObj.setTargeting("pos", [String(pos)]);
     pub.adSlots[storageKey] = slotObj;
     pub.slotById[slotId] = slotObj;
     return slotObj;
@@ -7146,14 +7223,14 @@ function requestSpecialGptSlot(slot, displayRef) {
     if (requestKey && pub.slotRequestLocks[requestKey]) return;
     if (requestKey) pub.slotRequestLocks[requestKey] = true;
     try {
-        if (!slot.__ab_displayed) {
+        if (!slot.__slotDisplayed) {
             googletag.display(displayRef);
-            slot.__ab_displayed = true;
+            slot.__slotDisplayed = true;
         }
     } catch (e) {}
     try {
         googletag.pubads().refresh([slot]);
-        slot.__ab_requested = true;
+        slot.__slotRequested = true;
     } catch (e) {
         if (requestKey) delete pub.slotRequestLocks[requestKey];
     }
@@ -7228,62 +7305,42 @@ function ringierLoadInterstitial() {
     } catch (e) {}
 }
 
-function ylSlot(slotObj, slotId) {
-    if (!slotObj || slotObj.__ylAttached || !window.yieldlove_cmd) return false;
+function getYieldloveBaseAdUnitPath(el, slotName) {
+    const root = getSlotRoot(el) || slotName;
+    if (!root) return null;
+    return "/417417404/" + root;
+}
+
+function ylSlot(slotObj, slotId, clonePath) {
+    if (!slotObj || slotObj.__ylAttached || !window.yieldlove_cmd) return;
+    const effectivePath = clonePath || slotObj.__ylClonePath || (slotObj.getAdUnitPath && slotObj.getAdUnitPath()) || null;
     try {
-        const path = slotObj.getAdUnitPath && slotObj.getAdUnitPath();
-        if (slotId === "oop" || (typeof path === "string" && /\/oop$/.test(path))) return false;
+        if (slotId === "oop" || (typeof effectivePath === "string" && /\/oop$/.test(effectivePath))) return;
     } catch (e) {}
+    if (effectivePath) slotObj.__ylClonePath = effectivePath;
     slotObj.__ylAttached = true;
-    slotObj.__ab_fallback_timer = null;
-    function markRequested() {
-        slotObj.__ab_requested = true;
-    }
-    function clearFallback() {
-        if (slotObj.__ab_fallback_timer) {
-            clearTimeout(slotObj.__ab_fallback_timer);
-            slotObj.__ab_fallback_timer = null;
-        }
-    }
-    function fallbackRefresh() {
-        if (slotObj.__ab_requested) return;
-        try {
-            googletag.pubads().refresh([slotObj]);
-            markRequested();
-        } catch (e) {}
-    }
     window.yieldlove_cmd.push(function() {
         function runCloneUnit() {
-            if (slotObj.__ab_requested) return;
+            if (slotObj.__ylRequested) return;
             if (!document.getElementById(slotId)) return;
             try {
                 if (slotObj.setTargeting) slotObj.setTargeting("tl", "yl");
             } catch (e) {}
             try {
-                const path = slotObj.getAdUnitPath && slotObj.getAdUnitPath();
+                const path = slotObj.__ylClonePath || clonePath || (slotObj.getAdUnitPath && slotObj.getAdUnitPath());
                 if (path && window.YLHH && YLHH.bidder && typeof YLHH.bidder.cloneUnit === "function") {
-                    clearFallback();
-                    markRequested();
+                    slotObj.__ylRequested = true;
                     YLHH.bidder.cloneUnit(path, slotId, true);
-                    return;
                 }
             } catch (e) {}
-            fallbackRefresh();
         }
         try {
-            if (window.YLHH && YLHH.utils && typeof YLHH.utils.lazyLoad === "function") {
-                YLHH.utils.lazyLoad(slotId, runCloneUnit);
-            } else {
-                runCloneUnit();
-            }
+            if (window.YLHH && YLHH.utils && typeof YLHH.utils.lazyLoad === "function") YLHH.utils.lazyLoad(slotId, runCloneUnit);
+            else runCloneUnit();
         } catch (e) {
             runCloneUnit();
         }
     });
-    slotObj.__ab_fallback_timer = setTimeout(function() {
-        fallbackRefresh();
-    }, 2000);
-    return true;
 }
 
 function initRingier() {
@@ -7510,8 +7567,8 @@ function initInjectedAds(consentState) {
                         slot = googletag.defineOutOfPageSlot("/417417404/oop", slotId);
                         if (!slot) return;
                         slot.addService(pub.ads);
-                        slot.__ab_displayed = false;
-                        slot.__ab_requested = false;
+                        slot.__slotDisplayed = false;
+                        slot.__slotRequested = false;
                         pub.adSlots[slotId] = slot;
                         pub.slotById[slotId] = slot;
                     }
@@ -7524,26 +7581,26 @@ function initInjectedAds(consentState) {
                     if (!slot) {
                         slot = defineSlot(el, slotName, stickySlotId);
                         if (!slot) return;
-                        slot.__ab_displayed = false;
-                        slot.__ab_requested = false;
+                        slot.__slotDisplayed = false;
+                        slot.__slotRequested = false;
                     }
                     requestSpecialGptSlot(slot, stickySlotId);
                     return;
                 }
                 let slot = this.getSlotByDiv(slotId);
-                const alreadyRequested = slot && slot.__ab_requested === true;
+                const alreadyRequested = slot && slot.__slotRequested === true;
                 if (!slot) {
                     slot = defineSlot(el, slotName, slotId, getIndexedAdUnitPath(el));
                     if (!slot) return;
                     try {
                         slot.setTargeting("tl", "gpt");
                     } catch (e) {}
-                    slot.__ab_displayed = false;
-                    slot.__ab_requested = false;
+                    slot.__slotDisplayed = false;
+                    slot.__slotRequested = false;
                 }
-                if (!slot.__ab_displayed) {
+                if (!slot.__slotDisplayed) {
                     googletag.display(slotId);
-                    slot.__ab_displayed = true;
+                    slot.__slotDisplayed = true;
                 }
                 if (alreadyRequested) return;
                 if (!lockSlotRequest(slotId)) return;
@@ -7551,7 +7608,7 @@ function initInjectedAds(consentState) {
                     APSManager.fetchBids(slot, slotName, slotId, function() {
                         try {
                             googletag.pubads().refresh([slot]);
-                            slot.__ab_requested = true;
+                            slot.__slotRequested = true;
                         } finally {
                             unlockSlotRequest(slotId);
                         }
@@ -7559,7 +7616,7 @@ function initInjectedAds(consentState) {
                 } else {
                     try {
                         googletag.pubads().refresh([slot]);
-                        slot.__ab_requested = true;
+                        slot.__slotRequested = true;
                     } finally {
                         unlockSlotRequest(slotId);
                     }
@@ -7623,31 +7680,7 @@ function initInjectedAds(consentState) {
                         });
                         if (typeof pub.ads.addEventListener === "function" && !pub.__manualSlotRenderEndedAttached) {
                             pub.__manualSlotRenderEndedAttached = true;
-                            pub.ads.addEventListener("slotRenderEnded", function(event) {
-                                try {
-                                    if (!event || !event.slot || typeof event.slot.getSlotElementId !== "function") return;
-                                    const id = event.slot.getSlotElementId();
-                                    if (id === "oop" || event.isEmpty) return;
-                                    if (id === "footersticky-slot") {
-                                        const wl = pub.footerstickyWL;
-                                        const isWLGhost = wl && event.campaignId && wl[event.campaignId] && event.size && event.size[0] === 1 && event.size[1] === 1;
-                                        if (isWLGhost) {
-                                            footerBeacon();
-                                            const sticky = document.getElementById("footersticky");
-                                            if (sticky) {
-                                                sticky.classList.remove("footerstickyFX");
-                                                sticky.classList.add("footerstickyBeacon");
-                                            }
-                                            const closeBtn = document.getElementById("footersticky-close");
-                                            if (closeBtn) closeBtn.style.display = "none";
-                                            return;
-                                        }
-                                        handleFooterStickyRendered();
-                                        return;
-                                    }
-                                    adTxt(id);
-                                } catch (e) {}
-                            });
+                            pub.ads.addEventListener("slotRenderEnded", onPubSlotRenderEnded);
                         }
                         if (!pub.servicesEnabled) {
                             googletag.enableServices();
@@ -7656,7 +7689,6 @@ function initInjectedAds(consentState) {
                         window.defineAndPush = function(elOrRoot, position, medium) {
                             return SlotManager.defineAndPush(elOrRoot, position, medium);
                         };
-                        gptLoadInterstitial();
                     });
                 });
             }
@@ -7702,36 +7734,7 @@ function initYL(consentState) {
             googletag.setConfig({ disableInitialLoad: true });
             if (typeof pub.ads.addEventListener === "function" && !pub.__slotRenderEndedAttached) {
                 pub.__slotRenderEndedAttached = true;
-                pub.ads.addEventListener("slotRenderEnded", function(event) {
-                    try {
-                        if (!event || !event.slot || typeof event.slot.getSlotElementId !== "function") return;
-                        const slotElementId = event.slot.getSlotElementId();
-                        if (slotElementId === "oop" || event.isEmpty) return;
-                        if (slotElementId === "footersticky-slot") {
-                            const wl = pub.footerstickyWL;
-                            const isWLGhost = wl && event.campaignId && wl[event.campaignId] && event.size && event.size[0] === 1 && event.size[1] === 1;
-                            if (isWLGhost) {
-                                footerBeacon();
-                                const sticky = document.getElementById("footersticky");
-                                if (sticky) {
-                                    sticky.classList.remove("footerstickyFX");
-                                    sticky.classList.add("footerstickyBeacon");
-                                }
-                                const closeBtn = document.getElementById("footersticky-close");
-                                if (closeBtn) {
-                                    closeBtn.style.display = "none";
-                                    closeBtn.style.visibility = "hidden";
-                                    closeBtn.style.opacity = "0";
-                                    closeBtn.style.pointerEvents = "none";
-                                }
-                                return;
-                            }
-                            handleFooterStickyRendered();
-                            return;
-                        }
-                        adTxt(slotElementId);
-                    } catch (e) {}
-                });
+                pub.ads.addEventListener("slotRenderEnded", onPubSlotRenderEnded);
             }
             try {
                 if (pub.ads && typeof pub.ads.clearTargeting === "function" && window.apstag && typeof window.apstag.targetingKeys === "function") {
@@ -7768,8 +7771,8 @@ function initYL(consentState) {
                         slotObj = googletag.defineOutOfPageSlot("/417417404/oop", slotId);
                         if (!slotObj) return false;
                         slotObj.addService(pub.ads);
-                        slotObj.__ab_displayed = false;
-                        slotObj.__ab_requested = false;
+                        slotObj.__slotDisplayed = false;
+                        slotObj.__slotRequested = false;
                         pub.adSlots[slotId] = slotObj;
                         pub.slotById[slotId] = slotObj;
                     }
@@ -7777,14 +7780,33 @@ function initYL(consentState) {
                     requestSpecialGptSlot(slotObj, slotId);
                     return true;
                 }
-                if (!slotObj) {
-                    slotObj = defineSlot(el, type, slotTargetId);
-                    if (!slotObj) return false;
-                    slotObj.__ab_displayed = false;
-                    slotObj.__ab_requested = false;
+                const ylBasePath = type === "footersticky" ? null : getYieldloveBaseAdUnitPath(el, type);
+                if (slotObj && ylBasePath && slotObj.getAdUnitPath && slotObj.getAdUnitPath() !== ylBasePath) {
                     try {
-                        slotObj.setTargeting("tl", "gpt");
+                        googletag.destroySlots([slotObj]);
                     } catch (e) {}
+                    try {
+                        delete pub.slotById[slotTargetId];
+                    } catch (e) {}
+                    try {
+                        delete pub.adSlots[slotTargetId];
+                    } catch (e) {}
+                    try {
+                        delete pub.adSlots[type === "footersticky" ? "footersticky" : slotId];
+                    } catch (e) {}
+                    slotObj = null;
+                }
+                if (!slotObj) {
+                    slotObj = defineSlot(el, type, slotTargetId, ylBasePath || undefined);
+                    if (!slotObj) return false;
+                    slotObj.__slotDisplayed = false;
+                    slotObj.__slotRequested = false;
+                    if (ylBasePath) slotObj.__ylClonePath = ylBasePath;
+                    try {
+                        slotObj.setTargeting("tl", "yl");
+                    } catch (e) {}
+                } else if (ylBasePath) {
+                    slotObj.__ylClonePath = ylBasePath;
                 }
                 try {
                     if (slotObj && typeof slotObj.clearTargeting === "function" && window.apstag && typeof window.apstag.targetingKeys === "function") {
@@ -7794,23 +7816,25 @@ function initYL(consentState) {
                         }
                     }
                 } catch (e) {}
-                if (!slotObj.__ab_displayed) {
+                if (!slotObj.__slotDisplayed) {
                     googletag.display(slotTargetId);
-                    slotObj.__ab_displayed = true;
+                    slotObj.__slotDisplayed = true;
                 }
                 if (type === "footersticky") {
-                    if (!slotObj.__ab_requested) {
+                    if (!slotObj.__slotRequested) {
                         googletag.pubads().refresh([slotObj]);
-                        slotObj.__ab_requested = true;
+                        slotObj.__slotRequested = true;
                     }
                     return true;
                 }
                 if (!slotObj.__ylAttached) {
-                    ylSlot(slotObj, slotId);
+                    ylSlot(slotObj, slotId, slotObj.__ylClonePath || ylBasePath || null);
+                }
+                if (!slotObj.__slotRequested) {
+                    slotObj.__slotRequested = true;
                 }
                 return true;
             };
-            gptLoadInterstitial();
         });
     }
     if (document.getElementById("gpt-js")) {
@@ -7874,6 +7898,7 @@ function bootAds() {
     if (location.search.length > 1) {
         pub.fEnd = [encodeURIComponent(decodeURIComponent(location.search.slice(1).replace(/\+/g, " ")))];
     }
+    assignSequentialSlotPositions();
     cmpGate(function(consentState) {
         pub.consentState = consentState;
         pub.geoOverride = getGeoOverride();
@@ -7897,7 +7922,7 @@ if (document.readyState === "loading") {
 
 <div id="interstitial" class="ad interstitial" style="position:fixed;left:0;top:0;z-index:2147483646;width:1px;height:1px;"></div>
 
-<div id="oop" class="ad oop" style="position:fixed;left:0;top:0;z-index:2147483645;width:1px;height:1px;" data-ringier-slot="top_special_1"></div>
+<div id="oop" class="ad oop" style="position:fixed;left:0;top:0;z-index:2147483645;width:1px;height:1px;"></div>
 <script>
 (function() {
     var el = document.currentScript.previousElementSibling;
@@ -7908,7 +7933,7 @@ if (document.readyState === "loading") {
 })();
 </script>
 
-<div id="footersticky" class="ad footersticky" data-ringier-slot="sticky_ad_1">
+<div id="footersticky" class="ad footersticky">
     <div id="footersticky-wrapper">
         <div class="ad-inner" id="footersticky-slot"></div>
         <button id="footersticky-close" type="button" title="Close Ad">×</button>
@@ -7918,25 +7943,9 @@ if (document.readyState === "loading") {
         var el = document.currentScript.parentElement;
         var closeBtn = document.getElementById("footersticky-close");
         if (closeBtn) {
-            closeBtn.style.display = "none";
-            closeBtn.style.visibility = "hidden";
-            closeBtn.style.opacity = "0";
-            closeBtn.style.pointerEvents = "none";
+            hideFooterStickyClose();
             closeBtn.onclick = function() {
-                try {
-                    el.remove();
-                } catch (e) {}
-                if (window.pub && pub.adsReady && pub.adSlots && pub.adSlots.footersticky && window.googletag) {
-                    try {
-                        googletag.destroySlots([pub.adSlots.footersticky]);
-                    } catch (e) {}
-                    try {
-                        delete pub.adSlots.footersticky;
-                    } catch (e) {}
-                    try {
-                        delete pub.slotById["footersticky-slot"];
-                    } catch (e) {}
-                }
+                destroyFooterSticky();
             };
         }
         window.waitForCmd().then(function() {
