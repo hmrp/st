@@ -6363,8 +6363,7 @@
             }
         </script>
         <!--added replaced-->
-        <script>
-window.googletag = window.googletag || { cmd: [] };
+        <script>window.googletag = window.googletag || { cmd: [] };
 window.pub = window.pub || {};
 
 function getGeo() {
@@ -6596,14 +6595,10 @@ function onPubSlotRenderEnded(event) {
     } catch (e) {}
 }
 
-
-
 function getSlotRoot(el) {
     if (!el || !el.dataset || !el.dataset.slotAdunit) return null;
     return String(el.dataset.slotAdunit);
 }
-
-
 
 function applySlotId(el) {
     if (!el) return null;
@@ -6616,8 +6611,6 @@ function applySlotId(el) {
     el.id = root + String(pos);
     return { slotName: root, slotId: el.id, position: pos };
 }
-
-
 
 function pubDisplay(el) {
     if (!el) return false;
@@ -6698,15 +6691,13 @@ function buildSharedKVs() {
 }
 
 function adKVtargeting() {
-    if (!pub.ads || !pub.ads.setTargeting) return;
-    const kv = buildSharedKVs();
-    Object.keys(kv).forEach(function(key) {
-        try {
-            pub.ads.setTargeting(key, kv[key]);
-        } catch (e) {}
-    });
+    try {
+        const kv = buildSharedKVs();
+        if (window.googletag && typeof googletag.setConfig === "function") {
+            googletag.setConfig({ targeting: kv });
+        }
+    } catch (e) {}
 }
-
 
 function assignSequentialSlotPositions() {
     const counters = {};
@@ -6714,12 +6705,12 @@ function assignSequentialSlotPositions() {
     for (let i = 0; i < nodes.length; i++) {
         const el = nodes[i];
         if (!el || !el.dataset) continue;
-        if (el.id === 'oop' || el.id === 'footersticky' || el.id === 'interstitial') continue;
+        if (el.id === "oop" || el.id === "footersticky" || el.id === "interstitial") continue;
         if (!pubDisplay(el)) continue;
-        const root = (el.dataset.slotAdunit || '').trim();
+        const root = (el.dataset.slotAdunit || "").trim();
         if (!root) continue;
-        const medium = (el.dataset.medium || '').trim().toLowerCase();
-        const key = root + '|' + medium;
+        const medium = (el.dataset.medium || "").trim().toLowerCase();
+        const key = root + "|" + medium;
         counters[key] = (counters[key] || 0) + 1;
         el.__slotPosition = counters[key];
     }
@@ -6756,7 +6747,7 @@ function getIndexedAdUnitPath(el) {
     return "/417417404/" + root + "/position" + String(pos);
 }
 
-function defineSlot(el, slotName, slotId, adUnitPath) {
+function defineSlot(el, slotName, slotId, adUnitPath, tlValue) {
     if (!document.getElementById(slotId)) return null;
     const storageKey = slotName === "footersticky" ? "footersticky" : slotId;
     if (slotName !== "footersticky") el.id = slotId;
@@ -6771,7 +6762,12 @@ function defineSlot(el, slotName, slotId, adUnitPath) {
     if (!slotObj) return null;
     slotObj.defineSizeMapping(mapping).addService(pub.ads);
     const pos = getSlotPosition(el);
-    if (Number.isInteger(pos)) slotObj.setTargeting("pos", [String(pos)]);
+    const targeting = {};
+    if (Number.isInteger(pos)) targeting.pos = [String(pos)];
+    if (tlValue) targeting.tl = [String(tlValue)];
+    if (Object.keys(targeting).length) {
+        slotObj.setConfig({ targeting: targeting });
+    }
     pub.adSlots[storageKey] = slotObj;
     pub.slotById[slotId] = slotObj;
     return slotObj;
@@ -6794,7 +6790,6 @@ function handleFooterStickyRendered() {
     } catch (e) {}
 }
 
-
 function cmpConsentGroup() {
     try {
         if (typeof window.OnetrustActiveGroups === "string") return window.OnetrustActiveGroups.split(",");
@@ -6813,7 +6808,9 @@ function cmpConsented() {
     if (!required.length) return true;
     const active = cmpConsentGroup();
     if (!active) return false;
-    return required.every((id) => active.indexOf(id) !== -1);
+    return required.every(function(id) {
+        return active.indexOf(id) !== -1;
+    });
 }
 
 function cmpHasAdsConsent(active) {
@@ -6836,9 +6833,7 @@ function cmpGeoRegime() {
         if (typeof window.__gpp === "function" || typeof window.__gppLocator !== "undefined") return "us";
     } catch (e) {}
     try {
-        const geo = window.OneTrust && OneTrust.geolocationResponse && typeof OneTrust.geolocationResponse.countryCode === "string"
-            ? OneTrust.geolocationResponse.countryCode.toUpperCase()
-            : "";
+        const geo = window.OneTrust && OneTrust.geolocationResponse && typeof OneTrust.geolocationResponse.countryCode === "string" ? OneTrust.geolocationResponse.countryCode.toUpperCase() : "";
         if (geo === "BR") return "lgpd";
         if (geo === "US") return "us";
     } catch (e) {}
@@ -6991,12 +6986,10 @@ function resolveRingierSlot(el) {
         if (el.id === "footersticky") return "sticky_ad_1";
         if (el.id === "oop") return "top_special_1";
         if (el.id === "interstitial") return "interstitial_1";
-
         const root = getSlotRoot(el);
         const pos = getSlotPosition(el);
-        const medium = el && el.dataset && el.dataset.medium ? String(el.dataset.medium).toLowerCase() : (window.innerWidth < 768 ? "mobile" : "desktop");
+        const medium = el && el.dataset && el.dataset.medium ? String(el.dataset.medium).toLowerCase() : window.innerWidth < 768 ? "mobile" : "desktop";
         const pageType = getRingierPageType();
-
         if (root === "horz") {
             if (pageType === "home") {
                 if (pos === 1) return "top_ad_1";
@@ -7005,22 +6998,18 @@ function resolveRingierSlot(el) {
                 if (pos === 1) return "top_ad_1";
             }
         }
-
         if (root === "vert") {
             if (medium === "mobile") return pageType === "home" ? "index_ad_2" : "details_ad_1";
             return "side-right_ad_1";
         }
-
         if (root === "inline") {
             if (medium === "mobile") return pageType === "home" ? "index_ad_3" : "details_ad_2";
             return "details_ad_1";
         }
-
         if (root === "mrec") {
             if (medium === "mobile") return pageType === "home" ? "index_ad_4" : "details_ad_3";
             return "side-right_ad_2";
         }
-
         if (el.dataset) {
             const slot = el.dataset.ringierSlot;
             if (typeof slot === "string") {
@@ -7219,7 +7208,7 @@ function ringierOneIdInitAndGetId(timeoutMs) {
 function requestSpecialGptSlot(slot, displayRef) {
     if (!slot || !pub || !pub.ads) return;
     pub.slotRequestLocks = pub.slotRequestLocks || {};
-    const requestKey = (typeof displayRef === "string" && displayRef) || (slot.getSlotElementId && slot.getSlotElementId()) || (slot.getAdUnitPath && slot.getAdUnitPath()) || "";
+    const requestKey = typeof displayRef === "string" && displayRef || typeof slot.getSlotElementId === "function" && slot.getSlotElementId() || typeof slot.getAdUnitPath === "function" && slot.getAdUnitPath() || "";
     if (requestKey && pub.slotRequestLocks[requestKey]) return;
     if (requestKey) pub.slotRequestLocks[requestKey] = true;
     try {
@@ -7268,7 +7257,8 @@ function gptLoadInterstitial() {
                 if (pub.interstitialSlot) return;
                 const inter = googletag.defineOutOfPageSlot("/417417404/Interstitial", googletag.enums.OutOfPageFormat.INTERSTITIAL);
                 if (inter) {
-                    inter.setTargeting("pos", "interstitial").addService(pub.ads).setConfig({
+                    inter.addService(pub.ads).setConfig({
+                        targeting: { pos: ["interstitial"] },
                         interstitial: {
                             triggers: {
                                 unhideWindow: true,
@@ -7313,9 +7303,9 @@ function getYieldloveBaseAdUnitPath(el, slotName) {
 
 function ylSlot(slotObj, slotId, clonePath) {
     if (!slotObj || slotObj.__ylAttached || !window.yieldlove_cmd) return;
-    const effectivePath = clonePath || slotObj.__ylClonePath || (slotObj.getAdUnitPath && slotObj.getAdUnitPath()) || null;
+    const effectivePath = clonePath || slotObj.__ylClonePath || typeof slotObj.getAdUnitPath === "function" && slotObj.getAdUnitPath() || null;
     try {
-        if (slotId === "oop" || (typeof effectivePath === "string" && /\/oop$/.test(effectivePath))) return;
+        if (slotId === "oop" || typeof effectivePath === "string" && /\/oop$/.test(effectivePath)) return;
     } catch (e) {}
     if (effectivePath) slotObj.__ylClonePath = effectivePath;
     slotObj.__ylAttached = true;
@@ -7324,10 +7314,7 @@ function ylSlot(slotObj, slotId, clonePath) {
             if (slotObj.__ylRequested) return;
             if (!document.getElementById(slotId)) return;
             try {
-                if (slotObj.setTargeting) slotObj.setTargeting("tl", "yl");
-            } catch (e) {}
-            try {
-                const path = slotObj.__ylClonePath || clonePath || (slotObj.getAdUnitPath && slotObj.getAdUnitPath());
+                const path = slotObj.__ylClonePath || clonePath || typeof slotObj.getAdUnitPath === "function" && slotObj.getAdUnitPath();
                 if (path && window.YLHH && YLHH.bidder && typeof YLHH.bidder.cloneUnit === "function") {
                     slotObj.__ylRequested = true;
                     YLHH.bidder.cloneUnit(path, slotId, true);
@@ -7404,9 +7391,7 @@ function initRingier() {
             registerRingierElement(el);
         }
         try {
-            if (window.admTagMan && typeof admTagMan.loadSlots === "function") {
-                admTagMan.loadSlots();
-            }
+            if (window.admTagMan && typeof admTagMan.loadSlots === "function") admTagMan.loadSlots();
         } catch (e) {}
     }
     (function(r, i, a, d, s) {
@@ -7440,7 +7425,6 @@ function initRingier() {
 }
 
 function initInjectedAds(consentState) {
-    const PRESENCE_TIMEOUT = 2000;
     const APS_PUB_ID = "7046d657-31ef-4394-964e-805033a84142";
     const GPT_SRC = {
         la: "https://pagead2.googlesyndication.com/tag/js/gpt.js",
@@ -7480,10 +7464,7 @@ function initInjectedAds(consentState) {
         init() {
             if (this.initialized) return;
             if (!window.apstag || typeof window.apstag.init !== "function") return;
-            window.apstag.init({
-                pubID: APS_PUB_ID,
-                adServer: "googletag"
-            });
+            window.apstag.init({ pubID: APS_PUB_ID, adServer: "googletag" });
             this.initialized = true;
         },
         isEligible(slotName) {
@@ -7515,7 +7496,7 @@ function initInjectedAds(consentState) {
                 window.apstag.fetchBids({
                     slots: [{
                         slotID: slotId,
-                        slotName: slot.getAdUnitPath ? slot.getAdUnitPath() : "/417417404/" + slotName,
+                        slotName: typeof slot.getAdUnitPath === "function" ? slot.getAdUnitPath() : "/417417404/" + slotName,
                         sizes: sizes
                     }],
                     timeout: this.config.fetchBidsTimeout
@@ -7524,9 +7505,7 @@ function initInjectedAds(consentState) {
                     finished = true;
                     clearTimeout(timeout);
                     try {
-                        if (window.apstag && typeof window.apstag.setDisplayBids === "function") {
-                            window.apstag.setDisplayBids();
-                        }
+                        if (window.apstag && typeof window.apstag.setDisplayBids === "function") window.apstag.setDisplayBids();
                     } catch (e) {}
                     done();
                 });
@@ -7541,7 +7520,9 @@ function initInjectedAds(consentState) {
     const SlotManager = {
         getSlotByDiv(id) {
             try {
-                return googletag.pubads().getSlots().find((s) => s.getSlotElementId && s.getSlotElementId() === id) || null;
+                return googletag.pubads().getSlots().find(function(s) {
+                    return typeof s.getSlotElementId === "function" && s.getSlotElementId() === id;
+                }) || null;
             } catch (e) {
                 return null;
             }
@@ -7579,7 +7560,7 @@ function initInjectedAds(consentState) {
                     const stickySlotId = "footersticky-slot";
                     let slot = this.getSlotByDiv(stickySlotId) || pub.slotById[stickySlotId] || null;
                     if (!slot) {
-                        slot = defineSlot(el, slotName, stickySlotId);
+                        slot = defineSlot(el, slotName, stickySlotId, undefined, "gpt");
                         if (!slot) return;
                         slot.__slotDisplayed = false;
                         slot.__slotRequested = false;
@@ -7590,11 +7571,8 @@ function initInjectedAds(consentState) {
                 let slot = this.getSlotByDiv(slotId);
                 const alreadyRequested = slot && slot.__slotRequested === true;
                 if (!slot) {
-                    slot = defineSlot(el, slotName, slotId, getIndexedAdUnitPath(el));
+                    slot = defineSlot(el, slotName, slotId, getIndexedAdUnitPath(el), "gpt");
                     if (!slot) return;
-                    try {
-                        slot.setTargeting("tl", "gpt");
-                    } catch (e) {}
                     slot.__slotDisplayed = false;
                     slot.__slotRequested = false;
                 }
@@ -7642,23 +7620,6 @@ function initInjectedAds(consentState) {
                     APSManager.init();
                     window.googletag.cmd.push(function() {
                         const pubads = googletag.pubads();
-                        (function() {
-                            const orig = pubads.setTargeting.bind(pubads);
-                            pubads.setTargeting = function(key, val) {
-                                if (val == null) return this;
-                                if (Array.isArray(val)) {
-                                    const cleaned = val.map((v) => (v == null ? "" : String(v))).map((s) => s.trim()).filter(Boolean);
-                                    if (!cleaned.length) return this;
-                                    return orig(key, cleaned);
-                                }
-                                if (typeof val === "string") {
-                                    const s = val.trim();
-                                    if (!s) return this;
-                                    return orig(key, s);
-                                }
-                                return orig(key, String(val));
-                            };
-                        })();
                         pub.ads = pubads;
                         pub.adsReady = true;
                         pubads.setPrivacySettings({
@@ -7736,14 +7697,6 @@ function initYL(consentState) {
                 pub.__slotRenderEndedAttached = true;
                 pub.ads.addEventListener("slotRenderEnded", onPubSlotRenderEnded);
             }
-            try {
-                if (pub.ads && typeof pub.ads.clearTargeting === "function" && window.apstag && typeof window.apstag.targetingKeys === "function") {
-                    const apsKeys = window.apstag.targetingKeys() || [];
-                    for (let i = 0; i < apsKeys.length; i++) {
-                        pub.ads.clearTargeting(apsKeys[i]);
-                    }
-                }
-            } catch (e) {}
             if (!pub.servicesEnabled) {
                 googletag.enableServices();
                 pub.servicesEnabled = true;
@@ -7781,7 +7734,7 @@ function initYL(consentState) {
                     return true;
                 }
                 const ylBasePath = type === "footersticky" ? null : getYieldloveBaseAdUnitPath(el, type);
-                if (slotObj && ylBasePath && slotObj.getAdUnitPath && slotObj.getAdUnitPath() !== ylBasePath) {
+                if (slotObj && ylBasePath && typeof slotObj.getAdUnitPath === "function" && slotObj.getAdUnitPath() !== ylBasePath) {
                     try {
                         googletag.destroySlots([slotObj]);
                     } catch (e) {}
@@ -7797,25 +7750,14 @@ function initYL(consentState) {
                     slotObj = null;
                 }
                 if (!slotObj) {
-                    slotObj = defineSlot(el, type, slotTargetId, ylBasePath || undefined);
+                    slotObj = defineSlot(el, type, slotTargetId, ylBasePath || undefined, "yl");
                     if (!slotObj) return false;
                     slotObj.__slotDisplayed = false;
                     slotObj.__slotRequested = false;
                     if (ylBasePath) slotObj.__ylClonePath = ylBasePath;
-                    try {
-                        slotObj.setTargeting("tl", "yl");
-                    } catch (e) {}
                 } else if (ylBasePath) {
                     slotObj.__ylClonePath = ylBasePath;
                 }
-                try {
-                    if (slotObj && typeof slotObj.clearTargeting === "function" && window.apstag && typeof window.apstag.targetingKeys === "function") {
-                        const apsKeys = window.apstag.targetingKeys() || [];
-                        for (let j = 0; j < apsKeys.length; j++) {
-                            slotObj.clearTargeting(apsKeys[j]);
-                        }
-                    }
-                } catch (e) {}
                 if (!slotObj.__slotDisplayed) {
                     googletag.display(slotTargetId);
                     slotObj.__slotDisplayed = true;
@@ -7830,9 +7772,7 @@ function initYL(consentState) {
                 if (!slotObj.__ylAttached) {
                     ylSlot(slotObj, slotId, slotObj.__ylClonePath || ylBasePath || null);
                 }
-                if (!slotObj.__slotRequested) {
-                    slotObj.__slotRequested = true;
-                }
+                if (!slotObj.__slotRequested) slotObj.__slotRequested = true;
                 return true;
             };
         });
@@ -7866,13 +7806,7 @@ function bootAds() {
     pub.BPLabels = ["mobile", "phablet", "tablet", "smalldesktop", "widedesktop"];
     pub.currentBP = pubBreakPoint(window.innerWidth);
     pub.currentBPLabel = pub.BPLabels[pub.currentBP];
-    pub.footerstickyWL = {
-        "3483087791": true,
-        "3556005506": true,
-        "3389807013": true,
-        "4014717829": true,
-        "3558075999": true
-    };
+    pub.footerstickyWL = { "3483087791": true, "3556005506": true, "3389807013": true, "4014717829": true, "3558075999": true };
     pub.exclusiveContent = ["noticia-patrocinada", "livescore", "mercado", "matchhub", "man-of-the-match"];
     pub.consent = ["C0004", "V2STACK42"];
     pub.consentState = pub.consentState || null;
@@ -7890,13 +7824,15 @@ function bootAds() {
             if (!exclusive.length) return false;
             const cats = getCategoryValues() || [];
             if (!cats.length) return false;
-            return cats.some((c) => exclusive.indexOf(c) !== -1);
+            return cats.some(function(c) {
+                return exclusive.indexOf(c) !== -1;
+            });
         } catch (e) {
             return false;
         }
     };
     if (location.search.length > 1) {
-        pub.fEnd = [encodeURIComponent(decodeURIComponent(location.search.slice(1).replace(/\+/g, " ")))];
+        pub.fEnd = [encodeURIComponent(decodeURIComponent(location.search.slice(1).replace(/\+/g, " ")))] ;
     }
     assignSequentialSlotPositions();
     cmpGate(function(consentState) {
@@ -7918,41 +7854,7 @@ if (document.readyState === "loading") {
 } else {
     bootAds();
 }
-</script>
 
-<div id="interstitial" class="ad interstitial" style="position:fixed;left:0;top:0;z-index:2147483646;width:1px;height:1px;"></div>
-
-<div id="oop" class="ad oop" style="position:fixed;left:0;top:0;z-index:2147483645;width:1px;height:1px;"></div>
-<script>
-(function() {
-    var el = document.currentScript.previousElementSibling;
-    window.waitForCmd().then(function() {
-        if (window.pub && typeof window.pub.isExclusiveContentBlocked === "function" && window.pub.isExclusiveContentBlocked()) return;
-        window.defineAndPush(el);
-    });
-})();
-</script>
-
-<div id="footersticky" class="ad footersticky">
-    <div id="footersticky-wrapper">
-        <div class="ad-inner" id="footersticky-slot"></div>
-        <button id="footersticky-close" type="button" title="Close Ad">×</button>
-    </div>
-    <script>
-    (function() {
-        var el = document.currentScript.parentElement;
-        var closeBtn = document.getElementById("footersticky-close");
-        if (closeBtn) {
-            hideFooterStickyClose();
-            closeBtn.onclick = function() {
-                destroyFooterSticky();
-            };
-        }
-        window.waitForCmd().then(function() {
-            if (window.pub && typeof window.pub.isExclusiveContentBlocked === "function" && window.pub.isExclusiveContentBlocked()) return;
-            window.defineAndPush(el);
-        });
-    })();
     </script>
 
             <!-- end added replaced-->
