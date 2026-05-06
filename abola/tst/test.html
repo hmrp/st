@@ -1,21 +1,115 @@
-    <script src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b-test/otSDKStub.js" data-document-language="true" type="text/javascript" charset="UTF-8" data-domain-script="65b60f59-7417-4967-865d-889d81e1122b-test"></script>
-        <!-- end added or replaced -->
+<link href="https://cdn.cookielaw.org" rel="preconnect">
 
+<script
+    src="https://cdn.cookielaw.org/consent/65b60f59-7417-4967-865d-889d81e1122b-test/otSDKStub.js"
+    data-document-language="true"
+    type="text/javascript"
+    charset="UTF-8"
+    data-domain-script="65b60f59-7417-4967-865d-889d81e1122b-test">
+</script>
 
+<div id="div-gpt-ad-2973401-1"></div>
 
-
-<!-- Start GPT Tag -->
-<script async src='https://securepubads.g.doubleclick.net/tag/js/gpt.js'></script>
 <script>
-  window.googletag = window.googletag || {cmd: []};
-  googletag.cmd.push(function() {
-    googletag.defineSlot('/417417404/inline', [[300,250]], 'div-gpt-ad-2973401-1')
-             .setTargeting('end', ['test'])
-             .addService(googletag.pubads());
+window.googletag = window.googletag || { cmd: [] };
 
-    googletag.pubads().enableSingleRequest();
-    googletag.enableServices();
-  });
+function waitForTcfApi(timeout) {
+    return new Promise(function(resolve) {
+        var start = Date.now();
+
+        var timer = setInterval(function() {
+            if (typeof window.__tcfapi === "function") {
+                clearInterval(timer);
+                resolve(true);
+                return;
+            }
+
+            if (Date.now() - start >= timeout) {
+                clearInterval(timer);
+                resolve(false);
+            }
+        }, 50);
+    });
+}
+
+function waitForTcfConsent(timeout) {
+    return new Promise(function(resolve) {
+        var resolved = false;
+
+        function finish(tcData) {
+            if (resolved) return;
+            resolved = true;
+            resolve(tcData || null);
+        }
+
+        var timeoutId = setTimeout(function() {
+            finish(null);
+        }, timeout);
+
+        waitForTcfApi(timeout).then(function(hasApi) {
+            if (!hasApi) {
+                clearTimeout(timeoutId);
+                finish(null);
+                return;
+            }
+
+            window.__tcfapi("addEventListener", 2, function(tcData, success) {
+                if (!success || !tcData) return;
+
+                if (tcData.eventStatus === "useractioncomplete" || tcData.eventStatus === "tcloaded") {
+                    clearTimeout(timeoutId);
+                    finish(tcData);
+                }
+            });
+        });
+    });
+}
+
+function hasGoogleAdsConsent(tcData) {
+    if (!tcData || !tcData.purpose || !tcData.vendor) return false;
+
+    var purposeConsents = tcData.purpose.consents || {};
+    var vendorConsents = tcData.vendor.consents || {};
+
+    return purposeConsents[1] === true && vendorConsents[755] === true;
+}
+
+function loadGpt() {
+    return new Promise(function(resolve) {
+        if (document.querySelector('script[src*="securepubads.g.doubleclick.net/tag/js/gpt.js"]')) {
+            resolve();
+            return;
+        }
+
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = "https://securepubads.g.doubleclick.net/tag/js/gpt.js";
+        script.onload = resolve;
+        document.head.appendChild(script);
+    });
+}
+
+function initAds() {
+    loadGpt().then(function() {
+        googletag.cmd.push(function() {
+            googletag.defineSlot("/417417404/inline", [[300, 250]], "div-gpt-ad-2973401-1")
+                .setTargeting("end", ["test"])
+                .addService(googletag.pubads());
+
+            googletag.pubads().enableSingleRequest();
+            googletag.enableServices();
+            googletag.display("div-gpt-ad-2973401-1");
+        });
+    });
+}
+
+waitForTcfConsent(15000).then(function(tcData) {
+    if (!hasGoogleAdsConsent(tcData)) {
+        return;
+    }
+
+    initAds();
+});
 </script>
 <!-- End GPT Tag -->
 
