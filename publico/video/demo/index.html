@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Video.js IMA Publisher Player</title>
+  <link rel="stylesheet" href="../assets/videojs/vendor/video-js.min.css">
+  <link rel="stylesheet" href="../assets/videojs/vendor/videojs.ads.css">
+  <link rel="stylesheet" href="../assets/videojs/vendor/videojs.ima.css">
+  <link rel="stylesheet" href="../assets/videojs/css/publisher-video-player.css">
+
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #222; background: #fff; }
+    main { max-width: 980px; margin: 0 auto; padding: 32px 16px 80px; }
+    h1 { font-size: clamp(28px, 4vw, 46px); line-height: 1.05; margin: 0 0 12px; }
+    h2 { margin-top: 36px; }
+    p { font-size: 17px; line-height: 1.65; }
+    code { background: #f2f2f2; padding: 2px 5px; border-radius: 5px; }
+    .setup-box { background: #f7f7f7; border: 1px solid #e3e3e3; border-radius: 12px; padding: 16px; margin: 24px 0; }
+    .demo-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 28px; }
+    .demo-links a { color: #111; background: #eee; border: 1px solid #ddd; border-radius: 999px; padding: 9px 13px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Video.js + Google IMA Publisher Player</h1>
+    <p>Esta versão tem dois modos no mesmo componente: preroll com conteúdo de vídeo quando existe <code>data-video-src</code>, ou só publicidade quando <code>data-ad-only="true"</code>.</p>
+
+    <div class="setup-box">
+      <p><strong>Começa por testar o primeiro player.</strong> Ele já tem um vídeo de exemplo estilo sci-fi/space, parecido com o demo anterior que tinhas gostado, para veres imediatamente a sequência: publicidade GAM → conteúdo de vídeo.</p>
+      <p>Para produção, muda apenas <code>data-video-src</code>, <code>data-video-type</code> e <code>data-poster</code>. O teu <code>data-ad-tag-url</code> já está colocado.</p>
+    </div>
+
+    <div class="demo-links">
+      <a href="../content-player.html">Abrir só o demo com conteúdo</a>
+      <a href="../ad-only.html">Abrir só o demo ad-only</a>
+      <a href="../PARAMETROS_A_MUDAR.txt">Ver parâmetros a mudar</a>
+    </div>
+
+    <h2>Modo 1: preroll + conteúdo de vídeo</h2>
+    <p>Este exemplo pede a publicidade ao GAM e, se houver anúncio, toca o preroll antes do conteúdo. Se não houver anúncio, o conteúdo deve seguir normalmente.</p>
+
+    <div class="pub-video-shell" data-publisher-video data-player-mode="content" data-video-src="https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8" data-video-type="application/x-mpegURL" data-poster="https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/poster.jpg" data-ad-tag-url="https://pubads.g.doubleclick.net/gampad/ads?iu=/4458504/Video&amp;description_url=[placeholder]&amp;tfcd=0&amp;npa=0&amp;sz=1x1%7C1x1%7C300x1%7C300x250%7C640x360%7C640x360&amp;gdfp_req=1&amp;unviewed_position_start=1&amp;output=vast&amp;env=vp&amp;impl=s&amp;correlator=" data-sticky="false">
+      <video class="video-js vjs-default-skin" controls playsinline preload="metadata"></video>
+      <div class="pub-video-status" data-video-status>Waiting for viewport initialization</div>
+    </div>
+
+    <h2>Modo 2: só publicidade, sem conteúdo</h2>
+    <p>Este exemplo usa a mesma lógica Video.js + IMA. Como está em <code>data-ad-only="true"</code>, corre o anúncio como preroll técnico e depois pára/colapsa.</p>
+
+    <div class="pub-video-shell" data-publisher-video data-player-mode="ad-only" data-ad-only="true" data-muted="true" data-autoplay="false" data-collapse-on-ad-end="true" data-collapse-delay="1000" data-ad-tag-url="https://pubads.g.doubleclick.net/gampad/ads?iu=/4458504/Video&amp;description_url=[placeholder]&amp;tfcd=0&amp;npa=0&amp;sz=1x1%7C1x1%7C300x1%7C300x250%7C640x360%7C640x360&amp;gdfp_req=1&amp;unviewed_position_start=1&amp;output=vast&amp;env=vp&amp;impl=s&amp;correlator=" data-sticky="false">
+      <video class="video-js vjs-default-skin" controls muted playsinline preload="metadata"></video>
+      <div class="pub-video-status" data-video-status>Waiting for viewport initialization</div>
+    </div>
+
+    <p>O script substitui automaticamente <code>[placeholder]</code> pelo URL atual da página e adiciona um <code>correlator</code> novo em cada pedido.</p>
+  </main>
+
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+  <script src="../assets/videojs/vendor/video.min.js"></script>
+  <script src="../assets/videojs/vendor/videojs.ads.min.js"></script>
+  <script src="../assets/videojs/vendor/videojs.ima.min.js"></script>
+  <script src="../assets/videojs/js/gam-ad-tag-builder.js"></script>
+  <script src="../assets/videojs/js/publisher-video-player.js"></script>
+</body>
+</html>
