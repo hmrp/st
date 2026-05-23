@@ -15,6 +15,9 @@
     }
     target.classList.toggle('pub-video-error', Boolean(isError));
     target.textContent = message;
+    if (window.console && console.log) {
+      console[isError ? 'warn' : 'log']('[PublisherIncontentIMA]', message);
+    }
   }
 
   function replaceOrAddParam(url, name, value) {
@@ -33,9 +36,12 @@
     var normalized = url
       .replaceAll('[placeholder]', encodedPageUrl)
       .replaceAll('[page_url]', encodedPageUrl)
+      .replaceAll('[PAGE_URL]', encodedPageUrl)
       .replaceAll('%5Bpage_url%5D', encodedPageUrl)
+      .replaceAll('%5BPAGE_URL%5D', encodedPageUrl)
       .replaceAll('__timestamp__', timestamp)
-      .replaceAll('[timestamp]', timestamp);
+      .replaceAll('[timestamp]', timestamp)
+      .replaceAll('[TIMESTAMP]', timestamp);
     normalized = replaceOrAddParam(normalized, 'description_url', pageUrl);
     normalized = replaceOrAddParam(normalized, 'url', pageUrl);
     normalized = replaceOrAddParam(normalized, 'correlator', timestamp);
@@ -74,7 +80,7 @@
       return false;
     }
     container.classList.add('is-fallback-shown');
-    container.classList.remove('is-loading', 'is-ad-playing', 'is-ad-completed');
+    container.classList.remove('is-loading', 'is-ad-playing', 'is-ad-completed', 'has-ad-loaded');
     container.classList.add('has-fallback-content');
     container.setAttribute('data-fallback-reason', reason || 'no-ad');
     if (instance) {
@@ -84,11 +90,25 @@
     return true;
   }
 
-  function makePlayhead(duration) {
-    return {
-      currentTime: 0,
-      duration: duration || 30
-    };
+  function ensureVideoElement(media) {
+    var video = media.querySelector('[data-incontent-video]');
+    if (!video) {
+      video = document.createElement('video');
+      video.setAttribute('data-incontent-video', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.setAttribute('muted', '');
+      video.muted = true;
+      video.preload = 'none';
+      media.appendChild(video);
+    }
+    video.classList.add('pub-incontent-ad__video');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.muted = true;
+    video.controls = false;
+    video.preload = 'none';
+    return video;
   }
 
   function create(container) {
@@ -104,18 +124,26 @@
       log(container, 'Missing data-ad-tag-url', true);
       return null;
     }
+
     var media = container.querySelector('[data-incontent-media]') || container.querySelector('.pub-incontent-ad__media') || container;
+    var video = ensureVideoElement(media);
     var width = Number(container.getAttribute('data-ad-width') || media.clientWidth || container.clientWidth || 640);
     var height = Number(container.getAttribute('data-ad-height') || Math.round(width * 9 / 16) || 360);
     var timeoutMs = Number(container.getAttribute('data-no-ad-timeout') || 6500);
+    var startTimeoutMs = Number(container.getAttribute('data-ad-start-timeout') || 10000);
+    var vastLoadTimeoutMs = Number(container.getAttribute('data-vast-load-timeout') || 8000);
     var hasAdStarted = false;
     var hasFinished = false;
-    var timeoutId = null;
+    var hasRequested = false;
+    var requestTimeoutId = null;
+    var startTimeoutId = null;
     var adsLoader = null;
     var adsManager = null;
     var adDisplayContainer = null;
     var normalizedAdTagUrl = normalizeAdTagUrl(adTagUrl, container);
     var clickToStart = asBool(container.getAttribute('data-click-to-start'), false);
+    var willAutoPlay = asBool(container.getAttribute('data-ad-will-autoplay'), !clickToStart);
+    var willPlayMuted = asBool(container.getAttribute('data-ad-will-play-muted'), true);
     var startButton = container.querySelector('[data-incontent-start]');
     var instance = {
       start: start,
@@ -125,28 +153,53 @@
       }
     };
 
-    function clearTimer() {
-      if (!timeoutId) {
-        return;
+    function clearRequestTimer() {
+      if (requestTimeoutId) {
+        window.clearTimeout(requestTimeoutId);
+        requestTimeoutId = null;
       }
-      window.clearTimeout(timeoutId);
-      timeoutId = null;
     }
 
-    function startTimer() {
-      clearTimer();
+    function clearStartTimer() {
+      if (startTimeoutId) {
+        window.clearTimeout(startTimeoutId);
+        startTimeoutId = null;
+      }
+    }
+
+    function clearTimers() {
+      clearRequestTimer();
+      clearStartTimer();
+    }
+
+    function startRequestTimer() {
+      clearRequestTimer();
       if (!asBool(container.getAttribute('data-fallback-on-no-ad'), false)) {
         return;
       }
-      timeoutId = window.setTimeout(function () {
+      requestTimeoutId = window.setTimeout(function () {
         if (!hasAdStarted && !hasFinished) {
-          showFallback(container, instance, 'timeout');
+          log(container, 'Ad request timeout', true);
+          showFallback(container, instance, 'request-timeout');
         }
       }, timeoutMs);
     }
 
+    function startAdStartTimer() {
+      clearStartTimer();
+      if (!asBool(container.getAttribute('data-fallback-on-no-ad'), false)) {
+        return;
+      }
+      startTimeoutId = window.setTimeout(function () {
+        if (!hasAdStarted && !hasFinished) {
+          log(container, 'Ad loaded but did not start', true);
+          showFallback(container, instance, 'start-timeout');
+        }
+      }, startTimeoutMs);
+    }
+
     function onAdError(event) {
-      clearTimer();
+      clearTimers();
       var message = 'IMA ad error';
       if (event && event.getError) {
         message = event.getError().toString();
@@ -155,23 +208,53 @@
       showFallback(container, instance, 'ad-error');
     }
 
-    function onAdsManagerLoaded(event) {
-      clearTimer();
-      var settings = new google.ima.AdsRenderingSettings();
-      settings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-      adsManager = event.getAdsManager(makePlayhead(Number(container.getAttribute('data-video-duration') || 30)), settings);
+    function bindAdEvents() {
       adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+      adsManager.addEventListener(google.ima.AdEvent.Type.LOADED, function () {
+        container.classList.add('has-ad-loaded');
+        log(container, 'Ad loaded');
+      });
+      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function () {
+        log(container, 'Ad break starting');
+      });
       adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, function () {
         hasAdStarted = true;
+        clearTimers();
         container.classList.remove('is-loading');
         container.classList.add('is-ad-playing');
         log(container, 'Ad started');
       });
+      adsManager.addEventListener(google.ima.AdEvent.Type.FIRST_QUARTILE, function () {
+        log(container, 'Ad first quartile');
+      });
+      adsManager.addEventListener(google.ima.AdEvent.Type.MIDPOINT, function () {
+        log(container, 'Ad midpoint');
+      });
+      adsManager.addEventListener(google.ima.AdEvent.Type.THIRD_QUARTILE, function () {
+        log(container, 'Ad third quartile');
+      });
       adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, onAdFinished);
       adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, onAdFinished);
       adsManager.addEventListener(google.ima.AdEvent.Type.SKIPPED, onAdFinished);
+      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function () {
+        if (!hasFinished) {
+          onAdFinished();
+        }
+      });
+    }
+
+    function onAdsManagerLoaded(event) {
+      clearRequestTimer();
+      container.classList.add('has-ads-manager');
+      log(container, 'Ads manager loaded');
+      var settings = new google.ima.AdsRenderingSettings();
+      settings.restoreCustomPlaybackStateOnAdBreakComplete = false;
+      settings.enablePreloading = true;
       try {
+        adsManager = event.getAdsManager(video, settings);
+        bindAdEvents();
         adsManager.init(width, height, google.ima.ViewMode.NORMAL);
+        startAdStartTimer();
         adsManager.start();
       } catch (error) {
         log(container, error && error.message ? error.message : 'IMA start failed', true);
@@ -184,7 +267,7 @@
         return;
       }
       hasFinished = true;
-      clearTimer();
+      clearTimers();
       container.classList.remove('is-loading', 'is-ad-playing');
       container.classList.add('is-ad-completed');
       log(container, 'Ad completed. Incontent slot finished.');
@@ -202,27 +285,40 @@
     }
 
     function requestAds() {
+      if (hasRequested) {
+        return;
+      }
+      hasRequested = true;
       var request = new google.ima.AdsRequest();
       request.adTagUrl = normalizedAdTagUrl;
       request.linearAdSlotWidth = width;
       request.linearAdSlotHeight = height;
       request.nonLinearAdSlotWidth = width;
       request.nonLinearAdSlotHeight = Math.round(height / 3);
+      if (typeof request.setAdWillAutoPlay === 'function') {
+        request.setAdWillAutoPlay(willAutoPlay);
+      }
+      if (typeof request.setAdWillPlayMuted === 'function') {
+        request.setAdWillPlayMuted(willPlayMuted);
+      }
       if (google.ima.ImaSdkSettings && google.ima.ImaSdkSettings.VpaidMode) {
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
       }
+      if (google.ima.settings && typeof google.ima.settings.setVastLoadTimeout === 'function') {
+        google.ima.settings.setVastLoadTimeout(vastLoadTimeoutMs);
+      }
       container.classList.add('is-loading');
       log(container, 'Ad request sent');
-      startTimer();
+      startRequestTimer();
       adsLoader.requestAds(request);
     }
 
     function start() {
-      if (hasFinished || container.classList.contains('is-fallback-shown')) {
+      if (hasFinished || container.classList.contains('is-fallback-shown') || hasRequested) {
         return;
       }
       if (!adDisplayContainer) {
-        adDisplayContainer = new google.ima.AdDisplayContainer(media);
+        adDisplayContainer = new google.ima.AdDisplayContainer(media, video);
         adsLoader = new google.ima.AdsLoader(adDisplayContainer);
         adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, onAdsManagerLoaded, false);
         adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
@@ -234,7 +330,7 @@
     }
 
     function destroy() {
-      clearTimer();
+      clearTimers();
       if (adsManager) {
         try {
           adsManager.destroy();
@@ -249,6 +345,7 @@
     }
 
     container.classList.add('is-incontent-ima-direct');
+    media.style.minHeight = height + 'px';
     log(container, clickToStart ? 'Ready. Press play to request ad.' : 'Waiting for viewport initialization');
     if (startButton) {
       startButton.addEventListener('click', start);
