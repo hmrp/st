@@ -1,8 +1,0 @@
-{
-  "video.js": "8.23.7",
-  "videojs-contrib-ads": "7.5.2",
-  "videojs-ima": "2.6.0",
-  "external_js": [
-    "https://imasdk.googleapis.com/js/sdkloader/ima3.js"
-  ]
-}
