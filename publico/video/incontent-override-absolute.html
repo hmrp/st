@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/css/publisher-video-player.css">
+
+<div
+  class="pub-incontent-ad"
+  data-publisher-incontent-ad
+  data-fallback-on-no-ad="true"
+  data-fallback-selector="#fallback-incontent"
+  data-no-ad-timeout="6500"
+  data-keep-slot-after-complete="true"
+  data-ad-width="640"
+  data-ad-height="360"
+  data-ad-tag-url="https://pubads.g.doubleclick.net/gampad/ads?iu=/4458504/Video/Ipsilon&amp;hl=en&amp;plcmt=2&amp;vpa=click&amp;vpmute=1&amp;vpos=preroll&amp;wta=1&amp;description_url=[placeholder]&amp;tfcd=0&amp;npa=0&amp;sz=1x1%7C640x360&amp;gdfp_req=1&amp;output=xml_vast4&amp;unviewed_position_start=1&amp;env=vp&amp;correlator=[timestamp]&amp;url=[page_url]&amp;cust_params=noticiatag%3Dundefined%26Seccao%3Dundefined%26assinante%3Dundefined%26pos%3Dincview%26end%3D%5Bpage_url%5D&amp;vconp=1"
+>
+  <div class="pub-incontent-ad__label">Publicidade</div>
+  <div class="pub-incontent-ad__media" data-incontent-media></div>
+  <div class="pub-video-status" data-incontent-status>Waiting for viewport initialization</div>
+</div>
+
+<template id="fallback-incontent">
+  <div class="pub-video-fallback-card">
+    <strong>Conteúdo recomendado</strong>
+    <p>Não houve publicidade disponível neste momento. Este bloco substituiu automaticamente o slot incontent na mesma posição.</p>
+    <a href="https://www.example.com/" target="_blank" rel="noopener">Abrir conteúdo</a>
+  </div>
+</template>
+
+<script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+<script src="https://hugopedroso.com/publico/video/assets/videojs/js/publisher-incontent-ima.js"></script>
