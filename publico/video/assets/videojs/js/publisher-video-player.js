@@ -195,8 +195,12 @@
         title: ''
       };
     }
+    var clickUrl = item.clickUrl || item.click_url || item.href || item.link || item.destinationUrl || item.destination_url || '';
     if (!item.src && item.url) {
       item.src = item.url;
+      clickUrl = clickUrl || '';
+    } else if (item.url) {
+      clickUrl = clickUrl || item.url;
     }
     if (!item.src) {
       return null;
@@ -206,7 +210,8 @@
       type: item.type || 'video/mp4',
       poster: item.poster || '',
       title: item.title || '',
-      duration: item.duration ? String(item.duration) : ''
+      duration: item.duration ? String(item.duration) : '',
+      url: clickUrl
     };
   }
 
@@ -236,10 +241,55 @@
     } else {
       container.removeAttribute('data-playlist-title');
     }
+    if (item.url) {
+      container.setAttribute('data-playlist-url', item.url);
+    } else {
+      container.removeAttribute('data-playlist-url');
+    }
+    updateContentClickOverlay(container, player, item);
     player.src({
       src: item.src,
       type: item.type || 'video/mp4'
     });
+  }
+
+  function ensureContentClickOverlay(container, player) {
+    if (getMode(container) !== 'content' || !player || !player.el) {
+      return null;
+    }
+    var playerElement = player.el();
+    var existing = playerElement.querySelector('.pub-video-click-overlay');
+    if (existing) {
+      return existing;
+    }
+    var overlay = document.createElement('a');
+    overlay.className = 'pub-video-click-overlay';
+    overlay.setAttribute('aria-label', container.getAttribute('data-content-click-label') || 'Abrir conteúdo');
+    overlay.setAttribute('rel', 'noopener sponsored');
+    overlay.addEventListener('click', function (event) {
+      if (container.classList.contains('is-ad-playing') || !overlay.getAttribute('href')) {
+        event.preventDefault();
+      }
+    });
+    playerElement.appendChild(overlay);
+    return overlay;
+  }
+
+  function updateContentClickOverlay(container, player, item) {
+    var overlay = ensureContentClickOverlay(container, player);
+    if (!overlay) {
+      return;
+    }
+    var url = item && item.url ? item.url : '';
+    if (!url) {
+      overlay.removeAttribute('href');
+      overlay.removeAttribute('target');
+      container.classList.remove('has-content-click-overlay');
+      return;
+    }
+    overlay.href = url;
+    overlay.target = '_blank';
+    container.classList.add('has-content-click-overlay');
   }
 
   function getInlinePlaylistItems(container) {
@@ -333,6 +383,7 @@
     }
     try {
       container.setAttribute('data-last-ad-tag-url', adTagUrl);
+      container.classList.add('is-ad-requesting');
       if (window.console && console.info) {
         console.info('VIDEOJS: fresh VAST request', adTagUrl);
       }
@@ -522,12 +573,14 @@
       log(container, 'Content ready');
     });
     player.on('ads-request', function () {
+      container.classList.add('is-ad-requesting');
       log(container, 'Ad request sent');
       startNoAdTimer();
     });
     player.on('ads-ad-started', function () {
       adStarted = true;
       clearNoAdTimer();
+      container.classList.remove('is-ad-requesting');
       container.classList.add('is-ad-playing');
       try {
         if (player.ima && player.ima.getAdsManager && player.ima.getAdsManager()) {
@@ -538,6 +591,7 @@
     });
     player.on('adend', function () {
       clearNoAdTimer();
+      container.classList.remove('is-ad-requesting');
       container.classList.remove('is-ad-playing');
       if (mode === 'ad-only') {
         finishAdOnly(container, player, 'Ad ended. Slot stopped.', false);
@@ -547,6 +601,7 @@
     });
     player.on('adserror', function () {
       clearNoAdTimer();
+      container.classList.remove('is-ad-requesting');
       container.classList.remove('is-ad-playing');
       if (!adStarted && showFallback(container, player, 'adserror')) {
         return;
@@ -559,6 +614,8 @@
     });
     player.on('contentresumed', function () {
       clearNoAdTimer();
+      container.classList.remove('is-ad-requesting');
+      container.classList.remove('is-ad-requesting');
       container.classList.remove('is-ad-playing');
       if (mode === 'ad-only') {
         if (!adStarted && showFallback(container, player, 'contentresumed-no-ad')) {
@@ -635,6 +692,7 @@
       fluid: true,
       responsive: true,
       controlBar: {
+        fullscreenToggle: false,
         pictureInPictureToggle: false,
         progressControl: false,
         currentTimeDisplay: false,
@@ -657,6 +715,9 @@
     player.volume(initialVolume);
     player.muted(shouldMute);
     var firstItem = container._publisherPlaylistItems && container._publisherPlaylistItems.length ? container._publisherPlaylistItems[0] : null;
+    if (mode === 'content') {
+      updateContentClickOverlay(container, player, firstItem);
+    }
     var adTagUrl = buildAdTagFromDataset(container, firstItem);
     if (adTagUrl && player.ima) {
       player.ima({
