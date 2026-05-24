@@ -119,48 +119,21 @@
     return url + (url.indexOf('?') === -1 ? '?' : '&') + name + '=' + encodedValue;
   }
 
-  function ensureAdParam(url, name, value) {
-    var pattern = new RegExp('([?&])' + name + '=([^&]*)');
-    if (pattern.test(url)) {
-      return url;
-    }
-    return replaceOrAddParam(url, name, value);
-  }
-
   function normalizeDirectAdTag(url, container, item) {
     var descriptionUrl = container.getAttribute('data-description-url') || window.location.href;
-    var pageUrl = window.location.href;
     var encodedDescriptionUrl = encodeURIComponent(descriptionUrl);
-    var encodedPageUrl = encodeURIComponent(pageUrl);
     var timestamp = String(Date.now() + Math.floor(Math.random() * 1000000));
     var duration = item && item.duration ? item.duration : container.getAttribute('data-video-duration') || (getMode(container) === 'ad-only' ? '30' : '120');
-    var normalized = String(url || '')
+    var normalized = url
       .replaceAll('[placeholder]', encodedDescriptionUrl)
-      .replaceAll('[page_url]', encodedPageUrl)
-      .replaceAll('%5Bpage_url%5D', encodedPageUrl)
+      .replaceAll('[page_url]', encodedDescriptionUrl)
+      .replaceAll('%5Bpage_url%5D', encodedDescriptionUrl)
       .replaceAll('__timestamp__', timestamp)
       .replaceAll('[timestamp]', timestamp)
       .replaceAll('__item-duration__', duration);
-
-    normalized = ensureAdParam(normalized, 'iu', '/4458504/Video/Ipsilon');
-    normalized = ensureAdParam(normalized, 'hl', 'en');
-    normalized = ensureAdParam(normalized, 'plcmt', '2');
-    normalized = ensureAdParam(normalized, 'vpa', container.getAttribute('data-ad-vpa') || 'auto');
-    normalized = ensureAdParam(normalized, 'vpmute', container.getAttribute('data-ad-vpmute') || '0');
-    normalized = ensureAdParam(normalized, 'vpos', 'preroll');
-    normalized = ensureAdParam(normalized, 'wta', '1');
     normalized = replaceOrAddParam(normalized, 'description_url', descriptionUrl);
-    normalized = ensureAdParam(normalized, 'tfcd', '0');
-    normalized = ensureAdParam(normalized, 'npa', '0');
-    normalized = ensureAdParam(normalized, 'sz', '1x1|640x360');
-    normalized = ensureAdParam(normalized, 'gdfp_req', '1');
-    normalized = ensureAdParam(normalized, 'output', 'xml_vast4');
-    normalized = ensureAdParam(normalized, 'unviewed_position_start', '1');
-    normalized = ensureAdParam(normalized, 'env', 'vp');
+    normalized = replaceOrAddParam(normalized, 'url', window.location.href);
     normalized = replaceOrAddParam(normalized, 'correlator', timestamp);
-    normalized = replaceOrAddParam(normalized, 'url', pageUrl);
-    normalized = ensureAdParam(normalized, 'cust_params', 'noticiatag%3Dundefined%26Seccao%3Dundefined%26assinante%3Dundefined%26pos%3Dincview%26end%3D' + encodeURIComponent(pageUrl));
-    normalized = ensureAdParam(normalized, 'vconp', '1');
     normalized = replaceOrAddParam(normalized, 'cb', timestamp);
     normalized = replaceOrAddParam(normalized, 'cachebuster', timestamp);
     return normalized;
@@ -494,7 +467,7 @@
       container.classList.add('is-ad-requesting');
       container.classList.add('is-content-ui-hidden');
       if (window.console && console.info) {
-        console.info('VIDEOJS: fresh VAST request full=' + adTagUrl);
+        console.info('VIDEOJS: fresh VAST request', adTagUrl);
       }
       if (player.ima.changeAdTag) {
         player.ima.changeAdTag(adTagUrl);
@@ -814,176 +787,8 @@
       container.setAttribute('data-current-volume', String(Math.round(player.volume() * 100)));
       syncImaVolume(container, player);
     });
-    ['ads-manager', 'ads-ad-started', 'adstart', 'adsready', 'readyforpreroll'].forEach(function (eventName) {
-      player.on(eventName, function () {
-        syncImaVolume(container, player);
-      });
-    });
-  }
-
-
-  function setupAdFloating(container, player) {
-    if (!asBool(container.getAttribute('data-ad-floating'), false)) {
-      return;
-    }
-    var placeholder = document.createElement('div');
-    placeholder.className = 'pub-video-floating-placeholder';
-    placeholder.setAttribute('aria-hidden', 'true');
-    container.parentNode.insertBefore(placeholder, container);
-
-    var closeButton = document.createElement('button');
-    closeButton.type = 'button';
-    closeButton.className = 'pub-video-floating-close';
-    closeButton.setAttribute('aria-label', 'Fechar publicidade flutuante');
-    closeButton.textContent = '×';
-    container.appendChild(closeButton);
-
-    var state = {
-      adActive: false,
-      dismissed: false,
-      closeTimer: null,
-      raf: null
-    };
-
-    function clearCloseTimer() {
-      if (!state.closeTimer) {
-        return;
-      }
-      window.clearTimeout(state.closeTimer);
-      state.closeTimer = null;
-    }
-
-    function hideCloseButton() {
-      clearCloseTimer();
-      container.classList.remove('is-ad-floating-close-visible');
-    }
-
-    function showCloseButtonLater() {
-      hideCloseButton();
-      state.closeTimer = window.setTimeout(function () {
-        if (state.adActive && container.classList.contains('is-ad-floating') && !state.dismissed) {
-          container.classList.add('is-ad-floating-close-visible');
-        }
-      }, Number(container.getAttribute('data-ad-floating-close-delay') || 3000));
-    }
-
-    function getReferenceElement() {
-      return container.classList.contains('is-ad-floating') ? placeholder : container;
-    }
-
-    function isOriginalPlacementVisible() {
-      var element = getReferenceElement();
-      if (!element || !element.getBoundingClientRect) {
-        return true;
-      }
-      var rect = element.getBoundingClientRect();
-      var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-      var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-      if (!viewportHeight || !viewportWidth) {
-        return true;
-      }
-      return rect.bottom > 0 && rect.right > 0 && rect.top < viewportHeight && rect.left < viewportWidth;
-    }
-
-    function enterFloating() {
-      if (container.classList.contains('is-ad-floating')) {
-        return;
-      }
-      var rect = container.getBoundingClientRect();
-      placeholder.style.height = Math.max(1, Math.round(rect.height || container.offsetHeight || 0)) + 'px';
-      placeholder.style.display = 'block';
-      container.classList.add('is-ad-floating');
-      showCloseButtonLater();
-    }
-
-    function exitFloating() {
-      if (!container.classList.contains('is-ad-floating')) {
-        hideCloseButton();
-        placeholder.style.height = '';
-        placeholder.style.display = '';
-        return;
-      }
-      container.classList.remove('is-ad-floating');
-      hideCloseButton();
-      placeholder.style.height = '';
-      placeholder.style.display = '';
-    }
-
-    function updateFloatingState() {
-      state.raf = null;
-      if (!state.adActive || state.dismissed) {
-        exitFloating();
-        return;
-      }
-      if (isOriginalPlacementVisible()) {
-        exitFloating();
-        return;
-      }
-      enterFloating();
-    }
-
-    function requestUpdate() {
-      if (state.raf) {
-        return;
-      }
-      state.raf = window.requestAnimationFrame(updateFloatingState);
-    }
-
-    function activateFloatingMode() {
-      state.adActive = true;
-      state.dismissed = false;
-      container.classList.remove('is-ad-floating-dismissed');
-      requestUpdate();
-    }
-
-    function deactivateFloatingMode() {
-      state.adActive = false;
-      state.dismissed = false;
-      container.classList.remove('is-ad-floating-dismissed');
-      exitFloating();
-    }
-
-    function pauseAdAndContent() {
-      try {
-        if (player.ima && player.ima.getAdsManager) {
-          var adsManager = player.ima.getAdsManager();
-          if (adsManager && adsManager.pause) {
-            adsManager.pause();
-          }
-        }
-      } catch (error) {}
-      try {
-        player.pause();
-      } catch (error) {}
-    }
-
-    closeButton.addEventListener('click', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (event.stopImmediatePropagation) {
-        event.stopImmediatePropagation();
-      }
-      state.dismissed = true;
-      container.classList.add('is-ad-floating-dismissed');
-      exitFloating();
-      pauseAdAndContent();
-      log(container, 'Publicidade em pausa. Carrega em play no player principal para retomar.');
-    }, true);
-
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-    ['ads-request', 'adsready', 'readyforpreroll', 'ads-manager', 'ads-ad-started', 'adstart', 'contentpause', 'contentpauserequested'].forEach(function (eventName) {
-      player.on(eventName, activateFloatingMode);
-    });
-    ['adend', 'ads-ad-ended', 'adserror', 'contentresumed', 'contentresume', 'contentresumerequested', 'ended', 'dispose'].forEach(function (eventName) {
-      player.on(eventName, deactivateFloatingMode);
-    });
-    player.on('dispose', function () {
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-      if (placeholder && placeholder.parentNode) {
-        placeholder.parentNode.removeChild(placeholder);
-      }
+    player.on('ads-manager ads-ad-started adstart adsready readyforpreroll', function () {
+      syncImaVolume(container, player);
     });
   }
 
@@ -1056,10 +861,8 @@
     player.volume(initialVolume);
     player.muted(shouldMute);
     setupAudioToggle(container, player, initialVolume);
-    ['useractive', 'userinactive', 'volumechange', 'play', 'pause'].forEach(function (eventName) {
-      player.on(eventName, function () {
-        polishControlButtons(player);
-      });
+    player.on('useractive userinactive volumechange play pause', function () {
+      polishControlButtons(player);
     });
     var firstItem = container._publisherPlaylistItems && container._publisherPlaylistItems.length ? container._publisherPlaylistItems[0] : null;
     if (mode === 'content') {
@@ -1111,7 +914,6 @@
     if (mode === 'content') {
       setupPlaylist(container, player);
     }
-    setupAdFloating(container, player);
     setupSticky(container);
     instances.set(container, player);
     return player;
