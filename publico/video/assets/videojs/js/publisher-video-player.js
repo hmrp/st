@@ -1,6 +1,7 @@
 (function () {
   var instances = new WeakMap();
-  var blankContentSrc = 'assets/videojs/media/blank-content.mp4';
+  var assetBaseUrl = 'https://hugopedroso.com/publico/video/';
+  var blankContentSrc = assetBaseUrl + 'assets/videojs/media/blank-content.mp4';
 
   function asBool(value, fallback) {
     if (value === undefined || value === null || value === '') {
@@ -241,9 +242,45 @@
     });
   }
 
+  function getInlinePlaylistItems(container) {
+    var raw = container.getAttribute('data-playlist-items') || '';
+    if (!raw) {
+      return [];
+    }
+    return raw.split('|').map(function (src) {
+      return normalizePlaylistItem({
+        src: src.trim(),
+        type: 'video/mp4'
+      });
+    }).filter(Boolean);
+  }
+
+  function setPlaylistItems(container, items) {
+    if (!items || !items.length) {
+      return false;
+    }
+    container._publisherPlaylistItems = items;
+    container._publisherPlaylistLoaded = true;
+    container._publisherPlaylistLoading = false;
+    container.setAttribute('data-video-src', items[0].src);
+    container.setAttribute('data-video-type', items[0].type || 'video/mp4');
+    if (items[0].poster) {
+      container.setAttribute('data-poster', items[0].poster);
+    }
+    if (items[0].duration) {
+      container.setAttribute('data-video-duration', items[0].duration);
+    }
+    return true;
+  }
+
   function loadPlaylistBeforeCreate(container) {
     var playlistSrc = container.getAttribute('data-playlist-src');
-    if (!playlistSrc || container._publisherPlaylistLoaded) {
+    var inlineItems = getInlinePlaylistItems(container);
+    if (container._publisherPlaylistLoaded) {
+      return false;
+    }
+    if (!playlistSrc) {
+      setPlaylistItems(container, inlineItems);
       return false;
     }
     if (container._publisherPlaylistLoading) {
@@ -253,7 +290,8 @@
     container.classList.add('is-loading');
     log(container, 'A carregar playlist');
     window.fetch(playlistSrc, {
-      credentials: 'same-origin'
+      credentials: 'omit',
+      mode: 'cors'
     }).then(function (response) {
       if (!response.ok) {
         throw new Error('HTTP ' + response.status);
@@ -264,25 +302,20 @@
       if (!items.length) {
         throw new Error('Playlist vazia');
       }
-      container._publisherPlaylistItems = items;
-      container._publisherPlaylistLoaded = true;
-      container._publisherPlaylistLoading = false;
-      container.setAttribute('data-video-src', items[0].src);
-      container.setAttribute('data-video-type', items[0].type || 'video/mp4');
-      if (items[0].poster) {
-        container.setAttribute('data-poster', items[0].poster);
-      }
-      if (items[0].duration) {
-        container.setAttribute('data-video-duration', items[0].duration);
-      }
+      setPlaylistItems(container, items);
       log(container, 'Playlist carregada: ' + items.length + ' vídeos');
       createPlayer(container);
     }).catch(function (error) {
-      container._publisherPlaylistLoaded = true;
       container._publisherPlaylistLoading = false;
       container.classList.remove('is-loading');
+      if (setPlaylistItems(container, inlineItems)) {
+        log(container, 'Playlist inline carregada: ' + inlineItems.length + ' vídeos');
+        createPlayer(container);
+        return;
+      }
       log(container, 'Erro ao carregar playlist: ' + error.message, true);
       if (container.getAttribute('data-video-src')) {
+        container._publisherPlaylistLoaded = true;
         createPlayer(container);
       }
     });
@@ -601,6 +634,15 @@
       controls: true,
       fluid: true,
       responsive: true,
+      controlBar: {
+        pictureInPictureToggle: false,
+        progressControl: false,
+        currentTimeDisplay: false,
+        timeDivider: false,
+        durationDisplay: false,
+        remainingTimeDisplay: false,
+        playbackRateMenuButton: false
+      },
       preload: container.getAttribute('data-preload') || (shouldAutoplay ? 'auto' : 'metadata'),
       autoplay: shouldAutoplay,
       muted: shouldMute,
@@ -619,7 +661,7 @@
     if (adTagUrl && player.ima) {
       player.ima({
         adTagUrl: adTagUrl,
-        showCountdown: true,
+        showCountdown: false,
         preventLateAdStart: true,
         vastLoadTimeout: Number(container.getAttribute('data-vast-timeout') || 5000),
         adWillAutoPlay: shouldAutoplay,

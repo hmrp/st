@@ -221,3 +221,106 @@
   border-radius: 0;
   overflow: visible;
 }
+
+.pub-video-shell[data-resolved-player-mode="content"] .pub-video-status {
+  display: none;
+}
+
+.pub-video-shell .video-js {
+  background: #000;
+  overflow: hidden;
+}
+
+.pub-video-shell .video-js .vjs-big-play-button,
+.pub-video-shell .video-js .vjs-progress-control,
+.pub-video-shell .video-js .vjs-current-time,
+.pub-video-shell .video-js .vjs-duration,
+.pub-video-shell .video-js .vjs-time-divider,
+.pub-video-shell .video-js .vjs-remaining-time,
+.pub-video-shell .video-js .vjs-playback-rate,
+.pub-video-shell .video-js .vjs-picture-in-picture-control,
+.pub-video-shell .video-js .vjs-volume-control,
+.pub-video-shell .video-js .vjs-live-control,
+.pub-video-shell .video-js .vjs-subs-caps-button,
+.pub-video-shell .video-js .vjs-audio-button,
+.pub-video-shell .video-js .vjs-chapters-button,
+.pub-video-shell .video-js .vjs-descriptions-button,
+.pub-video-shell .video-js .vjs-ima-countdown,
+.pub-video-shell .video-js .vjs-ima-seek-bar-div,
+.pub-video-shell .video-js .vjs-ima-progress-div,
+.pub-video-shell .video-js .vjs-ima-ad-label {
+  display: none !important;
+}
+
+.pub-video-shell .video-js .vjs-control-bar {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: none;
+}
+
+.pub-video-shell .video-js .vjs-control {
+  display: none !important;
+}
+
+.pub-video-shell .video-js .vjs-play-control,
+.pub-video-shell .video-js .vjs-volume-panel,
+.pub-video-shell .video-js .vjs-mute-control,
+.pub-video-shell .video-js .vjs-fullscreen-control {
+  position: absolute;
+  z-index: 20;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: rgba(24, 24, 30, 0.88);
+  color: #fff;
+  pointer-events: auto;
+}
+
+.pub-video-shell .video-js .vjs-play-control {
+  left: 16px;
+  bottom: 16px;
+}
+
+.pub-video-shell .video-js .vjs-volume-panel {
+  left: 16px;
+  top: 16px;
+}
+
+.pub-video-shell .video-js .vjs-volume-panel .vjs-mute-control {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.pub-video-shell .video-js .vjs-fullscreen-control {
+  right: 16px;
+  bottom: 16px;
+}
+
+.pub-video-shell .video-js .vjs-control-text,
+.pub-video-shell .video-js .vjs-time-tooltip,
+.pub-video-shell .video-js .vjs-mouse-display,
+.pub-video-shell .video-js .vjs-play-progress,
+.pub-video-shell .video-js .vjs-load-progress {
+  display: none !important;
+}
+
+.pub-video-shell .video-js.vjs-user-inactive .vjs-control-bar {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pub-video-shell .video-js .ima-ad-container,
+.pub-video-shell .video-js .ima-ad-container > div {
+  max-width: 100%;
+}
