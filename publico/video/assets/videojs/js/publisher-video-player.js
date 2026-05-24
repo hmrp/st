@@ -39,6 +39,44 @@
     return Math.max(0, Math.min(1, value));
   }
 
+
+
+  function getMaxVolume(container) {
+    var raw = container.getAttribute('data-volume-max');
+    if (raw === undefined || raw === null || raw === '') {
+      return 1;
+    }
+    var value = Number(String(raw).replace(',', '.'));
+    if (!isFinite(value)) {
+      return 1;
+    }
+    if (value > 1) {
+      value = value / 100;
+    }
+    return Math.max(0, Math.min(1, value));
+  }
+
+  function syncImaVolume(container, player) {
+    if (!player || !player.ima || !player.ima.getAdsManager) {
+      return;
+    }
+    try {
+      var adsManager = player.ima.getAdsManager();
+      if (adsManager && adsManager.setVolume) {
+        adsManager.setVolume(player.muted() ? 0 : player.volume());
+      }
+    } catch (error) {}
+  }
+
+  function applyAudioState(container, player, muted, volume) {
+    var normalizedVolume = Math.max(0, Math.min(1, Number(volume)));
+    player.volume(normalizedVolume);
+    player.muted(Boolean(muted));
+    container.classList.toggle('is-audio-muted', Boolean(muted));
+    container.setAttribute('data-current-volume', String(Math.round(normalizedVolume * 100)));
+    syncImaVolume(container, player);
+  }
+
   function getMode(container) {
     if (asBool(container.getAttribute('data-ad-only'), false)) {
       return 'ad-only';
@@ -434,6 +472,7 @@
       if (player.ima.changeAdTag) {
         player.ima.changeAdTag(adTagUrl);
       }
+      syncImaVolume(container, player);
       if (player.ima.requestAds) {
         player.ima.requestAds();
       }
@@ -468,8 +507,7 @@
       if (shouldMute || !asBool(container.getAttribute('data-autoplay-muted-fallback'), true)) {
         return;
       }
-      player.muted(true);
-      player.volume(initialVolume);
+      applyAudioState(container, player, true, initialVolume);
       log(container, 'Autoplay com som bloqueado. A tentar autoplay muted com volume preparado para ' + Math.round(initialVolume * 100) + '/100.', true);
       if (requestAdsCallback) {
         requestAdsCallback();
@@ -630,11 +668,7 @@
       clearNoAdTimer();
       container.classList.remove('is-ad-requesting');
       setAdUiState(container, true);
-      try {
-        if (player.ima && player.ima.getAdsManager && player.ima.getAdsManager()) {
-          player.ima.getAdsManager().setVolume(getVolume(container));
-        }
-      } catch (error) {}
+      syncImaVolume(container, player);
       log(container, 'Ad started');
     });
     player.on('adend', function () {
@@ -726,6 +760,38 @@
     });
   }
 
+
+  function setupAudioToggle(container, player, initialVolume) {
+    var minimumVolume = Math.max(0, Math.min(1, initialVolume));
+    var maximumVolume = getMaxVolume(container);
+    applyAudioState(container, player, player.muted(), player.muted() ? minimumVolume : minimumVolume);
+    player.el().addEventListener('click', function (event) {
+      var control = event.target && event.target.closest ? event.target.closest('.vjs-mute-control, .vjs-volume-panel') : null;
+      if (!control) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) {
+        event.stopImmediatePropagation();
+      }
+      if (player.muted()) {
+        applyAudioState(container, player, false, maximumVolume);
+      } else {
+        applyAudioState(container, player, true, minimumVolume);
+      }
+      polishControlButtons(player);
+    }, true);
+    player.on('volumechange', function () {
+      container.classList.toggle('is-audio-muted', player.muted());
+      container.setAttribute('data-current-volume', String(Math.round(player.volume() * 100)));
+      syncImaVolume(container, player);
+    });
+    player.on('ads-manager ads-ad-started adstart adsready readyforpreroll', function () {
+      syncImaVolume(container, player);
+    });
+  }
+
   function setupSticky(container) {
     if (!asBool(container.getAttribute('data-sticky'), false) || !window.IntersectionObserver) {
       return;
@@ -794,6 +860,7 @@
     });
     player.volume(initialVolume);
     player.muted(shouldMute);
+    setupAudioToggle(container, player, initialVolume);
     player.on('useractive userinactive volumechange play pause', function () {
       polishControlButtons(player);
     });
@@ -833,8 +900,7 @@
         polishControlButtons(player);
       }, 250);
       container.classList.remove('is-loading');
-      player.volume(initialVolume);
-      player.muted(shouldMute);
+      applyAudioState(container, player, shouldMute, initialVolume);
       if (mode === 'ad-only') {
         log(container, 'Ad-only mode loaded. Press play or enable autoplay muted.');
       } else if (shouldAutoplay) {
