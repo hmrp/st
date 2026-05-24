@@ -253,6 +253,29 @@
     });
   }
 
+  function getCurrentContentUrl(container) {
+    return container.getAttribute('data-playlist-url') || '';
+  }
+
+  function shouldIgnoreContentClick(container, target) {
+    if (container.classList.contains('is-ad-playing') || container.classList.contains('is-ad-requesting')) {
+      return true;
+    }
+    if (!target || !target.closest) {
+      return false;
+    }
+    return Boolean(target.closest('.vjs-control-bar, .vjs-control, .ima-ad-container'));
+  }
+
+  function openContentUrl(container) {
+    var url = getCurrentContentUrl(container);
+    if (!url) {
+      return false;
+    }
+    window.open(url, '_blank', 'noopener');
+    return true;
+  }
+
   function ensureContentClickOverlay(container, player) {
     if (getMode(container) !== 'content' || !player || !player.el) {
       return null;
@@ -262,15 +285,28 @@
     if (existing) {
       return existing;
     }
-    var overlay = document.createElement('a');
+    var overlay = document.createElement('button');
+    overlay.type = 'button';
     overlay.className = 'pub-video-click-overlay';
     overlay.setAttribute('aria-label', container.getAttribute('data-content-click-label') || 'Abrir conteúdo');
-    overlay.setAttribute('rel', 'noopener sponsored');
     overlay.addEventListener('click', function (event) {
-      if (container.classList.contains('is-ad-playing') || !overlay.getAttribute('href')) {
-        event.preventDefault();
+      event.preventDefault();
+      event.stopPropagation();
+      if (!shouldIgnoreContentClick(container, event.target)) {
+        openContentUrl(container);
       }
     });
+    playerElement.addEventListener('click', function (event) {
+      if (!container.classList.contains('has-content-click-overlay')) {
+        return;
+      }
+      if (event.target === overlay || shouldIgnoreContentClick(container, event.target)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      openContentUrl(container);
+    }, true);
     playerElement.appendChild(overlay);
     return overlay;
   }
@@ -282,13 +318,11 @@
     }
     var url = item && item.url ? item.url : '';
     if (!url) {
-      overlay.removeAttribute('href');
-      overlay.removeAttribute('target');
+      container.removeAttribute('data-playlist-url');
       container.classList.remove('has-content-click-overlay');
       return;
     }
-    overlay.href = url;
-    overlay.target = '_blank';
+    container.setAttribute('data-playlist-url', url);
     container.classList.add('has-content-click-overlay');
   }
 
@@ -648,6 +682,27 @@
     });
   }
 
+  function polishControlButtons(player) {
+    if (!player || !player.el) {
+      return;
+    }
+    var root = player.el();
+    var selectors = [
+      '.vjs-play-control',
+      '.vjs-mute-control',
+      '.vjs-volume-panel',
+      '.vjs-fullscreen-control',
+      '.vjs-picture-in-picture-control'
+    ];
+    selectors.forEach(function (selector) {
+      Array.prototype.slice.call(root.querySelectorAll(selector)).forEach(function (element) {
+        element.removeAttribute('title');
+        element.setAttribute('title', '');
+        element.removeAttribute('data-title');
+      });
+    });
+  }
+
   function setupSticky(container) {
     if (!asBool(container.getAttribute('data-sticky'), false) || !window.IntersectionObserver) {
       return;
@@ -675,6 +730,7 @@
     if (!video || !source.src || !window.videojs) {
       return null;
     }
+    video.removeAttribute('controls');
     container.setAttribute('data-resolved-player-mode', mode);
     container.classList.add('is-loading');
     var shouldAutoplay = getAutoplay(container, mode);
@@ -692,6 +748,7 @@
       fluid: true,
       responsive: true,
       controlBar: {
+        children: ['playToggle', 'volumePanel'],
         fullscreenToggle: false,
         pictureInPictureToggle: false,
         progressControl: false,
@@ -714,6 +771,9 @@
     });
     player.volume(initialVolume);
     player.muted(shouldMute);
+    player.on('useractive userinactive volumechange play pause', function () {
+      polishControlButtons(player);
+    });
     var firstItem = container._publisherPlaylistItems && container._publisherPlaylistItems.length ? container._publisherPlaylistItems[0] : null;
     if (mode === 'content') {
       updateContentClickOverlay(container, player, firstItem);
@@ -745,6 +805,10 @@
       }
     }
     player.ready(function () {
+      polishControlButtons(player);
+      window.setTimeout(function () {
+        polishControlButtons(player);
+      }, 250);
       container.classList.remove('is-loading');
       player.volume(initialVolume);
       player.muted(shouldMute);
