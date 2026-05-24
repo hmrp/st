@@ -95,6 +95,8 @@
     normalized = replaceOrAddParam(normalized, 'description_url', descriptionUrl);
     normalized = replaceOrAddParam(normalized, 'url', window.location.href);
     normalized = replaceOrAddParam(normalized, 'correlator', timestamp);
+    normalized = replaceOrAddParam(normalized, 'cb', timestamp);
+    normalized = replaceOrAddParam(normalized, 'cachebuster', timestamp);
     return normalized;
   }
 
@@ -297,6 +299,10 @@
       return false;
     }
     try {
+      container.setAttribute('data-last-ad-tag-url', adTagUrl);
+      if (window.console && console.info) {
+        console.info('VIDEOJS: fresh VAST request', adTagUrl);
+      }
       if (player.ima.changeAdTag) {
         player.ima.changeAdTag(adTagUrl);
       }
@@ -311,16 +317,38 @@
     }
   }
 
-  function safePlay(player, container) {
+  function safePlay(player, container, onBlocked) {
     var playPromise = player.play();
     if (playPromise && playPromise.catch) {
       playPromise.catch(function (error) {
         if (container) {
           log(container, 'Autoplay bloqueado pelo browser: ' + (error && error.message ? error.message : 'interação necessária'), true);
         }
+        if (onBlocked) {
+          onBlocked(error);
+        }
       });
     }
     return playPromise;
+  }
+
+  function startAutoplay(container, player, shouldMute, initialVolume, requestAdsCallback) {
+    function tryMutedFallback() {
+      if (shouldMute || !asBool(container.getAttribute('data-autoplay-muted-fallback'), true)) {
+        return;
+      }
+      player.muted(true);
+      player.volume(initialVolume);
+      log(container, 'Autoplay com som bloqueado. A tentar autoplay muted com volume preparado para ' + Math.round(initialVolume * 100) + '/100.', true);
+      if (requestAdsCallback) {
+        requestAdsCallback();
+      }
+      safePlay(player, container);
+    }
+    if (requestAdsCallback) {
+      requestAdsCallback();
+    }
+    safePlay(player, container, tryMutedFallback);
   }
 
   function setupPlaylist(container, player) {
@@ -621,7 +649,9 @@
         log(container, 'Ad-only mode loaded. Press play or enable autoplay muted.');
       } else if (shouldAutoplay) {
         log(container, 'Autoplay activo com volume ' + Math.round(initialVolume * 100) + '/100');
-        safePlay(player, container);
+        startAutoplay(container, player, shouldMute, initialVolume, function () {
+          requestFreshPreroll(container, player, firstItem);
+        });
       }
     });
     attachEvents(container, player, mode);
