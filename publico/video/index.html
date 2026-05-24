@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Video.js IMA Publisher Player</title>
-  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/vendor/video-js.min.css?v=14">
-  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.css?v=14">
-  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.css?v=14">
-  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/css/publisher-video-player.css?v=14">
+  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/vendor/video-js.min.css?v=19">
+  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.css?v=19">
+  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.css?v=19">
+  <link rel="stylesheet" href="https://hugopedroso.com/publico/video/assets/videojs/css/publisher-video-player.css?v=19">
 
   <style>
     body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #222; background: #fff; }
@@ -19,6 +19,10 @@
     .setup-box { background: #f7f7f7; border: 1px solid #e3e3e3; border-radius: 12px; padding: 16px; margin: 24px 0; }
     .demo-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 28px; }
     .demo-links a { color: #111; background: #eee; border: 1px solid #ddd; border-radius: 999px; padding: 9px 13px; text-decoration: none; }
+
+    .scroll-test-area { margin: 36px 0 0; display: grid; gap: 18px; }
+    .scroll-test-card { min-height: 520px; border: 1px solid #e4e4e4; border-radius: 16px; background: linear-gradient(180deg, #fafafa, #f0f0f0); padding: 24px; }
+    .scroll-test-card strong { display: block; font-size: 22px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -40,10 +44,26 @@
     <h2>Modo 1: preroll + conteúdo de vídeo</h2>
     <p>Este exemplo carrega uma playlist sequencial a partir de <code>playlist.json</code>. Antes do primeiro vídeo há preroll; quando cada vídeo termina, o player passa para o seguinte e faz nova chamada VAST com correlator novo.</p>
 
-    <div class="pub-video-shell" data-publisher-video data-player-mode="content" data-playlist-src="https://hugopedroso.com/publico/video/playlist.json" data-playlist-loop="true" data-playlist-items="https://hugopedroso.com/publico/video/teste1.mp4|https://hugopedroso.com/publico/video/teste2.mp4" data-autoplay="true" data-muted="false" data-volume="1" data-autoplay-muted-fallback="true" data-video-src="https://hugopedroso.com/publico/video/teste1.mp4" data-video-type="video/mp4" data-ad-tag-url="https://pubads.g.doubleclick.net/gampad/ads?iu=/4458504/Video/Ipsilon&amp;hl=en&amp;plcmt=2&amp;vpa=auto&amp;vpmute=0&amp;vpos=preroll&amp;wta=1&amp;description_url=[placeholder]&amp;tfcd=0&amp;npa=0&amp;sz=1x1%7C640x360&amp;gdfp_req=1&amp;output=xml_vast4&amp;unviewed_position_start=1&amp;env=vp&amp;correlator=[timestamp]&amp;url=[page_url]&amp;cust_params=noticiatag%3Dundefined%26Seccao%3Dundefined%26assinante%3Dundefined%26pos%3Dincview%26end%3D%5Bpage_url%5D&amp;vconp=1" data-sticky="false">
+    <div class="pub-video-shell" data-publisher-video data-player-mode="content" data-ad-floating="true" data-playlist-src="https://hugopedroso.com/publico/video/playlist.json" data-playlist-loop="true" data-playlist-items="https://hugopedroso.com/publico/video/teste1.mp4|https://hugopedroso.com/publico/video/teste2.mp4" data-autoplay="true" data-muted="false" data-volume="1" data-autoplay-muted-fallback="true" data-video-src="https://hugopedroso.com/publico/video/teste1.mp4" data-video-type="video/mp4" data-ad-tag-url="https://pubads.g.doubleclick.net/gampad/ads?iu=/4458504/Video/Ipsilon&amp;hl=en&amp;plcmt=2&amp;vpa=auto&amp;vpmute=0&amp;vpos=preroll&amp;wta=1&amp;description_url=[placeholder]&amp;tfcd=0&amp;npa=0&amp;sz=1x1%7C640x360&amp;gdfp_req=1&amp;output=xml_vast4&amp;unviewed_position_start=1&amp;env=vp&amp;correlator=[timestamp]&amp;url=[page_url]&amp;cust_params=noticiatag%3Dundefined%26Seccao%3Dundefined%26assinante%3Dundefined%26pos%3Dincview%26end%3D%5Bpage_url%5D&amp;vconp=1" data-sticky="false">
       <video class="video-js vjs-default-skin" playsinline preload="metadata"></video>
       <div class="pub-video-status" data-video-status>Waiting for viewport initialization</div>
     </div>
+
+
+    <section class="scroll-test-area" aria-label="Área extra para teste de scroll">
+      <div class="scroll-test-card">
+        <strong>Área de scroll para teste do floating</strong>
+        <p>Depois de a publicidade começar, faz scroll para baixo até o player original sair totalmente do viewport. Se <code>data-ad-floating="true"</code> estiver activo e houver publicidade em reprodução, o player pequeno deve aparecer no canto inferior direito.</p>
+      </div>
+      <div class="scroll-test-card">
+        <strong>Continuação do artigo</strong>
+        <p>Este bloco serve apenas para simular uma página longa, semelhante a uma notícia real. Ao regressares à zona original do player, o floating deve desaparecer imediatamente.</p>
+      </div>
+      <div class="scroll-test-card">
+        <strong>Mais conteúdo de teste</strong>
+        <p>Quando a publicidade terminar, o player pequeno deve desaparecer. Se fechares o player pequeno, a publicidade fica em pausa no placement principal até o utilizador carregar novamente em play.</p>
+      </div>
+    </section>
 
     <h2>Modo 2: incontent/ad-only sem conteúdo</h2>
     <p>Este exemplo usa IMA SDK direto, sem Video.js e sem dummy MP4. Se houver anúncio, mostra a publicidade e mantém o slot após terminar. Se houver erro, no-fill ou timeout, chama o HTML fallback.</p>
@@ -76,11 +96,11 @@
   </main>
 
   <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
-  <script src="https://hugopedroso.com/publico/video/assets/videojs/vendor/video.min.js?v=14"></script>
-  <script src="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.min.js?v=14"></script>
-  <script src="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.min.js?v=14"></script>
-  <script src="https://hugopedroso.com/publico/video/assets/videojs/js/gam-ad-tag-builder.js?v=14"></script>
-  <script src="https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=14"></script>
-  <script src="https://hugopedroso.com/publico/video/assets/videojs/js/publisher-incontent-ima.js?v=14"></script>
+  <script src="https://hugopedroso.com/publico/video/assets/videojs/vendor/video.min.js?v=19"></script>
+  <script src="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.min.js?v=19"></script>
+  <script src="https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.min.js?v=19"></script>
+  <script src="https://hugopedroso.com/publico/video/assets/videojs/js/gam-ad-tag-builder.js?v=19"></script>
+  <script src="https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=19"></script>
+  <script src="https://hugopedroso.com/publico/video/assets/videojs/js/publisher-incontent-ima.js?v=19"></script>
 </body>
 </html>

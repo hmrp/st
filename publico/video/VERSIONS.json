@@ -1,8 +1,5 @@
 {
-  "video.js": "8.23.7",
-  "videojs-contrib-ads": "7.5.2",
-  "videojs-ima": "2.6.0",
-  "external_js": [
-    "https://imasdk.googleapis.com/js/sdkloader/ima3.js"
-  ]
+  "version": "18",
+  "base": "v16",
+  "notes": "Rollback-safe floating fix. Removed v17 MutationObserver logic and bound Video.js events individually so the player loads normally while ad floating can activate during preroll."
 }

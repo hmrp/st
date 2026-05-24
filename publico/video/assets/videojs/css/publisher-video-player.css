@@ -498,3 +498,80 @@
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+.pub-video-floating-placeholder {
+  display: none;
+  width: 100%;
+  pointer-events: none;
+}
+
+.pub-video-shell.is-ad-floating {
+  position: fixed !important;
+  right: 18px !important;
+  bottom: 18px !important;
+  left: auto !important;
+  top: auto !important;
+  width: min(380px, calc(100vw - 36px)) !important;
+  max-width: min(380px, calc(100vw - 36px)) !important;
+  margin: 0 !important;
+  z-index: 2147483000 !important;
+  background: #000 !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.48) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+.pub-video-shell.is-ad-floating .video-js {
+  width: 100% !important;
+  aspect-ratio: 16 / 9;
+}
+
+.pub-video-floating-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2147483001;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(20, 20, 24, 0.82);
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pub-video-shell.is-ad-floating.is-ad-floating-close-visible .pub-video-floating-close {
+  display: flex;
+}
+
+.pub-video-shell.is-ad-floating .pub-video-floating-close:hover {
+  background: rgba(20, 20, 24, 0.94);
+  transform: translateY(-1px);
+}
+
+.pub-video-shell:not(.is-ad-floating) .pub-video-floating-close,
+.pub-video-shell:not(.is-ad-playing):not(.is-ad-requesting) .pub-video-floating-close {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .pub-video-shell.is-ad-floating {
+    right: 12px !important;
+    bottom: 12px !important;
+    width: min(320px, calc(100vw - 24px)) !important;
+    max-width: min(320px, calc(100vw - 24px)) !important;
+  }
+}
