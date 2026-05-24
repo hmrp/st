@@ -254,7 +254,7 @@
   }
 
   function getCurrentContentUrl(container) {
-    return container.getAttribute('data-playlist-url') || '';
+    return container.getAttribute('data-playlist-url') || container.getAttribute('data-content-click-url') || '';
   }
 
   function shouldIgnoreContentClick(container, target) {
@@ -289,15 +289,19 @@
     overlay.type = 'button';
     overlay.className = 'pub-video-click-overlay';
     overlay.setAttribute('aria-label', container.getAttribute('data-content-click-label') || 'Abrir conteúdo');
-    overlay.addEventListener('click', function (event) {
+    function handleOverlayClick(event) {
+      if (container.classList.contains('is-ad-playing') || container.classList.contains('is-ad-requesting')) {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
       if (!shouldIgnoreContentClick(container, event.target)) {
         openContentUrl(container);
       }
-    });
+    }
+    overlay.addEventListener('click', handleOverlayClick);
     playerElement.addEventListener('click', function (event) {
-      if (!container.classList.contains('has-content-click-overlay')) {
+      if (!container.classList.contains('has-content-click-overlay') || container.classList.contains('is-ad-playing') || container.classList.contains('is-ad-requesting')) {
         return;
       }
       if (event.target === overlay || shouldIgnoreContentClick(container, event.target)) {
@@ -410,6 +414,11 @@
     return Boolean(player.ads && player.ads.isInAdMode && player.ads.isInAdMode());
   }
 
+  function setAdUiState(container, isAdActive) {
+    container.classList.toggle('is-ad-playing', Boolean(isAdActive));
+    container.classList.toggle('is-content-ui-hidden', Boolean(isAdActive));
+  }
+
   function requestFreshPreroll(container, player, item) {
     var adTagUrl = buildAdTagFromDataset(container, item);
     if (!adTagUrl || !player.ima) {
@@ -418,6 +427,7 @@
     try {
       container.setAttribute('data-last-ad-tag-url', adTagUrl);
       container.classList.add('is-ad-requesting');
+      container.classList.add('is-content-ui-hidden');
       if (window.console && console.info) {
         console.info('VIDEOJS: fresh VAST request', adTagUrl);
       }
@@ -430,6 +440,9 @@
       log(container, 'Nova chamada de publicidade enviada');
       return true;
     } catch (error) {
+      container.classList.remove('is-ad-requesting');
+      container.classList.remove('is-content-ui-hidden');
+      setAdUiState(container, false);
       log(container, 'Erro ao pedir preroll: ' + error.message + '. Conteúdo continua.', true);
       return false;
     }
@@ -608,6 +621,7 @@
     });
     player.on('ads-request', function () {
       container.classList.add('is-ad-requesting');
+      container.classList.add('is-content-ui-hidden');
       log(container, 'Ad request sent');
       startNoAdTimer();
     });
@@ -615,7 +629,7 @@
       adStarted = true;
       clearNoAdTimer();
       container.classList.remove('is-ad-requesting');
-      container.classList.add('is-ad-playing');
+      setAdUiState(container, true);
       try {
         if (player.ima && player.ima.getAdsManager && player.ima.getAdsManager()) {
           player.ima.getAdsManager().setVolume(getVolume(container));
@@ -626,17 +640,22 @@
     player.on('adend', function () {
       clearNoAdTimer();
       container.classList.remove('is-ad-requesting');
-      container.classList.remove('is-ad-playing');
+      container.classList.remove('is-content-ui-hidden');
+      setAdUiState(container, false);
       if (mode === 'ad-only') {
         finishAdOnly(container, player, 'Ad ended. Slot stopped.', false);
         return;
+      }
+      if (getCurrentContentUrl(container)) {
+        container.classList.add('has-content-click-overlay');
       }
       log(container, 'Ad ended');
     });
     player.on('adserror', function () {
       clearNoAdTimer();
       container.classList.remove('is-ad-requesting');
-      container.classList.remove('is-ad-playing');
+      container.classList.remove('is-content-ui-hidden');
+      setAdUiState(container, false);
       if (!adStarted && showFallback(container, player, 'adserror')) {
         return;
       }
@@ -650,13 +669,17 @@
       clearNoAdTimer();
       container.classList.remove('is-ad-requesting');
       container.classList.remove('is-ad-requesting');
-      container.classList.remove('is-ad-playing');
+      container.classList.remove('is-content-ui-hidden');
+      setAdUiState(container, false);
       if (mode === 'ad-only') {
         if (!adStarted && showFallback(container, player, 'contentresumed-no-ad')) {
           return;
         }
         finishAdOnly(container, player, adStarted ? 'Ad completed. No content source configured.' : 'No ad was played. Slot stopped.', false);
         return;
+      }
+      if (getCurrentContentUrl(container)) {
+        container.classList.add('has-content-click-overlay');
       }
       log(container, 'Content resumed');
     });

@@ -1,0 +1,152 @@
+ESTRUTURA
+
+index.html
+Página de entrada com botões para os dois demos.
+
+content-player.html
+Demo com vídeo editorial: Video.js + videojs-ima.
+Serve para preroll antes de conteúdo real.
+
+ad-only.html
+Demo incontent/ad-only: IMA SDK direto, sem Video.js e sem dummy MP4.
+Serve para publicidade incontent sem conteúdo depois.
+
+
+MODO COM CONTEÚDO
+
+Ficheiro:
+content-player.html
+
+Mudar quando fores para produção:
+
+data-playlist-src
+Caminho do ficheiro JSON com a lista sequencial de vídeos.
+
+playlist.json
+Ficheiro com os MP4. Cada item pode ter title, src, type, poster e duration.
+
+data-playlist-loop
+true para repetir a lista quando chega ao fim. false para parar no último vídeo.
+
+data-ad-tag-url
+Tag VAST/VMAP do GAM. Nesta versão está configurada com /4458504/Video/Ipsilon e placeholders para URL/correlator.
+
+Neste modo, o fluxo é:
+GAM/IMA preroll -> vídeo 1 -> nova chamada GAM/IMA preroll -> vídeo 2 -> nova chamada GAM/IMA preroll -> próximo vídeo.
+
+
+MODO INCONTENT / AD-ONLY
+
+Ficheiro:
+ad-only.html
+
+Este modo já não usa dummy MP4.
+Não existe data-video-src.
+Não carrega video.min.js, videojs.ads.min.js nem videojs.ima.min.js.
+Usa só o Google IMA SDK direto:
+https://imasdk.googleapis.com/js/sdkloader/ima3.js
+
+O bloco principal é:
+
+data-publisher-incontent-ad
+
+A tag está em:
+
+data-ad-tag-url
+
+A tag atual está configurada próxima da chamada Radiant legacy:
+
+/4458504/Video/Ipsilon
+env=vp
+plcmt=2
+vpa=click
+vpmute=1
+sz=1x1|640x360
+pos=incview
+
+
+FALLBACK HTML
+
+O fallback só aparece quando existe erro, no-fill ou timeout.
+Não aparece quando o anúncio termina normalmente.
+
+Para mudar o HTML de fallback, editar:
+
+<template id="fallback-incontent">
+
+Parâmetros importantes:
+
+data-fallback-on-no-ad="true"
+Ativa fallback em erro/no-fill/timeout.
+
+data-fallback-selector="#fallback-incontent"
+Indica qual template usar.
+
+data-no-ad-timeout="6500"
+Tempo em ms antes de considerar que não houve anúncio.
+
+data-keep-slot-after-complete="true"
+Quando o anúncio termina normalmente, o slot não colapsa e não chama o fallback.
+
+
+PLACEHOLDERS DA TAG
+
+O JavaScript substitui automaticamente:
+
+[placeholder]
+URL atual da página, encoded.
+
+[page_url]
+URL atual da página, encoded.
+
+%5Bpage_url%5D
+Também é substituído, útil quando [page_url] está dentro de cust_params.
+
+[timestamp]
+Correlator único.
+
+__timestamp__
+Correlator único.
+
+
+SCRIPT DO INCONTENT
+
+Ficheiro:
+assets/videojs/js/publisher-incontent-ima.js
+
+Este ficheiro é responsável por:
+
+1. Esperar o slot entrar no viewport.
+2. Normalizar a tag VAST.
+3. Criar google.ima.AdDisplayContainer.
+4. Criar google.ima.AdsLoader.
+5. Fazer requestAds().
+6. Mostrar o anúncio no container.
+7. Chamar fallback apenas em erro/no-fill/timeout.
+8. Manter o slot quando o anúncio termina normalmente.
+
+
+PLAYLIST JSON
+
+Ficheiro:
+playlist.json
+
+Exemplo:
+{
+  "videos": [
+    {
+      "title": "Teste 1",
+      "src": "https://hugopedroso.com/publico/video/teste1.mp4",
+      "type": "video/mp4",
+      "duration": 120
+    },
+    {
+      "title": "Teste 2",
+      "src": "https://hugopedroso.com/publico/video/teste2.mp4",
+      "type": "video/mp4",
+      "duration": 120
+    }
+  ]
+}
+
+Quando um vídeo termina, o script carrega o item seguinte e usa player.ima.changeAdTag() + player.ima.requestAds() para gerar uma nova chamada de preroll.

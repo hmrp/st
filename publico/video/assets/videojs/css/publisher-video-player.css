@@ -453,3 +453,48 @@
     pointer-events: auto;
   }
 }
+
+.pub-video-shell.is-ad-playing .video-js .vjs-play-control,
+.pub-video-shell.is-ad-playing .video-js .vjs-volume-panel,
+.pub-video-shell.is-ad-playing .video-js .vjs-mute-control,
+.pub-video-shell.is-ad-requesting .video-js .vjs-play-control,
+.pub-video-shell.is-ad-requesting .video-js .vjs-volume-panel,
+.pub-video-shell.is-ad-requesting .video-js .vjs-mute-control {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.pub-video-shell:not(.is-ad-playing):not(.is-ad-requesting) .video-js .ima-ad-container,
+.pub-video-shell:not(.is-ad-playing):not(.is-ad-requesting) .video-js .ima-ad-container > div,
+.pub-video-shell:not(.is-ad-playing):not(.is-ad-requesting) .video-js .ima-ad-container iframe {
+  pointer-events: none !important;
+}
+
+.pub-video-shell.is-ad-playing .video-js .ima-ad-container,
+.pub-video-shell.is-ad-requesting .video-js .ima-ad-container {
+  pointer-events: auto !important;
+  z-index: 90 !important;
+}
+
+.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .pub-video-click-overlay {
+  display: block !important;
+  pointer-events: auto !important;
+  z-index: 50 !important;
+}
+
+.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .vjs-play-control,
+.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .vjs-volume-panel,
+.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .vjs-mute-control {
+  z-index: 70 !important;
+}
+
+
+.pub-video-shell.is-content-ui-hidden .video-js .vjs-play-control,
+.pub-video-shell.is-content-ui-hidden .video-js .vjs-volume-panel,
+.pub-video-shell.is-content-ui-hidden .video-js .vjs-mute-control,
+.pub-video-shell.is-content-ui-hidden .video-js .pub-video-click-overlay {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
