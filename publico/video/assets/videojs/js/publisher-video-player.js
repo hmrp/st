@@ -453,12 +453,8 @@
   }
 
   function setAdUiState(container, isAdActive) {
-    var active = Boolean(isAdActive);
-    container.classList.toggle('is-ad-playing', active);
-    container.classList.toggle('is-content-ui-hidden', active);
-    if (container._publisherAdFloatingSetActive) {
-      container._publisherAdFloatingSetActive(active);
-    }
+    container.classList.toggle('is-ad-playing', Boolean(isAdActive));
+    container.classList.toggle('is-content-ui-hidden', Boolean(isAdActive));
   }
 
   function requestFreshPreroll(container, player, item) {
@@ -470,9 +466,6 @@
       container.setAttribute('data-last-ad-tag-url', adTagUrl);
       container.classList.add('is-ad-requesting');
       container.classList.add('is-content-ui-hidden');
-      if (container._publisherAdFloatingSetActive) {
-        container._publisherAdFloatingSetActive(true);
-      }
       if (window.console && console.info) {
         console.info('VIDEOJS: fresh VAST request', adTagUrl);
       }
@@ -667,18 +660,10 @@
     player.on('ads-request', function () {
       container.classList.add('is-ad-requesting');
       container.classList.add('is-content-ui-hidden');
-      if (container._publisherAdFloatingSetActive) {
-        container._publisherAdFloatingSetActive(true);
-      }
       log(container, 'Ad request sent');
       startNoAdTimer();
     });
-    player.on('adsready readyforpreroll ads-manager', function () {
-      if (container.classList.contains('is-ad-requesting') && container._publisherAdFloatingSetActive) {
-        container._publisherAdFloatingSetActive(true);
-      }
-    });
-    player.on('ads-ad-started adstart', function () {
+    player.on('ads-ad-started', function () {
       adStarted = true;
       clearNoAdTimer();
       container.classList.remove('is-ad-requesting');
@@ -802,8 +787,10 @@
       container.setAttribute('data-current-volume', String(Math.round(player.volume() * 100)));
       syncImaVolume(container, player);
     });
-    player.on('ads-manager ads-ad-started adstart adsready readyforpreroll', function () {
-      syncImaVolume(container, player);
+    ['ads-manager', 'ads-ad-started', 'adstart', 'adsready', 'readyforpreroll'].forEach(function (eventName) {
+      player.on(eventName, function () {
+        syncImaVolume(container, player);
+      });
     });
   }
 
@@ -920,8 +907,6 @@
       state.dismissed = false;
       container.classList.remove('is-ad-floating-dismissed');
       requestUpdate();
-      window.setTimeout(requestUpdate, 60);
-      window.setTimeout(requestUpdate, 250);
     }
 
     function deactivateFloatingMode() {
@@ -929,26 +914,6 @@
       state.dismissed = false;
       container.classList.remove('is-ad-floating-dismissed');
       exitFloating();
-    }
-
-    container._publisherAdFloatingSetActive = function (active) {
-      if (active) {
-        activateFloatingMode();
-      } else {
-        deactivateFloatingMode();
-      }
-    };
-
-    var classObserver = null;
-    if (window.MutationObserver) {
-      classObserver = new MutationObserver(function () {
-        if (container.classList.contains('is-ad-playing') || container.classList.contains('is-ad-requesting')) {
-          activateFloatingMode();
-        } else {
-          deactivateFloatingMode();
-        }
-      });
-      classObserver.observe(container, { attributes: true, attributeFilter: ['class'] });
     }
 
     function pauseAdAndContent() {
@@ -980,17 +945,15 @@
 
     window.addEventListener('scroll', requestUpdate, { passive: true });
     window.addEventListener('resize', requestUpdate);
-    player.on('ads-request adsready readyforpreroll ads-manager ads-ad-started adstart contentpause contentpauserequested', activateFloatingMode);
-    player.on('adend ads-ad-ended adserror contentresumed contentresume contentresumerequested ended dispose', deactivateFloatingMode);
+    ['ads-request', 'adsready', 'readyforpreroll', 'ads-manager', 'ads-ad-started', 'adstart', 'contentpause', 'contentpauserequested'].forEach(function (eventName) {
+      player.on(eventName, activateFloatingMode);
+    });
+    ['adend', 'ads-ad-ended', 'adserror', 'contentresumed', 'contentresume', 'contentresumerequested', 'ended', 'dispose'].forEach(function (eventName) {
+      player.on(eventName, deactivateFloatingMode);
+    });
     player.on('dispose', function () {
       window.removeEventListener('scroll', requestUpdate);
       window.removeEventListener('resize', requestUpdate);
-      if (container._publisherAdFloatingSetActive) {
-        container._publisherAdFloatingSetActive = null;
-      }
-      if (classObserver) {
-        classObserver.disconnect();
-      }
       if (placeholder && placeholder.parentNode) {
         placeholder.parentNode.removeChild(placeholder);
       }
@@ -1066,8 +1029,10 @@
     player.volume(initialVolume);
     player.muted(shouldMute);
     setupAudioToggle(container, player, initialVolume);
-    player.on('useractive userinactive volumechange play pause', function () {
-      polishControlButtons(player);
+    ['useractive', 'userinactive', 'volumechange', 'play', 'pause'].forEach(function (eventName) {
+      player.on(eventName, function () {
+        polishControlButtons(player);
+      });
     });
     var firstItem = container._publisherPlaylistItems && container._publisherPlaylistItems.length ? container._publisherPlaylistItems[0] : null;
     if (mode === 'content') {

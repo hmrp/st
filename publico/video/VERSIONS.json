@@ -1,5 +1,5 @@
 {
-  "version": "16",
-  "base": "v15",
-  "notes": "Ad floating player controlled by data-ad-floating. The player floats bottom-right only while an ad is active and the original placement is outside the viewport."
+  "version": "18",
+  "base": "v16",
+  "notes": "Rollback-safe floating fix. Removed v17 MutationObserver logic and bound Video.js events individually so the player loads normally while ad floating can activate during preroll."
 }
