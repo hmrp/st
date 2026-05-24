@@ -119,21 +119,48 @@
     return url + (url.indexOf('?') === -1 ? '?' : '&') + name + '=' + encodedValue;
   }
 
+  function ensureAdParam(url, name, value) {
+    var pattern = new RegExp('([?&])' + name + '=([^&]*)');
+    if (pattern.test(url)) {
+      return url;
+    }
+    return replaceOrAddParam(url, name, value);
+  }
+
   function normalizeDirectAdTag(url, container, item) {
     var descriptionUrl = container.getAttribute('data-description-url') || window.location.href;
+    var pageUrl = window.location.href;
     var encodedDescriptionUrl = encodeURIComponent(descriptionUrl);
+    var encodedPageUrl = encodeURIComponent(pageUrl);
     var timestamp = String(Date.now() + Math.floor(Math.random() * 1000000));
     var duration = item && item.duration ? item.duration : container.getAttribute('data-video-duration') || (getMode(container) === 'ad-only' ? '30' : '120');
-    var normalized = url
+    var normalized = String(url || '')
       .replaceAll('[placeholder]', encodedDescriptionUrl)
-      .replaceAll('[page_url]', encodedDescriptionUrl)
-      .replaceAll('%5Bpage_url%5D', encodedDescriptionUrl)
+      .replaceAll('[page_url]', encodedPageUrl)
+      .replaceAll('%5Bpage_url%5D', encodedPageUrl)
       .replaceAll('__timestamp__', timestamp)
       .replaceAll('[timestamp]', timestamp)
       .replaceAll('__item-duration__', duration);
+
+    normalized = ensureAdParam(normalized, 'iu', '/4458504/Video/Ipsilon');
+    normalized = ensureAdParam(normalized, 'hl', 'en');
+    normalized = ensureAdParam(normalized, 'plcmt', '2');
+    normalized = ensureAdParam(normalized, 'vpa', container.getAttribute('data-ad-vpa') || 'auto');
+    normalized = ensureAdParam(normalized, 'vpmute', container.getAttribute('data-ad-vpmute') || '0');
+    normalized = ensureAdParam(normalized, 'vpos', 'preroll');
+    normalized = ensureAdParam(normalized, 'wta', '1');
     normalized = replaceOrAddParam(normalized, 'description_url', descriptionUrl);
-    normalized = replaceOrAddParam(normalized, 'url', window.location.href);
+    normalized = ensureAdParam(normalized, 'tfcd', '0');
+    normalized = ensureAdParam(normalized, 'npa', '0');
+    normalized = ensureAdParam(normalized, 'sz', '1x1|640x360');
+    normalized = ensureAdParam(normalized, 'gdfp_req', '1');
+    normalized = ensureAdParam(normalized, 'output', 'xml_vast4');
+    normalized = ensureAdParam(normalized, 'unviewed_position_start', '1');
+    normalized = ensureAdParam(normalized, 'env', 'vp');
     normalized = replaceOrAddParam(normalized, 'correlator', timestamp);
+    normalized = replaceOrAddParam(normalized, 'url', pageUrl);
+    normalized = ensureAdParam(normalized, 'cust_params', 'noticiatag%3Dundefined%26Seccao%3Dundefined%26assinante%3Dundefined%26pos%3Dincview%26end%3D' + encodeURIComponent(pageUrl));
+    normalized = ensureAdParam(normalized, 'vconp', '1');
     normalized = replaceOrAddParam(normalized, 'cb', timestamp);
     normalized = replaceOrAddParam(normalized, 'cachebuster', timestamp);
     return normalized;
@@ -467,7 +494,7 @@
       container.classList.add('is-ad-requesting');
       container.classList.add('is-content-ui-hidden');
       if (window.console && console.info) {
-        console.info('VIDEOJS: fresh VAST request', adTagUrl);
+        console.info('VIDEOJS: fresh VAST request full=' + adTagUrl);
       }
       if (player.ima.changeAdTag) {
         player.ima.changeAdTag(adTagUrl);
