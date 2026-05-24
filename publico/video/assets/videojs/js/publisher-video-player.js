@@ -9,6 +9,35 @@
     return String(value).toLowerCase() === 'true' || String(value) === '1';
   }
 
+  function getAutoplay(container, mode) {
+    if (mode === 'ad-only') {
+      return true;
+    }
+    return asBool(container.getAttribute('data-autoplay'), false);
+  }
+
+  function getMuted(container, mode) {
+    if (mode === 'ad-only') {
+      return true;
+    }
+    return asBool(container.getAttribute('data-muted'), false);
+  }
+
+  function getVolume(container) {
+    var raw = container.getAttribute('data-volume');
+    if (raw === undefined || raw === null || raw === '') {
+      return 1;
+    }
+    var value = Number(String(raw).replace(',', '.'));
+    if (!isFinite(value)) {
+      return 1;
+    }
+    if (value > 1) {
+      value = value / 100;
+    }
+    return Math.max(0, Math.min(1, value));
+  }
+
   function getMode(container) {
     if (asBool(container.getAttribute('data-ad-only'), false)) {
       return 'ad-only';
@@ -282,11 +311,16 @@
     }
   }
 
-  function safePlay(player) {
+  function safePlay(player, container) {
     var playPromise = player.play();
     if (playPromise && playPromise.catch) {
-      playPromise.catch(function () {});
+      playPromise.catch(function (error) {
+        if (container) {
+          log(container, 'Autoplay bloqueado pelo browser: ' + (error && error.message ? error.message : 'interação necessária'), true);
+        }
+      });
     }
+    return playPromise;
   }
 
   function setupPlaylist(container, player) {
@@ -337,7 +371,7 @@
         if (!adRequested) {
           log(container, 'Sem preroll disponível. A iniciar conteúdo.');
         }
-        safePlay(player);
+        safePlay(player, container);
         unlockSwitching(1200);
       });
       player.one('playing', function () {
@@ -434,6 +468,11 @@
       adStarted = true;
       clearNoAdTimer();
       container.classList.add('is-ad-playing');
+      try {
+        if (player.ima && player.ima.getAdsManager && player.ima.getAdsManager()) {
+          player.ima.getAdsManager().setVolume(getVolume(container));
+        }
+      } catch (error) {}
       log(container, 'Ad started');
     });
     player.on('adend', function () {
@@ -520,13 +559,23 @@
     }
     container.setAttribute('data-resolved-player-mode', mode);
     container.classList.add('is-loading');
+    var shouldAutoplay = getAutoplay(container, mode);
+    var shouldMute = getMuted(container, mode);
+    var initialVolume = getVolume(container);
+    if (shouldAutoplay) {
+      video.setAttribute('autoplay', 'autoplay');
+    } else {
+      video.removeAttribute('autoplay');
+    }
+    video.muted = shouldMute;
+    video.volume = initialVolume;
     var player = window.videojs(video, {
       controls: true,
       fluid: true,
       responsive: true,
-      preload: container.getAttribute('data-preload') || 'metadata',
-      autoplay: mode === 'ad-only',
-      muted: mode === 'ad-only',
+      preload: container.getAttribute('data-preload') || (shouldAutoplay ? 'auto' : 'metadata'),
+      autoplay: shouldAutoplay,
+      muted: shouldMute,
       poster: container.getAttribute('data-poster') || '',
       html5: {
         vhs: {
@@ -535,6 +584,8 @@
       },
       sources: [source]
     });
+    player.volume(initialVolume);
+    player.muted(shouldMute);
     var firstItem = container._publisherPlaylistItems && container._publisherPlaylistItems.length ? container._publisherPlaylistItems[0] : null;
     var adTagUrl = buildAdTagFromDataset(container, firstItem);
     if (adTagUrl && player.ima) {
@@ -543,21 +594,34 @@
         showCountdown: true,
         preventLateAdStart: true,
         vastLoadTimeout: Number(container.getAttribute('data-vast-timeout') || 5000),
+        adWillAutoPlay: shouldAutoplay,
+        adWillPlayMuted: shouldMute,
         autoPlayAdBreaks: !asBool(container.getAttribute('data-manual-ad-breaks'), false),
         contribAdsSettings: {
           timeout: Number(container.getAttribute('data-ads-timeout') || 5000)
         }
       });
-      player.one('play', function () {
+      function initializeImaOnce() {
         if (player.ima && player.ima.initializeAdDisplayContainer) {
           player.ima.initializeAdDisplayContainer();
         }
-      });
+      }
+      player.one('play', initializeImaOnce);
+      if (shouldAutoplay) {
+        player.ready(function () {
+          initializeImaOnce();
+        });
+      }
     }
     player.ready(function () {
       container.classList.remove('is-loading');
+      player.volume(initialVolume);
+      player.muted(shouldMute);
       if (mode === 'ad-only') {
         log(container, 'Ad-only mode loaded. Press play or enable autoplay muted.');
+      } else if (shouldAutoplay) {
+        log(container, 'Autoplay activo com volume ' + Math.round(initialVolume * 100) + '/100');
+        safePlay(player, container);
       }
     });
     attachEvents(container, player, mode);
