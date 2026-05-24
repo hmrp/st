@@ -1,0 +1,16 @@
+{
+  "videos": [
+    {
+      "title": "Teste 1",
+      "src": "https://hugopedroso.com/publico/video/teste1.mp4",
+      "type": "video/mp4",
+      "duration": 120
+    },
+    {
+      "title": "Teste 2",
+      "src": "https://hugopedroso.com/publico/video/teste2.mp4",
+      "type": "video/mp4",
+      "duration": 120
+    }
+  ]
+}

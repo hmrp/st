@@ -24,16 +24,16 @@
 <body>
   <main>
     <h1>Preroll + conteúdo de vídeo</h1>
-    <p>Este é o exemplo que faltava: o player tem <code>data-video-src</code>, por isso a lógica é publicidade primeiro e conteúdo depois.</p>
+    <p>Este exemplo usa <code>data-playlist-src="playlist.json"</code>. O player começa no primeiro MP4 da lista e, sempre que um vídeo termina, carrega o seguinte e faz uma nova chamada VAST de preroll.</p>
 
-    <div class="pub-video-shell" data-publisher-video data-player-mode="content" data-video-src="https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8" data-video-type="application/x-mpegURL" data-poster="https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/poster.jpg" data-ad-tag-url="https://pubads.g.doubleclick.net/gampad/ads?iu=/4458504/Video&amp;description_url=[placeholder]&amp;url=[page_url]&amp;gdfp_req=1&amp;output=xml_vast4&amp;env=instream&amp;unviewed_position_start=1&amp;impl=s&amp;plcmt=1&amp;vconp=1&amp;aconp=1&amp;hl=pt&amp;vpa=click&amp;vpmute=0&amp;vpos=preroll&amp;tfcd=0&amp;npa=0&amp;sz=1x1%7C1x1%7C300x1%7C300x250%7C640x360%7C640x360&amp;vid_d=120&amp;wta=1&amp;cust_params=end%3Dsticky&amp;correlator=__timestamp__" data-sticky="false">
+    <div class="pub-video-shell" data-publisher-video data-player-mode="content" data-playlist-src="playlist.json" data-playlist-loop="true" data-video-src="https://hugopedroso.com/publico/video/teste1.mp4" data-video-type="video/mp4" data-ad-tag-url="https://pubads.g.doubleclick.net/gampad/ads?iu=/4458504/Video/Ipsilon&amp;hl=en&amp;plcmt=2&amp;vpa=click&amp;vpmute=1&amp;vpos=preroll&amp;wta=1&amp;description_url=[placeholder]&amp;tfcd=0&amp;npa=0&amp;sz=1x1%7C640x360&amp;gdfp_req=1&amp;output=xml_vast4&amp;unviewed_position_start=1&amp;env=vp&amp;correlator=[timestamp]&amp;url=[page_url]&amp;cust_params=noticiatag%3Dundefined%26Seccao%3Dundefined%26assinante%3Dundefined%26pos%3Dincview%26end%3D%5Bpage_url%5D&amp;vconp=1" data-sticky="false">
       <video class="video-js vjs-default-skin" controls playsinline preload="metadata"></video>
       <div class="pub-video-status" data-video-status>Waiting for viewport initialization</div>
     </div>
 
     <div class="setup-box">
-      <p>Para trocares para o teu vídeo real, muda:</p>
-      <p><code>data-video-src</code><br><code>data-video-type</code><br><code>data-poster</code></p>
+      <p>Para mudares a sequência de vídeos, edita <code>playlist.json</code>.</p>
+      <p>Cada item pode ter <code>title</code>, <code>src</code>, <code>type</code>, <code>poster</code> e <code>duration</code>.</p>
       <p>Não mudes <code>data-ad-only</code> aqui. Este modo tem conteúdo.</p>
     </div>
   </main>

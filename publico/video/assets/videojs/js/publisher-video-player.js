@@ -13,7 +13,7 @@
     if (asBool(container.getAttribute('data-ad-only'), false)) {
       return 'ad-only';
     }
-    if (!container.getAttribute('data-video-src')) {
+    if (!container.getAttribute('data-video-src') && !container.getAttribute('data-playlist-src')) {
       return 'ad-only';
     }
     return 'content';
@@ -51,26 +51,28 @@
     return url + (url.indexOf('?') === -1 ? '?' : '&') + name + '=' + encodedValue;
   }
 
-  function normalizeDirectAdTag(url, container) {
+  function normalizeDirectAdTag(url, container, item) {
     var descriptionUrl = container.getAttribute('data-description-url') || window.location.href;
     var encodedDescriptionUrl = encodeURIComponent(descriptionUrl);
     var timestamp = String(Date.now() + Math.floor(Math.random() * 1000000));
+    var duration = item && item.duration ? item.duration : container.getAttribute('data-video-duration') || (getMode(container) === 'ad-only' ? '30' : '120');
     var normalized = url
       .replaceAll('[placeholder]', encodedDescriptionUrl)
       .replaceAll('[page_url]', encodedDescriptionUrl)
       .replaceAll('%5Bpage_url%5D', encodedDescriptionUrl)
       .replaceAll('__timestamp__', timestamp)
       .replaceAll('[timestamp]', timestamp)
-      .replaceAll('__item-duration__', container.getAttribute('data-video-duration') || (getMode(container) === 'ad-only' ? '30' : '120'));
+      .replaceAll('__item-duration__', duration);
     normalized = replaceOrAddParam(normalized, 'description_url', descriptionUrl);
+    normalized = replaceOrAddParam(normalized, 'url', window.location.href);
     normalized = replaceOrAddParam(normalized, 'correlator', timestamp);
     return normalized;
   }
 
-  function buildAdTagFromDataset(container) {
+  function buildAdTagFromDataset(container, item) {
     var directTag = container.getAttribute('data-ad-tag-url');
     if (directTag) {
-      return normalizeDirectAdTag(directTag, container);
+      return normalizeDirectAdTag(directTag, container, item);
     }
     var adUnitPath = container.getAttribute('data-gam-ad-unit');
     if (!adUnitPath || !window.PublisherGamAdTagBuilder) {
@@ -148,6 +150,244 @@
         }
       }, Number(container.getAttribute('data-collapse-delay') || 800));
     }
+  }
+
+  function normalizePlaylistItem(item) {
+    if (!item) {
+      return null;
+    }
+    if (typeof item === 'string') {
+      return {
+        src: item,
+        type: 'video/mp4',
+        title: ''
+      };
+    }
+    if (!item.src && item.url) {
+      item.src = item.url;
+    }
+    if (!item.src) {
+      return null;
+    }
+    return {
+      src: item.src,
+      type: item.type || 'video/mp4',
+      poster: item.poster || '',
+      title: item.title || '',
+      duration: item.duration ? String(item.duration) : ''
+    };
+  }
+
+  function normalizePlaylistPayload(payload) {
+    var rawItems = Array.isArray(payload) ? payload : payload && Array.isArray(payload.videos) ? payload.videos : [];
+    return rawItems.map(normalizePlaylistItem).filter(Boolean);
+  }
+
+  function applyPlaylistItem(container, player, item, index) {
+    container.setAttribute('data-video-src', item.src);
+    container.setAttribute('data-video-type', item.type || 'video/mp4');
+    if (item.poster) {
+      container.setAttribute('data-poster', item.poster);
+      player.poster(item.poster);
+    } else {
+      container.removeAttribute('data-poster');
+      player.poster('');
+    }
+    if (item.duration) {
+      container.setAttribute('data-video-duration', item.duration);
+    } else {
+      container.removeAttribute('data-video-duration');
+    }
+    container.setAttribute('data-playlist-index', String(index));
+    if (item.title) {
+      container.setAttribute('data-playlist-title', item.title);
+    } else {
+      container.removeAttribute('data-playlist-title');
+    }
+    player.src({
+      src: item.src,
+      type: item.type || 'video/mp4'
+    });
+  }
+
+  function loadPlaylistBeforeCreate(container) {
+    var playlistSrc = container.getAttribute('data-playlist-src');
+    if (!playlistSrc || container._publisherPlaylistLoaded) {
+      return false;
+    }
+    if (container._publisherPlaylistLoading) {
+      return true;
+    }
+    container._publisherPlaylistLoading = true;
+    container.classList.add('is-loading');
+    log(container, 'A carregar playlist');
+    window.fetch(playlistSrc, {
+      credentials: 'same-origin'
+    }).then(function (response) {
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+      return response.json();
+    }).then(function (payload) {
+      var items = normalizePlaylistPayload(payload);
+      if (!items.length) {
+        throw new Error('Playlist vazia');
+      }
+      container._publisherPlaylistItems = items;
+      container._publisherPlaylistLoaded = true;
+      container._publisherPlaylistLoading = false;
+      container.setAttribute('data-video-src', items[0].src);
+      container.setAttribute('data-video-type', items[0].type || 'video/mp4');
+      if (items[0].poster) {
+        container.setAttribute('data-poster', items[0].poster);
+      }
+      if (items[0].duration) {
+        container.setAttribute('data-video-duration', items[0].duration);
+      }
+      log(container, 'Playlist carregada: ' + items.length + ' vídeos');
+      createPlayer(container);
+    }).catch(function (error) {
+      container._publisherPlaylistLoaded = true;
+      container._publisherPlaylistLoading = false;
+      container.classList.remove('is-loading');
+      log(container, 'Erro ao carregar playlist: ' + error.message, true);
+      if (container.getAttribute('data-video-src')) {
+        createPlayer(container);
+      }
+    });
+    return true;
+  }
+
+  function isInAdMode(player) {
+    return Boolean(player.ads && player.ads.isInAdMode && player.ads.isInAdMode());
+  }
+
+  function requestFreshPreroll(container, player, item) {
+    var adTagUrl = buildAdTagFromDataset(container, item);
+    if (!adTagUrl || !player.ima) {
+      return false;
+    }
+    try {
+      if (player.ima.changeAdTag) {
+        player.ima.changeAdTag(adTagUrl);
+      }
+      if (player.ima.requestAds) {
+        player.ima.requestAds();
+      }
+      log(container, 'Nova chamada de publicidade enviada');
+      return true;
+    } catch (error) {
+      log(container, 'Erro ao pedir preroll: ' + error.message + '. Conteúdo continua.', true);
+      return false;
+    }
+  }
+
+  function safePlay(player) {
+    var playPromise = player.play();
+    if (playPromise && playPromise.catch) {
+      playPromise.catch(function () {});
+    }
+  }
+
+  function setupPlaylist(container, player) {
+    var items = container._publisherPlaylistItems || [];
+    if (!items.length) {
+      return;
+    }
+    var state = {
+      index: Number(container.getAttribute('data-playlist-start-index') || 0),
+      switching: false,
+      advanceTimer: null
+    };
+    var loop = asBool(container.getAttribute('data-playlist-loop'), true);
+    var total = items.length;
+    if (state.index < 0 || state.index >= total) {
+      state.index = 0;
+    }
+    container.setAttribute('data-playlist-count', String(total));
+    container.setAttribute('data-playlist-index', String(state.index));
+
+    function clearAdvanceTimer() {
+      if (!state.advanceTimer) {
+        return;
+      }
+      window.clearTimeout(state.advanceTimer);
+      state.advanceTimer = null;
+    }
+
+    function unlockSwitching(delay) {
+      window.setTimeout(function () {
+        state.switching = false;
+      }, delay || 500);
+    }
+
+    function playPlaylistItem(index) {
+      var item = items[index];
+      clearAdvanceTimer();
+      state.switching = true;
+      state.index = index;
+      log(container, 'A preparar vídeo ' + (state.index + 1) + ' de ' + total + (item.title ? ': ' + item.title : ''));
+      player.pause();
+      applyPlaylistItem(container, player, item, state.index);
+      if (player.ads) {
+        player.trigger('contentchanged');
+      }
+      player.one('loadedmetadata', function () {
+        var adRequested = requestFreshPreroll(container, player, item);
+        if (!adRequested) {
+          log(container, 'Sem preroll disponível. A iniciar conteúdo.');
+        }
+        safePlay(player);
+        unlockSwitching(1200);
+      });
+      player.one('playing', function () {
+        unlockSwitching(400);
+      });
+    }
+
+    function advancePlaylist(reason) {
+      clearAdvanceTimer();
+      if (state.switching || container.classList.contains('is-ad-playing')) {
+        return;
+      }
+      var nextIndex = state.index + 1;
+      if (nextIndex >= total) {
+        if (!loop) {
+          log(container, 'Playlist terminada');
+          return;
+        }
+        nextIndex = 0;
+      }
+      log(container, 'Vídeo terminado. A avançar para o próximo item (' + reason + ').');
+      playPlaylistItem(nextIndex);
+    }
+
+    function scheduleAdvance(reason) {
+      if (state.advanceTimer || state.switching || container.classList.contains('is-ad-playing')) {
+        return;
+      }
+      state.advanceTimer = window.setTimeout(function () {
+        advancePlaylist(reason);
+      }, 80);
+    }
+
+    player.on('ended', function () {
+      scheduleAdvance('ended');
+    });
+
+    player.on('timeupdate', function () {
+      if (state.switching || container.classList.contains('is-ad-playing')) {
+        return;
+      }
+      var duration = player.duration();
+      var currentTime = player.currentTime();
+      if (!duration || !isFinite(duration) || duration < 1) {
+        return;
+      }
+      if (currentTime >= duration - 0.35) {
+        scheduleAdvance('timeupdate');
+      }
+    });
   }
 
   function attachEvents(container, player, mode) {
@@ -269,6 +509,9 @@
     if (instances.has(container)) {
       return instances.get(container);
     }
+    if (loadPlaylistBeforeCreate(container)) {
+      return null;
+    }
     var video = container.querySelector('video');
     var source = getSource(container);
     var mode = getMode(container);
@@ -292,7 +535,8 @@
       },
       sources: [source]
     });
-    var adTagUrl = buildAdTagFromDataset(container);
+    var firstItem = container._publisherPlaylistItems && container._publisherPlaylistItems.length ? container._publisherPlaylistItems[0] : null;
+    var adTagUrl = buildAdTagFromDataset(container, firstItem);
     if (adTagUrl && player.ima) {
       player.ima({
         adTagUrl: adTagUrl,
@@ -317,6 +561,9 @@
       }
     });
     attachEvents(container, player, mode);
+    if (mode === 'content') {
+      setupPlaylist(container, player);
+    }
     setupSticky(container);
     instances.set(container, player);
     return player;
