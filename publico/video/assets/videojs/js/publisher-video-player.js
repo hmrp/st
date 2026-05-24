@@ -792,6 +792,168 @@
     });
   }
 
+
+  function setupAdFloating(container, player) {
+    if (!asBool(container.getAttribute('data-ad-floating'), false)) {
+      return;
+    }
+    var placeholder = document.createElement('div');
+    placeholder.className = 'pub-video-floating-placeholder';
+    placeholder.setAttribute('aria-hidden', 'true');
+    container.parentNode.insertBefore(placeholder, container);
+
+    var closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'pub-video-floating-close';
+    closeButton.setAttribute('aria-label', 'Fechar publicidade flutuante');
+    closeButton.textContent = '×';
+    container.appendChild(closeButton);
+
+    var state = {
+      adActive: false,
+      dismissed: false,
+      closeTimer: null,
+      raf: null
+    };
+
+    function clearCloseTimer() {
+      if (!state.closeTimer) {
+        return;
+      }
+      window.clearTimeout(state.closeTimer);
+      state.closeTimer = null;
+    }
+
+    function hideCloseButton() {
+      clearCloseTimer();
+      container.classList.remove('is-ad-floating-close-visible');
+    }
+
+    function showCloseButtonLater() {
+      hideCloseButton();
+      state.closeTimer = window.setTimeout(function () {
+        if (state.adActive && container.classList.contains('is-ad-floating') && !state.dismissed) {
+          container.classList.add('is-ad-floating-close-visible');
+        }
+      }, Number(container.getAttribute('data-ad-floating-close-delay') || 3000));
+    }
+
+    function getReferenceElement() {
+      return container.classList.contains('is-ad-floating') ? placeholder : container;
+    }
+
+    function isOriginalPlacementVisible() {
+      var element = getReferenceElement();
+      if (!element || !element.getBoundingClientRect) {
+        return true;
+      }
+      var rect = element.getBoundingClientRect();
+      var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+      var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+      if (!viewportHeight || !viewportWidth) {
+        return true;
+      }
+      return rect.bottom > 0 && rect.right > 0 && rect.top < viewportHeight && rect.left < viewportWidth;
+    }
+
+    function enterFloating() {
+      if (container.classList.contains('is-ad-floating')) {
+        return;
+      }
+      var rect = container.getBoundingClientRect();
+      placeholder.style.height = Math.max(1, Math.round(rect.height || container.offsetHeight || 0)) + 'px';
+      placeholder.style.display = 'block';
+      container.classList.add('is-ad-floating');
+      showCloseButtonLater();
+    }
+
+    function exitFloating() {
+      if (!container.classList.contains('is-ad-floating')) {
+        hideCloseButton();
+        placeholder.style.height = '';
+        placeholder.style.display = '';
+        return;
+      }
+      container.classList.remove('is-ad-floating');
+      hideCloseButton();
+      placeholder.style.height = '';
+      placeholder.style.display = '';
+    }
+
+    function updateFloatingState() {
+      state.raf = null;
+      if (!state.adActive || state.dismissed) {
+        exitFloating();
+        return;
+      }
+      if (isOriginalPlacementVisible()) {
+        exitFloating();
+        return;
+      }
+      enterFloating();
+    }
+
+    function requestUpdate() {
+      if (state.raf) {
+        return;
+      }
+      state.raf = window.requestAnimationFrame(updateFloatingState);
+    }
+
+    function activateFloatingMode() {
+      state.adActive = true;
+      state.dismissed = false;
+      container.classList.remove('is-ad-floating-dismissed');
+      requestUpdate();
+    }
+
+    function deactivateFloatingMode() {
+      state.adActive = false;
+      state.dismissed = false;
+      container.classList.remove('is-ad-floating-dismissed');
+      exitFloating();
+    }
+
+    function pauseAdAndContent() {
+      try {
+        if (player.ima && player.ima.getAdsManager) {
+          var adsManager = player.ima.getAdsManager();
+          if (adsManager && adsManager.pause) {
+            adsManager.pause();
+          }
+        }
+      } catch (error) {}
+      try {
+        player.pause();
+      } catch (error) {}
+    }
+
+    closeButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) {
+        event.stopImmediatePropagation();
+      }
+      state.dismissed = true;
+      container.classList.add('is-ad-floating-dismissed');
+      exitFloating();
+      pauseAdAndContent();
+      log(container, 'Publicidade em pausa. Carrega em play no player principal para retomar.');
+    }, true);
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    player.on('ads-request ads-ad-started adstart', activateFloatingMode);
+    player.on('adend adserror contentresumed ended dispose', deactivateFloatingMode);
+    player.on('dispose', function () {
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+      if (placeholder && placeholder.parentNode) {
+        placeholder.parentNode.removeChild(placeholder);
+      }
+    });
+  }
+
   function setupSticky(container) {
     if (!asBool(container.getAttribute('data-sticky'), false) || !window.IntersectionObserver) {
       return;
@@ -914,6 +1076,7 @@
     if (mode === 'content') {
       setupPlaylist(container, player);
     }
+    setupAdFloating(container, player);
     setupSticky(container);
     instances.set(container, player);
     return player;

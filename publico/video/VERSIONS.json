@@ -1,8 +1,5 @@
 {
-  "video.js": "8.23.7",
-  "videojs-contrib-ads": "7.5.2",
-  "videojs-ima": "2.6.0",
-  "external_js": [
-    "https://imasdk.googleapis.com/js/sdkloader/ima3.js"
-  ]
+  "version": "16",
+  "base": "v15",
+  "notes": "Ad floating player controlled by data-ad-floating. The player floats bottom-right only while an ad is active and the original placement is outside the viewport."
 }
