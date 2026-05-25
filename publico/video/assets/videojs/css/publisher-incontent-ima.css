@@ -58,20 +58,17 @@
 }
 
 .pub-video-status,
+[data-video-status],
+[data-incontent-status],
 .pub-incontent-ad__status {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 13px;
-  line-height: 1.45;
-  color: #fff;
-  background: #222;
-  padding: 10px 12px;
-  border: 1px solid #333;
-  border-top: 0;
-  white-space: pre-wrap;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .pub-video-error {
-  color: #ffb4c0;
+  display: none !important;
 }
 
 .pub-incontent-ad.has-fallback-content,

@@ -9,14 +9,15 @@
   }
 
   function log(container, message, isError) {
-    var target = container.querySelector('[data-video-status], [data-incontent-status]');
-    if (!target) {
+    if (!window.console) {
       return;
     }
-    target.classList.toggle('pub-video-error', Boolean(isError));
-    target.textContent = message;
-    if (window.console && console.log) {
-      console[isError ? 'warn' : 'log']('[PublisherIncontentIMA]', message);
+    if (isError && console.warn) {
+      console.warn('[PublisherIncontentIMA]', message);
+      return;
+    }
+    if (console.log) {
+      console.log('[PublisherIncontentIMA]', message);
     }
   }
 

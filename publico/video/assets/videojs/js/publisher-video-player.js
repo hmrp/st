@@ -104,12 +104,16 @@
   }
 
   function log(container, message, isError) {
-    var target = container.querySelector('[data-video-status]');
-    if (!target) {
+    if (!window.console) {
       return;
     }
-    target.classList.toggle('pub-video-error', Boolean(isError));
-    target.textContent = message;
+    if (isError && console.warn) {
+      console.warn('[VJSPlayer]', message);
+      return;
+    }
+    if (console.log) {
+      console.log('[VJSPlayer]', message);
+    }
   }
 
   function replaceOrAddParam(url, name, value) {
