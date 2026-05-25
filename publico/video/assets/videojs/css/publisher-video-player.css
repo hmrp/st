@@ -575,3 +575,102 @@
     max-width: min(320px, calc(100vw - 24px)) !important;
   }
 }
+
+.pub-video-shell.has-custom-controls .video-js .vjs-control-bar,
+.pub-video-shell.has-custom-controls .video-js .vjs-play-control,
+.pub-video-shell.has-custom-controls .video-js .vjs-volume-panel,
+.pub-video-shell.has-custom-controls .video-js .vjs-mute-control {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.pub-video-shell .pub-video-custom-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 2147482500;
+  pointer-events: none;
+}
+
+.pub-video-shell .pub-video-custom-control {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  max-width: 48px;
+  max-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(24, 24, 28, 0.76);
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.pub-video-shell .pub-video-custom-control:hover {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  max-width: 48px;
+  max-height: 48px;
+  background: rgba(24, 24, 28, 0.92);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+}
+
+.pub-video-shell .pub-video-custom-control svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+.pub-video-shell .pub-video-custom-audio {
+  top: 16px;
+  left: 16px;
+}
+
+.pub-video-shell .pub-video-custom-play {
+  bottom: 16px;
+  left: 16px;
+}
+
+.pub-video-shell.is-content-ui-hidden .pub-video-custom-controls,
+.pub-video-shell.is-ad-playing .pub-video-custom-controls,
+.pub-video-shell.is-ad-requesting .pub-video-custom-controls {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .pub-video-click-overlay {
+  z-index: 40 !important;
+}
+
+.pub-video-shell.has-custom-controls .pub-video-custom-controls {
+  z-index: 90 !important;
+}
+
+.pub-video-shell .video-js .vjs-big-play-button,
+.pub-video-shell .video-js .vjs-overlay-play-button,
+.pub-video-shell .video-js .vjs-poster .vjs-big-play-button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
