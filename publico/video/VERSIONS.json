@@ -1,5 +1,5 @@
 {
-  "version": "20",
+  "version": "21",
   "base": "videojsV19-scrolltest",
   "changes": [
     "Adiciona API window.VJSPlayer mantendo PublisherVideoPlayer",
@@ -7,5 +7,6 @@
     "Adiciona controlos custom internos play/pause e som para garantir interligacao com creative GAM",
     "Mantem overlay de conteudo abaixo dos controlos e botao fechar apenas em floating",
     "Permite init(container), setAdTag, requestAd, setPlaylist, play e pause por data-player-id"
-  ]
+  ],
+  "notes": "v21: close button only visible in actual internal floating state; native central play hidden; custom play/audio controls hardened; optional data-floating-mode=\"frame\" disables internal floating for GAM iframe usage."
 }

@@ -674,3 +674,59 @@
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+/* v21 hardening */
+.pub-video-shell .video-js .vjs-big-play-button,
+.pub-video-shell .video-js .vjs-overlay-play-button,
+.pub-video-shell .video-js .vjs-poster .vjs-big-play-button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.pub-video-shell.has-custom-controls:not(.is-ad-playing):not(.is-ad-requesting) .pub-video-custom-controls,
+.pub-video-shell.has-custom-controls:not(.is-ad-playing):not(.is-ad-requesting):not(.is-content-ui-hidden) .pub-video-custom-controls {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  z-index: 2147482500 !important;
+}
+
+.pub-video-shell.has-custom-controls:not(.is-ad-playing):not(.is-ad-requesting) .pub-video-custom-control {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .pub-video-click-overlay {
+  z-index: 40 !important;
+}
+
+.pub-video-shell.has-custom-controls .pub-video-custom-controls {
+  z-index: 90 !important;
+}
+
+.pub-video-shell .pub-video-floating-close {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.pub-video-shell.is-ad-floating.is-ad-floating-close-visible .pub-video-floating-close {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.pub-video-shell:not(.is-ad-floating) .pub-video-floating-close,
+.pub-video-shell:not(.is-ad-floating).is-ad-floating-close-visible .pub-video-floating-close {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

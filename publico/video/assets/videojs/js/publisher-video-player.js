@@ -684,6 +684,9 @@
       if (mode === 'ad-only') {
         return;
       }
+      container.classList.remove('is-ad-requesting');
+      container.classList.remove('is-content-ui-hidden');
+      setAdUiState(container, false);
       log(container, 'Content ready');
     });
     player.on('ads-request', function () {
@@ -928,6 +931,9 @@
   }
 
   function setupAdFloating(container, player) {
+    if (container.getAttribute('data-floating-mode') === 'frame') {
+      return;
+    }
     if (!asBool(container.getAttribute('data-ad-floating'), false)) {
       return;
     }
