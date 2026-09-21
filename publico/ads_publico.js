@@ -1,4 +1,4 @@
-/* 0.00.05 */
+
 (function (window, document) {
     "use strict";
 
@@ -11,12 +11,12 @@
     var PAGE_TYPES = ["page", "noticia", "video", "infografia"];
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"]';
     var FOOTER_BLOCK = ["mundial-2026", "leituras"];
-    var FULLSCREEN_BLOCK = ["mundial-2026", "leituras"];
+    var OOP_BLOCK = ["mundial-2026", "leituras"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
     var FOOTER_BTN_DELAY_MS = 300;
-    var FULLSCREEN_CAP_KEY = "intro_cap";
-    var FULLSCREEN_CAP_MS = 180000;
-    var FULLSCREEN_CAP_BYPASS = ["11826917"];
+    var OOP_CAP_KEY = "intro_cap";
+    var OOP_CAP_MS = 180000;
+    var OOP_CAP_BYPASS = ["11826917"];
     var OOP_FALLBACK_MS = 800;
     var REWARDED_TIMEOUT_MS = 10000;
 
@@ -267,30 +267,30 @@
         });
     }
 
-    function clearFullscreenCap() {
+    function clearOOPCap() {
         try {
             if (window.localStorage) {
-                window.localStorage.removeItem(FULLSCREEN_CAP_KEY);
+                window.localStorage.removeItem(OOP_CAP_KEY);
             }
         } catch (e) {
         }
     }
 
-    function setFullscreenCap() {
+    function setOOPCap() {
         try {
             if (window.localStorage) {
-                window.localStorage.setItem(FULLSCREEN_CAP_KEY, String(Date.now() + FULLSCREEN_CAP_MS));
+                window.localStorage.setItem(OOP_CAP_KEY, String(Date.now() + OOP_CAP_MS));
             }
         } catch (e) {
         }
     }
 
-    function hasFullscreenCap() {
+    function hasOOPCap() {
         var capUntil = 0;
 
         try {
             capUntil = parseInt(
-                window.localStorage ? window.localStorage.getItem(FULLSCREEN_CAP_KEY) : null,
+                window.localStorage ? window.localStorage.getItem(OOP_CAP_KEY) : null,
                 10
             ) || 0;
         } catch (e) {
@@ -302,29 +302,29 @@
         }
 
         if (Date.now() >= capUntil) {
-            clearFullscreenCap();
+            clearOOPCap();
             return false;
         }
 
         return true;
     }
 
-    function canShowFullscreen(config) {
+    function canInitOOP(config) {
         if (!config || config.showAds === false || config.userType === "subscriber") {
             return false;
         }
 
-        if (isTagBlocked(config, FULLSCREEN_BLOCK)) {
+        if (isTagBlocked(config, OOP_BLOCK)) {
             return false;
         }
 
-        return !hasFullscreenCap();
+        return !hasOOPCap();
     }
 
     function initOOP(config, userType, adUnit, runtime) {
         var oop;
 
-        runtime.fullscreen = runtime.fullscreen || {
+        runtime.oop = runtime.oop || {
             enabled: false,
             blocked: false,
             oopResolved: false,
@@ -336,15 +336,15 @@
             state: "idle"
         };
 
-        if (!canShowFullscreen(config)) {
-            runtime.fullscreen.blocked = isTagBlocked(config, FULLSCREEN_BLOCK);
+        if (!canInitOOP(config)) {
+            runtime.oop.blocked = isTagBlocked(config, OOP_BLOCK);
 
             if (config.userType === "subscriber") {
-                runtime.fullscreen.state = "subscriber";
-            } else if (runtime.fullscreen.blocked) {
-                runtime.fullscreen.state = "blocked";
+                runtime.oop.state = "subscriber";
+            } else if (runtime.oop.blocked) {
+                runtime.oop.state = "blocked";
             } else {
-                runtime.fullscreen.state = "capped";
+                runtime.oop.state = "capped";
             }
 
             return;
@@ -362,23 +362,23 @@
 
         document.body.insertAdjacentElement("afterbegin", oop);
 
-        runtime.fullscreen.enabled = true;
-        runtime.fullscreen.state = "oop-pending";
+        runtime.oop.enabled = true;
+        runtime.oop.state = "oop-pending";
     }
 
     function initInterstitial(config, userType, adUnit, runtime) {
-        var fullscreen = runtime.fullscreen;
+        var oop = runtime.oop;
 
-        if (!fullscreen || fullscreen.interstitialInit || config.pageType !== "noticia" || !canShowFullscreen(config)) {
+        if (!oop || oop.interstitialInit || config.pageType !== "noticia" || !canInitOOP(config)) {
             return;
         }
 
-        fullscreen.interstitialInit = true;
+        oop.interstitialInit = true;
 
         window.googletag.cmd.push(function () {
             var slot;
 
-            if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
+            if (config.pageType !== "noticia" || !canInitOOP(config)) {
                 return;
             }
 
@@ -386,7 +386,7 @@
                 !window.googletag.enums ||
                 !window.googletag.enums.OutOfPageFormat ||
                 !window.googletag.enums.OutOfPageFormat.INTERSTITIAL) {
-                fullscreen.state = "interstitial-unsupported";
+                oop.state = "interstitial-unsupported";
                 return;
             }
 
@@ -396,12 +396,12 @@
             );
 
             if (!slot) {
-                fullscreen.state = "interstitial-unavailable";
+                oop.state = "interstitial-unavailable";
                 return;
             }
 
-            fullscreen.state = "interstitial";
-            setFullscreenCap();
+            oop.state = "interstitial";
+            setOOPCap();
 
             if (typeof slot.setConfig === "function") {
                 slot.setConfig({
@@ -428,19 +428,19 @@
     }
 
     function initRewarded(config, userType, adUnit, runtime) {
-        var fullscreen = runtime.fullscreen;
+        var oop = runtime.oop;
 
-        if (!fullscreen || fullscreen.rewardedInit || config.pageType !== "noticia" || !canShowFullscreen(config)) {
+        if (!oop || oop.rewardedInit || config.pageType !== "noticia" || !canInitOOP(config)) {
             return;
         }
 
-        fullscreen.rewardedInit = true;
-        fullscreen.state = "rewarded-pending";
+        oop.rewardedInit = true;
+        oop.state = "rewarded-pending";
 
         window.googletag.cmd.push(function () {
             var rewardedSlot;
 
-            if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
+            if (config.pageType !== "noticia" || !canInitOOP(config)) {
                 return;
             }
 
@@ -465,19 +465,19 @@
             rewardedSlot.addService(window.googletag.pubads());
 
             window.googletag.pubads().addEventListener("rewardedSlotReady", function (event) {
-                if (event.slot !== rewardedSlot || fullscreen.rewardedTimedOut) {
+                if (event.slot !== rewardedSlot || oop.rewardedTimedOut) {
                     return;
                 }
 
-                fullscreen.rewardedReady = true;
+                oop.rewardedReady = true;
 
-                if (fullscreen.rewardedVisible || typeof event.makeRewardedVisible !== "function") {
+                if (oop.rewardedVisible || typeof event.makeRewardedVisible !== "function") {
                     return;
                 }
 
-                fullscreen.rewardedVisible = true;
-                fullscreen.state = "rewarded";
-                setFullscreenCap();
+                oop.rewardedVisible = true;
+                oop.state = "rewarded";
+                setOOPCap();
                 event.makeRewardedVisible();
             });
 
@@ -498,15 +498,15 @@
             }
 
             window.setTimeout(function () {
-                if (fullscreen.rewardedReady) {
+                if (oop.rewardedReady) {
                     return;
                 }
 
-                if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
+                if (config.pageType !== "noticia" || !canInitOOP(config)) {
                     return;
                 }
 
-                fullscreen.rewardedTimedOut = true;
+                oop.rewardedTimedOut = true;
                 if (window.googletag && typeof window.googletag.destroySlots === "function") {
                     window.googletag.destroySlots([rewardedSlot]);
                 }
@@ -516,32 +516,32 @@
     }
 
     function onOOPRender(event, config, userType, adUnit, runtime) {
-        var fullscreen = runtime.fullscreen;
+        var oop = runtime.oop;
         var templateId;
 
-        if (!fullscreen || !fullscreen.enabled || fullscreen.oopResolved) {
+        if (!oop || !oop.enabled || oop.oopResolved) {
             return;
         }
 
-        fullscreen.oopResolved = true;
+        oop.oopResolved = true;
 
         if (!event.isEmpty) {
             templateId = getTemplateId(event);
 
-            if (templateId && FULLSCREEN_CAP_BYPASS.indexOf(templateId) !== -1) {
-                clearFullscreenCap();
-                fullscreen.state = "oop-bypass";
+            if (templateId && OOP_CAP_BYPASS.indexOf(templateId) !== -1) {
+                clearOOPCap();
+                oop.state = "oop-bypass";
                 return;
             }
 
-            setFullscreenCap();
-            fullscreen.state = "oop";
+            setOOPCap();
+            oop.state = "oop";
             return;
         }
 
-        fullscreen.state = "oop-empty";
+        oop.state = "oop-empty";
         window.setTimeout(function () {
-            if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
+            if (config.pageType !== "noticia" || !canInitOOP(config)) {
                 return;
             }
 
