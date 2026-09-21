@@ -1,4 +1,4 @@
-/* 0.0.3 */
+/*0.0.4*/
 
 (function (window, document) {
     "use strict";
@@ -351,7 +351,7 @@
     function initInterstitial(config, userType, adUnit, runtime) {
         var fullscreen = runtime.fullscreen;
 
-        if (!fullscreen || fullscreen.interstitialInit || !canShowFullscreen(config)) {
+        if (!fullscreen || fullscreen.interstitialInit || config.pageType !== "noticia" || !canShowFullscreen(config)) {
             return;
         }
 
@@ -360,7 +360,7 @@
         window.googletag.cmd.push(function () {
             var slot;
 
-            if (!canShowFullscreen(config)) {
+            if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
                 return;
             }
 
@@ -412,7 +412,7 @@
     function initRewarded(config, userType, adUnit, runtime) {
         var fullscreen = runtime.fullscreen;
 
-        if (!fullscreen || fullscreen.rewardedInit || !canShowFullscreen(config)) {
+        if (!fullscreen || fullscreen.rewardedInit || config.pageType !== "noticia" || !canShowFullscreen(config)) {
             return;
         }
 
@@ -422,7 +422,7 @@
         window.googletag.cmd.push(function () {
             var rewardedSlot;
 
-            if (!canShowFullscreen(config)) {
+            if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
                 return;
             }
 
@@ -484,7 +484,7 @@
                     return;
                 }
 
-                if (!canShowFullscreen(config)) {
+                if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
                     return;
                 }
 
@@ -523,7 +523,7 @@
 
         fullscreen.state = "oop-empty";
         window.setTimeout(function () {
-            if (!canShowFullscreen(config)) {
+            if (config.pageType !== "noticia" || !canShowFullscreen(config)) {
                 return;
             }
 
