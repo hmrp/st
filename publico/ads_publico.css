@@ -68,14 +68,10 @@ body:has(.decider-overlay.decider-bar-bottom) .TagBundleStickyBottom.active {
 .st-placement.inScreen#inScreen [class*="x-to-close"] {
     display: flex !important;
     visibility: visible !important;
-    opacity: 1 !important;
     pointer-events: auto !important;
     position: absolute !important;
     top: -25px !important;
     right: 0 !important;
-    left: auto !important;
-    bottom: auto !important;
-    transform: none !important;
     width: 23px !important;
     height: 23px !important;
     min-width: 23px !important;
@@ -88,12 +84,13 @@ body:has(.decider-overlay.decider-bar-bottom) .TagBundleStickyBottom.active {
     background: #f1f1f1 !important;
     color: #9a9a9a !important;
     box-shadow: none !important;
+    opacity: 1 !important;
     cursor: pointer !important;
     align-items: center !important;
     justify-content: center !important;
     font-size: 0 !important;
     line-height: 1 !important;
-    z-index: 2147483647 !important;
+    z-index: 1000 !important;
 }
 
 #inScreen.st-placement.inScreen .x-to-close > *,
@@ -117,23 +114,20 @@ body:has(.decider-overlay.decider-bar-bottom) .TagBundleStickyBottom.active {
     height: 2px !important;
     border-radius: 999px !important;
     background: currentColor !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform-origin: center !important;
 }
 
 #inScreen.st-placement.inScreen .x-to-close::before,
 .st-placement.inScreen#inScreen .x-to-close::before,
 #inScreen.st-placement.inScreen [class*="x-to-close"]::before,
 .st-placement.inScreen#inScreen [class*="x-to-close"]::before {
-    transform: translate(-50%, -50%) rotate(45deg) !important;
+    transform: rotate(45deg) !important;
 }
 
 #inScreen.st-placement.inScreen .x-to-close::after,
 .st-placement.inScreen#inScreen .x-to-close::after,
 #inScreen.st-placement.inScreen [class*="x-to-close"]::after,
 .st-placement.inScreen#inScreen [class*="x-to-close"]::after {
-    transform: translate(-50%, -50%) rotate(-45deg) !important;
+    transform: rotate(-45deg) !important;
 }
 
 html.darkmode #inScreen.st-placement.inScreen .x-to-close,

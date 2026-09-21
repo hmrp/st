@@ -1,4 +1,3 @@
-/* 0.00.02 */
 
 (function (window, document) {
     "use strict";
