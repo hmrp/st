@@ -1,4 +1,4 @@
-
+/* 0.0.12 */
 (function (window, document) {
     "use strict";
 
@@ -310,11 +310,19 @@
     }
 
     function canInitOOP(config) {
-        if (!config || config.showAds === false || config.userType === "subscriber") {
+        if (!config || config.showAds === false) {
             return false;
         }
 
         if (isTagBlocked(config, OOP_BLOCK)) {
+            return false;
+        }
+
+        if (new URLSearchParams(window.location.search).has("google_preview")) {
+            return true;
+        }
+
+        if (config.userType === "subscriber") {
             return false;
         }
 
