@@ -1,5 +1,4 @@
-/*0.0.4*/
-
+/* 0.0.01 */
 (function (window, document) {
     "use strict";
 
@@ -78,6 +77,25 @@
         return true;
     }
 
+    function getAdUnitName(element, defaultName) {
+        var overwrite = element && element.getAttribute
+            ? element.getAttribute("data-publico-adunit-overwrite")
+            : null;
+
+        overwrite = typeof overwrite === "string" ? overwrite.trim() : "";
+
+        if (!overwrite) {
+            return defaultName;
+        }
+
+        if (overwrite.indexOf("/") !== -1) {
+            logError("data-publico-adunit-overwrite deve conter apenas o nome final do ad unit.", overwrite);
+            return defaultName;
+        }
+
+        return overwrite;
+    }
+
     function setupHorz(userType, adUnit) {
         Array.prototype.slice.call(document.querySelectorAll("ad-placement.pubHorz")).forEach(function (element, index) {
             if (!element.id) {
@@ -87,7 +105,7 @@
             element.setAttribute("format", "horz");
             element.setAttribute(
                 "adunit",
-                "Horz_Publico/" + userType + "/" + adUnit + "/" + (index === 0 ? "HorzTopo" : "HorzMiddle")
+                "Horz_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "HorzTopo" : "HorzMiddle")
             );
         });
     }
@@ -104,7 +122,7 @@
             element.setAttribute("format", "vert");
             element.setAttribute(
                 "adunit",
-                "Vert_Publico/" + userType + "/" + adUnit + "/" + (index === 0 ? "VertTopo" : "VertMiddle")
+                "Vert_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "VertTopo" : "VertMiddle")
             );
         });
 
@@ -114,7 +132,7 @@
             }
 
             element.setAttribute("format", "Botao");
-            element.setAttribute("adunit", "Botao_Publico/" + userType + "/" + adUnit + "/Botao");
+            element.setAttribute("adunit", "Botao_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, "Botao"));
         });
     }
 
@@ -866,7 +884,7 @@
             return {
                 id: "pubHorz" + index,
                 format: "horz",
-                adunit: "Horz_Publico/" + userType + "/" + adUnit + "/" + (index === 0 ? "HorzTopo" : "HorzMiddle")
+                adunit: "Horz_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "HorzTopo" : "HorzMiddle")
             };
         }
 
@@ -883,7 +901,7 @@
             return {
                 id: "Botao" + index,
                 format: "Botao",
-                adunit: "Botao_Publico/" + userType + "/" + adUnit + "/Botao"
+                adunit: "Botao_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, "Botao")
             };
         }
 
@@ -900,7 +918,7 @@
             return {
                 id: "pubVert" + index,
                 format: "vert",
-                adunit: "Vert_Publico/" + userType + "/" + adUnit + "/" + (index === 0 ? "VertTopo" : "VertMiddle")
+                adunit: "Vert_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "VertTopo" : "VertMiddle")
             };
         }
 
@@ -915,7 +933,7 @@
         placement.setAttribute("format", slotConfig.format);
         placement.setAttribute("adunit", slotConfig.adunit);
 
-        ["refresh", "lazyload", "targeting"].forEach(function (attributeName) {
+        ["refresh", "lazyload", "targeting", "data-publico-adunit-overwrite"].forEach(function (attributeName) {
             if (marker.hasAttribute(attributeName)) {
                 placement.setAttribute(attributeName, marker.getAttribute(attributeName));
             }
