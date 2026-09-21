@@ -1,4 +1,4 @@
-
+/* 0.00.05 */
 (function (window, document) {
     "use strict";
 
@@ -704,10 +704,19 @@
     }
 
     function getTagBundleConfig(config, userType) {
+        var href = String(window.location.href || "");
+        var queryIndex = href.indexOf("?");
+        var fEnd = queryIndex !== -1
+            ? encodeURI(href.slice(queryIndex + 1).split("#")[0])
+            : "";
         var targeting = {
             user: [userType],
             noticiaTag: config.tags
         };
+
+        if (fEnd) {
+            targeting.end = [fEnd];
+        }
 
         if (typeof config.exclusive === "boolean") {
             targeting.exclusivo = [config.exclusive ? "sim" : "nao"];
