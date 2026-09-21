@@ -1,4 +1,5 @@
-/* 0.0.01 */
+/* 0.00.02 */
+
 (function (window, document) {
     "use strict";
 
