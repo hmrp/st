@@ -1,4 +1,4 @@
-/* 0.0.15 */
+/* 0.0.16 atencao ao vertcontent de datawall */
 (function (window, document) {
     "use strict";
 
@@ -200,8 +200,36 @@
         return slotCount;
     }
 
+    function insertLockedVertContent(userType, adUnit) {
+        var storyBody = document.querySelector("#story-body");
+        var pwContainer;
+        var placement;
+        var isMobile;
+
+        if (!storyBody) {
+            return 0;
+        }
+
+        if (storyBody.querySelector('aside[data-publico-vertcontent="1"]')) {
+            return storyBody.querySelectorAll('aside[data-publico-vertcontent="1"]').length;
+        }
+
+        pwContainer = storyBody.querySelector(".pw-container");
+
+        if (!pwContainer) {
+            return 0;
+        }
+
+        isMobile = window.matchMedia && window.matchMedia("only screen and (max-width: 767px)").matches;
+        placement = createVertContent(0, userType, adUnit);
+        pwContainer.insertAdjacentElement(isMobile ? "beforebegin" : "afterend", placement);
+
+        return 1;
+    }
+
     function initVertContent(config, userType, adUnit, runtime) {
         var isPwEnable;
+        var pwContainer;
 
         if (config.pageType !== "noticia" || !document.querySelector("#story-body")) {
             return;
@@ -210,8 +238,26 @@
         runtime.vertContent = runtime.vertContent || {
             state: "pending",
             count: 0,
-            listenerInstalled: false
+            listenerInstalled: false,
+            lockedObserver: null
         };
+
+        function disconnectLockedObserver() {
+            if (runtime.vertContent.lockedObserver) {
+                runtime.vertContent.lockedObserver.disconnect();
+                runtime.vertContent.lockedObserver = null;
+            }
+        }
+
+        function setLocked() {
+            if (runtime.vertContent.state !== "pending") {
+                return;
+            }
+
+            disconnectLockedObserver();
+            runtime.vertContent.state = "locked";
+            runtime.vertContent.count = insertLockedVertContent(userType, adUnit);
+        }
 
         isPwEnable = window.publicoConfig && typeof window.publicoConfig.isPwEnable === "boolean"
             ? window.publicoConfig.isPwEnable
@@ -230,11 +276,11 @@
             return;
         }
 
-        if (window.Publico && window.Publico.BodyIsClean === true) {
-            if (runtime.vertContent.state === "pending") {
-                runtime.vertContent.state = "locked";
-                runtime.vertContent.count = 0;
-            }
+        pwContainer = document.querySelector("#story-body .pw-container");
+
+        if ((window.Publico && window.Publico.BodyIsClean === true) ||
+            (pwContainer && pwContainer.querySelector(".decider-inline"))) {
+            setLocked();
             return;
         }
 
@@ -246,18 +292,36 @@
                     return;
                 }
 
+                disconnectLockedObserver();
                 runtime.vertContent.state = "open";
                 runtime.vertContent.count = insertVertContent(userType, adUnit, config);
             }, { once: true });
 
             document.addEventListener("clean.done", function () {
-                if (runtime.vertContent.state !== "pending") {
-                    return;
-                }
-
-                runtime.vertContent.state = "locked";
-                runtime.vertContent.count = 0;
+                setLocked();
             }, { once: true });
+
+            if (pwContainer && typeof window.MutationObserver === "function") {
+                runtime.vertContent.lockedObserver = new window.MutationObserver(function () {
+                    if (runtime.vertContent.state !== "pending") {
+                        disconnectLockedObserver();
+                        return;
+                    }
+
+                    if (pwContainer.querySelector(".decider-inline")) {
+                        setLocked();
+                    }
+                });
+
+                runtime.vertContent.lockedObserver.observe(pwContainer, {
+                    childList: true,
+                    subtree: true
+                });
+
+                if (pwContainer.querySelector(".decider-inline")) {
+                    setLocked();
+                }
+            }
         }
     }
 
