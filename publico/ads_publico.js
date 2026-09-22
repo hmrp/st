@@ -1,4 +1,4 @@
-/* 0.0.12 */
+/* 0.0.15 */
 (function (window, document) {
     "use strict";
 
@@ -10,7 +10,7 @@
 
     var PAGE_TYPES = ["page", "noticia", "video", "infografia"];
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"]';
-    var FOOTER_BLOCK = ["mundial-2026", "leituras"];
+    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras"];
     var OOP_BLOCK = ["mundial-2026", "leituras"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
     var FOOTER_BTN_DELAY_MS = 300;
@@ -569,11 +569,15 @@
             return;
         }
 
+        if (adUnit === "home") {
+            return;
+        }
+
         if (config.exclusive === true) {
             return;
         }
 
-        if (isTagBlocked(config, FOOTER_BLOCK)) {
+        if (isTagBlocked(config, FOOTER_BLOCK_NOTICIATAG)) {
             runtime.footer.blocked = true;
             return;
         }
