@@ -1,4 +1,4 @@
-/* 0.0.16 atencao ao vertcontent de datawall */
+/* 0.0.17 atencao ao vertcontent de datawall */
 (function (window, document) {
     "use strict";
 
@@ -8,7 +8,7 @@
         subscriber: "Assinante"
     };
 
-    var PAGE_TYPES = ["page", "noticia", "video", "infografia"];
+    var PAGE_TYPES = ["page", "noticia", "video", "infografia", "fotogaleria"];
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"]';
     var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras"];
     var OOP_BLOCK = ["mundial-2026", "leituras"];
