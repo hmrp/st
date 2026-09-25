@@ -1,4 +1,4 @@
-/* 0.0.18 galeria */
+/* 0.0.19 galeria refresh */
 (function (window, document) {
     "use strict";
 
@@ -1164,38 +1164,62 @@
 
         runtime.gallery = {
             initialized: true,
-            lastIndex: null
+            lastRefreshIndex: null,
+            element: null
         };
 
+        function bindGalleryChanges() {
+            var galleryElement = window.publico &&
+                window.publico.gallery &&
+                window.publico.gallery.element;
+
+            if (!galleryElement ||
+                typeof galleryElement.listen !== "function" ||
+                typeof galleryElement.getCurrentIndex !== "function" ||
+                runtime.gallery.element === galleryElement) {
+                return;
+            }
+
+            runtime.gallery.element = galleryElement;
+
+            galleryElement.listen("afterChange", function () {
+                var index;
+
+                if (runtime.gallery.element !== galleryElement) {
+                    return;
+                }
+
+                index = galleryElement.getCurrentIndex();
+
+                if (typeof index !== "number" ||
+                    index <= 0 ||
+                    index % 3 !== 0 ||
+                    index === runtime.gallery.lastRefreshIndex) {
+                    return;
+                }
+
+                runtime.gallery.lastRefreshIndex = index;
+                refreshGallerySlot();
+            });
+        }
+
         window.addEventListener("pub.gallery.open", function () {
+            var existingGallerySlot;
+
             if (config.showAds === false) {
                 return;
             }
 
-            runtime.gallery.lastIndex = null;
-            createGallerySlot();
-        });
+            runtime.gallery.lastRefreshIndex = null;
+            existingGallerySlot = document.getElementById("pubGaleria");
 
-        window.addEventListener("pub.gallery.change", function (event) {
-            var index = event &&
-                event.detail &&
-                typeof event.detail.index === "number"
-                ? event.detail.index
-                : null;
-
-            if (config.showAds === false ||
-                index === null ||
-                index === runtime.gallery.lastIndex) {
-                return;
+            if (existingGallerySlot) {
+                refreshGallerySlot();
+            } else {
+                createGallerySlot();
             }
 
-            runtime.gallery.lastIndex = index;
-
-            if (index <= 0 || index % 3 !== 0) {
-                return;
-            }
-
-            refreshGallerySlot();
+            bindGalleryChanges();
         });
     }
 
