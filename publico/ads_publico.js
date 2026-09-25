@@ -1,4 +1,4 @@
-/* 0.0.25 */
+/* 0.0.26 */
 (function (window, document) {
     "use strict";
 
@@ -655,11 +655,11 @@
             blocked: false
         };
 
-        if (config.userType === "subscriber") {
+        if (config.pageType !== "noticia") {
             return;
         }
 
-        if (adUnit === "home") {
+        if (config.userType === "subscriber") {
             return;
         }
 
@@ -925,6 +925,38 @@
         }
     }
 
+    function enablePlacementAutoRefresh(placement) {
+        if (!placement || placement.getAttribute("data-publico-no-auto-refresh") !== "true") {
+            return;
+        }
+
+        placement.removeAttribute("data-publico-no-auto-refresh");
+
+        if (placement._publicoRefreshAttribute === null) {
+            placement.removeAttribute("refresh");
+        } else if (typeof placement._publicoRefreshAttribute === "string") {
+            placement.setAttribute("refresh", placement._publicoRefreshAttribute);
+        }
+
+        if (typeof placement._publicoRefreshOriginal === "function") {
+            placement.refresh = placement._publicoRefreshOriginal;
+        }
+
+        delete placement._publicoRefreshAttribute;
+        delete placement._publicoRefreshOriginal;
+    }
+
+    function setPlacementAutoRefresh(placement, enabled) {
+        if (enabled === false) {
+            stopPlacementAutoRefresh(placement);
+            return;
+        }
+
+        if (enabled === true) {
+            enablePlacementAutoRefresh(placement);
+        }
+    }
+
     function resetPlacementCreativeControls(placement) {
         if (!placement) {
             return;
@@ -932,23 +964,7 @@
 
         placement.removeAttribute("data-publico-hide-pub-label");
         placement.classList.remove("pubtxt");
-
-        if (placement.getAttribute("data-publico-no-auto-refresh") === "true") {
-            placement.removeAttribute("data-publico-no-auto-refresh");
-
-            if (placement._publicoRefreshAttribute === null) {
-                placement.removeAttribute("refresh");
-            } else if (typeof placement._publicoRefreshAttribute === "string") {
-                placement.setAttribute("refresh", placement._publicoRefreshAttribute);
-            }
-
-            if (typeof placement._publicoRefreshOriginal === "function") {
-                placement.refresh = placement._publicoRefreshOriginal;
-            }
-
-            delete placement._publicoRefreshAttribute;
-            delete placement._publicoRefreshOriginal;
-        }
+        enablePlacementAutoRefresh(placement);
     }
 
     function hidePlacementPubLabel(placement) {
@@ -974,7 +990,7 @@
             if (!data ||
                 typeof data !== "object" ||
                 data.type !== "adControl" ||
-                (data.noAutoRefresh !== true && data.hidePubLabel !== true)) {
+                (typeof data.autoRefresh !== "boolean" && data.hidePubLabel !== true)) {
                 return;
             }
 
@@ -984,8 +1000,8 @@
                 return;
             }
 
-            if (data.noAutoRefresh === true) {
-                stopPlacementAutoRefresh(placement);
+            if (typeof data.autoRefresh === "boolean") {
+                setPlacementAutoRefresh(placement, data.autoRefresh);
             }
 
             if (data.hidePubLabel === true) {
