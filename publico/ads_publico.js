@@ -1,4 +1,4 @@
-/* 0.0.17 atencao ao vertcontent de datawall */
+/* 0.0.18 galeria */
 (function (window, document) {
     "use strict";
 
@@ -9,7 +9,7 @@
     };
 
     var PAGE_TYPES = ["page", "noticia", "video", "infografia", "fotogaleria"];
-    var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"]';
+    var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"]';
     var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras"];
     var OOP_BLOCK = ["mundial-2026", "leituras"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
@@ -831,6 +831,11 @@
                     tablet: [[1, 1], [300, 250], [300, 600], [300, 200], [120, 600], "fluid"],
                     mobile: [[1, 1], [300, 250], [300, 600], [300, 200], [120, 600], "fluid"]
                 },
+                gallery: {
+                    desktop: [[1, 1], [300, 250], [300, 600]],
+                    tablet: [[1, 1], [300, 250], [300, 600]],
+                    mobile: [[1, 1], [300, 250], [300, 600]]
+                },
                 vertContent: {
                     desktop: [[1, 1], [300, 250], [300, 600], [300, 200], "fluid"],
                     tablet: [[1, 1], [300, 250], [300, 600], [300, 200], "fluid"],
@@ -1007,6 +1012,14 @@
             };
         }
 
+        if (slotType === "gallery") {
+            return {
+                id: "pubGaleria",
+                format: "gallery",
+                adunit: "Vert_Publico/" + userType + "/" + adUnit + "/galeria"
+            };
+        }
+
         return null;
     }
 
@@ -1087,6 +1100,105 @@
         });
     }
 
+    function createGallerySlot() {
+        var scrollWrap;
+        var wrapper;
+        var marker;
+
+        if (document.getElementById("pubGaleria") ||
+            document.querySelector('[data-publico-ad-placeholder="gallery"]')) {
+            return;
+        }
+
+        scrollWrap = document.querySelector("#pswp-standard .pswp__scroll-wrap") ||
+            document.querySelector(".pswp__scroll-wrap");
+
+        if (!scrollWrap) {
+            return;
+        }
+
+        wrapper = document.createElement("aside");
+        wrapper.className = "ad-slot ad-slot--gallery";
+        wrapper.style.zIndex = "9999999999";
+
+        marker = document.createElement("div");
+        marker.id = "pubGaleria";
+        marker.className = "ad-slot--gallery-wrapper";
+        marker.setAttribute("data-publico-ad-placeholder", "gallery");
+        marker.setAttribute("refresh", "false");
+
+        wrapper.appendChild(marker);
+        scrollWrap.insertBefore(wrapper, scrollWrap.firstChild);
+    }
+
+    function refreshGallerySlot() {
+        window.googletag = window.googletag || {};
+        window.googletag.cmd = window.googletag.cmd || [];
+
+        window.googletag.cmd.push(function () {
+            var slot;
+
+            if (!window.googletag.pubads ||
+                typeof window.googletag.pubads !== "function" ||
+                typeof window.googletag.pubads().getSlots !== "function") {
+                return;
+            }
+
+            slot = window.googletag.pubads().getSlots().find(function (item) {
+                return typeof item.getSlotElementId === "function" &&
+                    item.getSlotElementId() === "pubGaleria";
+            });
+
+            if (!slot) {
+                return;
+            }
+
+            window.googletag.pubads().refresh([slot]);
+        });
+    }
+
+    function initGallery(config, runtime) {
+        if (runtime.gallery && runtime.gallery.initialized) {
+            return;
+        }
+
+        runtime.gallery = {
+            initialized: true,
+            lastIndex: null
+        };
+
+        window.addEventListener("pub.gallery.open", function () {
+            if (config.showAds === false) {
+                return;
+            }
+
+            runtime.gallery.lastIndex = null;
+            createGallerySlot();
+        });
+
+        window.addEventListener("pub.gallery.change", function (event) {
+            var index = event &&
+                event.detail &&
+                typeof event.detail.index === "number"
+                ? event.detail.index
+                : null;
+
+            if (config.showAds === false ||
+                index === null ||
+                index === runtime.gallery.lastIndex) {
+                return;
+            }
+
+            runtime.gallery.lastIndex = index;
+
+            if (index <= 0 || index % 3 !== 0) {
+                return;
+            }
+
+            refreshGallerySlot();
+        });
+    }
+
     function initAds() {
         var config = window.pub;
         var runtime;
@@ -1132,6 +1244,7 @@
         initVertContent(config, userType, adUnit, runtime);
         initOOP(config, userType, adUnit, runtime);
         initFooter(config, userType, adUnit, runtime);
+        initGallery(config, runtime);
         watchDynamicSlots(userType, adUnit, runtime);
 
         tagBundleConfig = getTagBundleConfig(config, userType);
