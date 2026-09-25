@@ -1,4 +1,4 @@
-/* 0.0.19 galeria refresh */
+/* 0.0.20 galeria TagBundle refresh + cooldown */
 (function (window, document) {
     "use strict";
 
@@ -1132,29 +1132,14 @@
     }
 
     function refreshGallerySlot() {
-        window.googletag = window.googletag || {};
-        window.googletag.cmd = window.googletag.cmd || [];
+        var placement = document.getElementById("pubGaleria");
 
-        window.googletag.cmd.push(function () {
-            var slot;
+        if (!placement || typeof placement.refresh !== "function") {
+            return false;
+        }
 
-            if (!window.googletag.pubads ||
-                typeof window.googletag.pubads !== "function" ||
-                typeof window.googletag.pubads().getSlots !== "function") {
-                return;
-            }
-
-            slot = window.googletag.pubads().getSlots().find(function (item) {
-                return typeof item.getSlotElementId === "function" &&
-                    item.getSlotElementId() === "pubGaleria";
-            });
-
-            if (!slot) {
-                return;
-            }
-
-            window.googletag.pubads().refresh([slot]);
-        });
+        placement.refresh();
+        return true;
     }
 
     function initGallery(config, runtime) {
@@ -1164,8 +1149,10 @@
 
         runtime.gallery = {
             initialized: true,
-            lastRefreshIndex: null,
-            element: null
+            element: null,
+            lastIndex: null,
+            slidesSinceCooldown: 0,
+            lastRefreshAt: 0
         };
 
         function bindGalleryChanges() {
@@ -1184,6 +1171,7 @@
 
             galleryElement.listen("afterChange", function () {
                 var index;
+                var now;
 
                 if (runtime.gallery.element !== galleryElement) {
                     return;
@@ -1191,15 +1179,27 @@
 
                 index = galleryElement.getCurrentIndex();
 
-                if (typeof index !== "number" ||
-                    index <= 0 ||
-                    index % 3 !== 0 ||
-                    index === runtime.gallery.lastRefreshIndex) {
+                if (typeof index !== "number" || index === runtime.gallery.lastIndex) {
                     return;
                 }
 
-                runtime.gallery.lastRefreshIndex = index;
-                refreshGallerySlot();
+                runtime.gallery.lastIndex = index;
+                now = Date.now();
+
+                if (now - runtime.gallery.lastRefreshAt < 5000) {
+                    return;
+                }
+
+                runtime.gallery.slidesSinceCooldown++;
+
+                if (runtime.gallery.slidesSinceCooldown < 3) {
+                    return;
+                }
+
+                if (refreshGallerySlot()) {
+                    runtime.gallery.slidesSinceCooldown = 0;
+                    runtime.gallery.lastRefreshAt = now;
+                }
             });
         }
 
@@ -1210,7 +1210,9 @@
                 return;
             }
 
-            runtime.gallery.lastRefreshIndex = null;
+            runtime.gallery.lastIndex = null;
+            runtime.gallery.slidesSinceCooldown = 0;
+            runtime.gallery.lastRefreshAt = Date.now();
             existingGallerySlot = document.getElementById("pubGaleria");
 
             if (existingGallerySlot) {
