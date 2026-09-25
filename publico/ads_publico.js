@@ -1,4 +1,4 @@
-/* 0.0.20 galeria TagBundle refresh + cooldown */
+/* 0.0.21 exclusivo via publicoConfig.isExclusivo */
 (function (window, document) {
     "use strict";
 
@@ -637,7 +637,7 @@
             return;
         }
 
-        if (config.exclusive === true) {
+        if (window.publicoConfig && window.publicoConfig.isExclusivo === true) {
             return;
         }
 
@@ -794,9 +794,9 @@
             targeting.end = [fEnd];
         }
 
-        if (typeof config.exclusive === "boolean") {
-            targeting.exclusivo = [config.exclusive ? "sim" : "nao"];
-        }
+        targeting.exclusivo = [
+            window.publicoConfig && window.publicoConfig.isExclusivo === true ? "sim" : "nao"
+        ];
 
         if (config.pageType === "noticia" &&
             window.publicoConfig &&
