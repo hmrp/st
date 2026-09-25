@@ -1,4 +1,4 @@
-/* 0.0.21 exclusivo via publicoConfig.isExclusivo */
+/* 0.0.23 */
 (function (window, document) {
     "use strict";
 
@@ -856,6 +856,118 @@
         };
     }
 
+    function getAdPlacementFromMessageSource(source) {
+        var placements = document.querySelectorAll("ad-placement");
+        var i;
+        var frames;
+        var j;
+
+        if (!source) {
+            return null;
+        }
+
+        for (i = 0; i < placements.length; i++) {
+            frames = placements[i].querySelectorAll("iframe");
+
+            for (j = 0; j < frames.length; j++) {
+                try {
+                    if (frames[j].contentWindow === source) {
+                        return placements[i];
+                    }
+                } catch (e) {
+                }
+            }
+        }
+
+        return null;
+    }
+
+    function stopPlacementAutoRefresh(placement) {
+        if (!placement || placement.getAttribute("data-publico-no-auto-refresh") === "true") {
+            return;
+        }
+
+        placement.setAttribute("data-publico-no-auto-refresh", "true");
+        placement._publicoRefreshAttribute = placement.getAttribute("refresh");
+        placement.setAttribute("refresh", "false");
+
+        if (typeof placement.refresh === "function") {
+            placement._publicoRefreshOriginal = placement.refresh;
+            placement.refresh = function () {
+                return false;
+            };
+        }
+    }
+
+    function resetPlacementCreativeControls(placement) {
+        if (!placement) {
+            return;
+        }
+
+        placement.removeAttribute("data-publico-hide-pub-label");
+        placement.classList.remove("pubtxt");
+
+        if (placement.getAttribute("data-publico-no-auto-refresh") === "true") {
+            placement.removeAttribute("data-publico-no-auto-refresh");
+
+            if (placement._publicoRefreshAttribute === null) {
+                placement.removeAttribute("refresh");
+            } else if (typeof placement._publicoRefreshAttribute === "string") {
+                placement.setAttribute("refresh", placement._publicoRefreshAttribute);
+            }
+
+            if (typeof placement._publicoRefreshOriginal === "function") {
+                placement.refresh = placement._publicoRefreshOriginal;
+            }
+
+            delete placement._publicoRefreshAttribute;
+            delete placement._publicoRefreshOriginal;
+        }
+    }
+
+    function hidePlacementPubLabel(placement) {
+        if (!placement) {
+            return;
+        }
+
+        placement.setAttribute("data-publico-hide-pub-label", "true");
+        placement.classList.remove("pubtxt");
+    }
+
+    function initCreativeAdControl(runtime) {
+        if (runtime.creativeAdControlInitialized) {
+            return;
+        }
+
+        runtime.creativeAdControlInitialized = true;
+
+        window.addEventListener("message", function (event) {
+            var data = event.data;
+            var placement;
+
+            if (!data ||
+                typeof data !== "object" ||
+                data.type !== "adControl" ||
+                (data.noAutoRefresh !== true && data.hidePubLabel !== true)) {
+                return;
+            }
+
+            placement = getAdPlacementFromMessageSource(event.source);
+
+            if (!placement) {
+                return;
+            }
+
+            if (data.noAutoRefresh === true) {
+                stopPlacementAutoRefresh(placement);
+            }
+
+            if (data.hidePubLabel === true) {
+                hidePlacementPubLabel(placement);
+            }
+        });
+    }
+
     function bindRenderEvents(runtime) {
         window.googletag = window.googletag || {};
         window.googletag.cmd = window.googletag.cmd || [];
@@ -864,6 +976,19 @@
             if (!window.googletag.pubads || typeof window.googletag.pubads !== "function") {
                 return;
             }
+
+            window.googletag.pubads().addEventListener("slotRequested", function (event) {
+                var slotId;
+                var element;
+
+                if (!event || !event.slot || typeof event.slot.getSlotElementId !== "function") {
+                    return;
+                }
+
+                slotId = event.slot.getSlotElementId();
+                element = slotId ? getSlotElement(slotId) : null;
+                resetPlacementCreativeControls(element);
+            });
 
             window.googletag.pubads().addEventListener("slotRenderEnded", function (event) {
                 var slotId;
@@ -879,7 +1004,9 @@
 
                 setVertContentVisibility(event, element);
 
-                if (!event.isEmpty && element) {
+                if (!event.isEmpty &&
+                    element &&
+                    element.getAttribute("data-publico-hide-pub-label") !== "true") {
                     element.classList.add("pubtxt");
                 }
 
@@ -1138,8 +1265,7 @@
             return false;
         }
 
-        placement.refresh();
-        return true;
+        return placement.refresh() !== false;
     }
 
     function initGallery(config, runtime) {
@@ -1264,6 +1390,7 @@
         runtime.adUnit = adUnit;
         runtime.tagBundleUrl = tagBundleUrl;
 
+        initCreativeAdControl(runtime);
         initDynamicSlots(userType, adUnit);
         setupHorz(userType, adUnit);
         setupVert(userType, adUnit);
