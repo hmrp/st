@@ -1,4 +1,4 @@
-/* 0.0.23 */
+/* 0.0.24 */
 (function (window, document) {
     "use strict";
 
@@ -262,6 +262,14 @@
         isPwEnable = window.publicoConfig && typeof window.publicoConfig.isPwEnable === "boolean"
             ? window.publicoConfig.isPwEnable
             : null;
+
+        if (config.userType === "subscriber") {
+            if (runtime.vertContent.state === "pending") {
+                runtime.vertContent.state = "open";
+                runtime.vertContent.count = insertVertContent(userType, adUnit, config);
+            }
+            return;
+        }
 
         if (isPwEnable === null) {
             runtime.vertContent.state = "unknown";
