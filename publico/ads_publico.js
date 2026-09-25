@@ -1,4 +1,4 @@
-/* 0.0.24 */
+/* 0.0.25 */
 (function (window, document) {
     "use strict";
 
@@ -9,6 +9,23 @@
     };
 
     var PAGE_TYPES = ["page", "noticia", "video", "infografia", "fotogaleria"];
+    var VERT_CONTENT_RULES = {
+        anonymous: {
+            maxSlots: 100,
+            interval: 5,
+            firstSlotAt: 3
+        },
+        registered: {
+            maxSlots: 100,
+            interval: 5,
+            firstSlotAt: 3
+        },
+        subscriber: {
+            maxSlots: 3,
+            interval: 7,
+            firstSlotAt: 3
+        }
+    };
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"]';
     var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras"];
     var OOP_BLOCK = ["mundial-2026", "leituras"];
@@ -154,10 +171,11 @@
     function insertVertContent(userType, adUnit, config) {
         var storyBody = document.querySelector("#story-body");
         var nodes;
-        var isSubscriber = config.userType === "subscriber";
+        var rules = VERT_CONTENT_RULES[config.userType];
         var isMobile = window.matchMedia && window.matchMedia("only screen and (max-width: 767px)").matches;
-        var maxSlots = isSubscriber ? 3 : 100;
-        var interval = isSubscriber ? 7 : 5;
+        var maxSlots = rules.maxSlots;
+        var interval = rules.interval;
+        var firstSlotAt = rules.firstSlotAt;
         var iCount = 1;
         var slotCount = 0;
         var firstSlotFilled = false;
@@ -189,7 +207,7 @@
                 iCount = element.classList.contains("ad-slot") ? 1 : iCount + 1;
             }
 
-            if (iCount === interval || (iCount === 3 && !firstSlotFilled)) {
+            if (iCount === interval || (iCount === firstSlotAt && !firstSlotFilled)) {
                 element.insertAdjacentElement("afterend", createVertContent(slotCount, userType, adUnit));
                 iCount = 1;
                 slotCount += 1;
