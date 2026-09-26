@@ -1,4 +1,4 @@
-/* 0.0.32 */
+/* 0.0.33 */
 (function (window, document) {
     "use strict";
 
@@ -430,6 +430,7 @@
             enabled: false,
             blocked: false,
             oopResolved: false,
+            slot: null,
             rewardedInit: false,
             rewardedReady: false,
             rewardedTimedOut: false,
@@ -626,6 +627,7 @@
         }
 
         oop.oopResolved = true;
+        oop.slot = event.slot;
 
         if (!event.isEmpty) {
             templateId = getTemplateId(event);
@@ -649,6 +651,114 @@
 
             initRewarded(config, userType, adUnit, runtime);
         }, OOP_FALLBACK_MS);
+    }
+
+    function getHeavyAdFrameUrl(report) {
+        var message = report && report.body && typeof report.body.message === "string"
+            ? report.body.message
+            : "";
+        var match = message.match(/\(id=[^;]+;url=([^)]*)\)/);
+
+        return match && match[1] ? match[1] : null;
+    }
+
+    function isOOPFullscreen(element) {
+        var rect;
+        var viewportWidth;
+        var viewportHeight;
+
+        if (!element || typeof element.getBoundingClientRect !== "function") {
+            return false;
+        }
+
+        rect = element.getBoundingClientRect();
+        viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+        viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+
+        if (!viewportWidth || !viewportHeight) {
+            return false;
+        }
+
+        return rect.width >= viewportWidth * 0.8 &&
+            rect.height >= viewportHeight * 0.8;
+    }
+
+    function isHeavyAdForOOP(report, element) {
+        var frameUrl = getHeavyAdFrameUrl(report);
+        var frames;
+        var i;
+        var src;
+
+        if (!element) {
+            return false;
+        }
+
+        if (frameUrl) {
+            frames = element.querySelectorAll("iframe");
+
+            for (i = 0; i < frames.length; i++) {
+                src = frames[i].getAttribute("src") || frames[i].getAttribute("data-src") || "";
+
+                if (src && (src === frameUrl || frameUrl.indexOf(src) === 0 || src.indexOf(frameUrl) === 0)) {
+                    return true;
+                }
+            }
+        }
+
+        return isOOPFullscreen(element);
+    }
+
+    function removeHeavyOOP(runtime) {
+        var oop = runtime.oop;
+        var element = document.getElementById("oop");
+
+        if (!oop || !element) {
+            return;
+        }
+
+        if (oop.slot && window.googletag && typeof window.googletag.destroySlots === "function") {
+            window.googletag.destroySlots([oop.slot]);
+        }
+
+        element.remove();
+        oop.enabled = false;
+        oop.slot = null;
+        oop.state = "oop-heavy-ad-blocked";
+    }
+
+    function initHeavyAdObserver(runtime) {
+        if (runtime.heavyAdObserverInitialized || typeof window.ReportingObserver !== "function") {
+            return;
+        }
+
+        runtime.heavyAdObserverInitialized = true;
+        runtime.heavyAdObserver = new window.ReportingObserver(function (reports) {
+            reports.forEach(function (report) {
+                var body = report && report.body;
+                var oop = runtime.oop;
+                var element;
+
+                if (!body ||
+                    body.id !== "HeavyAdIntervention" ||
+                    !oop ||
+                    (oop.state !== "oop" && oop.state !== "oop-bypass")) {
+                    return;
+                }
+
+                element = document.getElementById("oop");
+
+                if (!isHeavyAdForOOP(report, element)) {
+                    return;
+                }
+
+                removeHeavyOOP(runtime);
+            });
+        }, {
+            types: ["intervention"],
+            buffered: true
+        });
+
+        runtime.heavyAdObserver.observe();
     }
 
     function initFooter(config, userType, adUnit, runtime) {
@@ -1437,6 +1547,7 @@
         runtime.tagBundleUrl = tagBundleUrl;
 
         initCreativeAdControl(runtime);
+        initHeavyAdObserver(runtime);
         initDynamicSlots(userType, adUnit);
         setupHorz(userType, adUnit);
         setupVert(userType, adUnit);
