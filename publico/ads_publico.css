@@ -852,3 +852,8 @@ ad-placement.pubVert iframe {
         margin-bottom: 2rem;
     }
 }
+.ad-slot::before,
+.aside--ads__slot::before {
+    content: none !important;
+    display: none !important;
+}
