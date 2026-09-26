@@ -1,12 +1,8 @@
-/* 0.0.30 */
+/* 0.0.31 */
 (function (window, document) {
     "use strict";
 
-    var USER_TYPES = {
-        anonymous: "Anonimo",
-        registered: "Registado",
-        subscriber: "Assinante"
-    };
+    var VALID_USER_TYPES = ["anonymous", "registered", "subscriber"];
 
     var PAGE_TYPES = ["page", "noticia", "video", "infografia", "fotogaleria"];
     var VERT_CONTENT_RULES = {
@@ -75,7 +71,7 @@
             return logError("window.pub.showAds tem de ser booleano quando definido.", config.showAds);
         }
 
-        if (!USER_TYPES[config.userType]) {
+        if (VALID_USER_TYPES.indexOf(config.userType) === -1) {
             return logError("window.pub.userType inválido. Valores aceites: anonymous, registered, subscriber.", config.userType);
         }
 
@@ -1427,7 +1423,7 @@
             return;
         }
 
-        userType = USER_TYPES[config.userType];
+        userType = config.userType.charAt(0).toUpperCase() + config.userType.slice(1);
         adUnit = config.adUnit;
         tagBundleUrl = getTagBundleUrl();
 
