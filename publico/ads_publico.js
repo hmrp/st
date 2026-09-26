@@ -1,4 +1,4 @@
-/* 0.0.31 */
+/* 0.0.32 */
 (function (window, document) {
     "use strict";
 
@@ -1424,7 +1424,7 @@
         }
 
         userType = config.userType.charAt(0).toUpperCase() + config.userType.slice(1);
-        adUnit = config.adUnit;
+        adUnit = config.adUnit.charAt(0).toUpperCase() + config.adUnit.slice(1);
         tagBundleUrl = getTagBundleUrl();
 
         if (!tagBundleUrl) {
