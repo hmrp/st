@@ -1,4 +1,4 @@
-/* 0.0.26 */
+/* 0.0.27 */
 (function (window, document) {
     "use strict";
 
@@ -122,7 +122,7 @@
             element.setAttribute("format", "horz");
             element.setAttribute(
                 "adunit",
-                "Horz_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "HorzTopo" : "HorzMiddle")
+                "Horz_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "HorzTop" : "HorzMiddle")
             );
         });
     }
@@ -139,7 +139,7 @@
             element.setAttribute("format", "vert");
             element.setAttribute(
                 "adunit",
-                "Vert_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "VertTopo" : "VertMiddle")
+                "Vert_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "VertTop" : "VertMiddle")
             );
         });
 
@@ -1143,7 +1143,7 @@
             return {
                 id: "pubHorz" + index,
                 format: "horz",
-                adunit: "Horz_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "HorzTopo" : "HorzMiddle")
+                adunit: "Horz_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "HorzTop" : "HorzMiddle")
             };
         }
 
@@ -1177,7 +1177,7 @@
             return {
                 id: "pubVert" + index,
                 format: "vert",
-                adunit: "Vert_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "VertTopo" : "VertMiddle")
+                adunit: "Vert_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "VertTop" : "VertMiddle")
             };
         }
 
