@@ -1,4 +1,4 @@
-/* 0.0.34 */
+/* 0.0.35 */
 (function (window, document) {
     "use strict";
 
@@ -1179,6 +1179,7 @@
 
                 if (!event.isEmpty &&
                     element &&
+                    slotId !== "oop" &&
                     element.getAttribute("data-publico-hide-pub-label") !== "true") {
                     element.classList.add("pubtxt");
                 }
