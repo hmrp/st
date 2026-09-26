@@ -1,4 +1,4 @@
-/* 0.0.33 */
+/* 0.0.34 */
 (function (window, document) {
     "use strict";
 
@@ -663,24 +663,41 @@
     }
 
     function isOOPFullscreen(element) {
-        var rect;
-        var viewportWidth;
-        var viewportHeight;
+        var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+        var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        var frames;
+        var i;
 
-        if (!element || typeof element.getBoundingClientRect !== "function") {
+        function coversViewport(target) {
+            var rect;
+
+            if (!target || typeof target.getBoundingClientRect !== "function") {
+                return false;
+            }
+
+            rect = target.getBoundingClientRect();
+
+            return rect.width >= viewportWidth * 0.8 &&
+                rect.height >= viewportHeight * 0.8;
+        }
+
+        if (!element || !viewportWidth || !viewportHeight) {
             return false;
         }
 
-        rect = element.getBoundingClientRect();
-        viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-        viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-
-        if (!viewportWidth || !viewportHeight) {
-            return false;
+        if (coversViewport(element)) {
+            return true;
         }
 
-        return rect.width >= viewportWidth * 0.8 &&
-            rect.height >= viewportHeight * 0.8;
+        frames = element.querySelectorAll("iframe");
+
+        for (i = 0; i < frames.length; i++) {
+            if (coversViewport(frames[i])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function isHeavyAdForOOP(report, element) {
