@@ -1,4 +1,4 @@
-/* 0.0.27 */
+/* 0.0.30 */
 (function (window, document) {
     "use strict";
 
@@ -98,6 +98,7 @@
         var overwrite = element && element.getAttribute
             ? element.getAttribute("data-publico-adunit-overwrite")
             : null;
+        var segments;
 
         overwrite = typeof overwrite === "string" ? overwrite.trim() : "";
 
@@ -105,12 +106,19 @@
             return defaultName;
         }
 
-        if (overwrite.indexOf("/") !== -1) {
-            logError("data-publico-adunit-overwrite deve conter apenas o nome final do ad unit.", overwrite);
+        segments = overwrite.split("/");
+
+        if (segments.some(function (segment) {
+            segment = segment.trim();
+            return !segment || segment === "." || segment === "..";
+        })) {
+            logError("data-publico-adunit-overwrite contém um caminho relativo inválido.", overwrite);
             return defaultName;
         }
 
-        return overwrite;
+        return segments.map(function (segment) {
+            return segment.trim();
+        }).join("/");
     }
 
     function setupHorz(userType, adUnit) {
@@ -489,7 +497,7 @@
             }
 
             slot = window.googletag.defineOutOfPageSlot(
-                "/4458504/INTERSTITIAL_Publico/" + userType + "/" + adUnit + "/INTERSTITIAL",
+                "/4458504/Interstitial_Publico/" + userType + "/" + adUnit + "/Interstitial",
                 window.googletag.enums.OutOfPageFormat.INTERSTITIAL
             );
 
@@ -551,7 +559,7 @@
             }
 
             rewardedSlot = window.googletag.defineOutOfPageSlot(
-                "/4458504/REWARDED_Publico/" + userType + "/" + adUnit + "/REWARDED",
+                "/4458504/Rewarded_Publico/" + userType + "/" + adUnit + "/Rewarded",
                 window.googletag.enums.OutOfPageFormat.REWARDED
             );
 
@@ -1185,7 +1193,7 @@
             return {
                 id: "pubGaleria",
                 format: "gallery",
-                adunit: "Vert_Publico/" + userType + "/" + adUnit + "/galeria"
+                adunit: "Vert_Publico/" + userType + "/" + adUnit + "/Galeria"
             };
         }
 
