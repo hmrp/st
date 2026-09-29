@@ -1,4 +1,4 @@
-/* 0.0.2*/
+/* 0.0.1*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -389,8 +389,8 @@ ad-placement:is(.inContent, [format="vertContent"]) {
 }
 
 ad-placement:is(.inContent, [format="vertContent"]):has(> div[id^="google_ads_iframe_"] iframe) {
-    padding-top: 1rem;
-    padding-bottom: 0;
+    padding-top: 0.75rem;
+    padding-bottom: 0.5rem;
 }
 
 ad-placement:is(.inContent, [format="vertContent"]) > div[id^="google_ads_iframe_"],
@@ -527,7 +527,7 @@ ad-placement:not(#oop):not(#Footer):not([format="outOfPage"]):not([format="stick
     > div[id^="google_ads_iframe_"]:has(iframe)::before {
     content: "PUB";
     position: absolute;
-    top: -0.8125rem;
+    top: -0.625rem;
     right: 0;
     left: auto;
     z-index: 2;
