@@ -1,4 +1,4 @@
-/* 0.0.2*/ 
+/* 0.0.1 */
 
 .TagBundleStickyBottom {
     z-index: 998 !important;
@@ -561,6 +561,17 @@ ad-placement[format="stickyBottom"] {
     overflow: hidden;
 }
 
+ad-placement.pubHorz > div[id^="google_ads_iframe_"],
+ad-placement[format="Billboard"] > div[id^="google_ads_iframe_"] {
+    position: relative;
+    display: block;
+    width: fit-content !important;
+    max-width: 100%;
+    margin-right: auto !important;
+    margin-left: auto !important;
+    overflow: visible;
+}
+
 
 ad-placement.pubVert,
 ad-placement[format="Halfpage"],
@@ -709,8 +720,23 @@ ad-placement[format="Botao"] iframe {
     }
 }
 
+@media screen and (max-width: 767px) {
+    ad-placement.pubVert {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    ad-placement.pubVert > div[id^="google_ads_iframe_"] {
+        width: 300px;
+        max-width: 100%;
+        margin-right: auto !important;
+        margin-left: auto !important;
+    }
+}
+
 @media screen and (max-width: 369px) {
-    ad-placement.pubVert,
     ad-placement[format="Inline"]:not(.inContent),
     ad-placement[format="Halfpage"],
     ad-placement[format="Botao"] {
