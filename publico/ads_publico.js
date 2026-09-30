@@ -1,4 +1,4 @@
-/* 0.0.35 */
+/*300926*/
 (function (window, document) {
     "use strict";
 
@@ -23,8 +23,8 @@
         }
     };
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"]';
-    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras"];
-    var OOP_BLOCK = ["mundial-2026", "leituras"];
+    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", " podcast-no-escuro", "podcast-escuro"];
+    var OOP_BLOCK = ["mundial-2026", "leituras", "livros",  "podcast-no-escuro", "podcast-escuro"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
     var FOOTER_BTN_DELAY_MS = 300;
     var OOP_CAP_KEY = "intro_cap";
@@ -115,6 +115,24 @@
         return segments.map(function (segment) {
             return segment.trim();
         }).join("/");
+    }
+
+    function getAdUnitPath(adUnit) {
+        var segments = String(adUnit || "").split("/").map(function (segment) {
+            return segment.trim();
+        }).filter(function (segment) {
+            return segment.length > 0;
+        });
+
+        if (!segments.length || segments.some(function (segment) {
+            return segment === "." || segment === "..";
+        })) {
+            return null;
+        }
+
+        segments[0] = segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
+
+        return segments.join("/");
     }
 
     function setupHorz(userType, adUnit) {
@@ -1552,8 +1570,12 @@
         }
 
         userType = config.userType.charAt(0).toUpperCase() + config.userType.slice(1);
-        adUnit = config.adUnit.charAt(0).toUpperCase() + config.adUnit.slice(1);
+        adUnit = getAdUnitPath(config.adUnit);
         tagBundleUrl = getTagBundleUrl();
+
+        if (!adUnit) {
+            return logError("window.pub.adUnit contém um caminho inválido.", config.adUnit);
+        }
 
         if (!tagBundleUrl) {
             return;
