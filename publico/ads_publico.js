@@ -1,4 +1,4 @@
-/*300926*/
+/*300926_2*/
 (function (window, document) {
     "use strict";
 
@@ -23,8 +23,8 @@
         }
     };
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"]';
-    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", " podcast-no-escuro", "podcast-escuro"];
-    var OOP_BLOCK = ["mundial-2026", "leituras", "livros",  "podcast-no-escuro", "podcast-escuro"];
+    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras"];
+    var OOP_BLOCK = ["mundial-2026", "leituras"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
     var FOOTER_BTN_DELAY_MS = 300;
     var OOP_CAP_KEY = "intro_cap";
@@ -58,12 +58,16 @@
         return null;
     }
 
+    function adsAreDisabled(config) {
+        return window.hasAds === false || (config && config.showAds === false);
+    }
+
     function checkConfig(config) {
         if (!config || typeof config !== "object") {
             return logError("window.pub não está definido.");
         }
 
-        if (config.showAds === false) {
+        if (adsAreDisabled(config)) {
             return true;
         }
 
@@ -422,7 +426,7 @@
     }
 
     function canInitOOP(config) {
-        if (!config || config.showAds === false) {
+        if (!config || adsAreDisabled(config)) {
             return false;
         }
 
@@ -1524,7 +1528,7 @@
         window.addEventListener("pub.gallery.open", function () {
             var existingGallerySlot;
 
-            if (config.showAds === false) {
+            if (adsAreDisabled(config)) {
                 return;
             }
 
@@ -1555,7 +1559,7 @@
             return;
         }
 
-        if (config.showAds === false) {
+        if (adsAreDisabled(config)) {
             return;
         }
 
