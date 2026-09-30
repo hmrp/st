@@ -1,5 +1,3 @@
-/* 0.0.1 */
-
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -390,7 +388,7 @@ ad-placement:is(.inContent, [format="vertContent"]) {
 }
 
 ad-placement:is(.inContent, [format="vertContent"]):has(> div[id^="google_ads_iframe_"] iframe) {
-    padding-top: 1.25rem;
+    padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 }
 
