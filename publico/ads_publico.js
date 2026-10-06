@@ -1,4 +1,4 @@
-/*300926_2*/
+/*061026*/
 (function (window, document) {
     "use strict";
 
@@ -46,7 +46,7 @@
             .toLowerCase()
             .replace(/\.$/, "");
 
-        if (hostname === "www.publico.pt") {
+        if (/^www[^.]*\.publico\.pt$/.test(hostname)) {
             hostname = "publico.pt";
         }
 
