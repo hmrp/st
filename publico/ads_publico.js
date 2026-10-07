@@ -1,4 +1,4 @@
-/*061026*/
+/*071026*/
 (function (window, document) {
     "use strict";
 
@@ -45,10 +45,6 @@
             .trim()
             .toLowerCase()
             .replace(/\.$/, "");
-
-        if (/^www[^.]*\.publico\.pt$/.test(hostname)) {
-            hostname = "publico.pt";
-        }
 
         if (hostname === "publico.pt" || hostname.endsWith(".publico.pt")) {
             return "https://tagbundle.com/static/" + hostname + "/tagbundle.min.js";
