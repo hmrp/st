@@ -1,4 +1,4 @@
-/*071026*/
+/*071026_2*/
 (function (window, document) {
     "use strict";
 
@@ -303,7 +303,7 @@
             ? window.publicoConfig.isPwEnable
             : null;
 
-        if (config.userType === "subscriber") {
+        if (config.userType === "subscriber" || config.contentAccess === "open") {
             if (runtime.vertContent.state === "pending") {
                 runtime.vertContent.state = "open";
                 runtime.vertContent.count = insertVertContent(userType, adUnit, config);
