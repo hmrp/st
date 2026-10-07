@@ -1,4 +1,4 @@
-/*071026_2*/
+/*071026_3*/
 (function (window, document) {
     "use strict";
 
@@ -23,8 +23,8 @@
         }
     };
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"]';
-    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras"];
-    var OOP_BLOCK = ["mundial-2026", "leituras"];
+    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro"];
+    var OOP_BLOCK = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
     var FOOTER_BTN_DELAY_MS = 300;
     var OOP_CAP_KEY = "intro_cap";
