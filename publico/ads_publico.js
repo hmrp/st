@@ -1,4 +1,4 @@
-/*071026_3*/
+/*071026_2*/
 (function (window, document) {
     "use strict";
 
@@ -192,7 +192,6 @@
 
     function insertVertContent(userType, adUnit, config) {
         var storyBody = document.querySelector("#story-body");
-        var contentBody;
         var nodes;
         var rules = VERT_CONTENT_RULES[config.userType];
         var isMobile = window.matchMedia && window.matchMedia("only screen and (max-width: 767px)").matches;
@@ -211,15 +210,7 @@
             return storyBody.querySelectorAll('aside[data-publico-vertcontent="1"]').length;
         }
 
-        contentBody = config.pageType === "fotogaleria"
-            ? storyBody.querySelector(".text")
-            : storyBody;
-
-        if (!contentBody) {
-            return 0;
-        }
-
-        nodes = Array.prototype.slice.call(contentBody.childNodes);
+        nodes = Array.prototype.slice.call(storyBody.childNodes);
 
         nodes.forEach(function (element) {
             var nodeName;
@@ -280,7 +271,7 @@
         var isPwEnable;
         var pwContainer;
 
-        if ((config.pageType !== "noticia" && config.pageType !== "fotogaleria") || !document.querySelector("#story-body")) {
+        if (config.pageType !== "noticia" || !document.querySelector("#story-body")) {
             return;
         }
 
