@@ -1,4 +1,4 @@
-/*300926*/
+/*091026*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -822,6 +822,11 @@ ad-placement.pubVert.pubtxt iframe {
 .aside--ads__slot::before {
     content: none !important;
     display: none !important;
+}
+
+
+html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large {
+    background: var(--tone-pub) !important;
 }
 
 @media print, screen and (min-width: 64em) {
