@@ -1,4 +1,4 @@
-/*081026*/
+/*091026*/
 (function (window, document) {
     "use strict";
 
@@ -22,9 +22,10 @@
             firstSlotAt: 3
         }
     };
-    var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"]';
-    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro", "centro-jogo"];
-    var OOP_BLOCK = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro","centro-jogo"];
+    var LISTING_DYNAMIC_SELECTOR = '.page--listing #ul-listing .ad-slot--sticky div.pubVert[id^="dynamic-"]';
+    var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"], ' + LISTING_DYNAMIC_SELECTOR;
+    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro"];
+    var OOP_BLOCK = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
     var FOOTER_BTN_DELAY_MS = 300;
     var OOP_CAP_KEY = "intro_cap";
@@ -147,6 +148,93 @@
                 "Horz_Publico/" + userType + "/" + adUnit + "/" + getAdUnitName(element, index === 0 ? "HorzTop" : "HorzMiddle")
             );
         });
+    }
+
+    function createListingVertMarkers(list) {
+        var index;
+        var items;
+        var anchor;
+        var row;
+        var wrapper;
+        var inner;
+        var marker;
+
+        for (index = 1; index <= 3; index++) {
+            items = Array.prototype.slice.call(list.children).filter(function (element) {
+                return element.tagName === "LI";
+            });
+            anchor = items[index * 3];
+
+            if (!anchor) {
+                break;
+            }
+
+            row = document.createElement("li");
+            wrapper = document.createElement("div");
+            inner = document.createElement("div");
+            marker = document.createElement("div");
+
+            wrapper.className = "ad-slot ad-slot--sticky hide-for-large";
+            inner.className = "ad-slot--sticky-wrapper";
+            marker.className = "pubVert";
+            marker.id = "dynamic-" + index * 3;
+            marker.setAttribute("data-publico-ad-placeholder", "vert");
+
+            inner.appendChild(marker);
+            wrapper.appendChild(inner);
+            row.appendChild(wrapper);
+            anchor.insertAdjacentElement("afterend", row);
+        }
+    }
+
+    function prepareListingVertSlots() {
+        var listing = document.querySelector(".page--listing");
+        var list;
+        var sidebar;
+        var container;
+        var sidebarVerticals;
+        var legacyAddsMarkers;
+
+        if (!listing || !window.matchMedia || window.matchMedia("(min-width: 1024px)").matches) {
+            return;
+        }
+
+        list = listing.querySelector("#ul-listing");
+        sidebar = listing.querySelector(".page__extras");
+        container = sidebar && sidebar.querySelector(".stack__ads");
+
+        if (!list || !container ||
+            !window.Foundation || !window.Foundation.MediaQuery ||
+            typeof window.Foundation.MediaQuery.atLeast !== "function") {
+            return;
+        }
+
+        sidebarVerticals = Array.prototype.slice.call(
+            container.querySelectorAll("ad-placement.pubVert:not(.BtnFixo)")
+        );
+
+        if (!sidebarVerticals.length) {
+            return;
+        }
+
+        legacyAddsMarkers = !window.Foundation.MediaQuery.atLeast("xmedium");
+
+        sidebarVerticals.forEach(function (element) {
+            element.remove();
+        });
+
+        if (!container.children.length && !container.textContent.trim()) {
+            container.remove();
+        }
+
+        if (!sidebar.children.length && !sidebar.textContent.trim()) {
+            sidebar.remove();
+        }
+
+        if (!legacyAddsMarkers &&
+            !list.querySelector('[data-publico-ad-placeholder="vert"], div.pubVert[id^="dynamic-"], ad-placement[id^="dynamic-"]')) {
+            createListingVertMarkers(list);
+        }
     }
 
     function setupVert(userType, adUnit) {
@@ -529,11 +617,10 @@
                     interstitial: {
                         requireStorageAccess: true,
                         triggers: {
-                            navBar: false,
-                            unhideWindow: false,
-                            inactivity: false,
-                            endOfArticle: false,
-                            backward: true
+                            navBar: true,
+                            unhideWindow: true,
+                            inactivity: true,
+                            endOfArticle: true
                         }
                     }
                 });
@@ -1314,10 +1401,11 @@
             };
         }
 
-        if (slotType === "vert") {
+        if (slotType === "vert" ||
+            (!slotType && typeof element.matches === "function" && element.matches(LISTING_DYNAMIC_SELECTOR))) {
             index = getSlotIndex(
                 element,
-                'ad-placement.pubVert:not(.BtnFixo), [data-publico-ad-placeholder="vert"]'
+                'ad-placement.pubVert:not(.BtnFixo), [data-publico-ad-placeholder="vert"], ' + LISTING_DYNAMIC_SELECTOR
             );
 
             if (index < 0) {
@@ -1588,6 +1676,7 @@
 
         initCreativeAdControl(runtime);
         initHeavyAdObserver(runtime);
+        prepareListingVertSlots();
         initDynamicSlots(userType, adUnit);
         setupHorz(userType, adUnit);
         setupVert(userType, adUnit);
