@@ -1,4 +1,4 @@
-/*091026*/
+/*091026_1*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -826,7 +826,17 @@ ad-placement.pubVert.pubtxt iframe {
 
 
 html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large {
+    width: 100% !important;
+    max-width: 100% !important;
     background: var(--tone-pub) !important;
+    box-sizing: border-box;
+}
+
+html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad-slot--sticky-wrapper {
+    width: 300px;
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 @media print, screen and (min-width: 64em) {
