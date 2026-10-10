@@ -1,4 +1,4 @@
-/*101026*/
+/*101026_1*/
 (function (window, document) {
     "use strict";
 
@@ -817,7 +817,8 @@
 
         runtime.footer = runtime.footer || {
             enabled: false,
-            blocked: false
+            blocked: false,
+            specialNoRefresh: false
         };
 
         if (config.pageType !== "noticia") {
@@ -1189,7 +1190,10 @@
 
                 slotId = event.slot.getSlotElementId();
                 element = slotId ? getSlotElement(slotId) : null;
-                resetPlacementCreativeControls(element);
+
+                if (slotId !== "Footer" || !runtime.footer || !runtime.footer.specialNoRefresh) {
+                    resetPlacementCreativeControls(element);
+                }
 
                 if (slotId === "Footer") {
                     resetFooterBtn(runtime);
@@ -1230,6 +1234,11 @@
                 if (event.isEmpty) {
                     var footerWrapper = getFooterWrapper();
 
+                    if (runtime.footer) {
+                        runtime.footer.specialNoRefresh = false;
+                    }
+                    enablePlacementAutoRefresh(element);
+
                     if (footerWrapper) {
                         footerWrapper.classList.remove("footer-special-hidden");
                     }
@@ -1240,9 +1249,17 @@
 
                 if (FOOTER_NO_BTN.indexOf(campaignId) !== -1) {
                     hideFooterBtn(runtime);
+                    stopPlacementAutoRefresh(element);
+                    if (runtime.footer) {
+                        runtime.footer.specialNoRefresh = true;
+                    }
                     return;
                 }
 
+                if (runtime.footer) {
+                    runtime.footer.specialNoRefresh = false;
+                }
+                enablePlacementAutoRefresh(element);
                 showFooterBtn(runtime);
             });
         });
