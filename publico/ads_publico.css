@@ -1,4 +1,4 @@
-/*091026_1*/
+/*101026*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -18,6 +18,10 @@
 }
 
 body:has(.decider-overlay.decider-bar-bottom) .TagBundleStickyBottom.active {
+    bottom: 62px !important;
+}
+
+body:has(.decider-overlay.decider-bar-bottom) #inScreen.st-placement.inScreen .st-adunit-ad.st-reset {
     bottom: 62px !important;
 }
 

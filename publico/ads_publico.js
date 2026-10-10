@@ -1,4 +1,4 @@
-/*091026_1*/
+/*101026*/
 (function (window, document) {
     "use strict";
 
@@ -846,7 +846,6 @@
         footer.id = "Footer";
         footer.className = "tagbundle-footer-sticky";
         footer.setAttribute("format", "stickyBottom");
-        footer.setAttribute("refresh", "false");
         footer.setAttribute("adunit", "Footer_Publico/" + userType + "/" + adUnit + "/Footer");
         document.body.appendChild(footer);
 
@@ -937,17 +936,11 @@
     }
 
     function hideFooterBtn(runtime) {
-        var footer = document.getElementById("Footer");
         var wrapper = getFooterWrapper();
 
         resetFooterBtn(runtime);
 
-        if (footer) {
-            footer.removeAttribute("format");
-        }
-
         if (wrapper) {
-            wrapper.classList.remove("footer-close-ready");
             wrapper.classList.add("footer-special-hidden");
         }
     }
@@ -957,9 +950,11 @@
 
         resetFooterBtn(runtime);
 
-        if (!wrapper || wrapper.classList.contains("footer-special-hidden")) {
+        if (!wrapper) {
             return;
         }
+
+        wrapper.classList.remove("footer-special-hidden");
 
         runtime.footerBtnTimer = window.setTimeout(function () {
             var currentWrapper = getFooterWrapper();
@@ -1195,6 +1190,10 @@
                 slotId = event.slot.getSlotElementId();
                 element = slotId ? getSlotElement(slotId) : null;
                 resetPlacementCreativeControls(element);
+
+                if (slotId === "Footer") {
+                    resetFooterBtn(runtime);
+                }
             });
 
             window.googletag.pubads().addEventListener("slotRenderEnded", function (event) {
@@ -1229,6 +1228,11 @@
                 resetFooterBtn(runtime);
 
                 if (event.isEmpty) {
+                    var footerWrapper = getFooterWrapper();
+
+                    if (footerWrapper) {
+                        footerWrapper.classList.remove("footer-special-hidden");
+                    }
                     return;
                 }
 
