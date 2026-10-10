@@ -1,4 +1,4 @@
-/*101026_1*/
+/*101026_2*/
 (function (window, document) {
     "use strict";
 
@@ -502,6 +502,7 @@
 
         runtime.oop.enabled = true;
         runtime.oop.state = "oop-pending";
+        trackOOPFrameUrls(runtime);
     }
 
     function initInterstitial(config, userType, adUnit, runtime) {
@@ -691,9 +692,74 @@
         var message = report && report.body && typeof report.body.message === "string"
             ? report.body.message
             : "";
-        var match = message.match(/\(id=[^;]+;url=([^)]*)\)/);
+        var match = message.match(/\(id=[^;)]*;url=([^)]*)\)/);
 
-        return match && match[1] ? match[1] : null;
+        return match && match[1] ? match[1].trim() : null;
+    }
+
+    function normalizeHeavyAdUrl(url) {
+        var parsed;
+
+        if (typeof url !== "string" || !url.trim()) {
+            return null;
+        }
+
+        try {
+            parsed = new URL(url, window.location.href);
+            if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+                return null;
+            }
+            parsed.hash = "";
+            return parsed.href;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function trackOOPFrameUrls(runtime) {
+        var oop = runtime.oop;
+        var element = document.getElementById("oop");
+
+        if (!oop || !element || oop.frameObserver) {
+            return;
+        }
+
+        oop.frameUrls = oop.frameUrls || [];
+
+        function rememberUrl(value) {
+            var url = normalizeHeavyAdUrl(value);
+
+            if (url && oop.frameUrls.indexOf(url) === -1) {
+                oop.frameUrls.push(url);
+            }
+        }
+
+        function collectFrameUrls() {
+            Array.prototype.slice.call(element.querySelectorAll("iframe")).forEach(function (frame) {
+                rememberUrl(frame.getAttribute("src"));
+                rememberUrl(frame.getAttribute("data-src"));
+            });
+        }
+
+        collectFrameUrls();
+
+        if (typeof window.MutationObserver === "function") {
+            oop.frameObserver = new window.MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === "attributes") {
+                        rememberUrl(mutation.oldValue);
+                    }
+                });
+                collectFrameUrls();
+            });
+            oop.frameObserver.observe(element, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ["src", "data-src"],
+                attributeOldValue: true
+            });
+        }
     }
 
     function isOOPFullscreen(element) {
@@ -734,29 +800,70 @@
         return false;
     }
 
-    function isHeavyAdForOOP(report, element) {
-        var frameUrl = getHeavyAdFrameUrl(report);
+    function isHeavyAdForOOP(report, element, runtime) {
+        var oop = runtime.oop;
+        var frameUrl = normalizeHeavyAdUrl(getHeavyAdFrameUrl(report));
+        var reportUrl = normalizeHeavyAdUrl(report && report.url);
+        var pageUrl = normalizeHeavyAdUrl(window.location.href);
+        var candidateUrls = [];
+        var knownUrls = oop && oop.frameUrls ? oop.frameUrls : [];
         var frames;
         var i;
-        var src;
+        var frame;
+        var frameSrc;
+        var frameDataSrc;
+        var matchedOOP = false;
+        var matchedOther = false;
 
-        if (!element) {
+        if (!element || !oop) {
             return false;
         }
 
         if (frameUrl) {
-            frames = element.querySelectorAll("iframe");
+            candidateUrls.push(frameUrl);
+        }
+
+        if (reportUrl && reportUrl !== pageUrl && candidateUrls.indexOf(reportUrl) === -1) {
+            candidateUrls.push(reportUrl);
+        }
+
+        for (i = 0; i < candidateUrls.length; i++) {
+            if (knownUrls.indexOf(candidateUrls[i]) !== -1) {
+                matchedOOP = true;
+                break;
+            }
+        }
+
+        if (candidateUrls.length) {
+            frames = document.querySelectorAll("iframe");
 
             for (i = 0; i < frames.length; i++) {
-                src = frames[i].getAttribute("src") || frames[i].getAttribute("data-src") || "";
+                frame = frames[i];
+                frameSrc = normalizeHeavyAdUrl(frame.getAttribute("src"));
+                frameDataSrc = normalizeHeavyAdUrl(frame.getAttribute("data-src"));
 
-                if (src && (src === frameUrl || frameUrl.indexOf(src) === 0 || src.indexOf(frameUrl) === 0)) {
-                    return true;
+                if (candidateUrls.indexOf(frameSrc) === -1 &&
+                    candidateUrls.indexOf(frameDataSrc) === -1) {
+                    continue;
+                }
+
+                if (element.contains(frame)) {
+                    matchedOOP = true;
+                } else {
+                    matchedOther = true;
                 }
             }
         }
 
-        return isOOPFullscreen(element);
+        if (matchedOther) {
+            return false;
+        }
+
+        if (matchedOOP) {
+            return true;
+        }
+
+        return (oop.state === "oop" || oop.state === "oop-bypass") && isOOPFullscreen(element);
     }
 
     function removeHeavyOOP(runtime) {
@@ -765,6 +872,11 @@
 
         if (!oop || !element) {
             return;
+        }
+
+        if (oop.frameObserver) {
+            oop.frameObserver.disconnect();
+            oop.frameObserver = null;
         }
 
         if (oop.slot && window.googletag && typeof window.googletag.destroySlots === "function") {
@@ -788,21 +900,29 @@
                 var body = report && report.body;
                 var oop = runtime.oop;
                 var element;
+                var matched;
 
-                if (!body ||
-                    body.id !== "HeavyAdIntervention" ||
-                    !oop ||
-                    (oop.state !== "oop" && oop.state !== "oop-bypass")) {
+                if (!body || body.id !== "HeavyAdIntervention" ||
+                    !oop || !oop.enabled || oop.state === "oop-empty" ||
+                    oop.state === "oop-heavy-ad-blocked" ||
+                    /A future version of Chrome may remove this ad/i.test(body.message || "")) {
                     return;
                 }
 
                 element = document.getElementById("oop");
+                matched = isHeavyAdForOOP(report, element, runtime);
 
-                if (!isHeavyAdForOOP(report, element)) {
-                    return;
+                oop.lastHeavyAdReport = {
+                    message: body.message || "",
+                    frameUrl: getHeavyAdFrameUrl(report),
+                    reportUrl: report.url || null,
+                    state: oop.state,
+                    matchedOOP: matched
+                };
+
+                if (matched) {
+                    removeHeavyOOP(runtime);
                 }
-
-                removeHeavyOOP(runtime);
             });
         }, {
             types: ["intervention"],
