@@ -1,4 +1,4 @@
-/*101026_2*/
+/*111026*/
 (function (window, document) {
     "use strict";
 
@@ -688,13 +688,20 @@
         }, OOP_FALLBACK_MS);
     }
 
-    function getHeavyAdFrameUrl(report) {
+    function getHeavyAdFrameDetails(report) {
         var message = report && report.body && typeof report.body.message === "string"
             ? report.body.message
             : "";
-        var match = message.match(/\(id=[^;)]*;url=([^)]*)\)/);
+        var match = message.match(/\(id=([^;)]*);url=([^)]*)\)/);
 
-        return match && match[1] ? match[1].trim() : null;
+        return {
+            id: match && match[1] ? match[1].trim() : null,
+            url: match && match[2] ? match[2].trim() : null
+        };
+    }
+
+    function getHeavyAdFrameUrl(report) {
+        return getHeavyAdFrameDetails(report).url;
     }
 
     function normalizeHeavyAdUrl(url) {
@@ -762,37 +769,37 @@
         }
     }
 
-    function isOOPFullscreen(element) {
+    function heavyAdCoversViewport(element) {
         var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
         var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-        var frames;
-        var i;
+        var rect;
 
-        function coversViewport(target) {
-            var rect;
-
-            if (!target || typeof target.getBoundingClientRect !== "function") {
-                return false;
-            }
-
-            rect = target.getBoundingClientRect();
-
-            return rect.width >= viewportWidth * 0.8 &&
-                rect.height >= viewportHeight * 0.8;
-        }
-
-        if (!element || !viewportWidth || !viewportHeight) {
+        if (!element || !viewportWidth || !viewportHeight ||
+            typeof element.getBoundingClientRect !== "function") {
             return false;
         }
 
-        if (coversViewport(element)) {
+        rect = element.getBoundingClientRect();
+        return rect.width >= viewportWidth * 0.75 &&
+            rect.height >= viewportHeight * 0.75;
+    }
+
+    function isOOPFullscreen(element) {
+        var frames;
+        var i;
+
+        if (!element) {
+            return false;
+        }
+
+        if (heavyAdCoversViewport(element)) {
             return true;
         }
 
         frames = element.querySelectorAll("iframe");
 
         for (i = 0; i < frames.length; i++) {
-            if (coversViewport(frames[i])) {
+            if (heavyAdCoversViewport(frames[i])) {
                 return true;
             }
         }
@@ -800,7 +807,45 @@
         return false;
     }
 
-    function isHeavyAdForOOP(report, element, runtime) {
+    function findHeavyAdIframe(details) {
+        var frames = document.querySelectorAll("iframe");
+        var matches = [];
+        var url = normalizeHeavyAdUrl(details.url);
+        var i;
+        var frame;
+
+        if (details.id) {
+            for (i = 0; i < frames.length; i++) {
+                frame = frames[i];
+                if (frame.id === details.id || frame.name === details.id) {
+                    matches.push(frame);
+                }
+            }
+
+            if (matches.length === 1) {
+                return { frame: matches[0], byId: true };
+            }
+            if (matches.length > 1) {
+                return null;
+            }
+        }
+
+        if (!url) {
+            return null;
+        }
+
+        for (i = 0; i < frames.length; i++) {
+            frame = frames[i];
+            if (normalizeHeavyAdUrl(frame.getAttribute("src")) === url ||
+                normalizeHeavyAdUrl(frame.getAttribute("data-src")) === url) {
+                matches.push(frame);
+            }
+        }
+
+        return matches.length === 1 ? { frame: matches[0], byId: false } : null;
+    }
+
+    function isHeavyAdForOOP(report, element, runtime, locatedFrame) {
         var oop = runtime.oop;
         var frameUrl = normalizeHeavyAdUrl(getHeavyAdFrameUrl(report));
         var reportUrl = normalizeHeavyAdUrl(report && report.url);
@@ -817,6 +862,10 @@
 
         if (!element || !oop) {
             return false;
+        }
+
+        if (locatedFrame && locatedFrame.frame) {
+            return element.contains(locatedFrame.frame);
         }
 
         if (frameUrl) {
@@ -863,7 +912,9 @@
             return true;
         }
 
-        return (oop.state === "oop" || oop.state === "oop-bypass") && isOOPFullscreen(element);
+        return !getHeavyAdFrameDetails(report).id &&
+            (oop.state === "oop" || oop.state === "oop-bypass") &&
+            isOOPFullscreen(element);
     }
 
     function removeHeavyOOP(runtime) {
@@ -871,7 +922,7 @@
         var element = document.getElementById("oop");
 
         if (!oop || !element) {
-            return;
+            return false;
         }
 
         if (oop.frameObserver) {
@@ -887,6 +938,78 @@
         oop.enabled = false;
         oop.slot = null;
         oop.state = "oop-heavy-ad-blocked";
+        return true;
+    }
+
+    function removeExternalHeavyOOP(locatedFrame, runtime) {
+        var frame = locatedFrame && locatedFrame.frame;
+        var placement;
+        var candidate;
+        var parent;
+        var computed;
+        var depth;
+        var slot;
+
+        if (!frame || !locatedFrame.byId || !frame.isConnected) {
+            return null;
+        }
+
+        placement = typeof frame.closest === "function"
+            ? frame.closest('ad-placement[adunit*="OOP_Publico/"]')
+            : null;
+
+        if (placement) {
+            if (placement.id === "oop" && removeHeavyOOP(runtime)) {
+                return "oop-removed";
+            }
+
+            if (window.googletag && window.googletag.pubads &&
+                typeof window.googletag.pubads === "function" &&
+                typeof window.googletag.destroySlots === "function") {
+                window.googletag.pubads().getSlots().forEach(function (item) {
+                    if (typeof item.getSlotElementId === "function" &&
+                        item.getSlotElementId() === placement.id &&
+                        typeof item.getAdUnitPath === "function" &&
+                        item.getAdUnitPath().indexOf("/OOP_Publico/") !== -1) {
+                        slot = item;
+                    }
+                });
+                if (slot) {
+                    window.googletag.destroySlots([slot]);
+                }
+            }
+
+            placement.remove();
+            return "external-oop-placement-removed";
+        }
+
+        if (typeof frame.closest === "function" && frame.closest("ad-placement")) {
+            return null;
+        }
+
+        candidate = null;
+        parent = frame.parentElement;
+
+        for (depth = 0; depth < 5 && parent && parent !== document.body &&
+            parent !== document.documentElement; depth++) {
+            if (heavyAdCoversViewport(parent) &&
+                parent.querySelectorAll("iframe").length === 1 &&
+                !parent.querySelector("main, article, header, nav, footer, form, ad-placement") &&
+                String(parent.textContent || "").trim().length <= 120) {
+                computed = window.getComputedStyle ? window.getComputedStyle(parent) : null;
+                if (computed && (computed.position === "fixed" || computed.position === "absolute")) {
+                    candidate = parent;
+                }
+            }
+            parent = parent.parentElement;
+        }
+
+        if (!candidate && !heavyAdCoversViewport(frame)) {
+            return null;
+        }
+
+        (candidate || frame).remove();
+        return candidate ? "external-fullscreen-overlay-removed" : "external-fullscreen-iframe-removed";
     }
 
     function initHeavyAdObserver(runtime) {
@@ -895,34 +1018,57 @@
         }
 
         runtime.heavyAdObserverInitialized = true;
+        runtime.heavyAdReports = runtime.heavyAdReports || [];
         runtime.heavyAdObserver = new window.ReportingObserver(function (reports) {
             reports.forEach(function (report) {
                 var body = report && report.body;
                 var oop = runtime.oop;
+                var details;
+                var located;
                 var element;
                 var matched;
+                var entry;
 
-                if (!body || body.id !== "HeavyAdIntervention" ||
-                    !oop || !oop.enabled || oop.state === "oop-empty" ||
-                    oop.state === "oop-heavy-ad-blocked" ||
-                    /A future version of Chrome may remove this ad/i.test(body.message || "")) {
+                if (!body || body.id !== "HeavyAdIntervention") {
                     return;
                 }
 
+                details = getHeavyAdFrameDetails(report);
+                located = findHeavyAdIframe(details);
                 element = document.getElementById("oop");
-                matched = isHeavyAdForOOP(report, element, runtime);
+                matched = !!(oop && oop.enabled && element &&
+                    oop.state !== "oop-empty" && oop.state !== "oop-heavy-ad-blocked" &&
+                    isHeavyAdForOOP(report, element, runtime, located));
 
-                oop.lastHeavyAdReport = {
+                entry = {
                     message: body.message || "",
-                    frameUrl: getHeavyAdFrameUrl(report),
+                    frameId: details.id,
+                    frameUrl: details.url,
                     reportUrl: report.url || null,
-                    state: oop.state,
-                    matchedOOP: matched
+                    state: oop ? oop.state : null,
+                    matchedOOP: matched,
+                    action: "none"
                 };
 
-                if (matched) {
-                    removeHeavyOOP(runtime);
+                runtime.heavyAdReports.push(entry);
+                if (runtime.heavyAdReports.length > 20) {
+                    runtime.heavyAdReports.shift();
                 }
+                if (oop) {
+                    oop.lastHeavyAdReport = entry;
+                }
+
+                if (/A future version of Chrome may remove this ad/i.test(entry.message)) {
+                    entry.action = "warning-only";
+                    return;
+                }
+
+                if (matched && removeHeavyOOP(runtime)) {
+                    entry.action = "oop-removed";
+                    return;
+                }
+
+                entry.action = removeExternalHeavyOOP(located, runtime) || "no-safe-match";
             });
         }, {
             types: ["intervention"],
