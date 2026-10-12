@@ -1,4 +1,4 @@
-/*111026*/
+/*121026*/
 (function (window, document) {
     "use strict";
 
@@ -1463,6 +1463,26 @@
 
                 if (slotId === "Footer") {
                     resetFooterBtn(runtime);
+                }
+            });
+
+            window.googletag.pubads().addEventListener("impressionViewable", function (event) {
+                var slotId;
+                var element;
+                var iframe;
+
+                if (!event || !event.slot || typeof event.slot.getSlotElementId !== "function") {
+                    return;
+                }
+
+                slotId = event.slot.getSlotElementId();
+                element = slotId ? getSlotElement(slotId) : null;
+                iframe = element && typeof element.querySelector === "function"
+                    ? element.querySelector('iframe[id^="google_ads_iframe_"]') || element.querySelector("iframe")
+                    : null;
+
+                if (iframe) {
+                    iframe.classList.add("\u2714");
                 }
             });
 
