@@ -1,4 +1,4 @@
-/*121026*/
+/*131026_1_tst*/
 (function (window, document) {
     "use strict";
 
@@ -257,7 +257,7 @@
         return slotCount;
     }
 
-    function insertLockedVertContent(userType, adUnit) {
+    function insertLockedVertContent(userType, adUnit, beforePaywall) {
         var storyBody = document.querySelector("#story-body");
         var pwContainer;
         var placement;
@@ -279,7 +279,7 @@
 
         isMobile = window.matchMedia && window.matchMedia("only screen and (max-width: 767px)").matches;
         placement = createVertContent(0, userType, adUnit);
-        pwContainer.insertAdjacentElement(isMobile ? "beforebegin" : "afterend", placement);
+        pwContainer.insertAdjacentElement(beforePaywall === true || isMobile ? "beforebegin" : "afterend", placement);
 
         return 1;
     }
@@ -306,19 +306,34 @@
             }
         }
 
-        function setLocked() {
+        function setLocked(beforePaywall) {
             if (runtime.vertContent.state !== "pending") {
                 return;
             }
 
             disconnectLockedObserver();
             runtime.vertContent.state = "locked";
-            runtime.vertContent.count = insertLockedVertContent(userType, adUnit);
+            runtime.vertContent.count = insertLockedVertContent(userType, adUnit, beforePaywall);
         }
 
         isPwEnable = window.publicoConfig && typeof window.publicoConfig.isPwEnable === "boolean"
             ? window.publicoConfig.isPwEnable
             : null;
+
+        if (config.userType !== "subscriber" &&
+            config.contentAccess === "open" &&
+            isPwEnable === true &&
+            window.publicoConfig &&
+            window.publicoConfig.isExclusivo === true) {
+            pwContainer = document.querySelector("#story-body > .pw-container");
+            if (pwContainer &&
+                pwContainer.previousElementSibling &&
+                pwContainer.previousElementSibling.tagName === "P" &&
+                document.querySelectorAll("#story-body > p").length === 1) {
+                setLocked(true);
+                return;
+            }
+        }
 
         if (config.userType === "subscriber" || config.contentAccess === "open") {
             if (runtime.vertContent.state === "pending") {
