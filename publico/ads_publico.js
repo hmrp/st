@@ -1,4 +1,4 @@
-/*131026_1_tst*/
+/*131026_teste2*/
 (function (window, document) {
     "use strict";
 
@@ -257,7 +257,7 @@
         return slotCount;
     }
 
-    function insertLockedVertContent(userType, adUnit, beforePaywall) {
+    function insertLockedVertContent(userType, adUnit) {
         var storyBody = document.querySelector("#story-body");
         var pwContainer;
         var placement;
@@ -279,7 +279,7 @@
 
         isMobile = window.matchMedia && window.matchMedia("only screen and (max-width: 767px)").matches;
         placement = createVertContent(0, userType, adUnit);
-        pwContainer.insertAdjacentElement(beforePaywall === true || isMobile ? "beforebegin" : "afterend", placement);
+        pwContainer.insertAdjacentElement(isMobile ? "beforebegin" : "afterend", placement);
 
         return 1;
     }
@@ -306,14 +306,14 @@
             }
         }
 
-        function setLocked(beforePaywall) {
+        function setLocked() {
             if (runtime.vertContent.state !== "pending") {
                 return;
             }
 
             disconnectLockedObserver();
             runtime.vertContent.state = "locked";
-            runtime.vertContent.count = insertLockedVertContent(userType, adUnit, beforePaywall);
+            runtime.vertContent.count = insertLockedVertContent(userType, adUnit);
         }
 
         isPwEnable = window.publicoConfig && typeof window.publicoConfig.isPwEnable === "boolean"
@@ -330,7 +330,7 @@
                 pwContainer.previousElementSibling &&
                 pwContainer.previousElementSibling.tagName === "P" &&
                 document.querySelectorAll("#story-body > p").length === 1) {
-                setLocked(true);
+                setLocked();
                 return;
             }
         }
