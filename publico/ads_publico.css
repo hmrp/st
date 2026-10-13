@@ -1,4 +1,4 @@
-/*131026*/
+/*131026_1*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -870,9 +870,7 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
 @media screen and (max-width: 767px) {
     #inScreen.st-placement.inScreen .st-display-render.st-reset > .x-to-close,
     #inScreen.st-placement.inScreen .st-display-render.st-reset > [class*="x-to-close"] {
-        top: -48px !important;
+        top: -38px !important;
         right: 0 !important;
-        transform: none !important;
-        transform-origin: top right !important;
     }
 }
