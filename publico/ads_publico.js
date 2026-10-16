@@ -1,6 +1,4 @@
-/* Base: 131026_teste2. Vídeo antes do primeiro VertContent de artigos. */
-/* Controlador de vídeo do primeiro VertContent — incluído no ads_publico.js.
- * Bibliotecas, CSS, player JS e playlist servidos por hugopedroso.com. */
+/* novo */
 (function (window, document) {
   'use strict';
 
