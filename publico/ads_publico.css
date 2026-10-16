@@ -868,7 +868,8 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
 
 /* ============================================================
    VIDEO IN-CONTENT: primeiro VertContent (Video.js + Google IMA)
-   Regras visuais apenas aqui. O JS calcula as dimensões reais.
+   Altura da área constante durante toda a playlist/VAST, desde a 1.ª chamada:
+   400px desktop / 250px smartphone. MP4 e VAST encaixam sem crop (contain).
    Não afeta os VertContent que apresentam display.
    ============================================================ */
 
@@ -883,18 +884,15 @@ aside[data-publico-vertcontent-video="1"] {
 aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
     position: relative !important;
     box-sizing: border-box !important;
-    width: 100%;
-    max-width: var(--pub-vcv-max-width);
-    max-height: var(--pub-vcv-max-height);
-    aspect-ratio: auto;
-    min-height: 0 !important;
+    width: 100% !important;
+    max-width: var(--pub-vcv-max-width) !important;
+    height: var(--pub-vcv-max-height) !important;
+    min-height: var(--pub-vcv-max-height) !important;
+    max-height: var(--pub-vcv-max-height) !important;
+    aspect-ratio: auto !important;
     margin: 0 auto !important;
-    overflow: hidden;
+    overflow: hidden !important;
     background: #000;
-}
-
-aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading {
-    aspect-ratio: 16 / 9;
 }
 
 aside[data-publico-vertcontent-video="1"] .pub-video-shell {

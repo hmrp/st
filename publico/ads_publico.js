@@ -1,4 +1,4 @@
-/* novo */
+/*v2*/
 (function (window, document) {
   'use strict';
 
@@ -27,8 +27,9 @@
       window.pub.showAds !== false && window.hasAds !== false &&
       document.querySelector('#story-body'));
   }
-  // Dimensões máximas e regras visuais: ads_publico.css.
-  // O JS lê as variáveis CSS e calcula apenas o tamanho real do MP4/VAST.
+  // Dimensões e altura estável da área de vídeo: ads_publico.css.
+  // A proporção real do MP4/VAST não altera o tamanho do contentor. A imagem
+  // é apresentada por object-fit:contain; o JS só sincroniza o tamanho com IMA.
   function normaliseRatio(ratio) {
     ratio = Number(ratio);
     return isFinite(ratio) && ratio >= 0.15 && ratio <= 10 ? ratio : 16 / 9;
@@ -58,36 +59,24 @@
 
   function fitVideoStage(instance, ratio) {
     if (instance.state === 'display' || !instance.stage.isConnected) return;
-    ratio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
-    instance.activeRatio = ratio;
+    instance.activeRatio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
+    instance.stage.setAttribute('data-video-ratio', instance.activeRatio.toFixed(4));
 
-    // Os três limites são definidos apenas no ads_publico.css.
-    var css = window.getComputedStyle(instance.wrapper);
-    var heightLimit = parseFloat(css.getPropertyValue('--pub-vcv-max-height'));
-    var widthLimit = parseFloat(css.getPropertyValue('--pub-vcv-max-width'));
-    var viewportInset = parseFloat(css.getPropertyValue('--pub-vcv-viewport-inset')) || 0;
-    if (!(heightLimit > 0 && widthLimit > 0)) {
-      log('CSS do player indisponível: verificar ads_publico.css');
-      return;
+    // NÃO ajustar stage.style.width/height/aspectRatio em mudanças de playlist.
+    // O CSS fixa a área em 400px (desktop) / 250px (mobile) desde a chamada.
+    // Isto evita CLS entre MP4, VAST e novos pedidos de anúncio.
+    if (instance.wrapper.getAttribute('data-publico-vcv-reserved') !== '1') return;
+    var rect = instance.stage.getBoundingClientRect();
+    var width = Math.max(0, Math.round(rect.width));
+    var height = Math.max(0, Math.round(rect.height));
+    if (!width || !height) return;
+
+    // Só pedir resize ao IMA se a área realmente mudar (p.ex. orientação).
+    if (instance.imaLastWidth !== width || instance.imaLastHeight !== height) {
+      instance.imaLastWidth = width;
+      instance.imaLastHeight = height;
+      resizeImaIfPlaying(instance, width, height);
     }
-
-    var rect = instance.wrapper.getBoundingClientRect();
-    var padding = (parseFloat(css.paddingLeft) || 0) + (parseFloat(css.paddingRight) || 0);
-    var available = rect.width - padding;
-    if (!(available > 0)) return;
-    available = Math.min(available, widthLimit);
-    if (viewportInset > 0) {
-      available = Math.min(available, Math.max(1, window.innerWidth - viewportInset));
-    }
-    var width = Math.max(1, Math.floor(Math.min(available, heightLimit * ratio)));
-    var height = Math.max(1, Math.min(heightLimit, Math.round(width / ratio)));
-
-    // Estes valores são dinâmicos, porque dependem dos metadados do MP4/VAST.
-    instance.stage.style.width = width + 'px';
-    instance.stage.style.height = height + 'px';
-    instance.stage.style.aspectRatio = String(ratio);
-    instance.stage.setAttribute('data-video-ratio', ratio.toFixed(4));
-    resizeImaIfPlaying(instance, width, height);
   }
 
   function bindVideoSizing(instance, shell, player) {
@@ -105,6 +94,9 @@
     }
     function startAd() {
       instance.inAd = true;
+      // O gestor IMA pode ser novo embora a área continue igual.
+      instance.imaLastWidth = 0;
+      instance.imaLastHeight = 0;
       instance.hadVisibleContent = true;
       if (window.PubAdLayout) window.PubAdLayout.videoVisible(instance.wrapper);
       var ratio = 16 / 9;
@@ -146,16 +138,12 @@
     player.on('adserror', endAd);
     var video = shell.querySelector('video.vjs-tech, video');
     if (video) video.addEventListener('loadedmetadata', updateContentRatio);
+    // A largura é responsiva por CSS; para IMA basta escutar mudanças de janela.
+    // Não há ResizeObserver nem medições contínuas deste player.
     var onResize = function () { fitVideoStage(instance, instance.activeRatio); };
     window.addEventListener('resize', onResize);
-    var observer = null;
-    if (typeof window.ResizeObserver === 'function') {
-      observer = new window.ResizeObserver(onResize);
-      observer.observe(instance.wrapper);
-    }
     instance.sizingCleanup = function () {
       window.removeEventListener('resize', onResize);
-      if (observer) observer.disconnect();
     };
     player.on('dispose', function () {
       if (instance.sizingCleanup) instance.sizingCleanup();
