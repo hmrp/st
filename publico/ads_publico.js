@@ -1,5 +1,6 @@
-/*161026*/
-
+/* Base: 131026_teste2. Vídeo antes do primeiro VertContent de artigos. */
+/* Controlador de vídeo do primeiro VertContent — incluído no ads_publico.js.
+ * Bibliotecas, CSS, player JS e playlist servidos por hugopedroso.com. */
 (function (window, document) {
   'use strict';
 
@@ -28,18 +29,21 @@
       window.pub.showAds !== false && window.hasAds !== false &&
       document.querySelector('#story-body'));
   }
+  // Limites: 400px desktop, 250px smartphone. Apenas o player integrado no artigo.
   function addStyles() {
     if (document.getElementById(STYLE_ID)) return;
     var style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = '\n' +
       'aside[data-publico-vertcontent-video="1"]{min-height:0!important;overflow:visible!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{position:relative;width:100%;max-width:692px;margin:0 auto;min-height:0}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading{aspect-ratio:4/3;max-height:520px}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{width:100%;max-width:692px;margin:0 auto!important;background:#31363b}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js{width:100%!important;height:auto!important;aspect-ratio:4/3!important;padding-top:0!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-tech{object-fit:contain}' +
-      '@media(max-width:767px){aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{max-width:calc(100vw - 32px)}}';
+      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{position:relative;width:100%;max-width:692px;max-height:400px;aspect-ratio:16/9;margin:0 auto;min-height:0;overflow:hidden}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading{aspect-ratio:16/9;max-height:400px}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{width:100%!important;height:100%!important;max-width:100%!important;max-height:400px!important;margin:0!important;background:#31363b;overflow:hidden}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;aspect-ratio:16/9!important;padding-top:0!important;overflow:hidden}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-tech{height:100%!important;max-height:100%!important;object-fit:contain}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container{height:100%!important;max-height:100%!important}' +
+      '@media(max-width:767px){aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{max-width:min(calc(100vw - 32px),444px)!important;max-height:250px!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{max-height:250px!important}}';
     document.head.appendChild(style);
   }
   function appendCss(href) {
@@ -87,52 +91,45 @@
       return Boolean(item && (item.src || item.url));
     });
   }
-  function getSection() {
-    var pub = window.pub || {};
-    return String(pub.adUnit || window.dfpSection || 'home').split('/')[0].trim();
-  }
-  // Replica os KV globais do display através da configuração já usada pelo TagBundle.
-  // Os KV específicos do vídeo continuam independentes (ex.: pos=incview).
-  function getVideoCustParams() {
-    var pub = window.pub || {};
-    var targeting = window.tagBundleConfig && window.tagBundleConfig.targeting;
-    var subscriber = pub.userType === 'subscriber' ? 'sim' : 'nao';
-    var params = new URLSearchParams({
-      noticiatag: Array.isArray(pub.tags) ? pub.tags.join(',') : '',
-      Seccao: getSection(),
-      assinante: subscriber,
-      subscriber: subscriber,
-      pos: 'incview'
-    });
-
-    if (targeting && typeof targeting === 'object') {
-      Object.keys(targeting).forEach(function (key) {
-        var value = targeting[key];
-        if (Array.isArray(value)) {
-          // O GAM aceita múltiplos valores de um KV separados por vírgulas.
-          value = value.filter(function (item) {
-            return item !== null && typeof item !== 'undefined' && String(item) !== '';
-          }).join(',');
-        }
-        if (value !== null && typeof value !== 'undefined' && String(value) !== '') {
-          params.set(key, String(value));
-        }
-      });
-    } else {
-      console.warn('[PUB VertVideo] Targeting do TagBundle indisponível no pedido VAST.');
+  // VAST: adunit Incontent separada da raiz Video (prerolls) e de Vert_Publico (display).
+  // Obtém a secção e eventuais subníveis do ADUNIT DISPLAY, sem segunda fonte de configuração.
+  // As subadunits correspondentes devem existir no GAM sob /4458504/Incontent.
+  function getVideoAdUnitPath(placement) {
+    var displayAdUnit = placement && placement.getAttribute('adunit') || '';
+    var match = /^Vert_Publico\/[^/]+\/(.+)\/VertContent$/.exec(displayAdUnit);
+    if (!match || !match[1]) {
+      throw new Error('Adunit VertContent inválida para derivar a secção do vídeo: ' + displayAdUnit);
     }
+    return '/4458504/Incontent/' + match[1];
+  }
 
+  // Fonte única: targeting criado UMA vez por getTagBundleConfig() e entregue ao TagBundle.
+  // Sem key-values adicionais: não recriar user/noticiaTag/exclusivo, nem incluir pos.
+  function getVideoCustParams() {
+    var targeting = window.tagBundleConfig && window.tagBundleConfig.targeting;
+    if (!targeting || typeof targeting !== 'object') {
+      throw new Error('Targeting do TagBundle indisponível para VAST');
+    }
+    var params = new URLSearchParams();
+    Object.keys(targeting).forEach(function (key) {
+      var value = targeting[key];
+      if (Array.isArray(value)) {
+        value = value.filter(function (item) {
+          return item !== null && item !== undefined && String(item) !== '';
+        }).join(',');
+      }
+      if (value !== null && value !== undefined && String(value) !== '') {
+        params.set(key, String(value));
+      }
+    });
     return params.toString();
   }
 
   function createVastRequestUrl(placement) {
     var pageUrl = window.location.href;
     var ts = String(Date.now());
-    // Mesmo adunit do VertContent display (incluindo userType e secção).
-    var adUnit = placement && placement.getAttribute('adunit');
-    if (!adUnit) throw new Error('VertContent sem adunit para chamada VAST');
     var q = new URLSearchParams({
-      iu: '/4458504/' + adUnit.replace(/^\/+/, ''),
+      iu: getVideoAdUnitPath(placement),
       plcmt: '2',
       vpa: 'auto',
       vpmute: '1',
@@ -140,7 +137,10 @@
       wta: '1',
       description_url: pageUrl,
       tfcd: '0',
-      sz: '1x1|640x360',
+      ad_type: 'video',
+      vad_type: 'linear',
+      // Tamanho do inventário VAST já definido na adunit: 640x360v ou 320x180v.
+      sz: window.matchMedia && window.matchMedia('(max-width: 767px)').matches ? '320x180' : '640x360',
       gdfp_req: '1',
       output: 'vast',
       unviewed_position_start: '1',
@@ -279,10 +279,32 @@
     mount: mount,
     eligible: eligible,
     instances: instances,
-    inspect: function () { return instances.map(function (x) {
-      return { slot: x.placement.id, state: x.state, fallbackReason: x.wrapper.getAttribute('data-publico-video-fallback-reason'),
-        attempts: x.wrapper.getAttribute('data-publico-video-attempt'), misses: x.wrapper.getAttribute('data-publico-video-misses') };
-    }); },
+    inspect: function () {
+      var result = instances.map(function (x) {
+        var shell = x.stage.querySelector('.pub-video-shell');
+        var request = shell && (shell.getAttribute('data-last-ad-tag-url') || shell.getAttribute('data-ad-tag-url'));
+        var vastUrl = request ? new URL(request, window.location.href) : null;
+        var kv = vastUrl ? Object.fromEntries(new URLSearchParams(vastUrl.searchParams.get('cust_params') || '')) : {};
+        return {
+          slot: x.placement.id,
+          state: x.state,
+          displayAdUnit: '/4458504/' + x.placement.getAttribute('adunit'),
+          videoAdUnit: vastUrl ? vastUrl.searchParams.get('iu') : getVideoAdUnitPath(x.placement),
+          playerHeightPx: Math.round(x.stage.getBoundingClientRect().height),
+          keyValues: kv,
+          attempts: x.wrapper.getAttribute('data-publico-video-attempt'),
+          misses: x.wrapper.getAttribute('data-publico-video-misses'),
+          fallbackReason: x.wrapper.getAttribute('data-publico-video-fallback-reason')
+        };
+      });
+      console.info('[PUB VertVideo] Targeting de referência TagBundle:', window.tagBundleConfig && window.tagBundleConfig.targeting);
+      console.table(result.map(function (x) {
+        return { slot: x.slot, state: x.state, displayAdUnit: x.displayAdUnit,
+          videoAdUnit: x.videoAdUnit, playerHeightPx: x.playerHeightPx,
+          keyValues: JSON.stringify(x.keyValues), attempts: x.attempts, misses: x.misses };
+      }));
+      return result;
+    },
     forceDisplay: function () { if (instances.length) instances[0].fallback('manual'); }
   });
 })(window, document);
