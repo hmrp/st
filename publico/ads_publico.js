@@ -1,4 +1,4 @@
-/*v3*/
+/*v5*/
 (function (window, document) {
   'use strict';
 
@@ -27,9 +27,10 @@
       window.pub.showAds !== false && window.hasAds !== false &&
       document.querySelector('#story-body'));
   }
-  // A área reservada no artigo é fixa por CSS (400px / 250px).
-  // A área interna do Video.js acompanha o rácio real de cada MP4/VAST.
-  // Assim o texto não se move e a imagem pode ser mostrada completa.
+  // A reserva de altura mantém-se fixa por CSS enquanto o player estiver ativo.
+  // O Video.js ocupa toda a área disponível; o elemento <video> utiliza
+  // object-fit: contain para apresentar MP4 16:9, 4:3 ou vertical sem crop.
+  // Nunca tentar redimensionar o contentor em função de loadedmetadata.
   function normaliseRatio(ratio) {
     ratio = Number(ratio);
     return isFinite(ratio) && ratio >= 0.15 && ratio <= 10 ? ratio : 16 / 9;
@@ -48,8 +49,6 @@
     } catch (error) { log('IMA resize não disponível', error); }
   }
 
-  // Os eventos e a reserva de altura são geridos pelo controlador único de slots
-  // da publicidade. O player apenas avisa quando começa uma chamada real.
   function activateVertContentHeight(instance) {
     if (!instance || !instance.wrapper.isConnected) return;
     instance.wrapper.setAttribute('data-publico-vcv-reserved', '1');
@@ -59,31 +58,17 @@
 
   function fitVideoStage(instance, ratio) {
     if (instance.state === 'display' || !instance.stage.isConnected) return;
-    ratio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
-    instance.activeRatio = ratio;
-    instance.stage.setAttribute('data-video-ratio', ratio.toFixed(4));
+    instance.activeRatio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
+    instance.stage.setAttribute('data-video-ratio', instance.activeRatio.toFixed(4));
 
-    // A área exterior mantém-se SEMPRE estável durante a playlist:
-    // 400px desktop / 250px smartphone. Só a superfície interior muda.
     if (instance.wrapper.getAttribute('data-publico-vcv-reserved') !== '1') return;
     var rect = instance.stage.getBoundingClientRect();
-    var limitWidth = Math.max(0, Math.floor(rect.width));
-    var limitHeight = Math.max(0, Math.floor(rect.height));
-    if (!limitWidth || !limitHeight) return;
+    var width = Math.max(0, Math.round(rect.width));
+    var height = Math.max(0, Math.round(rect.height));
+    if (!width || !height) return;
 
-    // Conter (contain) um vídeo de qualquer proporção dentro da reserva fixa.
-    // 16:9 -> 692x389, 4:3 -> 533x400, 9:16 -> 225x400 em desktop.
-    var width = Math.min(limitWidth, Math.floor(limitHeight * ratio));
-    var height = Math.min(limitHeight, Math.floor(width / ratio));
-    width = Math.max(1, width);
-    height = Math.max(1, height);
-
-    // As regras CSS governam o tamanho. Não se altera stage.style.height.
-    instance.stage.style.setProperty('--pub-vcv-content-width', width + 'px');
-    instance.stage.style.setProperty('--pub-vcv-content-height', height + 'px');
-
-    // IMA tem de receber o tamanho da superfície que contém a publicidade,
-    // não os 400/250px da área exterior. Evitar resize duplicado.
+    // Não alterar a largura/altura do Video.js entre vídeos da playlist.
+    // A proporção de cada MP4 é tratada pelo object-fit:contain no <video>.
     if (instance.imaLastWidth !== width || instance.imaLastHeight !== height) {
       instance.imaLastWidth = width;
       instance.imaLastHeight = height;
@@ -381,7 +366,13 @@
           if (!window.VJSPlayer.setPlaylist(shell, json)) throw new Error('Playlist inválida no VideoJS');
           instance.player = window.VJSPlayer.create(shell);
           if (!instance.player && !shell._publisherPlaylistLoading) throw new Error('O VideoJS não criou o player');
-          if (instance.player) bindVideoSizing(instance, shell, instance.player);
+          if (instance.player) {
+            // Se uma versão antiga da biblioteca ignorar o modo fill na criação,
+            // desativar fluid e ativar fill no player desta instância.
+            if (typeof instance.player.fluid === 'function') instance.player.fluid(false);
+            if (typeof instance.player.fill === 'function') instance.player.fill(true);
+            bindVideoSizing(instance, shell, instance.player);
+          }
           instance.state = 'video';
           // O watchdog só é acionado se o player NÃO fizer qualquer pedido.
           // Os 3 pedidos sem VAST são contabilizados no próprio publisher-video-player.js.

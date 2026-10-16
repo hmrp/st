@@ -868,8 +868,8 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
 
 /* ============================================================
    VIDEO IN-CONTENT: primeiro VertContent (Video.js + Google IMA)
-   Área EXTERIOR constante durante playlist/VAST: 400px desktop / 250px mobile.
-   Superfície INTERIOR respeita o rácio do MP4/VAST (contain, nunca crop).
+   Área do player fixa: 400px desktop / 250px mobile.
+   A mídia nativa respeita o próprio rácio com object-fit:contain.
    Não afeta os VertContent que apresentam display.
    ============================================================ */
 
@@ -901,10 +901,10 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
 aside[data-publico-vertcontent-video="1"] .pub-video-shell {
     position: relative !important;
     display: block !important;
-    /* Só esta superfície é redimensionada; o contentor exterior é fixo. */
-    width: var(--pub-vcv-content-width, 100%) !important;
-    height: var(--pub-vcv-content-height, 100%) !important;
-    flex: 0 0 auto !important;
+    /* O Video.js ocupa todo o espaço estável. Sem tamanhos dinâmicos por MP4. */
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 1 auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
     max-width: 100% !important;
@@ -916,7 +916,8 @@ aside[data-publico-vertcontent-video="1"] .pub-video-shell {
 }
 
 aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js,
-aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fluid {
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fluid,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fill {
     position: relative !important;
     display: block !important;
     width: 100% !important;
@@ -940,7 +941,8 @@ aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::after {
 }
 
 aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js video,
-aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js .vjs-tech {
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js .vjs-tech,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell video.vjs-tech {
     position: absolute !important;
     inset: 0 !important;
     display: block !important;
