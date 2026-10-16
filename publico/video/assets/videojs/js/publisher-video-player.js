@@ -1218,9 +1218,11 @@
     }
     video.muted = shouldMute;
     video.volume = initialVolume;
+    var isVertContent = container.getAttribute('data-publico-vertcontent-video') === '1';
     var player = window.videojs(video, {
       controls: true,
-      fluid: true,
+      fluid: !isVertContent,
+      fill: isVertContent,
       responsive: true,
       controlBar: {
         children: ['playToggle', 'volumePanel'],
