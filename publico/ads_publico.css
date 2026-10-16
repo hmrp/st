@@ -1,4 +1,4 @@
-/*131026_2*/
+/*131026*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -873,4 +873,169 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
         top: -44px !important;
         right: 0 !important;
     }
+}
+
+/* ============================================================
+   VIDEO IN-CONTENT: primeiro VertContent (Video.js + Google IMA)
+   Regras visuais apenas aqui. O JS calcula as dimensões reais.
+   Não afeta os VertContent que apresentam display.
+   ============================================================ */
+
+aside[data-publico-vertcontent-video="1"] {
+    --pub-vcv-max-height: 400px;
+    --pub-vcv-max-width: 692px;
+    --pub-vcv-viewport-inset: 0px;
+    min-height: 0 !important;
+    overflow: visible !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 100%;
+    max-width: var(--pub-vcv-max-width);
+    max-height: var(--pub-vcv-max-height);
+    aspect-ratio: auto;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    overflow: hidden;
+    background: #000;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading {
+    aspect-ratio: 16 / 9;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #000 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fluid {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: auto !important;
+    padding: 0 !important;
+    padding-top: 0 !important;
+    overflow: hidden !important;
+    background: #000 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::before,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::after {
+    content: none !important;
+    display: none !important;
+    padding: 0 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js video,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js .vjs-tech {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    transform: none !important;
+    background: #000 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+}
+
+/* O iframe/HTML de VPAID é controlado pelo IMA. O CSS limita o
+   contentor, mas não altera o conteúdo interno de um iframe cross-origin. */
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+}
+
+@media screen and (max-width: 767px) {
+    aside[data-publico-vertcontent-video="1"] {
+        --pub-vcv-max-height: 250px;
+        --pub-vcv-viewport-inset: 32px;
+    }
+
+    aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
+        max-width: min(100%, calc(100vw - var(--pub-vcv-viewport-inset)));
+    }
+}
+
+/* ============================================================
+   ANTICLS — apenas o primeiro VertContent com player in-content.
+   Sem reservar antes da primeira chamada.
+   Desktop: acompanha a altura da criatividade entregue (pode encolher no refresh).
+   Mobile: mantém a altura máxima alcançada, mesmo após um refresh menor.
+   ============================================================ */
+aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="1"] {
+    --pub-vcv-held-height: 0px;
+    /* Inicialmente 400px no pedido do vídeo; após o fallback, acompanha
+       os tamanhos reais que o GAM devolve em cada refresh. */
+    min-height: var(--pub-vcv-display-height, var(--pub-vcv-max-height, 400px)) !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+@media screen and (max-width: 767px) {
+    aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="1"] {
+        /* A publicidade display pode ter 600px; o máximo do vídeo continua
+           a ser 250px. O wrapper mobile nunca reduz a altura já atingida. */
+        min-height: max(var(--pub-vcv-max-height, 250px), var(--pub-vcv-held-height)) !important;
+    }
+}
+
+/* Primeira posicao in-content, ainda SEM qualquer request real.
+   Mantem apenas uma sentinela de 1px para o IntersectionObserver;
+   evita 250/400px em branco antes da ativacao. */
+aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="0"] {
+    min-height: 0 !important;
+    height: 1px !important;
+    max-height: 1px !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    overflow: hidden !important;
+    background: transparent !important;
+}
+aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="0"] > .pub-vcv-stage {
+    width: 1px !important;
+    height: 1px !important;
+    max-width: 1px !important;
+    max-height: 1px !important;
+    aspect-ratio: auto !important;
+    visibility: hidden !important;
 }

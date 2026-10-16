@@ -4,7 +4,6 @@
 (function (window, document) {
   'use strict';
 
-  var STYLE_ID = 'pub-vertcontent-video-css';
   var loaderPromise = null;
   var instances = [];
   var defaults = {
@@ -12,7 +11,8 @@
     vastTimeoutMs: 9000,
     startupTimeoutMs: 30000, // protege apenas contra ausência TOTAL de chamadas VAST
     floating: false, // testar primeiro sem floating; pode ser ativado no override
-    rootMargin: '0px 0px'
+    // Prepara a chamada antes de o leitor chegar ao slot; sem reservar na insercao.
+    rootMargin: '600px 0px 600px 0px'
   };
 
   function config() {
@@ -29,51 +29,8 @@
       window.pub.showAds !== false && window.hasAds !== false &&
       document.querySelector('#story-body'));
   }
-  // O player respeita o rácio real de cada ficheiro/VAST, com tetos de altura.
-  // Os tamanhos VAST (sz) dizem respeito ao inventário e não à altura visual do player.
-  function addStyles() {
-    if (document.getElementById(STYLE_ID)) return;
-    var style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = '\n' +
-      'aside[data-publico-vertcontent-video="1"]{min-height:0!important;overflow:visible!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{' +
-      'position:relative!important;box-sizing:border-box!important;width:100%;max-width:692px;' +
-      'max-height:400px;aspect-ratio:auto;margin:0 auto!important;min-height:0!important;overflow:hidden;background:#000}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading{aspect-ratio:16/9}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{' +
-      'position:relative!important;display:block!important;width:100%!important;height:100%!important;' +
-      'min-height:0!important;max-width:100%!important;max-height:100%!important;' +
-      'margin:0!important;padding:0!important;overflow:hidden!important;background:#000!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js,' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fluid{' +
-      'position:relative!important;display:block!important;width:100%!important;height:100%!important;' +
-      'min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;' +
-      'aspect-ratio:auto!important;padding:0!important;padding-top:0!important;overflow:hidden!important;background:#000!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::before,' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::after{' +
-      'content:none!important;display:none!important;padding:0!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js video,' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js .vjs-tech{' +
-      'position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;' +
-      'min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;' +
-      'object-fit:contain!important;object-position:center center!important;transform:none!important;background:#000!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster,' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster img{' +
-      'width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;' +
-      'object-fit:contain!important;object-position:center center!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container{' +
-      'position:absolute!important;inset:0!important;width:100%!important;height:100%!important;' +
-      'max-width:100%!important;max-height:100%!important;overflow:hidden!important}' +
-      '@media(max-width:767px){aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{' +
-      'max-width:calc(100vw - 32px)!important;max-height:250px!important}}';
-    document.head.appendChild(style);
-  }
-
-  function isMobileVideo() {
-    return Boolean(window.matchMedia && window.matchMedia('(max-width: 767px)').matches);
-  }
-
+  // Dimensões máximas e regras visuais: ads_publico.css.
+  // O JS lê as variáveis CSS e calcula apenas o tamanho real do MP4/VAST.
   function normaliseRatio(ratio) {
     ratio = Number(ratio);
     return isFinite(ratio) && ratio >= 0.15 && ratio <= 10 ? ratio : 16 / 9;
@@ -92,21 +49,70 @@
     } catch (error) { log('IMA resize não disponível', error); }
   }
 
+  // Mantem a maior altura ja apresentada pelo primeiro VertContent.
+  // Continua ativo depois do fallback para display e durante os refreshes.
+  function holdVertContentHeight(instance, explicitHeight) {
+    if (!instance || !instance.wrapper || !instance.wrapper.isConnected || !instance.heightActive) return;
+    var wrapper = instance.wrapper;
+    var rendered = wrapper.getBoundingClientRect().height;
+    var requested = Number(explicitHeight) || 0;
+    var oldHeight = instance.heldHeight || 0;
+    var candidate = Math.ceil(Math.max(rendered, requested));
+    if (candidate > oldHeight) {
+      instance.heldHeight = candidate;
+      wrapper.style.setProperty('--pub-vcv-held-height', candidate + 'px');
+      wrapper.setAttribute('data-publico-vcv-height', String(candidate));
+    }
+  }
+
+  function activateVertContentHeight(instance) {
+    // So reserva ao iniciar uma chamada real (ou apos resposta display com fill).
+    if (!instance || instance.heightActive || !instance.wrapper.isConnected) return;
+    instance.heightActive = true;
+    instance.wrapper.setAttribute('data-publico-vcv-reserved', '1');
+    instance.wrapper.style.display = '';
+    fitVideoStage(instance, instance.activeRatio || 16 / 9);
+    holdVertContentHeight(instance);
+  }
+
+  function watchVertContentHeight(instance) {
+    // Antes do primeiro request, o wrapper fica praticamente sem altura.
+    // Depois de ativado, regista crescimentos, incluindo displays altos.
+    if (typeof window.ResizeObserver === 'function') {
+      instance.heightObserver = new window.ResizeObserver(function () {
+        holdVertContentHeight(instance);
+      });
+      instance.heightObserver.observe(instance.wrapper);
+    }
+  }
+
   function fitVideoStage(instance, ratio) {
     if (instance.state === 'display' || !instance.stage.isConnected) return;
     ratio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
     instance.activeRatio = ratio;
-    var mobile = isMobileVideo();
-    var heightLimit = mobile ? 250 : 400;
+
+    // Os três limites são definidos apenas no ads_publico.css.
+    var css = window.getComputedStyle(instance.wrapper);
+    var heightLimit = parseFloat(css.getPropertyValue('--pub-vcv-max-height'));
+    var widthLimit = parseFloat(css.getPropertyValue('--pub-vcv-max-width'));
+    var viewportInset = parseFloat(css.getPropertyValue('--pub-vcv-viewport-inset')) || 0;
+    if (!(heightLimit > 0 && widthLimit > 0)) {
+      log('CSS do player indisponível: verificar ads_publico.css');
+      return;
+    }
+
     var rect = instance.wrapper.getBoundingClientRect();
-    var cs = window.getComputedStyle(instance.wrapper);
-    var padding = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+    var padding = (parseFloat(css.paddingLeft) || 0) + (parseFloat(css.paddingRight) || 0);
     var available = rect.width - padding;
     if (!(available > 0)) return;
-    available = Math.min(692, available);
-    if (mobile) available = Math.min(available, Math.max(1, window.innerWidth - 32));
+    available = Math.min(available, widthLimit);
+    if (viewportInset > 0) {
+      available = Math.min(available, Math.max(1, window.innerWidth - viewportInset));
+    }
     var width = Math.max(1, Math.floor(Math.min(available, heightLimit * ratio)));
     var height = Math.max(1, Math.min(heightLimit, Math.round(width / ratio)));
+
+    // Estes valores são dinâmicos, porque dependem dos metadados do MP4/VAST.
     instance.stage.style.width = width + 'px';
     instance.stage.style.height = height + 'px';
     instance.stage.style.aspectRatio = String(ratio);
@@ -129,14 +135,28 @@
     }
     function startAd() {
       instance.inAd = true;
-      var ratio = 16 / 9; // VAST desconhecido: formato neutro, sem crop (contain)
+      instance.hadVisibleContent = true;
+      var ratio = 16 / 9;
+      instance.currentAdInfo = null;
       try {
         var manager = player.ima && player.ima.getAdsManager && player.ima.getAdsManager();
         var current = manager && manager.getCurrentAd && manager.getCurrentAd();
-        var width = current && current.getWidth && current.getWidth();
-        var height = current && current.getHeight && current.getHeight();
-        if (width > 0 && height > 0) ratio = width / height;
-      } catch (error) { /* Algumas respostas VAST não expõem dimensões. */ }
+        if (current) {
+          // Em anúncios VAST lineares getWidth/getHeight costuma devolver 0.
+          // getVastMediaWidth/Height expõe a resolução da media selecionada.
+          var width = (current.getVastMediaWidth && current.getVastMediaWidth()) ||
+                      (current.getWidth && current.getWidth()) || 0;
+          var height = (current.getVastMediaHeight && current.getVastMediaHeight()) ||
+                       (current.getHeight && current.getHeight()) || 0;
+          if (width > 0 && height > 0) ratio = width / height;
+          instance.currentAdInfo = {
+            apiFramework: current.getApiFramework && current.getApiFramework() || '',
+            mediaWidth: width,
+            mediaHeight: height
+          };
+          log('Criatividade VAST:', instance.currentAdInfo);
+        }
+      } catch (error) { log('Dimensões VAST não disponíveis', error); }
       fitVideoStage(instance, ratio);
     }
     function endAd() {
@@ -144,6 +164,7 @@
       updateContentRatio();
     }
     // loadedmetadata volta a disparar após cada mudança de MP4 na playlist.
+    player.on('playing', function () { instance.hadVisibleContent = true; });
     player.on('loadedmetadata', updateContentRatio);
     player.on('loadeddata', updateContentRatio);
     player.on('ads-ad-started', startAd);
@@ -281,20 +302,25 @@
   function mount(wrapper, placement) {
     if (!wrapper || !placement || !eligible()) return false;
     if (wrapper.getAttribute('data-publico-vertcontent-video') === '1') return true;
-    addStyles();
     var opts = config();
     var stage = document.createElement('div');
     stage.className = 'pub-vcv-stage is-loading';
-    var instance = { wrapper: wrapper, placement: placement, stage: stage, state: 'pending', player: null, observer: null, safetyTimer: null };
+    var instance = { wrapper: wrapper, placement: placement, stage: stage, state: 'pending', player: null, observer: null, safetyTimer: null, heightActive: false, hadVisibleContent: false };
     instances.push(instance);
     wrapper.setAttribute('data-publico-vertcontent-video', '1');
+    // Nenhuma altura reservada ate existir pedido real de video ou display.
+    wrapper.setAttribute('data-publico-vcv-reserved', '0');
     wrapper.appendChild(stage);
+    watchVertContentHeight(instance);
     instance.activeRatio = 16 / 9;
     instance.inAd = false;
     fitVideoStage(instance, instance.activeRatio);
 
     function fallback(reason) {
       if (instance.state === 'display') return;
+      // Preservar altura apenas se ja houve carregamento; a resposta no-fill
+      // podera colapsar o slot se nunca houve anuncio/video reproduzido.
+      holdVertContentHeight(instance);
       instance.state = 'display';
       if (instance.observer) { instance.observer.disconnect(); instance.observer = null; }
       if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
@@ -305,6 +331,9 @@
       // A colocação só é introduzida após o vídeo falhar.
       // O TagBundle do PÚBLICO deve observar os ad-placement dinâmicos, como já acontece com os artigos fechados.
       wrapper.replaceChildren(placement);
+      // Voltar ao layout display, mantendo a altura reservada no wrapper.
+      // data-publico-vcv-reserved mantem-se deliberadamente.
+      wrapper.removeAttribute('data-publico-vertcontent-video');
       wrapper.setAttribute('data-publico-video-result', 'display');
       wrapper.setAttribute('data-publico-video-fallback-reason', String(reason || 'unknown'));
       log('Fallback para display', placement.id, reason);
@@ -323,6 +352,7 @@
     function start() {
       if (instance.state !== 'pending' || !wrapper.isConnected) return;
       instance.state = 'loading';
+      activateVertContentHeight(instance);
       var timeout = typeof AbortController !== 'undefined' ? new AbortController() : null;
       var timer = window.setTimeout(function () { if (timeout) timeout.abort(); }, 6000);
       fetch('https://hugopedroso.com/publico/video/playlist.json', { credentials: 'omit', mode: 'cors', cache: 'no-store', signal: timeout ? timeout.signal : undefined })
@@ -370,6 +400,7 @@
             wrapper.setAttribute('data-publico-video-misses', String(ev.detail.misses));
           });
           shell.addEventListener('publico:vertvideo-ad-started', function () {
+            instance.hadVisibleContent = true;
             if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
             wrapper.setAttribute('data-publico-video-misses', '0');
             wrapper.setAttribute('data-publico-video-result', 'vast-started');
@@ -411,6 +442,54 @@
     mount: mount,
     eligible: eligible,
     instances: instances,
+    holdDisplayHeight: function (wrapper, event) {
+      var instance = instances.find(function (item) { return item.wrapper === wrapper; });
+      if (!instance) return;
+      // No-fill sem qualquer video ou anuncio anteriormente visivel: ocultar.
+      if (event && event.isEmpty && !instance.hadVisibleContent) {
+        if (instance.heightObserver) { instance.heightObserver.disconnect(); instance.heightObserver = null; }
+        instance.heightActive = false;
+        instance.heldHeight = 0;
+        wrapper.style.removeProperty('--pub-vcv-held-height');
+        wrapper.style.removeProperty('--pub-vcv-display-height');
+        instance.displayHeight = 0;
+        wrapper.removeAttribute('data-publico-vcv-height');
+        wrapper.removeAttribute('data-publico-vcv-reserved');
+        wrapper.style.display = 'none';
+        return;
+      }
+      if (event && !event.isEmpty) {
+        instance.hadVisibleContent = true;
+        activateVertContentHeight(instance);
+      }
+      // Em desktop, cada criativo com fill define a nova altura mínima do
+      // primeiro VertContent (ex.: 600 -> 250 após o refresh).
+      // Em mobile, o CSS mantém a maior altura atingida e nunca encolhe.
+      // Sem fill, preserva-se a última altura já ocupada.
+      var size = event && event.size;
+      var adHeight = Array.isArray(size) && typeof size[1] === 'number' ? size[1] : 0;
+      if (event && !event.isEmpty && instance.state === 'display') {
+        if (adHeight > 0) {
+          instance.displayHeight = Math.ceil(adHeight);
+          wrapper.style.setProperty('--pub-vcv-display-height', instance.displayHeight + 'px');
+        } else {
+          // Criativos fluid: o tamanho só é conhecido depois de a criatividade
+          // entrar no DOM. Não medimos o wrapper, que pode reter a altura anterior.
+          window.requestAnimationFrame(function () {
+            if (!instance.wrapper.isConnected || instance.state !== 'display') return;
+            var frame = instance.placement.querySelector('iframe');
+            var measured = frame && frame.getBoundingClientRect().height;
+            if (!(measured > 0)) measured = instance.placement.getBoundingClientRect().height;
+            if (measured > 0) {
+              instance.displayHeight = Math.ceil(measured);
+              wrapper.style.setProperty('--pub-vcv-display-height', instance.displayHeight + 'px');
+              holdVertContentHeight(instance, instance.displayHeight);
+            }
+          });
+        }
+      }
+      holdVertContentHeight(instance, adHeight);
+    },
     inspect: function () {
       var result = instances.map(function (x) {
         var shell = x.stage.querySelector('.pub-video-shell');
@@ -424,7 +503,14 @@
           videoAdUnit: vastUrl ? vastUrl.searchParams.get('iu') : getVideoAdUnitPath(x.placement),
           playerWidthPx: Math.round(x.stage.getBoundingClientRect().width),
           playerHeightPx: Math.round(x.stage.getBoundingClientRect().height),
+          wrapperHeightPx: Math.round(x.wrapper.getBoundingClientRect().height),
+          heldHeightPx: x.heldHeight || 0,
+          displayHeightPx: x.displayHeight || 0,
+          heightPolicy: window.matchMedia && window.matchMedia('(max-width: 767px)').matches ? 'mobile-hold-max' : 'desktop-follow-creative',
+          heightActive: Boolean(x.heightActive),
+          hadVisibleContent: Boolean(x.hadVisibleContent),
           playerAspectRatio: Number((x.activeRatio || 16 / 9).toFixed(4)),
+          currentAdInfo: x.currentAdInfo || null,
           keyValues: kv,
           attempts: x.wrapper.getAttribute('data-publico-video-attempt'),
           misses: x.wrapper.getAttribute('data-publico-video-misses'),
@@ -435,7 +521,11 @@
       console.table(result.map(function (x) {
         return { slot: x.slot, state: x.state, displayAdUnit: x.displayAdUnit,
           videoAdUnit: x.videoAdUnit, playerWidthPx: x.playerWidthPx, playerHeightPx: x.playerHeightPx,
+          wrapperHeightPx: x.wrapperHeightPx, heldHeightPx: x.heldHeightPx,
+          displayHeightPx: x.displayHeightPx, heightPolicy: x.heightPolicy,
           playerAspectRatio: x.playerAspectRatio,
+          adApi: x.currentAdInfo && x.currentAdInfo.apiFramework || '',
+          mediaDimensions: x.currentAdInfo ? x.currentAdInfo.mediaWidth + 'x' + x.currentAdInfo.mediaHeight : '',
           keyValues: JSON.stringify(x.keyValues), attempts: x.attempts, misses: x.misses };
       }));
       return result;
@@ -1663,6 +1753,16 @@
             return;
         }
 
+        // Preserva a altura somente depois de uma chamada efetiva; se nunca
+        // foi mostrado video nem display, no-fill nao deixa espaco vazio.
+        if (wrapper.hasAttribute('data-publico-vcv-reserved')) {
+            if (window.VertInContentRequest &&
+                typeof window.VertInContentRequest.holdDisplayHeight === 'function') {
+                window.VertInContentRequest.holdDisplayHeight(wrapper, event);
+            }
+            return;
+        }
+
         wrapper.style.display = event.isEmpty ? "none" : "";
     }
 
@@ -1933,6 +2033,12 @@
 
                 slotId = event.slot.getSlotElementId();
                 element = slotId ? getSlotElement(slotId) : null;
+
+                if (element && slotId === 'VertContent0' &&
+                    window.VertInContentRequest &&
+                    typeof window.VertInContentRequest.holdDisplayHeight === 'function') {
+                    window.VertInContentRequest.holdDisplayHeight(element.closest('aside[data-publico-vcv-reserved="1"]'));
+                }
 
                 if (slotId !== "Footer" || !runtime.footer || !runtime.footer.specialNoRefresh) {
                     resetPlacementCreativeControls(element);
