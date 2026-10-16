@@ -1,448 +1,4 @@
-/*v5*/
-(function (window, document) {
-  'use strict';
-
-  var loaderPromise = null;
-  var instances = [];
-  var defaults = {
-    maxNoAd: 3,
-    vastTimeoutMs: 9000,
-    startupTimeoutMs: 30000, // protege apenas contra ausência TOTAL de chamadas VAST
-    floating: false, // testar primeiro sem floating; pode ser ativado no override
-    // Prepara a chamada antes de o leitor chegar ao slot; sem reservar na insercao.
-    rootMargin: '600px 0px 600px 0px'
-  };
-
-  function config() {
-    var provided = window.VertInContentRequest || {};
-    return Object.assign({}, defaults, provided);
-  }
-  function log() {
-    if (window.console && console.info) {
-      console.info.apply(console, ['[PUB VertVideo]'].concat(Array.prototype.slice.call(arguments)));
-    }
-  }
-  function eligible() {
-    return Boolean(window.pub && window.pub.pageType === 'noticia' &&
-      window.pub.showAds !== false && window.hasAds !== false &&
-      document.querySelector('#story-body'));
-  }
-  // A reserva de altura mantém-se fixa por CSS enquanto o player estiver ativo.
-  // O Video.js ocupa toda a área disponível; o elemento <video> utiliza
-  // object-fit: contain para apresentar MP4 16:9, 4:3 ou vertical sem crop.
-  // Nunca tentar redimensionar o contentor em função de loadedmetadata.
-  function normaliseRatio(ratio) {
-    ratio = Number(ratio);
-    return isFinite(ratio) && ratio >= 0.15 && ratio <= 10 ? ratio : 16 / 9;
-  }
-
-  function resizeImaIfPlaying(instance, width, height) {
-    if (!instance.inAd || !instance.player || !instance.player.ima ||
-        typeof instance.player.ima.getAdsManager !== 'function') return;
-    try {
-      var manager = instance.player.ima.getAdsManager();
-      if (manager && typeof manager.resize === 'function') {
-        var mode = window.google && window.google.ima && window.google.ima.ViewMode
-          ? window.google.ima.ViewMode.NORMAL : 'normal';
-        manager.resize(width, height, mode);
-      }
-    } catch (error) { log('IMA resize não disponível', error); }
-  }
-
-  function activateVertContentHeight(instance) {
-    if (!instance || !instance.wrapper.isConnected) return;
-    instance.wrapper.setAttribute('data-publico-vcv-reserved', '1');
-    if (window.PubAdLayout) window.PubAdLayout.videoRequested(instance.wrapper);
-    fitVideoStage(instance, instance.activeRatio || 16 / 9);
-  }
-
-  function fitVideoStage(instance, ratio) {
-    if (instance.state === 'display' || !instance.stage.isConnected) return;
-    instance.activeRatio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
-    instance.stage.setAttribute('data-video-ratio', instance.activeRatio.toFixed(4));
-
-    if (instance.wrapper.getAttribute('data-publico-vcv-reserved') !== '1') return;
-    var rect = instance.stage.getBoundingClientRect();
-    var width = Math.max(0, Math.round(rect.width));
-    var height = Math.max(0, Math.round(rect.height));
-    if (!width || !height) return;
-
-    // Não alterar a largura/altura do Video.js entre vídeos da playlist.
-    // A proporção de cada MP4 é tratada pelo object-fit:contain no <video>.
-    if (instance.imaLastWidth !== width || instance.imaLastHeight !== height) {
-      instance.imaLastWidth = width;
-      instance.imaLastHeight = height;
-      resizeImaIfPlaying(instance, width, height);
-    }
-  }
-
-  function bindVideoSizing(instance, shell, player) {
-    if (!player || typeof player.on !== 'function') return;
-    function updateContentRatio() {
-      var width = typeof player.videoWidth === 'function' ? player.videoWidth() : 0;
-      var height = typeof player.videoHeight === 'function' ? player.videoHeight() : 0;
-      var video = shell.querySelector('video.vjs-tech, video');
-      if (!(width > 0 && height > 0) && video) {
-        width = video.videoWidth;
-        height = video.videoHeight;
-      }
-      if (width > 0 && height > 0) instance.contentRatio = normaliseRatio(width / height);
-      if (!instance.inAd) fitVideoStage(instance, instance.contentRatio || 16 / 9);
-    }
-    function startAd() {
-      instance.inAd = true;
-      // O gestor IMA pode ser novo embora a área continue igual.
-      instance.imaLastWidth = 0;
-      instance.imaLastHeight = 0;
-      instance.hadVisibleContent = true;
-      if (window.PubAdLayout) window.PubAdLayout.videoVisible(instance.wrapper);
-      var ratio = 16 / 9;
-      instance.currentAdInfo = null;
-      try {
-        var manager = player.ima && player.ima.getAdsManager && player.ima.getAdsManager();
-        var current = manager && manager.getCurrentAd && manager.getCurrentAd();
-        if (current) {
-          // Em anúncios VAST lineares getWidth/getHeight costuma devolver 0.
-          // getVastMediaWidth/Height expõe a resolução da media selecionada.
-          var width = (current.getVastMediaWidth && current.getVastMediaWidth()) ||
-                      (current.getWidth && current.getWidth()) || 0;
-          var height = (current.getVastMediaHeight && current.getVastMediaHeight()) ||
-                       (current.getHeight && current.getHeight()) || 0;
-          if (width > 0 && height > 0) ratio = width / height;
-          instance.currentAdInfo = {
-            apiFramework: current.getApiFramework && current.getApiFramework() || '',
-            mediaWidth: width,
-            mediaHeight: height
-          };
-          log('Criatividade VAST:', instance.currentAdInfo);
-        }
-      } catch (error) { log('Dimensões VAST não disponíveis', error); }
-      fitVideoStage(instance, ratio);
-    }
-    function endAd() {
-      instance.inAd = false;
-      updateContentRatio();
-    }
-    // loadedmetadata volta a disparar após cada mudança de MP4 na playlist.
-    player.on('playing', function () { instance.hadVisibleContent = true; if (window.PubAdLayout) window.PubAdLayout.videoVisible(instance.wrapper); });
-    player.on('loadedmetadata', updateContentRatio);
-    player.on('loadeddata', updateContentRatio);
-    player.on('ads-ad-started', startAd);
-    player.on('adstart', startAd);
-    player.on('adend', endAd);
-    player.on('ads-ad-ended', endAd);
-    player.on('contentresumed', endAd);
-    player.on('adserror', endAd);
-    var video = shell.querySelector('video.vjs-tech, video');
-    if (video) video.addEventListener('loadedmetadata', updateContentRatio);
-    // A largura é responsiva por CSS; para IMA basta escutar mudanças de janela.
-    // Não há ResizeObserver nem medições contínuas deste player.
-    var onResize = function () { fitVideoStage(instance, instance.activeRatio); };
-    window.addEventListener('resize', onResize);
-    instance.sizingCleanup = function () {
-      window.removeEventListener('resize', onResize);
-    };
-    player.on('dispose', function () {
-      if (instance.sizingCleanup) instance.sizingCleanup();
-      instance.sizingCleanup = null;
-    });
-    updateContentRatio();
-  }
-
-  function appendCss(href) {
-    if (document.querySelector('link[data-pub-vcv-css="' + href + '"]')) return;
-    var link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = href;
-    link.setAttribute('data-pub-vcv-css', href);
-    document.head.appendChild(link);
-  }
-  function addScript(src) {
-    return new Promise(function (resolve, reject) {
-      var script = document.createElement('script');
-      script.src = src; script.async = false;
-      script.onload = resolve;
-      script.onerror = function () { reject(new Error('Falha no script: ' + src)); };
-      document.head.appendChild(script);
-    });
-  }
-  function ensureAssets() {
-    if (loaderPromise) return loaderPromise;
-    appendCss('https://hugopedroso.com/publico/video/assets/videojs/vendor/video-js.min.css');
-    appendCss('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.css');
-    appendCss('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.css');
-    appendCss('https://hugopedroso.com/publico/video/assets/videojs/css/publisher-video-player.css');
-    loaderPromise = Promise.resolve()
-      .then(function () { return window.google && window.google.ima ? null : addScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js'); })
-      .then(function () { return window.videojs ? null : addScript('https://hugopedroso.com/publico/video/assets/videojs/vendor/video.min.js'); })
-      .then(function () { return addScript('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.min.js'); })
-      .then(function () { return addScript('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.min.js'); })
-      .then(function () { return addScript('https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js'); })
-      .then(function () {
-        if (!window.VJSPlayer || !window.VJSPlayer.create || !window.google || !window.google.ima) {
-          throw new Error('VideoJS/IMA não inicializaram corretamente');
-        }
-      });
-    loaderPromise = loaderPromise.catch(function (error) { loaderPromise = null; throw error; });
-    return loaderPromise;
-  }
-  function normalisePlaylist(payload) {
-    var arr = Array.isArray(payload) ? payload : payload && payload.videos;
-    if (!Array.isArray(arr)) return [];
-    return arr.map(function (item) {
-      return typeof item === 'string' ? { src: item, type: 'video/mp4' } : item;
-    }).filter(function (item) {
-      return Boolean(item && (item.src || item.url));
-    });
-  }
-  // VAST: adunit Incontent separada da raiz Video (prerolls) e de Vert_Publico (display).
-  // Obtém a secção e eventuais subníveis do ADUNIT DISPLAY, sem segunda fonte de configuração.
-  // As subadunits correspondentes devem existir no GAM sob /4458504/Incontent.
-  function getVideoAdUnitPath(placement) {
-    var displayAdUnit = placement && placement.getAttribute('adunit') || '';
-    var match = /^Vert_Publico\/[^/]+\/(.+)\/VertContent$/.exec(displayAdUnit);
-    if (!match || !match[1]) {
-      throw new Error('Adunit VertContent inválida para derivar a secção do vídeo: ' + displayAdUnit);
-    }
-    return '/4458504/Incontent/' + match[1];
-  }
-
-  // Fonte única: targeting criado UMA vez por getTagBundleConfig() e entregue ao TagBundle.
-  // Sem key-values adicionais: não recriar user/noticiaTag/exclusivo, nem incluir pos.
-  function getVideoCustParams() {
-    var targeting = window.tagBundleConfig && window.tagBundleConfig.targeting;
-    if (!targeting || typeof targeting !== 'object') {
-      throw new Error('Targeting do TagBundle indisponível para VAST');
-    }
-    var params = new URLSearchParams();
-    Object.keys(targeting).forEach(function (key) {
-      var value = targeting[key];
-      if (Array.isArray(value)) {
-        value = value.filter(function (item) {
-          return item !== null && item !== undefined && String(item) !== '';
-        }).join(',');
-      }
-      if (value !== null && value !== undefined && String(value) !== '') {
-        params.set(key, String(value));
-      }
-    });
-    return params.toString();
-  }
-
-  function createVastRequestUrl(placement) {
-    var pageUrl = window.location.href;
-    var ts = String(Date.now());
-    var q = new URLSearchParams({
-      iu: getVideoAdUnitPath(placement),
-      plcmt: '2',
-      vpa: 'auto',
-      vpmute: '1',
-      vpos: 'preroll',
-      wta: '1',
-      description_url: pageUrl,
-      tfcd: '0',
-      ad_type: 'video',
-      vad_type: 'linear',
-      // Tamanho do inventário VAST já definido na adunit: 640x360v ou 320x180v.
-      sz: window.matchMedia && window.matchMedia('(max-width: 767px)').matches ? '320x180' : '640x360',
-      gdfp_req: '1',
-      output: 'vast',
-      unviewed_position_start: '1',
-      env: 'vp',
-      impl: 's',
-      correlator: ts,
-      url: pageUrl,
-      cust_params: getVideoCustParams()
-    });
-    return 'https://pubads.g.doubleclick.net/gampad/ads?' + q.toString();
-  }
-  function mount(wrapper, placement) {
-    if (!wrapper || !placement || !eligible()) return false;
-    if (wrapper.getAttribute('data-publico-vertcontent-video') === '1') return true;
-    var opts = config();
-    var stage = document.createElement('div');
-    stage.className = 'pub-vcv-stage is-loading';
-    var instance = { wrapper: wrapper, placement: placement, stage: stage, state: 'pending', player: null, observer: null, safetyTimer: null, hadVisibleContent: false };
-    instances.push(instance);
-    wrapper.setAttribute('data-publico-vertcontent-video', '1');
-    // Nenhuma altura reservada ate existir pedido real de video ou display.
-    wrapper.setAttribute('data-publico-vcv-reserved', '0');
-    wrapper.appendChild(stage);
-    instance.activeRatio = 16 / 9;
-    instance.inAd = false;
-    fitVideoStage(instance, instance.activeRatio);
-
-    function fallback(reason) {
-      if (instance.state === 'display') return;
-      // Preservar altura apenas se ja houve carregamento; a resposta no-fill
-      // podera colapsar o slot se nunca houve anuncio/video reproduzido.
-      instance.state = 'display';
-      if (instance.observer) { instance.observer.disconnect(); instance.observer = null; }
-      if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
-      if (instance.sizingCleanup) { instance.sizingCleanup(); instance.sizingCleanup = null; }
-      if (instance.player && !instance.player.isDisposed()) {
-        try { instance.player.dispose(); } catch (e) { log('Erro no dispose', e); }
-      }
-      // A colocação só é introduzida após o vídeo falhar.
-      // O TagBundle do PÚBLICO deve observar os ad-placement dinâmicos, como já acontece com os artigos fechados.
-      wrapper.replaceChildren(placement);
-      // Voltar ao layout display, mantendo a altura reservada no wrapper.
-      // data-publico-vcv-reserved mantem-se deliberadamente.
-      wrapper.removeAttribute('data-publico-vertcontent-video');
-      wrapper.setAttribute('data-publico-video-result', 'display');
-      wrapper.setAttribute('data-publico-video-fallback-reason', String(reason || 'unknown'));
-      log('Fallback para display', placement.id, reason);
-      document.dispatchEvent(new CustomEvent('publico:vertcontent-display-ready', {
-        detail: { placement: placement, wrapper: wrapper, reason: reason }
-      }));
-      window.setTimeout(function () {
-        if (!window.googletag || !window.googletag.pubads) return;
-        var known = window.googletag.pubads().getSlots().some(function (s) {
-          return s.getSlotElementId() === placement.id;
-        });
-        if (!known) console.warn('[PUB VertVideo] TagBundle ainda não registou o slot display', placement.id);
-      }, 3000);
-    }
-    instance.fallback = fallback;
-    function start() {
-      if (instance.state !== 'pending' || !wrapper.isConnected) return;
-      instance.state = 'loading';
-      activateVertContentHeight(instance);
-      var timeout = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      var timer = window.setTimeout(function () { if (timeout) timeout.abort(); }, 6000);
-      fetch('https://hugopedroso.com/publico/video/playlist.json', { credentials: 'omit', mode: 'cors', cache: 'no-store', signal: timeout ? timeout.signal : undefined })
-        .then(function (resp) { if (!resp.ok) throw new Error('Playlist HTTP ' + resp.status); return resp.json(); })
-        .then(function (json) {
-          var list = normalisePlaylist(json);
-          if (!list.length) throw new Error('Playlist JSON vazia');
-          return ensureAssets().then(function () { return json; });
-        })
-        .then(function (json) {
-          if (instance.state !== 'loading' || !wrapper.isConnected) return;
-          var shell = document.createElement('div');
-          shell.id = 'pub-vertcontent-video-' + placement.id;
-          shell.className = 'pub-video-shell';
-          shell.setAttribute('data-vjs-player', '');
-          shell.setAttribute('data-player-mode', 'content');
-          shell.setAttribute('data-publico-vertcontent-video', '1');
-          shell.setAttribute('data-player-id', shell.id);
-          shell.setAttribute('data-video-src', normalisePlaylist(json)[0].src || normalisePlaylist(json)[0].url || '');
-          shell.setAttribute('data-video-type', normalisePlaylist(json)[0].type || 'video/mp4');
-          shell.setAttribute('data-playlist-loop', 'true');
-          shell.setAttribute('data-autoplay', 'true');
-          shell.setAttribute('data-muted', 'true');
-          shell.setAttribute('data-volume', '1');
-          shell.setAttribute('data-autoplay-muted-fallback', 'true');
-          shell.setAttribute('data-ad-floating', String(Boolean(opts.floating)));
-          shell.setAttribute('data-sticky', 'false');
-          shell.setAttribute('data-preload', 'metadata');
-          shell.setAttribute('data-vast-timeout', '7000');
-          shell.setAttribute('data-vast-attempt-timeout', String(opts.vastTimeoutMs));
-          shell.setAttribute('data-vast-max-misses', String(opts.maxNoAd));
-          shell.setAttribute('data-ad-tag-url', createVastRequestUrl(placement));
-          shell.setAttribute('data-description-url', window.location.href);
-          shell.setAttribute('data-ad-vpa', 'auto');
-          shell.setAttribute('data-ad-vpmute', '1');
-          var video = document.createElement('video');
-          video.className = 'video-js vjs-default-skin';
-          video.playsInline = true;
-          video.muted = true;
-          video.preload = 'metadata';
-          shell.appendChild(video);
-          shell.addEventListener('publico:vertvideo-fallback', function (ev) { fallback(ev.detail && ev.detail.reason); });
-          shell.addEventListener('publico:vertvideo-attempt', function (ev) {
-            wrapper.setAttribute('data-publico-video-attempt', String(ev.detail.attempt));
-            wrapper.setAttribute('data-publico-video-misses', String(ev.detail.misses));
-          });
-          shell.addEventListener('publico:vertvideo-ad-started', function () {
-            instance.hadVisibleContent = true;
-            if (window.PubAdLayout) window.PubAdLayout.videoVisible(instance.wrapper);
-            if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
-            wrapper.setAttribute('data-publico-video-misses', '0');
-            wrapper.setAttribute('data-publico-video-result', 'vast-started');
-          });
-          stage.classList.remove('is-loading');
-          stage.appendChild(shell);
-          fitVideoStage(instance, instance.activeRatio);
-          if (!window.VJSPlayer.setPlaylist(shell, json)) throw new Error('Playlist inválida no VideoJS');
-          instance.player = window.VJSPlayer.create(shell);
-          if (!instance.player && !shell._publisherPlaylistLoading) throw new Error('O VideoJS não criou o player');
-          if (instance.player) {
-            // Se uma versão antiga da biblioteca ignorar o modo fill na criação,
-            // desativar fluid e ativar fill no player desta instância.
-            if (typeof instance.player.fluid === 'function') instance.player.fluid(false);
-            if (typeof instance.player.fill === 'function') instance.player.fill(true);
-            bindVideoSizing(instance, shell, instance.player);
-          }
-          instance.state = 'video';
-          // O watchdog só é acionado se o player NÃO fizer qualquer pedido.
-          // Os 3 pedidos sem VAST são contabilizados no próprio publisher-video-player.js.
-          instance.safetyTimer = window.setTimeout(function () {
-            if (instance.state !== 'video') return;
-            var monitor = shell._pubVertMonitor;
-            if (!monitor || monitor.attempts === 0) fallback('player-no-vast-request');
-          }, opts.startupTimeoutMs);
-          log('Player carregado no primeiro VertContent', placement.id, 'VAST:', shell.getAttribute('data-ad-tag-url'));
-        })
-        .catch(function (error) { fallback(error && error.message ? error.message : 'player-error'); })
-        .finally(function () { window.clearTimeout(timer); });
-    }
-    if (window.IntersectionObserver) {
-      instance.observer = new IntersectionObserver(function (items) {
-        if (!items.some(function (e) { return e.isIntersecting; })) return;
-        instance.observer.disconnect(); instance.observer = null;
-        start();
-      }, { rootMargin: opts.rootMargin, threshold: 0.5 });
-      instance.observer.observe(wrapper);
-    } else {
-      window.setTimeout(start, 0);
-    }
-    log('Reservado primeiro VertContent para vídeo:', placement.id);
-    return true;
-  }
-  window.VertInContentRequest = Object.assign(window.VertInContentRequest || {}, {
-    mount: mount,
-    eligible: eligible,
-    instances: instances,
-    inspect: function () {
-      var result = instances.map(function (x) {
-        var shell = x.stage.querySelector('.pub-video-shell');
-        var request = shell && (shell.getAttribute('data-last-ad-tag-url') || shell.getAttribute('data-ad-tag-url'));
-        var vastUrl = request ? new URL(request, window.location.href) : null;
-        var kv = vastUrl ? Object.fromEntries(new URLSearchParams(vastUrl.searchParams.get('cust_params') || '')) : {};
-        return {
-          slot: x.placement.id,
-          state: x.state,
-          displayAdUnit: '/4458504/' + x.placement.getAttribute('adunit'),
-          videoAdUnit: vastUrl ? vastUrl.searchParams.get('iu') : getVideoAdUnitPath(x.placement),
-          playerWidthPx: Math.round(x.stage.getBoundingClientRect().width),
-          playerHeightPx: Math.round(x.stage.getBoundingClientRect().height),
-          wrapperHeightPx: Math.round(x.wrapper.getBoundingClientRect().height),
-          hadVisibleContent: Boolean(x.hadVisibleContent),
-          playerAspectRatio: Number((x.activeRatio || 16 / 9).toFixed(4)),
-          currentAdInfo: x.currentAdInfo || null,
-          keyValues: kv,
-          attempts: x.wrapper.getAttribute('data-publico-video-attempt'),
-          misses: x.wrapper.getAttribute('data-publico-video-misses'),
-          fallbackReason: x.wrapper.getAttribute('data-publico-video-fallback-reason')
-        };
-      });
-      console.info('[PUB VertVideo] Targeting de referência TagBundle:', window.tagBundleConfig && window.tagBundleConfig.targeting);
-      console.table(result.map(function (x) {
-        return { slot: x.slot, state: x.state, displayAdUnit: x.displayAdUnit,
-          videoAdUnit: x.videoAdUnit, playerWidthPx: x.playerWidthPx, playerHeightPx: x.playerHeightPx,
-          wrapperHeightPx: x.wrapperHeightPx,
-          playerAspectRatio: x.playerAspectRatio,
-          adApi: x.currentAdInfo && x.currentAdInfo.apiFramework || '',
-          mediaDimensions: x.currentAdInfo ? x.currentAdInfo.mediaWidth + 'x' + x.currentAdInfo.mediaHeight : '',
-          keyValues: JSON.stringify(x.keyValues), attempts: x.attempts, misses: x.misses };
-      }));
-      return result;
-    },
-    forceDisplay: function () { if (instances.length) instances[0].fallback('manual'); }
-  });
-})(window, document);
-
-/*131026_teste2*/
+/*161026*/
 (function (window, document) {
     "use strict";
 
@@ -807,7 +363,86 @@
     })();
     window.PubAdLayout = pubAdLayout;
 
-    function createVertContent(index, userType, adUnit) {
+    // Apenas um carregador leve no ficheiro geral. A lógica VAST/Video.js
+    // vive inteiramente no publisher-video-player.js e é pedida só para o
+    // primeiro VertContent elegível quando se aproxima do viewport.
+    var vertVideoModulePromise = null;
+    function loadVertVideoModule() {
+        if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
+            return Promise.resolve(window.VertInContentRequest);
+        }
+        if (vertVideoModulePromise) return vertVideoModulePromise;
+        vertVideoModulePromise = new Promise(function (resolve, reject) {
+            var script = document.createElement("script");
+            script.src = "https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=20261016-modular-1";
+            script.async = true;
+            script.onload = function () {
+                if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
+                    resolve(window.VertInContentRequest);
+                } else {
+                    reject(new Error("Módulo VertInContentRequest não foi disponibilizado"));
+                }
+            };
+            script.onerror = function () { reject(new Error("Falha ao carregar publisher-video-player.js")); };
+            document.head.appendChild(script);
+        }).catch(function (error) {
+            vertVideoModulePromise = null;
+            throw error;
+        });
+        return vertVideoModulePromise;
+    }
+
+    function scheduleVertVideo(wrapper, placement, targeting) {
+        var started = false;
+        var observer = null;
+        // A reserva anterior a qualquer chamada continua em 1px.
+        wrapper.setAttribute("data-publico-vcv-reserved", "0");
+
+        function fallback(reason) {
+            if (!wrapper.isConnected || wrapper.getAttribute("data-publico-video-result") === "display") return;
+            wrapper.replaceChildren(placement);
+            // Em falhas antes do arranque, retirar a sentinela de 1px:
+            // caso contrário o fallback display ficaria invisível.
+            wrapper.removeAttribute("data-publico-vcv-reserved");
+            wrapper.removeAttribute("data-publico-vertcontent-video");
+            wrapper.setAttribute("data-publico-video-result", "display");
+            wrapper.setAttribute("data-publico-video-fallback-reason", String(reason));
+            document.dispatchEvent(new CustomEvent("publico:vertcontent-display-ready", {
+                detail: { placement: placement, wrapper: wrapper, reason: reason }
+            }));
+        }
+        function start() {
+            if (started || !wrapper.isConnected) return;
+            started = true;
+            if (observer) { observer.disconnect(); observer = null; }
+            loadVertVideoModule().then(function (module) {
+                if (!wrapper.isConnected) return;
+                try {
+                    if (!module.mount(wrapper, placement, {
+                        targeting: targeting,
+                        startImmediately: true
+                    })) fallback("player-ineligible");
+                } catch (error) {
+                    logError("Não foi possível iniciar o Incontent; usar display", error);
+                    fallback("player-mount-error");
+                }
+            }).catch(function (error) {
+                logError("Erro ao carregar o módulo Incontent", error);
+                fallback("player-module-error");
+            });
+        }
+        if (window.IntersectionObserver) {
+            observer = new IntersectionObserver(function (entries) {
+                if (entries.some(function (entry) { return entry.isIntersecting; })) start();
+            }, { rootMargin: "600px 0px 600px 0px", threshold: 0 });
+            observer.observe(wrapper);
+        } else {
+            window.setTimeout(start, 0);
+        }
+        return true;
+    }
+
+    function createVertContent(index, userType, adUnit, targeting) {
         var wrapper = document.createElement("aside");
         var placement = document.createElement("ad-placement");
 
@@ -819,20 +454,14 @@
         placement.setAttribute("format", "vertContent");
         placement.setAttribute("adunit", "Vert_Publico/" + userType + "/" + adUnit + "/VertContent");
 
-        // Apenas o primeiro VertContent de artigos testa VAST antes do display.
-        // O slot display NÃO entra no DOM até o player solicitar fallback.
+        // Primeiro VertContent: a decisão de carregar o módulo é feita por
+        // proximidade do viewport; os restantes ficam exclusivamente em display.
         if (index === 0 && window.pub && window.pub.pageType === "noticia" &&
                 !adsAreDisabled(window.pub) &&
                 !(window.VertInContentRequest && window.VertInContentRequest.enabled === false) &&
-                window.VertInContentRequest &&
-                typeof window.VertInContentRequest.mount === "function") {
-            try {
-                if (window.VertInContentRequest.mount(wrapper, placement)) {
-                    return wrapper;
-                }
-            } catch (error) {
-                logError("Falha ao preparar primeiro VertContent em vídeo; usar display.", error);
-            }
+                targeting && typeof targeting === "object") {
+            scheduleVertVideo(wrapper, placement, targeting);
+            return wrapper;
         }
 
         wrapper.appendChild(placement);
@@ -879,7 +508,7 @@
             }
 
             if (iCount === interval || (iCount === firstSlotAt && !firstSlotFilled)) {
-                element.insertAdjacentElement("afterend", createVertContent(slotCount, userType, adUnit));
+                element.insertAdjacentElement("afterend", createVertContent(slotCount, userType, adUnit, config.runtime.tagBundleConfig.targeting));
                 iCount = 1;
                 slotCount += 1;
                 firstSlotFilled = true;
@@ -889,7 +518,7 @@
         return slotCount;
     }
 
-    function insertLockedVertContent(userType, adUnit) {
+    function insertLockedVertContent(userType, adUnit, runtime) {
         var storyBody = document.querySelector("#story-body");
         var pwContainer;
         var placement;
@@ -910,7 +539,7 @@
         }
 
         isMobile = window.matchMedia && window.matchMedia("only screen and (max-width: 767px)").matches;
-        placement = createVertContent(0, userType, adUnit);
+        placement = createVertContent(0, userType, adUnit, runtime.tagBundleConfig.targeting);
         pwContainer.insertAdjacentElement(isMobile ? "beforebegin" : "afterend", placement);
 
         return 1;
@@ -945,7 +574,7 @@
 
             disconnectLockedObserver();
             runtime.vertContent.state = "locked";
-            runtime.vertContent.count = insertLockedVertContent(userType, adUnit);
+            runtime.vertContent.count = insertLockedVertContent(userType, adUnit, runtime);
         }
 
         isPwEnable = window.publicoConfig && typeof window.publicoConfig.isPwEnable === "boolean"
@@ -2197,7 +1826,7 @@
         }
 
         bindRenderEvents(runtime);
-        window.TagBundle.init(window.tagBundleConfig);
+        window.TagBundle.init(runtime.tagBundleConfig);
         runtime.tagBundleInitialized = true;
         return true;
     }
@@ -2508,7 +2137,6 @@
         var userType;
         var adUnit;
         var tagBundleUrl;
-        var tagBundleConfig;
 
         if (!checkConfig(config)) {
             return;
@@ -2545,6 +2173,9 @@
         runtime.adUnit = adUnit;
         runtime.tagBundleUrl = tagBundleUrl;
 
+
+        runtime.tagBundleConfig = getTagBundleConfig(config, userType);
+
         initCreativeAdControl(runtime);
         initHeavyAdObserver(runtime);
         suppressListingSidebarVerts(config);
@@ -2556,9 +2187,6 @@
         initFooter(config, userType, adUnit, runtime);
         initGallery(config, runtime);
         watchDynamicSlots(userType, adUnit, runtime);
-
-        tagBundleConfig = getTagBundleConfig(config, userType);
-        window.tagBundleConfig = tagBundleConfig;
 
         loadTagBundle(tagBundleUrl, function () {
             initTagBundle(runtime);
