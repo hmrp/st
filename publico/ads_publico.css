@@ -868,8 +868,8 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
 
 /* ============================================================
    VIDEO IN-CONTENT: primeiro VertContent (Video.js + Google IMA)
-   Altura da área constante durante toda a playlist/VAST, desde a 1.ª chamada:
-   400px desktop / 250px smartphone. MP4 e VAST encaixam sem crop (contain).
+   Área EXTERIOR constante durante playlist/VAST: 400px desktop / 250px mobile.
+   Superfície INTERIOR respeita o rácio do MP4/VAST (contain, nunca crop).
    Não afeta os VertContent que apresentam display.
    ============================================================ */
 
@@ -893,13 +893,19 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
     margin: 0 auto !important;
     overflow: hidden !important;
     background: #000;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 aside[data-publico-vertcontent-video="1"] .pub-video-shell {
     position: relative !important;
     display: block !important;
-    width: 100% !important;
-    height: 100% !important;
+    /* Só esta superfície é redimensionada; o contentor exterior é fixo. */
+    width: var(--pub-vcv-content-width, 100%) !important;
+    height: var(--pub-vcv-content-height, 100%) !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
     min-height: 0 !important;
     max-width: 100% !important;
     max-height: 100% !important;
@@ -979,7 +985,7 @@ aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container {
     }
 
     aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
-        max-width: min(100%, calc(100vw - var(--pub-vcv-viewport-inset)));
+        max-width: min(100%, calc(100vw - var(--pub-vcv-viewport-inset))) !important;
     }
 }
 

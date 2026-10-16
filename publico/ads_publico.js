@@ -1,4 +1,4 @@
-/*v2*/
+/*v3*/
 (function (window, document) {
   'use strict';
 
@@ -27,9 +27,9 @@
       window.pub.showAds !== false && window.hasAds !== false &&
       document.querySelector('#story-body'));
   }
-  // Dimensões e altura estável da área de vídeo: ads_publico.css.
-  // A proporção real do MP4/VAST não altera o tamanho do contentor. A imagem
-  // é apresentada por object-fit:contain; o JS só sincroniza o tamanho com IMA.
+  // A área reservada no artigo é fixa por CSS (400px / 250px).
+  // A área interna do Video.js acompanha o rácio real de cada MP4/VAST.
+  // Assim o texto não se move e a imagem pode ser mostrada completa.
   function normaliseRatio(ratio) {
     ratio = Number(ratio);
     return isFinite(ratio) && ratio >= 0.15 && ratio <= 10 ? ratio : 16 / 9;
@@ -59,19 +59,31 @@
 
   function fitVideoStage(instance, ratio) {
     if (instance.state === 'display' || !instance.stage.isConnected) return;
-    instance.activeRatio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
-    instance.stage.setAttribute('data-video-ratio', instance.activeRatio.toFixed(4));
+    ratio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
+    instance.activeRatio = ratio;
+    instance.stage.setAttribute('data-video-ratio', ratio.toFixed(4));
 
-    // NÃO ajustar stage.style.width/height/aspectRatio em mudanças de playlist.
-    // O CSS fixa a área em 400px (desktop) / 250px (mobile) desde a chamada.
-    // Isto evita CLS entre MP4, VAST e novos pedidos de anúncio.
+    // A área exterior mantém-se SEMPRE estável durante a playlist:
+    // 400px desktop / 250px smartphone. Só a superfície interior muda.
     if (instance.wrapper.getAttribute('data-publico-vcv-reserved') !== '1') return;
     var rect = instance.stage.getBoundingClientRect();
-    var width = Math.max(0, Math.round(rect.width));
-    var height = Math.max(0, Math.round(rect.height));
-    if (!width || !height) return;
+    var limitWidth = Math.max(0, Math.floor(rect.width));
+    var limitHeight = Math.max(0, Math.floor(rect.height));
+    if (!limitWidth || !limitHeight) return;
 
-    // Só pedir resize ao IMA se a área realmente mudar (p.ex. orientação).
+    // Conter (contain) um vídeo de qualquer proporção dentro da reserva fixa.
+    // 16:9 -> 692x389, 4:3 -> 533x400, 9:16 -> 225x400 em desktop.
+    var width = Math.min(limitWidth, Math.floor(limitHeight * ratio));
+    var height = Math.min(limitHeight, Math.floor(width / ratio));
+    width = Math.max(1, width);
+    height = Math.max(1, height);
+
+    // As regras CSS governam o tamanho. Não se altera stage.style.height.
+    instance.stage.style.setProperty('--pub-vcv-content-width', width + 'px');
+    instance.stage.style.setProperty('--pub-vcv-content-height', height + 'px');
+
+    // IMA tem de receber o tamanho da superfície que contém a publicidade,
+    // não os 400/250px da área exterior. Evitar resize duplicado.
     if (instance.imaLastWidth !== width || instance.imaLastHeight !== height) {
       instance.imaLastWidth = width;
       instance.imaLastHeight = height;
