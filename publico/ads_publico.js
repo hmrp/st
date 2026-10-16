@@ -1,3 +1,292 @@
+/*161026*/
+
+(function (window, document) {
+  'use strict';
+
+  var STYLE_ID = 'pub-vertcontent-video-css';
+  var loaderPromise = null;
+  var instances = [];
+  var defaults = {
+    maxNoAd: 3,
+    vastTimeoutMs: 9000,
+    startupTimeoutMs: 30000, // protege apenas contra ausência TOTAL de chamadas VAST
+    floating: false, // testar primeiro sem floating; pode ser ativado no override
+    rootMargin: '0px 0px'
+  };
+
+  function config() {
+    var provided = window.VertInContentRequest || {};
+    return Object.assign({}, defaults, provided);
+  }
+  function log() {
+    if (window.console && console.info) {
+      console.info.apply(console, ['[PUB VertVideo]'].concat(Array.prototype.slice.call(arguments)));
+    }
+  }
+  function eligible() {
+    return Boolean(window.pub && window.pub.pageType === 'noticia' &&
+      window.pub.showAds !== false && window.hasAds !== false &&
+      document.querySelector('#story-body'));
+  }
+  function addStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    var style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = '\n' +
+      'aside[data-publico-vertcontent-video="1"]{min-height:0!important;overflow:visible!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{position:relative;width:100%;max-width:692px;margin:0 auto;min-height:0}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading{aspect-ratio:4/3;max-height:520px}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{width:100%;max-width:692px;margin:0 auto!important;background:#31363b}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js{width:100%!important;height:auto!important;aspect-ratio:4/3!important;padding-top:0!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-tech{object-fit:contain}' +
+      '@media(max-width:767px){aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{max-width:calc(100vw - 32px)}}';
+    document.head.appendChild(style);
+  }
+  function appendCss(href) {
+    if (document.querySelector('link[data-pub-vcv-css="' + href + '"]')) return;
+    var link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = href;
+    link.setAttribute('data-pub-vcv-css', href);
+    document.head.appendChild(link);
+  }
+  function addScript(src) {
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = src; script.async = false;
+      script.onload = resolve;
+      script.onerror = function () { reject(new Error('Falha no script: ' + src)); };
+      document.head.appendChild(script);
+    });
+  }
+  function ensureAssets() {
+    if (loaderPromise) return loaderPromise;
+    appendCss('https://hugopedroso.com/publico/video/assets/videojs/vendor/video-js.min.css');
+    appendCss('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.css');
+    appendCss('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.css');
+    appendCss('https://hugopedroso.com/publico/video/assets/videojs/css/publisher-video-player.css');
+    loaderPromise = Promise.resolve()
+      .then(function () { return window.google && window.google.ima ? null : addScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js'); })
+      .then(function () { return window.videojs ? null : addScript('https://hugopedroso.com/publico/video/assets/videojs/vendor/video.min.js'); })
+      .then(function () { return addScript('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ads.min.js'); })
+      .then(function () { return addScript('https://hugopedroso.com/publico/video/assets/videojs/vendor/videojs.ima.min.js'); })
+      .then(function () { return addScript('https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js'); })
+      .then(function () {
+        if (!window.VJSPlayer || !window.VJSPlayer.create || !window.google || !window.google.ima) {
+          throw new Error('VideoJS/IMA não inicializaram corretamente');
+        }
+      });
+    loaderPromise = loaderPromise.catch(function (error) { loaderPromise = null; throw error; });
+    return loaderPromise;
+  }
+  function normalisePlaylist(payload) {
+    var arr = Array.isArray(payload) ? payload : payload && payload.videos;
+    if (!Array.isArray(arr)) return [];
+    return arr.map(function (item) {
+      return typeof item === 'string' ? { src: item, type: 'video/mp4' } : item;
+    }).filter(function (item) {
+      return Boolean(item && (item.src || item.url));
+    });
+  }
+  function getSection() {
+    var pub = window.pub || {};
+    return String(pub.adUnit || window.dfpSection || 'home').split('/')[0].trim();
+  }
+  // Replica os KV globais do display através da configuração já usada pelo TagBundle.
+  // Os KV específicos do vídeo continuam independentes (ex.: pos=incview).
+  function getVideoCustParams() {
+    var pub = window.pub || {};
+    var targeting = window.tagBundleConfig && window.tagBundleConfig.targeting;
+    var subscriber = pub.userType === 'subscriber' ? 'sim' : 'nao';
+    var params = new URLSearchParams({
+      noticiatag: Array.isArray(pub.tags) ? pub.tags.join(',') : '',
+      Seccao: getSection(),
+      assinante: subscriber,
+      subscriber: subscriber,
+      pos: 'incview'
+    });
+
+    if (targeting && typeof targeting === 'object') {
+      Object.keys(targeting).forEach(function (key) {
+        var value = targeting[key];
+        if (Array.isArray(value)) {
+          // O GAM aceita múltiplos valores de um KV separados por vírgulas.
+          value = value.filter(function (item) {
+            return item !== null && typeof item !== 'undefined' && String(item) !== '';
+          }).join(',');
+        }
+        if (value !== null && typeof value !== 'undefined' && String(value) !== '') {
+          params.set(key, String(value));
+        }
+      });
+    } else {
+      console.warn('[PUB VertVideo] Targeting do TagBundle indisponível no pedido VAST.');
+    }
+
+    return params.toString();
+  }
+
+  function createVastRequestUrl(placement) {
+    var pageUrl = window.location.href;
+    var ts = String(Date.now());
+    // Mesmo adunit do VertContent display (incluindo userType e secção).
+    var adUnit = placement && placement.getAttribute('adunit');
+    if (!adUnit) throw new Error('VertContent sem adunit para chamada VAST');
+    var q = new URLSearchParams({
+      iu: '/4458504/' + adUnit.replace(/^\/+/, ''),
+      plcmt: '2',
+      vpa: 'auto',
+      vpmute: '1',
+      vpos: 'preroll',
+      wta: '1',
+      description_url: pageUrl,
+      tfcd: '0',
+      sz: '1x1|640x360',
+      gdfp_req: '1',
+      output: 'vast',
+      unviewed_position_start: '1',
+      env: 'vp',
+      impl: 's',
+      correlator: ts,
+      url: pageUrl,
+      cust_params: getVideoCustParams()
+    });
+    return 'https://pubads.g.doubleclick.net/gampad/ads?' + q.toString();
+  }
+  function mount(wrapper, placement) {
+    if (!wrapper || !placement || !eligible()) return false;
+    if (wrapper.getAttribute('data-publico-vertcontent-video') === '1') return true;
+    addStyles();
+    var opts = config();
+    var stage = document.createElement('div');
+    stage.className = 'pub-vcv-stage is-loading';
+    var instance = { wrapper: wrapper, placement: placement, stage: stage, state: 'pending', player: null, observer: null, safetyTimer: null };
+    instances.push(instance);
+    wrapper.setAttribute('data-publico-vertcontent-video', '1');
+    wrapper.appendChild(stage);
+
+    function fallback(reason) {
+      if (instance.state === 'display') return;
+      instance.state = 'display';
+      if (instance.observer) { instance.observer.disconnect(); instance.observer = null; }
+      if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
+      if (instance.player && !instance.player.isDisposed()) {
+        try { instance.player.dispose(); } catch (e) { log('Erro no dispose', e); }
+      }
+      // A colocação só é introduzida após o vídeo falhar.
+      // O TagBundle do PÚBLICO deve observar os ad-placement dinâmicos, como já acontece com os artigos fechados.
+      wrapper.replaceChildren(placement);
+      wrapper.setAttribute('data-publico-video-result', 'display');
+      wrapper.setAttribute('data-publico-video-fallback-reason', String(reason || 'unknown'));
+      log('Fallback para display', placement.id, reason);
+      document.dispatchEvent(new CustomEvent('publico:vertcontent-display-ready', {
+        detail: { placement: placement, wrapper: wrapper, reason: reason }
+      }));
+      window.setTimeout(function () {
+        if (!window.googletag || !window.googletag.pubads) return;
+        var known = window.googletag.pubads().getSlots().some(function (s) {
+          return s.getSlotElementId() === placement.id;
+        });
+        if (!known) console.warn('[PUB VertVideo] TagBundle ainda não registou o slot display', placement.id);
+      }, 3000);
+    }
+    instance.fallback = fallback;
+    function start() {
+      if (instance.state !== 'pending' || !wrapper.isConnected) return;
+      instance.state = 'loading';
+      var timeout = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = window.setTimeout(function () { if (timeout) timeout.abort(); }, 6000);
+      fetch('https://hugopedroso.com/publico/video/playlist.json', { credentials: 'omit', mode: 'cors', cache: 'no-store', signal: timeout ? timeout.signal : undefined })
+        .then(function (resp) { if (!resp.ok) throw new Error('Playlist HTTP ' + resp.status); return resp.json(); })
+        .then(function (json) {
+          var list = normalisePlaylist(json);
+          if (!list.length) throw new Error('Playlist JSON vazia');
+          return ensureAssets().then(function () { return json; });
+        })
+        .then(function (json) {
+          if (instance.state !== 'loading' || !wrapper.isConnected) return;
+          var shell = document.createElement('div');
+          shell.id = 'pub-vertcontent-video-' + placement.id;
+          shell.className = 'pub-video-shell';
+          shell.setAttribute('data-vjs-player', '');
+          shell.setAttribute('data-player-mode', 'content');
+          shell.setAttribute('data-publico-vertcontent-video', '1');
+          shell.setAttribute('data-player-id', shell.id);
+          shell.setAttribute('data-video-src', normalisePlaylist(json)[0].src || normalisePlaylist(json)[0].url || '');
+          shell.setAttribute('data-video-type', normalisePlaylist(json)[0].type || 'video/mp4');
+          shell.setAttribute('data-playlist-loop', 'true');
+          shell.setAttribute('data-autoplay', 'true');
+          shell.setAttribute('data-muted', 'true');
+          shell.setAttribute('data-volume', '1');
+          shell.setAttribute('data-autoplay-muted-fallback', 'true');
+          shell.setAttribute('data-ad-floating', String(Boolean(opts.floating)));
+          shell.setAttribute('data-sticky', 'false');
+          shell.setAttribute('data-preload', 'metadata');
+          shell.setAttribute('data-vast-timeout', '7000');
+          shell.setAttribute('data-vast-attempt-timeout', String(opts.vastTimeoutMs));
+          shell.setAttribute('data-vast-max-misses', String(opts.maxNoAd));
+          shell.setAttribute('data-ad-tag-url', createVastRequestUrl(placement));
+          shell.setAttribute('data-description-url', window.location.href);
+          shell.setAttribute('data-ad-vpa', 'auto');
+          shell.setAttribute('data-ad-vpmute', '1');
+          var video = document.createElement('video');
+          video.className = 'video-js vjs-default-skin';
+          video.playsInline = true;
+          video.muted = true;
+          video.preload = 'metadata';
+          shell.appendChild(video);
+          shell.addEventListener('publico:vertvideo-fallback', function (ev) { fallback(ev.detail && ev.detail.reason); });
+          shell.addEventListener('publico:vertvideo-attempt', function (ev) {
+            wrapper.setAttribute('data-publico-video-attempt', String(ev.detail.attempt));
+            wrapper.setAttribute('data-publico-video-misses', String(ev.detail.misses));
+          });
+          shell.addEventListener('publico:vertvideo-ad-started', function () {
+            if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
+            wrapper.setAttribute('data-publico-video-misses', '0');
+            wrapper.setAttribute('data-publico-video-result', 'vast-started');
+          });
+          stage.classList.remove('is-loading');
+          stage.appendChild(shell);
+          if (!window.VJSPlayer.setPlaylist(shell, json)) throw new Error('Playlist inválida no VideoJS');
+          instance.player = window.VJSPlayer.create(shell);
+          if (!instance.player && !shell._publisherPlaylistLoading) throw new Error('O VideoJS não criou o player');
+          instance.state = 'video';
+          // O watchdog só é acionado se o player NÃO fizer qualquer pedido.
+          // Os 3 pedidos sem VAST são contabilizados no próprio publisher-video-player.js.
+          instance.safetyTimer = window.setTimeout(function () {
+            if (instance.state !== 'video') return;
+            var monitor = shell._pubVertMonitor;
+            if (!monitor || monitor.attempts === 0) fallback('player-no-vast-request');
+          }, opts.startupTimeoutMs);
+          log('Player carregado no primeiro VertContent', placement.id, 'VAST:', shell.getAttribute('data-ad-tag-url'));
+        })
+        .catch(function (error) { fallback(error && error.message ? error.message : 'player-error'); })
+        .finally(function () { window.clearTimeout(timer); });
+    }
+    if (window.IntersectionObserver) {
+      instance.observer = new IntersectionObserver(function (items) {
+        if (!items.some(function (e) { return e.isIntersecting; })) return;
+        instance.observer.disconnect(); instance.observer = null;
+        start();
+      }, { rootMargin: opts.rootMargin, threshold: 0.5 });
+      instance.observer.observe(wrapper);
+    } else {
+      window.setTimeout(start, 0);
+    }
+    log('Reservado primeiro VertContent para vídeo:', placement.id);
+    return true;
+  }
+  window.VertInContentRequest = Object.assign(window.VertInContentRequest || {}, {
+    mount: mount,
+    eligible: eligible,
+    instances: instances,
+    inspect: function () { return instances.map(function (x) {
+      return { slot: x.placement.id, state: x.state, fallbackReason: x.wrapper.getAttribute('data-publico-video-fallback-reason'),
+        attempts: x.wrapper.getAttribute('data-publico-video-attempt'), misses: x.wrapper.getAttribute('data-publico-video-misses') };
+    }); },
+    forceDisplay: function () { if (instances.length) instances[0].fallback('manual'); }
+  });
+})(window, document);
+
 /*131026_teste2*/
 (function (window, document) {
     "use strict";
@@ -202,6 +491,22 @@
         placement.id = "VertContent" + index;
         placement.setAttribute("format", "vertContent");
         placement.setAttribute("adunit", "Vert_Publico/" + userType + "/" + adUnit + "/VertContent");
+
+        // Apenas o primeiro VertContent de artigos testa VAST antes do display.
+        // O slot display NÃO entra no DOM até o player solicitar fallback.
+        if (index === 0 && window.pub && window.pub.pageType === "noticia" &&
+                !adsAreDisabled(window.pub) &&
+                !(window.VertInContentRequest && window.VertInContentRequest.enabled === false) &&
+                window.VertInContentRequest &&
+                typeof window.VertInContentRequest.mount === "function") {
+            try {
+                if (window.VertInContentRequest.mount(wrapper, placement)) {
+                    return wrapper;
+                }
+            } catch (error) {
+                logError("Falha ao preparar primeiro VertContent em vídeo; usar display.", error);
+            }
+        }
 
         wrapper.appendChild(placement);
         return wrapper;
