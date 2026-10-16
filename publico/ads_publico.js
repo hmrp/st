@@ -1,4 +1,5 @@
-/*161026*/
+/* 131026_teste2 | módulo de vídeo lazy em publisher-video-player.js */
+/*131026_teste2*/
 (function (window, document) {
     "use strict";
 
@@ -2173,8 +2174,11 @@
         runtime.adUnit = adUnit;
         runtime.tagBundleUrl = tagBundleUrl;
 
-
+        // Fonte única para o targeting do TagBundle e do player Incontent.
+        // O TagBundle legado também consulta a variável global tagBundleConfig
+        // nos comandos GPT; esta propriedade tem de ser mantida para compatibilidade.
         runtime.tagBundleConfig = getTagBundleConfig(config, userType);
+        window.tagBundleConfig = runtime.tagBundleConfig;
 
         initCreativeAdControl(runtime);
         initHeavyAdObserver(runtime);
