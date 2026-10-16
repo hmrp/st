@@ -758,3 +758,15 @@
   opacity: 1 !important;
   pointer-events: auto !important;
 }
+
+/* Incontent integrado no VertContent: o Video.js preenche o palco fixo.
+   Cada MP4 mantém a proporção através do object-fit: contain. */
+.pub-video-shell[data-publico-vertcontent-video="1"] .video-js {
+  aspect-ratio: auto;
+  height: 100%;
+}
+.pub-video-shell[data-publico-vertcontent-video="1"] .video-js video,
+.pub-video-shell[data-publico-vertcontent-video="1"] .video-js .vjs-tech {
+  object-fit: contain;
+  object-position: center;
+}
