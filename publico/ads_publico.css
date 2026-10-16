@@ -373,7 +373,7 @@ ad-placement[format="Billboard"]:has(> div[id^="google_ads_iframe_"] iframe) {
 .ad-slot.ad-slot--in-content {
     width: 100%;
     max-width: 100%;
-    min-height: 250px;
+    min-height: 0;
     height: auto;
     padding-right: 0;
     padding-left: 0;
@@ -385,7 +385,7 @@ ad-placement:is(.inContent, [format="vertContent"]) {
     display: block;
     width: 100%;
     max-width: 100%;
-    min-height: 250px;
+    min-height: 0;
     height: auto;
     margin-right: auto;
     margin-left: auto;
@@ -452,15 +452,6 @@ ad-placement:is(.inContent, [format="vertContent"]) iframe[width="600"][height="
     aspect-ratio: 1 / 1;
 }
 
-.ad-slot.ad-slot--in-content:has(ad-placement:is(.inContent, [format="vertContent"]) iframe[height="360"]),
-ad-placement:is(.inContent, [format="vertContent"]):has(iframe[height="360"]) {
-    min-height: 360px;
-}
-
-.ad-slot.ad-slot--in-content:has(ad-placement:is(.inContent, [format="vertContent"]) iframe[height="600"]),
-ad-placement:is(.inContent, [format="vertContent"]):has(iframe[height="600"]) {
-    min-height: 600px;
-}
 
 .pubHorz div {
     margin: auto !important;
@@ -994,48 +985,121 @@ aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container {
     }
 }
 
-/* ============================================================
-   ANTICLS — apenas o primeiro VertContent com player in-content.
-   Sem reservar antes da primeira chamada.
-   Desktop: acompanha a altura da criatividade entregue (pode encolher no refresh).
-   Mobile: mantém a altura máxima alcançada, mesmo após um refresh menor.
-   ============================================================ */
-aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="1"] {
-    --pub-vcv-held-height: 0px;
-    /* Inicialmente 400px no pedido do vídeo; após o fallback, acompanha
-       os tamanhos reais que o GAM devolve em cada refresh. */
-    min-height: var(--pub-vcv-display-height, var(--pub-vcv-max-height, 400px)) !important;
+/* ===============================================================
+   ANTI-CLS DOS VERTICAIS (baseado em eventos GPT, sem observação)
+   JS mantém reserva histórica até 600 px, mas permite expansão
+   temporária quando o criativo atual é maior que 600 px.
+   Nenhuma reserva antes de começar o pedido (VertContent inicial:
+   sentinela de 1 px necessário para lazyload).
+   =============================================================== */
+
+/* VertContent: desktop + mobile. Guarda reserva até 600 px e permite criativos maiores. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-publico-vertcontent="1"] {
+    --pub-ad-min-height: 0px;
+    position: relative;
+    width: 100%;
     height: auto !important;
+    min-height: var(--pub-ad-min-height) !important;
     max-height: none !important;
     overflow: visible !important;
 }
 
+/* O slot ainda não fez pedido: não ocupar uma área publicitária. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="idle"] {
+    height: 1px !important;
+    min-height: 0 !important;
+    max-height: 1px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="idle"] > ad-placement[format="vertContent"] {
+    height: 1px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Desde o pedido: reserva estável até 600 px; expansão temporária se maior. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="requested"],
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="filled"],
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="empty-held"] {
+    min-height: max(250px, var(--pub-ad-min-height)) !important;
+}
+
+/* Não somar padding vertical ao criativo 300x600, que já ocupa 600px. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout > ad-placement[format="vertContent"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Enquanto o player está ativo, reservar espaço apenas após o seu pedido. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="video"] {
+    min-height: max(400px, var(--pub-ad-min-height)) !important;
+}
 @media screen and (max-width: 767px) {
-    aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="1"] {
-        /* A publicidade display pode ter 600px; o máximo do vídeo continua
-           a ser 250px. O wrapper mobile nunca reduz a altura já atingida. */
-        min-height: max(var(--pub-vcv-max-height, 250px), var(--pub-vcv-held-height)) !important;
+    aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="video"] {
+        min-height: max(250px, var(--pub-ad-min-height)) !important;
     }
 }
 
-/* Primeira posicao in-content, ainda SEM qualquer request real.
-   Mantem apenas uma sentinela de 1px para o IntersectionObserver;
-   evita 250/400px em branco antes da ativacao. */
+/* O banner seguinte, quando mais pequeno, acompanha o leitor apenas
+   dentro da área já reservada pelo respetivo VertContent. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-sticky="true"]:not([data-pub-ad-phase="idle"]):not([data-pub-ad-phase="empty-held"]) > ad-placement[format="vertContent"] {
+    position: sticky !important;
+    top: 104px;
+    z-index: 1;
+    height: fit-content !important;
+    align-self: start;
+}
+@media screen and (max-width: 767px) {
+    aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-sticky="true"]:not([data-pub-ad-phase="idle"]):not([data-pub-ad-phase="empty-held"]) > ad-placement[format="vertContent"] {
+        top: 72px;
+    }
+}
+
+/* Sentinela do primeiro vídeo antes da sua primeira chamada. */
 aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="0"] {
-    min-height: 0 !important;
     height: 1px !important;
+    min-height: 0 !important;
     max-height: 1px !important;
-    padding: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
     overflow: hidden !important;
-    background: transparent !important;
+    padding: 0 !important;
 }
 aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="0"] > .pub-vcv-stage {
     width: 1px !important;
     height: 1px !important;
     max-width: 1px !important;
     max-height: 1px !important;
-    aspect-ratio: auto !important;
     visibility: hidden !important;
+}
+
+/* VertTop/VertMiddle, inclusive verticais dinâmicos em smartphone. */
+@media screen and (max-width: 767px) {
+    ad-placement.pub-ad-layout[format="vert"]:not(.BtnFixo) {
+        --pub-ad-min-height: 0px;
+        position: relative;
+        min-height: var(--pub-ad-min-height) !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="requested"]:not(.BtnFixo),
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="filled"]:not(.BtnFixo),
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="empty-held"]:not(.BtnFixo) {
+        min-height: max(250px, var(--pub-ad-min-height)) !important;
+    }
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="idle"]:not(.BtnFixo) {
+        min-height: 0 !important;
+        height: auto !important;
+    }
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-sticky="true"]:not([data-pub-ad-phase="idle"]):not([data-pub-ad-phase="empty-held"]):not(.BtnFixo) > div[id^="google_ads_iframe_"] {
+        position: sticky !important;
+        top: 72px !important;
+        z-index: 1;
+    }
+    .ad-slot--sticky-wrapper:has(> ad-placement.pub-ad-layout[format="vert"][data-pub-ad-sticky="true"]) {
+        position: static !important;
+        top: auto !important;
+    }
 }

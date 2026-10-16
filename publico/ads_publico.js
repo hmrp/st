@@ -49,41 +49,13 @@
     } catch (error) { log('IMA resize não disponível', error); }
   }
 
-  // Mantem a maior altura ja apresentada pelo primeiro VertContent.
-  // Continua ativo depois do fallback para display e durante os refreshes.
-  function holdVertContentHeight(instance, explicitHeight) {
-    if (!instance || !instance.wrapper || !instance.wrapper.isConnected || !instance.heightActive) return;
-    var wrapper = instance.wrapper;
-    var rendered = wrapper.getBoundingClientRect().height;
-    var requested = Number(explicitHeight) || 0;
-    var oldHeight = instance.heldHeight || 0;
-    var candidate = Math.ceil(Math.max(rendered, requested));
-    if (candidate > oldHeight) {
-      instance.heldHeight = candidate;
-      wrapper.style.setProperty('--pub-vcv-held-height', candidate + 'px');
-      wrapper.setAttribute('data-publico-vcv-height', String(candidate));
-    }
-  }
-
+  // Os eventos e a reserva de altura são geridos pelo controlador único de slots
+  // da publicidade. O player apenas avisa quando começa uma chamada real.
   function activateVertContentHeight(instance) {
-    // So reserva ao iniciar uma chamada real (ou apos resposta display com fill).
-    if (!instance || instance.heightActive || !instance.wrapper.isConnected) return;
-    instance.heightActive = true;
+    if (!instance || !instance.wrapper.isConnected) return;
     instance.wrapper.setAttribute('data-publico-vcv-reserved', '1');
-    instance.wrapper.style.display = '';
+    if (window.PubAdLayout) window.PubAdLayout.videoRequested(instance.wrapper);
     fitVideoStage(instance, instance.activeRatio || 16 / 9);
-    holdVertContentHeight(instance);
-  }
-
-  function watchVertContentHeight(instance) {
-    // Antes do primeiro request, o wrapper fica praticamente sem altura.
-    // Depois de ativado, regista crescimentos, incluindo displays altos.
-    if (typeof window.ResizeObserver === 'function') {
-      instance.heightObserver = new window.ResizeObserver(function () {
-        holdVertContentHeight(instance);
-      });
-      instance.heightObserver.observe(instance.wrapper);
-    }
   }
 
   function fitVideoStage(instance, ratio) {
@@ -136,6 +108,7 @@
     function startAd() {
       instance.inAd = true;
       instance.hadVisibleContent = true;
+      if (window.PubAdLayout) window.PubAdLayout.videoVisible(instance.wrapper);
       var ratio = 16 / 9;
       instance.currentAdInfo = null;
       try {
@@ -164,7 +137,7 @@
       updateContentRatio();
     }
     // loadedmetadata volta a disparar após cada mudança de MP4 na playlist.
-    player.on('playing', function () { instance.hadVisibleContent = true; });
+    player.on('playing', function () { instance.hadVisibleContent = true; if (window.PubAdLayout) window.PubAdLayout.videoVisible(instance.wrapper); });
     player.on('loadedmetadata', updateContentRatio);
     player.on('loadeddata', updateContentRatio);
     player.on('ads-ad-started', startAd);
@@ -305,13 +278,12 @@
     var opts = config();
     var stage = document.createElement('div');
     stage.className = 'pub-vcv-stage is-loading';
-    var instance = { wrapper: wrapper, placement: placement, stage: stage, state: 'pending', player: null, observer: null, safetyTimer: null, heightActive: false, hadVisibleContent: false };
+    var instance = { wrapper: wrapper, placement: placement, stage: stage, state: 'pending', player: null, observer: null, safetyTimer: null, hadVisibleContent: false };
     instances.push(instance);
     wrapper.setAttribute('data-publico-vertcontent-video', '1');
     // Nenhuma altura reservada ate existir pedido real de video ou display.
     wrapper.setAttribute('data-publico-vcv-reserved', '0');
     wrapper.appendChild(stage);
-    watchVertContentHeight(instance);
     instance.activeRatio = 16 / 9;
     instance.inAd = false;
     fitVideoStage(instance, instance.activeRatio);
@@ -320,7 +292,6 @@
       if (instance.state === 'display') return;
       // Preservar altura apenas se ja houve carregamento; a resposta no-fill
       // podera colapsar o slot se nunca houve anuncio/video reproduzido.
-      holdVertContentHeight(instance);
       instance.state = 'display';
       if (instance.observer) { instance.observer.disconnect(); instance.observer = null; }
       if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
@@ -401,6 +372,7 @@
           });
           shell.addEventListener('publico:vertvideo-ad-started', function () {
             instance.hadVisibleContent = true;
+            if (window.PubAdLayout) window.PubAdLayout.videoVisible(instance.wrapper);
             if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
             wrapper.setAttribute('data-publico-video-misses', '0');
             wrapper.setAttribute('data-publico-video-result', 'vast-started');
@@ -442,54 +414,6 @@
     mount: mount,
     eligible: eligible,
     instances: instances,
-    holdDisplayHeight: function (wrapper, event) {
-      var instance = instances.find(function (item) { return item.wrapper === wrapper; });
-      if (!instance) return;
-      // No-fill sem qualquer video ou anuncio anteriormente visivel: ocultar.
-      if (event && event.isEmpty && !instance.hadVisibleContent) {
-        if (instance.heightObserver) { instance.heightObserver.disconnect(); instance.heightObserver = null; }
-        instance.heightActive = false;
-        instance.heldHeight = 0;
-        wrapper.style.removeProperty('--pub-vcv-held-height');
-        wrapper.style.removeProperty('--pub-vcv-display-height');
-        instance.displayHeight = 0;
-        wrapper.removeAttribute('data-publico-vcv-height');
-        wrapper.removeAttribute('data-publico-vcv-reserved');
-        wrapper.style.display = 'none';
-        return;
-      }
-      if (event && !event.isEmpty) {
-        instance.hadVisibleContent = true;
-        activateVertContentHeight(instance);
-      }
-      // Em desktop, cada criativo com fill define a nova altura mínima do
-      // primeiro VertContent (ex.: 600 -> 250 após o refresh).
-      // Em mobile, o CSS mantém a maior altura atingida e nunca encolhe.
-      // Sem fill, preserva-se a última altura já ocupada.
-      var size = event && event.size;
-      var adHeight = Array.isArray(size) && typeof size[1] === 'number' ? size[1] : 0;
-      if (event && !event.isEmpty && instance.state === 'display') {
-        if (adHeight > 0) {
-          instance.displayHeight = Math.ceil(adHeight);
-          wrapper.style.setProperty('--pub-vcv-display-height', instance.displayHeight + 'px');
-        } else {
-          // Criativos fluid: o tamanho só é conhecido depois de a criatividade
-          // entrar no DOM. Não medimos o wrapper, que pode reter a altura anterior.
-          window.requestAnimationFrame(function () {
-            if (!instance.wrapper.isConnected || instance.state !== 'display') return;
-            var frame = instance.placement.querySelector('iframe');
-            var measured = frame && frame.getBoundingClientRect().height;
-            if (!(measured > 0)) measured = instance.placement.getBoundingClientRect().height;
-            if (measured > 0) {
-              instance.displayHeight = Math.ceil(measured);
-              wrapper.style.setProperty('--pub-vcv-display-height', instance.displayHeight + 'px');
-              holdVertContentHeight(instance, instance.displayHeight);
-            }
-          });
-        }
-      }
-      holdVertContentHeight(instance, adHeight);
-    },
     inspect: function () {
       var result = instances.map(function (x) {
         var shell = x.stage.querySelector('.pub-video-shell');
@@ -504,10 +428,6 @@
           playerWidthPx: Math.round(x.stage.getBoundingClientRect().width),
           playerHeightPx: Math.round(x.stage.getBoundingClientRect().height),
           wrapperHeightPx: Math.round(x.wrapper.getBoundingClientRect().height),
-          heldHeightPx: x.heldHeight || 0,
-          displayHeightPx: x.displayHeight || 0,
-          heightPolicy: window.matchMedia && window.matchMedia('(max-width: 767px)').matches ? 'mobile-hold-max' : 'desktop-follow-creative',
-          heightActive: Boolean(x.heightActive),
           hadVisibleContent: Boolean(x.hadVisibleContent),
           playerAspectRatio: Number((x.activeRatio || 16 / 9).toFixed(4)),
           currentAdInfo: x.currentAdInfo || null,
@@ -521,8 +441,7 @@
       console.table(result.map(function (x) {
         return { slot: x.slot, state: x.state, displayAdUnit: x.displayAdUnit,
           videoAdUnit: x.videoAdUnit, playerWidthPx: x.playerWidthPx, playerHeightPx: x.playerHeightPx,
-          wrapperHeightPx: x.wrapperHeightPx, heldHeightPx: x.heldHeightPx,
-          displayHeightPx: x.displayHeightPx, heightPolicy: x.heightPolicy,
+          wrapperHeightPx: x.wrapperHeightPx,
           playerAspectRatio: x.playerAspectRatio,
           adApi: x.currentAdInfo && x.currentAdInfo.apiFramework || '',
           mediaDimensions: x.currentAdInfo ? x.currentAdInfo.mediaWidth + 'x' + x.currentAdInfo.mediaHeight : '',
@@ -728,12 +647,184 @@
         });
     }
 
+    /* ============================================================
+       LAYOUT VERTICAL — GESTÃO POR EVENTOS GPT, SEM OBSERVERS
+       Só VertContent (desktop+mobile) e Vert (mobile no CSS).
+       A reserva histórica cresce até 600 px e não encolhe.
+       Um criativo fixo >600 px expande temporariamente o wrapper;
+       após refresh para um fixo mais pequeno, regressa a 600 px.
+       1x1/fluid não são medidos nem observados.
+       ============================================================ */
+    var pubAdLayout = (function () {
+        var MAX_HEIGHT = 600;
+        var STICKY_GAP = 80;
+        var states = new WeakMap();
+        var tracked = [];
+
+        function targetFor(placement) {
+            if (!placement || !placement.closest) return null;
+            var wrapper = placement.closest('aside[data-publico-vertcontent="1"]');
+            if (wrapper) return { holder: wrapper, placement: placement, kind: 'content' };
+            if (placement.matches && placement.matches(
+                'ad-placement.pubVert:not(.BtnFixo), ad-placement[format="vert"]:not(.BtnFixo)')) {
+                return { holder: placement, placement: placement, kind: 'vert' };
+            }
+            return null;
+        }
+        function getState(target) {
+            if (!target) return null;
+            var state = states.get(target.holder);
+            if (state) {
+                state.placement = target.placement;
+                return state;
+            }
+            state = {
+                holder: target.holder,
+                placement: target.placement,
+                kind: target.kind,
+                held: 0,           // histórico persistente, até 600 px
+                applied: 0,        // reserva atualmente aplicada (pode exceder 600)
+                current: 0,
+                filled: false,
+                phase: 'idle'
+            };
+            states.set(target.holder, state);
+            tracked.push(state);
+            target.holder.classList.add('pub-ad-layout');
+            target.holder.setAttribute('data-pub-ad-phase', 'idle');
+            return state;
+        }
+        function setPhase(state, phase) {
+            if (state.phase === phase) return;
+            state.phase = phase;
+            state.holder.setAttribute('data-pub-ad-phase', phase);
+        }
+        function setSticky(state, value) {
+            var flag = value ? 'true' : 'false';
+            if (state.holder.getAttribute('data-pub-ad-sticky') !== flag) {
+                state.holder.setAttribute('data-pub-ad-sticky', flag);
+            }
+        }
+        function setReservedHeight(state, height) {
+            height = Math.max(0, Math.ceil(Number(height) || 0));
+            if (state.applied === height) return;
+            state.applied = height;
+            if (height) {
+                state.holder.style.setProperty('--pub-ad-min-height', height + 'px');
+            } else {
+                state.holder.style.removeProperty('--pub-ad-min-height');
+            }
+        }
+        function hold(state, height) {
+            height = Math.max(0, Math.ceil(Number(height) || 0));
+            if (!height) return;
+            // Apenas o histórico fica limitado a 600 px.
+            state.held = Math.max(state.held, Math.min(MAX_HEIGHT, height));
+            // O criativo atualmente renderizado pode ser maior que 600 px.
+            // Se o seguinte for inferior, regressa à reserva histórica.
+            setReservedHeight(state, Math.max(state.held, height));
+        }
+        function forContent(wrapper) {
+            if (!wrapper) return null;
+            return getState({
+                holder: wrapper,
+                placement: wrapper.querySelector('ad-placement[format="vertContent"]'),
+                kind: 'content'
+            });
+        }
+        function requested(placement) {
+            var state = getState(targetFor(placement));
+            if (!state) return;
+            // Não apagar a reserva nem o sticky entre request e render.
+            // A primeira reserva só surge após a primeira chamada real.
+            setPhase(state, 'requested');
+        }
+        function rendered(placement, event) {
+            var state = getState(targetFor(placement));
+            if (!state || !event) return;
+
+            if (event.isEmpty) {
+                state.current = 0;
+                setSticky(state, false);
+                if (!state.filled) {
+                    // Nunca existiu publicidade: não deixar espaço vazio.
+                    state.held = 0;
+                    setReservedHeight(state, 0);
+                    setPhase(state, 'idle');
+                } else {
+                    // No-fill posterior: manter até 600 px, não o eventual pico >600.
+                    setReservedHeight(state, state.held);
+                    setPhase(state, 'empty-held');
+                }
+                return;
+            }
+
+            state.filled = true;
+            setPhase(state, 'filled');
+            var size = event.size;
+            var rawHeight = Array.isArray(size) ? Number(size[1]) : 0;
+            if (rawHeight > 1 && isFinite(rawHeight)) {
+                // event.size define a altura dos criativos fixos.
+                // Histórico: máximo 600 px. Criativo atual: altura real,
+                // mesmo quando supera 600. Após redução, retém até 600.
+                state.current = rawHeight;
+                hold(state, rawHeight);
+                setSticky(state, state.applied - rawHeight >= STICKY_GAP);
+            } else {
+                // 1x1 e fluid podem alterar dimensão depois do render.
+                // Deliberadamente não usar ResizeObserver nem temporizadores.
+                state.current = 0;
+                setSticky(state, false);
+            }
+        }
+        function videoRequested(wrapper) {
+            var state = forContent(wrapper);
+            if (state) setPhase(state, 'video');
+        }
+        function videoVisible(wrapper) {
+            var state = forContent(wrapper);
+            if (!state) return;
+            state.filled = true;
+            setPhase(state, 'video');
+            // Uma única leitura por evento real do player, sem polling.
+            var stage = wrapper.querySelector('.pub-vcv-stage');
+            if (stage) hold(state, stage.getBoundingClientRect().height);
+        }
+        function inspect() {
+            var output = tracked.filter(function (state) { return state.holder.isConnected; })
+                .map(function (state) {
+                    return {
+                        id: state.placement && state.placement.id || 'video',
+                        kind: state.kind,
+                        phase: state.phase,
+                        heldHeightPx: state.held,
+                        reservedHeightPx: state.applied,
+                        currentCreativePx: state.current,
+                        sticky: state.holder.getAttribute('data-pub-ad-sticky') === 'true',
+                        renderedHeightPx: Math.ceil(state.holder.getBoundingClientRect().height)
+                    };
+                });
+            console.table(output);
+            return output;
+        }
+        return {
+            registerContent: forContent,
+            requested: requested,
+            rendered: rendered,
+            videoRequested: videoRequested,
+            videoVisible: videoVisible,
+            inspect: inspect
+        };
+    })();
+    window.PubAdLayout = pubAdLayout;
+
     function createVertContent(index, userType, adUnit) {
         var wrapper = document.createElement("aside");
         var placement = document.createElement("ad-placement");
 
         wrapper.className = "ad-slot ad-slot--in-content";
         wrapper.setAttribute("data-publico-vertcontent", "1");
+        pubAdLayout.registerContent(wrapper);
 
         placement.id = "VertContent" + index;
         placement.setAttribute("format", "vertContent");
@@ -1738,32 +1829,9 @@
     }
 
     function setVertContentVisibility(event, element) {
-        var adUnitPath = event && event.slot && typeof event.slot.getAdUnitPath === "function"
-            ? event.slot.getAdUnitPath()
-            : "";
-        var wrapper;
-
-        if (!adUnitPath || adUnitPath.split("/").pop() !== "VertContent" || !element || typeof element.closest !== "function") {
-            return;
-        }
-
-        wrapper = element.closest('aside[data-publico-vertcontent="1"]');
-
-        if (!wrapper) {
-            return;
-        }
-
-        // Preserva a altura somente depois de uma chamada efetiva; se nunca
-        // foi mostrado video nem display, no-fill nao deixa espaco vazio.
-        if (wrapper.hasAttribute('data-publico-vcv-reserved')) {
-            if (window.VertInContentRequest &&
-                typeof window.VertInContentRequest.holdDisplayHeight === 'function') {
-                window.VertInContentRequest.holdDisplayHeight(wrapper, event);
-            }
-            return;
-        }
-
-        wrapper.style.display = event.isEmpty ? "none" : "";
+        // A reserva de altura do layout comum aplica-se a todos os VertContent.
+        // Nunca ocultar o wrapper por resposta vazia depois de ja haver fill.
+        if (element) pubAdLayout.rendered(element, event);
     }
 
     function resetFooterBtn(runtime) {
@@ -2034,11 +2102,7 @@
                 slotId = event.slot.getSlotElementId();
                 element = slotId ? getSlotElement(slotId) : null;
 
-                if (element && slotId === 'VertContent0' &&
-                    window.VertInContentRequest &&
-                    typeof window.VertInContentRequest.holdDisplayHeight === 'function') {
-                    window.VertInContentRequest.holdDisplayHeight(element.closest('aside[data-publico-vcv-reserved="1"]'));
-                }
+                if (element) pubAdLayout.requested(element);
 
                 if (slotId !== "Footer" || !runtime.footer || !runtime.footer.specialNoRefresh) {
                     resetPlacementCreativeControls(element);
