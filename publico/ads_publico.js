@@ -29,23 +29,149 @@
       window.pub.showAds !== false && window.hasAds !== false &&
       document.querySelector('#story-body'));
   }
-  // Limites: 400px desktop, 250px smartphone. Apenas o player integrado no artigo.
+  // O player respeita o rácio real de cada ficheiro/VAST, com tetos de altura.
+  // Os tamanhos VAST (sz) dizem respeito ao inventário e não à altura visual do player.
   function addStyles() {
     if (document.getElementById(STYLE_ID)) return;
     var style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = '\n' +
       'aside[data-publico-vertcontent-video="1"]{min-height:0!important;overflow:visible!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{position:relative;width:100%;max-width:692px;max-height:400px;aspect-ratio:16/9;margin:0 auto;min-height:0;overflow:hidden}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading{aspect-ratio:16/9;max-height:400px}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{width:100%!important;height:100%!important;max-width:100%!important;max-height:400px!important;margin:0!important;background:#31363b;overflow:hidden}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;aspect-ratio:16/9!important;padding-top:0!important;overflow:hidden}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-tech{height:100%!important;max-height:100%!important;object-fit:contain}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container{height:100%!important;max-height:100%!important}' +
-      '@media(max-width:767px){aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{max-width:min(calc(100vw - 32px),444px)!important;max-height:250px!important}' +
-      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{max-height:250px!important}}';
+      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{' +
+      'position:relative!important;box-sizing:border-box!important;width:100%;max-width:692px;' +
+      'max-height:400px;aspect-ratio:auto;margin:0 auto!important;min-height:0!important;overflow:hidden;background:#000}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-vcv-stage.is-loading{aspect-ratio:16/9}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell{' +
+      'position:relative!important;display:block!important;width:100%!important;height:100%!important;' +
+      'min-height:0!important;max-width:100%!important;max-height:100%!important;' +
+      'margin:0!important;padding:0!important;overflow:hidden!important;background:#000!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js,' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fluid{' +
+      'position:relative!important;display:block!important;width:100%!important;height:100%!important;' +
+      'min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;' +
+      'aspect-ratio:auto!important;padding:0!important;padding-top:0!important;overflow:hidden!important;background:#000!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::before,' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::after{' +
+      'content:none!important;display:none!important;padding:0!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js video,' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js .vjs-tech{' +
+      'position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;' +
+      'min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;' +
+      'object-fit:contain!important;object-position:center center!important;transform:none!important;background:#000!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster,' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster img{' +
+      'width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;' +
+      'object-fit:contain!important;object-position:center center!important}' +
+      'aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container{' +
+      'position:absolute!important;inset:0!important;width:100%!important;height:100%!important;' +
+      'max-width:100%!important;max-height:100%!important;overflow:hidden!important}' +
+      '@media(max-width:767px){aside[data-publico-vertcontent-video="1"] .pub-vcv-stage{' +
+      'max-width:calc(100vw - 32px)!important;max-height:250px!important}}';
     document.head.appendChild(style);
   }
+
+  function isMobileVideo() {
+    return Boolean(window.matchMedia && window.matchMedia('(max-width: 767px)').matches);
+  }
+
+  function normaliseRatio(ratio) {
+    ratio = Number(ratio);
+    return isFinite(ratio) && ratio >= 0.15 && ratio <= 10 ? ratio : 16 / 9;
+  }
+
+  function resizeImaIfPlaying(instance, width, height) {
+    if (!instance.inAd || !instance.player || !instance.player.ima ||
+        typeof instance.player.ima.getAdsManager !== 'function') return;
+    try {
+      var manager = instance.player.ima.getAdsManager();
+      if (manager && typeof manager.resize === 'function') {
+        var mode = window.google && window.google.ima && window.google.ima.ViewMode
+          ? window.google.ima.ViewMode.NORMAL : 'normal';
+        manager.resize(width, height, mode);
+      }
+    } catch (error) { log('IMA resize não disponível', error); }
+  }
+
+  function fitVideoStage(instance, ratio) {
+    if (instance.state === 'display' || !instance.stage.isConnected) return;
+    ratio = normaliseRatio(ratio || instance.activeRatio || 16 / 9);
+    instance.activeRatio = ratio;
+    var mobile = isMobileVideo();
+    var heightLimit = mobile ? 250 : 400;
+    var rect = instance.wrapper.getBoundingClientRect();
+    var cs = window.getComputedStyle(instance.wrapper);
+    var padding = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+    var available = rect.width - padding;
+    if (!(available > 0)) return;
+    available = Math.min(692, available);
+    if (mobile) available = Math.min(available, Math.max(1, window.innerWidth - 32));
+    var width = Math.max(1, Math.floor(Math.min(available, heightLimit * ratio)));
+    var height = Math.max(1, Math.min(heightLimit, Math.round(width / ratio)));
+    instance.stage.style.width = width + 'px';
+    instance.stage.style.height = height + 'px';
+    instance.stage.style.aspectRatio = String(ratio);
+    instance.stage.setAttribute('data-video-ratio', ratio.toFixed(4));
+    resizeImaIfPlaying(instance, width, height);
+  }
+
+  function bindVideoSizing(instance, shell, player) {
+    if (!player || typeof player.on !== 'function') return;
+    function updateContentRatio() {
+      var width = typeof player.videoWidth === 'function' ? player.videoWidth() : 0;
+      var height = typeof player.videoHeight === 'function' ? player.videoHeight() : 0;
+      var video = shell.querySelector('video.vjs-tech, video');
+      if (!(width > 0 && height > 0) && video) {
+        width = video.videoWidth;
+        height = video.videoHeight;
+      }
+      if (width > 0 && height > 0) instance.contentRatio = normaliseRatio(width / height);
+      if (!instance.inAd) fitVideoStage(instance, instance.contentRatio || 16 / 9);
+    }
+    function startAd() {
+      instance.inAd = true;
+      var ratio = 16 / 9; // VAST desconhecido: formato neutro, sem crop (contain)
+      try {
+        var manager = player.ima && player.ima.getAdsManager && player.ima.getAdsManager();
+        var current = manager && manager.getCurrentAd && manager.getCurrentAd();
+        var width = current && current.getWidth && current.getWidth();
+        var height = current && current.getHeight && current.getHeight();
+        if (width > 0 && height > 0) ratio = width / height;
+      } catch (error) { /* Algumas respostas VAST não expõem dimensões. */ }
+      fitVideoStage(instance, ratio);
+    }
+    function endAd() {
+      instance.inAd = false;
+      updateContentRatio();
+    }
+    // loadedmetadata volta a disparar após cada mudança de MP4 na playlist.
+    player.on('loadedmetadata', updateContentRatio);
+    player.on('loadeddata', updateContentRatio);
+    player.on('ads-ad-started', startAd);
+    player.on('adstart', startAd);
+    player.on('adend', endAd);
+    player.on('ads-ad-ended', endAd);
+    player.on('contentresumed', endAd);
+    player.on('adserror', endAd);
+    var video = shell.querySelector('video.vjs-tech, video');
+    if (video) video.addEventListener('loadedmetadata', updateContentRatio);
+    var onResize = function () { fitVideoStage(instance, instance.activeRatio); };
+    window.addEventListener('resize', onResize);
+    var observer = null;
+    if (typeof window.ResizeObserver === 'function') {
+      observer = new window.ResizeObserver(onResize);
+      observer.observe(instance.wrapper);
+    }
+    instance.sizingCleanup = function () {
+      window.removeEventListener('resize', onResize);
+      if (observer) observer.disconnect();
+    };
+    player.on('dispose', function () {
+      if (instance.sizingCleanup) instance.sizingCleanup();
+      instance.sizingCleanup = null;
+    });
+    updateContentRatio();
+  }
+
   function appendCss(href) {
     if (document.querySelector('link[data-pub-vcv-css="' + href + '"]')) return;
     var link = document.createElement('link');
@@ -163,12 +289,16 @@
     instances.push(instance);
     wrapper.setAttribute('data-publico-vertcontent-video', '1');
     wrapper.appendChild(stage);
+    instance.activeRatio = 16 / 9;
+    instance.inAd = false;
+    fitVideoStage(instance, instance.activeRatio);
 
     function fallback(reason) {
       if (instance.state === 'display') return;
       instance.state = 'display';
       if (instance.observer) { instance.observer.disconnect(); instance.observer = null; }
       if (instance.safetyTimer) { window.clearTimeout(instance.safetyTimer); instance.safetyTimer = null; }
+      if (instance.sizingCleanup) { instance.sizingCleanup(); instance.sizingCleanup = null; }
       if (instance.player && !instance.player.isDisposed()) {
         try { instance.player.dispose(); } catch (e) { log('Erro no dispose', e); }
       }
@@ -246,9 +376,11 @@
           });
           stage.classList.remove('is-loading');
           stage.appendChild(shell);
+          fitVideoStage(instance, instance.activeRatio);
           if (!window.VJSPlayer.setPlaylist(shell, json)) throw new Error('Playlist inválida no VideoJS');
           instance.player = window.VJSPlayer.create(shell);
           if (!instance.player && !shell._publisherPlaylistLoading) throw new Error('O VideoJS não criou o player');
+          if (instance.player) bindVideoSizing(instance, shell, instance.player);
           instance.state = 'video';
           // O watchdog só é acionado se o player NÃO fizer qualquer pedido.
           // Os 3 pedidos sem VAST são contabilizados no próprio publisher-video-player.js.
@@ -290,7 +422,9 @@
           state: x.state,
           displayAdUnit: '/4458504/' + x.placement.getAttribute('adunit'),
           videoAdUnit: vastUrl ? vastUrl.searchParams.get('iu') : getVideoAdUnitPath(x.placement),
+          playerWidthPx: Math.round(x.stage.getBoundingClientRect().width),
           playerHeightPx: Math.round(x.stage.getBoundingClientRect().height),
+          playerAspectRatio: Number((x.activeRatio || 16 / 9).toFixed(4)),
           keyValues: kv,
           attempts: x.wrapper.getAttribute('data-publico-video-attempt'),
           misses: x.wrapper.getAttribute('data-publico-video-misses'),
@@ -300,7 +434,8 @@
       console.info('[PUB VertVideo] Targeting de referência TagBundle:', window.tagBundleConfig && window.tagBundleConfig.targeting);
       console.table(result.map(function (x) {
         return { slot: x.slot, state: x.state, displayAdUnit: x.displayAdUnit,
-          videoAdUnit: x.videoAdUnit, playerHeightPx: x.playerHeightPx,
+          videoAdUnit: x.videoAdUnit, playerWidthPx: x.playerWidthPx, playerHeightPx: x.playerHeightPx,
+          playerAspectRatio: x.playerAspectRatio,
           keyValues: JSON.stringify(x.keyValues), attempts: x.attempts, misses: x.misses };
       }));
       return result;
