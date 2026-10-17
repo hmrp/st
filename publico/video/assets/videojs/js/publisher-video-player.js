@@ -532,7 +532,7 @@
     if (container.getAttribute('data-publico-vertcontent-video') !== '1') return null;
     if (container._pubVertMonitor) return container._pubVertMonitor;
     var maxMisses = Math.max(1, Number(container.getAttribute('data-vast-max-misses') || 3));
-    // Modo de diagnóstico: contar voltas COMPLETAS à playlist sem VAST reproduzido.
+    // Contar voltas COMPLETAS à playlist sem VAST efetivamente reproduzido.
     // Zero desativa-o e recupera o limite tradicional por número de pedidos sem VAST.
     var maxEmptyLoops = Math.max(0, Number(container.getAttribute('data-vast-max-empty-playlist-loops') || 0));
     var timeoutMs = Math.max(3000, Number(container.getAttribute('data-vast-attempt-timeout') || 9000));
@@ -1576,7 +1576,7 @@
   var instances = [];
   var defaults = {
     maxNoAd: 3,
-    maxPlaylistLoopsWithoutVast: 100, // TESTE: 100 voltas COMPLETAS antes do fallback para display.
+    maxPlaylistLoopsWithoutVast: 5, // Fallback apos 5 voltas completas consecutivas sem VAST reproduzido.
     vastTimeoutMs: 9000,
     startupTimeoutMs: 30000, // protege apenas contra ausência TOTAL de chamadas VAST
     floating: false, // testar primeiro sem floating; pode ser ativado no override
@@ -1976,7 +1976,7 @@
           }
           instance.state = 'video';
           // O watchdog só é acionado se o player NÃO fizer qualquer pedido.
-          // TESTE: contabilizar 100 voltas completas à playlist sem VAST antes de fallback.
+          // Monitorizar 5 voltas completas consecutivas sem VAST antes do fallback.
           instance.safetyTimer = window.setTimeout(function () {
             if (instance.state !== 'video') return;
             var monitor = shell._pubVertMonitor;
