@@ -190,6 +190,8 @@
       // Pedir VAST direto: impedir VMAP/Ad Rules predefinidas para esta adunit.
       normalized = replaceOrAddParam(normalized, 'ad_rule', '0');
       normalized = replaceOrAddParam(normalized, 'plcmt', '1'); // Incontent: In-stream conforme pedido para teste.
+      // O browser pode bloquear autoplay com som. Nos pedidos seguintes, indicar o estado real.
+      normalized = replaceOrAddParam(normalized, 'vpmute', container.getAttribute('data-ad-vpmute') || '0');
       normalized = replaceOrAddParam(normalized, 'hl', 'pt');
       normalized = replaceOrAddParam(normalized, 'vconp', '2'); // Playlist continua automaticamente.
       var deviceHint = getWebDeviceTypeHint();
@@ -530,8 +532,14 @@
     if (container.getAttribute('data-publico-vertcontent-video') !== '1') return null;
     if (container._pubVertMonitor) return container._pubVertMonitor;
     var maxMisses = Math.max(1, Number(container.getAttribute('data-vast-max-misses') || 3));
+    // Modo de diagnóstico: contar voltas COMPLETAS à playlist sem VAST reproduzido.
+    // Zero desativa-o e recupera o limite tradicional por número de pedidos sem VAST.
+    var maxEmptyLoops = Math.max(0, Number(container.getAttribute('data-vast-max-empty-playlist-loops') || 0));
     var timeoutMs = Math.max(3000, Number(container.getAttribute('data-vast-attempt-timeout') || 9000));
-    var state = { attempts: 0, misses: 0, active: null, timer: null, closed: false };
+    var state = {
+      attempts: 0, misses: 0, active: null, timer: null, closed: false,
+      completedLoops: 0, emptyLoops: 0, playedVastThisLoop: false, maxEmptyLoops: maxEmptyLoops
+    };
     container._pubVertMonitor = state;
     function fire(name, detail) {
       container.dispatchEvent(new CustomEvent('publico:vertvideo-' + name, { detail: detail || {} }));
@@ -545,12 +553,14 @@
       state.active.resolved = true;
       clearTimer();
       state.misses++;
-      log(container, 'Pedido VAST sem publicidade: ' + state.misses + '/' + maxMisses + ' (' + reason + ')', true);
+      log(container, 'Pedido VAST sem publicidade: ' + state.misses +
+        (maxEmptyLoops ? ' (limite: ' + maxEmptyLoops + ' voltas completas sem VAST)' : '/' + maxMisses) +
+        ' (' + reason + ')', true);
       fire('attempt', { attempt: state.attempts, misses: state.misses, reason: reason });
-      if (state.misses >= maxMisses) {
+      if (!maxEmptyLoops && state.misses >= maxMisses) {
         state.closed = true;
         window.setTimeout(function () {
-          fire('fallback', { reason: '3-no-vast-' + reason, attempts: state.attempts });
+          fire('fallback', { reason: 'no-vast-' + reason, attempts: state.attempts });
         }, 0);
       }
     }
@@ -566,6 +576,8 @@
       state.active.resolved = true;
       clearTimer();
       state.misses = 0;
+      state.emptyLoops = 0;
+      state.playedVastThisLoop = true;
       fire('ad-started', { attempts: state.attempts, misses: 0 });
       log(container, 'VAST iniciou reprodução. Contador de falhas reposto a zero.');
     }
@@ -583,6 +595,34 @@
       log(container, 'Pedido VAST #' + state.attempts + ' enviado; falhas seguidas=' + state.misses);
     };
     state.fail = fail;
+    state.completePlaylistLoop = function () {
+      if (state.closed) return false;
+      state.completedLoops++;
+      if (state.playedVastThisLoop) {
+        state.emptyLoops = 0;
+      } else {
+        state.emptyLoops++;
+      }
+      state.playedVastThisLoop = false;
+      container.setAttribute('data-vast-completed-loops', String(state.completedLoops));
+      container.setAttribute('data-vast-empty-loops', String(state.emptyLoops));
+      fire('playlist-loop', {
+        completedLoops: state.completedLoops,
+        emptyLoops: state.emptyLoops,
+        maxEmptyLoops: maxEmptyLoops
+      });
+      log(container, 'Volta completa à playlist: ' + state.completedLoops +
+        '; consecutivas sem VAST: ' + state.emptyLoops + '/' + maxEmptyLoops);
+      if (maxEmptyLoops && state.emptyLoops >= maxEmptyLoops) {
+        state.closed = true;
+        clearTimer();
+        window.setTimeout(function () {
+          fire('fallback', { reason: 'no-vast-after-' + maxEmptyLoops + '-playlist-loops', attempts: state.attempts });
+        }, 0);
+        return false;
+      }
+      return true;
+    };
     // Estes eventos vêm do IMA (não de um simples HTTP 200 da tag).
     player.on('ads-request', function () {
       if (!state.active || state.active.resolved) state.begin();
@@ -603,6 +643,9 @@
     var actualDuration = player && player.duration && Number(player.duration());
     if (isFinite(actualDuration) && actualDuration > 0) {
       requestItem = Object.assign({}, item || {}, { duration: actualDuration });
+    }
+    if (container.getAttribute('data-publico-vertcontent-video') === '1') {
+      container.setAttribute('data-ad-vpmute', player.muted() ? '1' : '0');
     }
     var adTagUrl = buildAdTagFromDataset(container, requestItem);
     if (!adTagUrl || !player.ima) {
@@ -657,6 +700,9 @@
         return;
       }
       applyAudioState(container, player, true, initialVolume);
+      if (container.getAttribute('data-publico-vertcontent-video') === '1') {
+        container.setAttribute('data-ad-vpmute', '1');
+      }
       log(container, 'Autoplay com som bloqueado. A tentar autoplay muted com volume preparado para ' + Math.round(initialVolume * 100) + '/100.', true);
       if (requestAdsCallback) {
         requestAdsCallback();
@@ -736,6 +782,9 @@
           log(container, 'Playlist terminada');
           return;
         }
+        // Só se conta uma volta depois de terminar TODOS os MP4 da playlist.
+        var monitor = container._pubVertMonitor;
+        if (monitor && monitor.completePlaylistLoop && !monitor.completePlaylistLoop()) return;
         nextIndex = 0;
       }
       log(container, 'Vídeo terminado. A avançar para o próximo item (' + reason + ').');
@@ -1504,6 +1553,7 @@
   var instances = [];
   var defaults = {
     maxNoAd: 3,
+    maxPlaylistLoopsWithoutVast: 100, // TESTE: 100 voltas COMPLETAS antes do fallback para display.
     vastTimeoutMs: 9000,
     startupTimeoutMs: 30000, // protege apenas contra ausência TOTAL de chamadas VAST
     floating: false, // testar primeiro sem floating; pode ser ativado no override
@@ -1736,7 +1786,7 @@
       hl: 'pt',
       vconp: '2', // Playlist editorial em reproducao continua.
       vpa: 'auto',
-      vpmute: '1',
+      vpmute: '0', // TESTE: pedir autoplay com som, sujeito às políticas do browser.
       vpos: 'preroll',
       wta: '1',
       description_url: pageUrl,
@@ -1840,8 +1890,8 @@
           shell.setAttribute('data-video-type', normalisePlaylist(json)[0].type || 'video/mp4');
           shell.setAttribute('data-playlist-loop', 'true');
           shell.setAttribute('data-autoplay', 'true');
-          shell.setAttribute('data-muted', 'true');
-          shell.setAttribute('data-volume', '1');
+          shell.setAttribute('data-muted', 'false'); // TESTE: áudio ativo quando permitido pelo browser.
+          shell.setAttribute('data-volume', '0.01'); // 1% do volume, sem mute.
           shell.setAttribute('data-autoplay-muted-fallback', 'true');
           shell.setAttribute('data-ad-floating', String(Boolean(opts.floating)));
           shell.setAttribute('data-sticky', 'false');
@@ -1849,20 +1899,27 @@
           shell.setAttribute('data-vast-timeout', '7000');
           shell.setAttribute('data-vast-attempt-timeout', String(opts.vastTimeoutMs));
           shell.setAttribute('data-vast-max-misses', String(opts.maxNoAd));
+          shell.setAttribute('data-vast-max-empty-playlist-loops', String(opts.maxPlaylistLoopsWithoutVast));
           shell.setAttribute('data-ad-tag-url', createVastRequestUrl(placement, instance.targeting, normalisePlaylist(json)[0]));
           shell.setAttribute('data-description-url', window.location.href);
           shell.setAttribute('data-ad-vpa', 'auto');
-          shell.setAttribute('data-ad-vpmute', '1');
+          shell.setAttribute('data-ad-vpmute', '0');
           var video = document.createElement('video');
           video.className = 'video-js vjs-default-skin';
           video.playsInline = true;
-          video.muted = true;
+          video.muted = false;
+          video.volume = 0.01; // Evitar arrancar no volume máximo antes do Video.js aplicar o valor.
           video.preload = 'metadata';
           shell.appendChild(video);
           shell.addEventListener('publico:vertvideo-fallback', function (ev) { fallback(ev.detail && ev.detail.reason); });
           shell.addEventListener('publico:vertvideo-attempt', function (ev) {
             wrapper.setAttribute('data-publico-video-attempt', String(ev.detail.attempt));
             wrapper.setAttribute('data-publico-video-misses', String(ev.detail.misses));
+          });
+          shell.addEventListener('publico:vertvideo-playlist-loop', function (ev) {
+            if (!ev.detail) return;
+            wrapper.setAttribute('data-publico-video-completed-loops', String(ev.detail.completedLoops));
+            wrapper.setAttribute('data-publico-video-empty-loops', String(ev.detail.emptyLoops));
           });
           shell.addEventListener('publico:vertvideo-ad-started', function () {
             instance.hadVisibleContent = true;
@@ -1886,7 +1943,7 @@
           }
           instance.state = 'video';
           // O watchdog só é acionado se o player NÃO fizer qualquer pedido.
-          // Os 3 pedidos sem VAST são contabilizados no próprio publisher-video-player.js.
+          // TESTE: contabilizar 100 voltas completas à playlist sem VAST antes de fallback.
           instance.safetyTimer = window.setTimeout(function () {
             if (instance.state !== 'video') return;
             var monitor = shell._pubVertMonitor;
@@ -1935,6 +1992,8 @@
           keyValues: kv,
           attempts: x.wrapper.getAttribute('data-publico-video-attempt'),
           misses: x.wrapper.getAttribute('data-publico-video-misses'),
+          completedLoops: x.wrapper.getAttribute('data-publico-video-completed-loops'),
+          emptyLoops: x.wrapper.getAttribute('data-publico-video-empty-loops'),
           fallbackReason: x.wrapper.getAttribute('data-publico-video-fallback-reason')
         };
       });
