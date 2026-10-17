@@ -8,6 +8,13 @@
       "url": "https://www.publico.pt/"
     },
     {
+      "title": "Oceans",
+      "src": "https://vjs.zencdn.net/v/oceans.mp4",
+      "type": "video/mp4",
+      "duration": 120,
+      "url": "https://www.publico.pt/"
+    },
+    {
       "title": "Teste 2",
       "src": "https://hugopedroso.com/publico/video/teste2.mp4",
       "type": "video/mp4",
