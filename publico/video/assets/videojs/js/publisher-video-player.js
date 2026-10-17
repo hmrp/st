@@ -1475,11 +1475,32 @@
   }
 })();
 
-
+/* Base: 131026_teste2. Vídeo antes do primeiro VertContent de artigos. */
+/* Controlador de vídeo do primeiro VertContent — módulo publisher-video-player.js.
+ * Bibliotecas, CSS, player JS e playlist servidos por hugopedroso.com. */
 (function (window, document) {
   'use strict';
 
   var loaderPromise = null;
+
+  // Helpers locais: o controlador Incontent usa uma IIFE distinta do VJSPlayer.
+  function getWebDeviceTypeHint() {
+    var ua = (window.navigator && window.navigator.userAgent) || '';
+    var nav = window.navigator || {};
+    if (/iPad|Tablet|PlayBook|Silk/i.test(ua) ||
+        (/Android/i.test(ua) && !/Mobile/i.test(ua)) ||
+        (nav.platform === 'MacIntel' && nav.maxTouchPoints > 1)) return '4';
+    if (/iPhone|iPod|Android.*Mobile|Windows Phone|Mobi/i.test(ua) ||
+        (nav.userAgentData && nav.userAgentData.mobile === true)) return '2';
+    if (/Windows NT|Macintosh|X11|Linux x86_64|CrOS/i.test(ua)) return '3';
+    return ''; // Desconhecido: melhor omitir do que inventar.
+  }
+
+  function getContentDurationSeconds(item) {
+    var seconds = item && Number(item.duration);
+    return isFinite(seconds) && seconds > 0 ? String(Math.ceil(seconds)) : '';
+  }
+
   var instances = [];
   var defaults = {
     maxNoAd: 3,
