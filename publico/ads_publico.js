@@ -1,5 +1,4 @@
-/* 131026_teste2 | módulo de vídeo lazy em publisher-video-player.js */
-/*131026_teste2*/
+/*v2*/
 (function (window, document) {
     "use strict";
 
@@ -375,7 +374,7 @@
         if (vertVideoModulePromise) return vertVideoModulePromise;
         vertVideoModulePromise = new Promise(function (resolve, reject) {
             var script = document.createElement("script");
-            script.src = "https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=20261017-incontent-scope-fix1";
+            script.src = "https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=20261017-audio-minimo-100-full-loops-test2";
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
