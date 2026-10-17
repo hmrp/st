@@ -133,6 +133,24 @@
     return replaceOrAddParam(url, name, value);
   }
 
+  // Incontent: sinais de video reais, sem simular SDKs, consentimento ou CTV.
+  function getWebDeviceTypeHint() {
+    var ua = (window.navigator && window.navigator.userAgent) || '';
+    var nav = window.navigator || {};
+    if (/iPad|Tablet|PlayBook|Silk/i.test(ua) ||
+        (/Android/i.test(ua) && !/Mobile/i.test(ua)) ||
+        (nav.platform === 'MacIntel' && nav.maxTouchPoints > 1)) return '4';
+    if (/iPhone|iPod|Android.*Mobile|Windows Phone|Mobi/i.test(ua) ||
+        (nav.userAgentData && nav.userAgentData.mobile === true)) return '2';
+    if (/Windows NT|Macintosh|X11|Linux x86_64|CrOS/i.test(ua)) return '3';
+    return ''; // Desconhecido: melhor omitir do que inventar.
+  }
+
+  function getContentDurationSeconds(item) {
+    var seconds = item && Number(item.duration);
+    return isFinite(seconds) && seconds > 0 ? String(Math.ceil(seconds)) : '';
+  }
+
   function normalizeDirectAdTag(url, container, item) {
     var descriptionUrl = container.getAttribute('data-description-url') || window.location.href;
     var pageUrl = window.location.href;
@@ -168,7 +186,22 @@
     normalized = replaceOrAddParam(normalized, 'correlator', timestamp);
     normalized = replaceOrAddParam(normalized, 'url', pageUrl);
     normalized = ensureAdParam(normalized, 'cust_params', 'noticiatag%3Dundefined%26Seccao%3Dundefined%26assinante%3Dundefined%26pos%3Dincview%26end%3D' + encodeURIComponent(pageUrl));
-    normalized = ensureAdParam(normalized, 'vconp', '1');
+    if (container.getAttribute('data-publico-vertcontent-video') === '1') {
+      // Pedir VAST direto: impedir VMAP/Ad Rules predefinidas para esta adunit.
+      normalized = replaceOrAddParam(normalized, 'ad_rule', '0');
+      normalized = replaceOrAddParam(normalized, 'plcmt', '1'); // Incontent: In-stream conforme pedido para teste.
+      normalized = replaceOrAddParam(normalized, 'hl', 'pt');
+      normalized = replaceOrAddParam(normalized, 'vconp', '2'); // Playlist continua automaticamente.
+      var deviceHint = getWebDeviceTypeHint();
+      if (deviceHint) normalized = replaceOrAddParam(normalized, 'dth', deviceHint);
+      // A duração deve corresponder ao MP4 efetivamente reproduzido neste preroll.
+      var adDuration = getContentDurationSeconds(item);
+      if (adDuration) normalized = replaceOrAddParam(normalized, 'vid_d', adDuration);
+      else normalized = normalized.replace(/&vid_d=[^&]*/g, '').replace(/\?vid_d=[^&]*&?/, '?').replace(/\?$/, '');
+      if (item && item.title) normalized = replaceOrAddParam(normalized, 'ct_ti', String(item.title));
+    } else {
+      normalized = ensureAdParam(normalized, 'vconp', '1');
+    }
     normalized = replaceOrAddParam(normalized, 'cb', timestamp);
     normalized = replaceOrAddParam(normalized, 'cachebuster', timestamp);
     return normalized;
@@ -564,7 +597,14 @@
   }
 
   function requestFreshPreroll(container, player, item) {
-    var adTagUrl = buildAdTagFromDataset(container, item);
+    // Para cada novo video da playlist, preferir metadados reais do MP4.
+    // O valor fornecido em playlist.json e utilizado apenas antes de loadedmetadata.
+    var requestItem = item;
+    var actualDuration = player && player.duration && Number(player.duration());
+    if (isFinite(actualDuration) && actualDuration > 0) {
+      requestItem = Object.assign({}, item || {}, { duration: actualDuration });
+    }
+    var adTagUrl = buildAdTagFromDataset(container, requestItem);
     if (!adTagUrl || !player.ima) {
       return false;
     }
@@ -1435,9 +1475,7 @@
   }
 })();
 
-/* Base: 131026_teste2. Vídeo antes do primeiro VertContent de artigos. */
-/* Controlador de vídeo do primeiro VertContent — módulo publisher-video-player.js.
- * Bibliotecas, CSS, player JS e playlist servidos por hugopedroso.com. */
+
 (function (window, document) {
   'use strict';
 
@@ -1667,12 +1705,15 @@
     return params.toString();
   }
 
-  function createVastRequestUrl(placement, targeting) {
+  function createVastRequestUrl(placement, targeting, item) {
     var pageUrl = window.location.href;
     var ts = String(Date.now());
     var q = new URLSearchParams({
       iu: getVideoAdUnitPath(placement),
-      plcmt: '2',
+      ad_rule: '0', // Incontent: pre-roll VAST direto, nunca resposta Ad Rules/VMAP.
+      plcmt: '1', // Incontent: In-stream conforme pedido para teste (vpos=preroll).
+      hl: 'pt',
+      vconp: '2', // Playlist editorial em reproducao continua.
       vpa: 'auto',
       vpmute: '1',
       vpos: 'preroll',
@@ -1692,6 +1733,11 @@
       url: pageUrl,
       cust_params: getVideoCustParams(targeting)
     });
+    var deviceHint = getWebDeviceTypeHint();
+    if (deviceHint) q.set('dth', deviceHint);
+    var duration = getContentDurationSeconds(item);
+    if (duration) q.set('vid_d', duration);
+    if (item && item.title) q.set('ct_ti', String(item.title));
     return 'https://pubads.g.doubleclick.net/gampad/ads?' + q.toString();
   }
   function mount(wrapper, placement, options) {
@@ -1782,7 +1828,7 @@
           shell.setAttribute('data-vast-timeout', '7000');
           shell.setAttribute('data-vast-attempt-timeout', String(opts.vastTimeoutMs));
           shell.setAttribute('data-vast-max-misses', String(opts.maxNoAd));
-          shell.setAttribute('data-ad-tag-url', createVastRequestUrl(placement, instance.targeting));
+          shell.setAttribute('data-ad-tag-url', createVastRequestUrl(placement, instance.targeting, normalisePlaylist(json)[0]));
           shell.setAttribute('data-description-url', window.location.href);
           shell.setAttribute('data-ad-vpa', 'auto');
           shell.setAttribute('data-ad-vpmute', '1');
