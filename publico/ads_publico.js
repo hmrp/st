@@ -433,11 +433,21 @@
             });
         }
         if (window.IntersectionObserver) {
+            // O VertContent antes da primeira chamada tem apenas 1 px de altura.
+            // Por isso, threshold: 0.3 mediria 30% de 1 px, e NÃO do player.
+            // Em vez disso, aguardar que o topo do placement esteja dentro
+            // do viewport por pelo menos 30% da altura prevista do player.
+            // A área do player (400px desktop / 250px mobile) continua sem
+            // ser reservada até ao arranque; o TagBundle não é afetado.
+            var mobileVideo = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
+            var expectedPlayerHeight = mobileVideo ? 250 : 400;
+            var minVisiblePx = Math.ceil(expectedPlayerHeight * 0.30);
             observer = new IntersectionObserver(function (entries) {
                 if (entries.some(function (entry) { return entry.isIntersecting; })) start();
-            }, { rootMargin: "600px 0px 600px 0px", threshold: 0 });
+            }, { rootMargin: "0px 0px -" + minVisiblePx + "px 0px", threshold: 0 });
             observer.observe(wrapper);
         } else {
+            // Fallback só para browsers sem IntersectionObserver.
             window.setTimeout(start, 0);
         }
         return true;
