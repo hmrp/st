@@ -695,24 +695,40 @@
   }
 
   function startAutoplay(container, player, shouldMute, initialVolume, requestAdsCallback) {
-    function tryMutedFallback() {
+    function tryMutedFallback(error) {
       if (shouldMute || !asBool(container.getAttribute('data-autoplay-muted-fallback'), true)) {
         return;
       }
+      if (!error || error.name !== 'NotAllowedError') {
+        container.setAttribute('data-audio-autoplay-status', 'play-error-not-autoplay-policy');
+        log(container, 'Erro de play diferente de bloqueio de autoplay; a manter o estado do audio para diagnostico.', true);
+        return;
+      }
+      container.setAttribute('data-audio-autoplay-status', 'blocked-by-browser');
       applyAudioState(container, player, true, initialVolume);
       if (container.getAttribute('data-publico-vertcontent-video') === '1') {
         container.setAttribute('data-ad-vpmute', '1');
       }
-      log(container, 'Autoplay com som bloqueado. A tentar autoplay muted com volume preparado para ' + Math.round(initialVolume * 100) + '/100.', true);
+      log(container, 'Autoplay com som recusado pelo browser (' + (error && error.name || 'sem-permissao') + '). A continuar muted; o utilizador pode ativar som no botao do player.', true);
       if (requestAdsCallback) {
         requestAdsCallback();
       }
       safePlay(player, container);
     }
+    container.setAttribute('data-audio-autoplay-status', shouldMute ? 'starting-muted' : 'trying-unmuted');
+    // Preservar a configuracao audio antes de inicializar um novo pedido IMA.
+    applyAudioState(container, player, shouldMute, initialVolume);
     if (requestAdsCallback) {
       requestAdsCallback();
     }
-    safePlay(player, container, tryMutedFallback);
+    var attempt = safePlay(player, container, tryMutedFallback);
+    if (attempt && typeof attempt.then === 'function') {
+      attempt.then(function () {
+        if (!player.muted() && container.getAttribute('data-audio-autoplay-status') !== 'blocked-by-browser') {
+          container.setAttribute('data-audio-autoplay-status', 'allowed-unmuted');
+        }
+      }).catch(function () {});
+    }
   }
 
   function setupPlaylist(container, player) {
@@ -1300,14 +1316,21 @@
     var shouldAutoplay = getAutoplay(container, mode);
     var shouldMute = getMuted(container, mode);
     var initialVolume = getVolume(container);
-    if (shouldAutoplay) {
+    var isVertContent = container.getAttribute('data-publico-vertcontent-video') === '1';
+    // Incontent: uma única tentativa de autoplay gerida abaixo por startAutoplay.
+    // Evita que o autoplay nativo/Video.js comece antes de fixar muted=false e volume.
+    var useNativeAutoplay = shouldAutoplay && !isVertContent;
+    if (useNativeAutoplay) {
       video.setAttribute('autoplay', 'autoplay');
     } else {
       video.removeAttribute('autoplay');
     }
+    if (isVertContent) {
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+    }
     video.muted = shouldMute;
     video.volume = initialVolume;
-    var isVertContent = container.getAttribute('data-publico-vertcontent-video') === '1';
     var player = window.videojs(video, {
       controls: true,
       fluid: !isVertContent,
@@ -1325,7 +1348,7 @@
         playbackRateMenuButton: false
       },
       preload: container.getAttribute('data-preload') || (shouldAutoplay ? 'auto' : 'metadata'),
-      autoplay: shouldAutoplay,
+      autoplay: useNativeAutoplay,
       muted: shouldMute,
       poster: container.getAttribute('data-poster') || '',
       html5: {
@@ -1743,16 +1766,25 @@
       return Boolean(item && (item.src || item.url));
     });
   }
-  // VAST: adunit Incontent separada da raiz Video (prerolls) e de Vert_Publico (display).
-  // Obtém a secção e eventuais subníveis do ADUNIT DISPLAY, sem segunda fonte de configuração.
-  // As subadunits correspondentes devem existir no GAM sob /4458504/Incontent.
+  // Usar o mesmo UserType e secção que o ads_publico.js já definiu
+  // no adunit do primeiro VertContent display. Os filhos Incontent
+  // estão organizados em Incontent/Anonymous|Registered|Subscriber/Secção.
   function getVideoAdUnitPath(placement) {
-    var displayAdUnit = placement && placement.getAttribute('adunit') || '';
-    var match = /^Vert_Publico\/[^/]+\/(.+)\/VertContent$/.exec(displayAdUnit);
-    if (!match || !match[1]) {
-      throw new Error('Adunit VertContent inválida para derivar a secção do vídeo: ' + displayAdUnit);
+    var displayPath = placement && typeof placement.getAttribute === 'function'
+      ? placement.getAttribute('adunit') : '';
+    var segments = String(displayPath || '').split('/');
+    var userType = segments[1];
+    var section = segments[2];
+
+    if (segments[0] !== 'Vert_Publico' ||
+        segments[segments.length - 1] !== 'VertContent' ||
+        !/^(Anonymous|Registered|Subscriber)$/.test(userType) ||
+        !section || section === '.' || section === '..') {
+      throw new Error('Caminho do primeiro VertContent inválido para o Incontent: ' + displayPath);
     }
-    return '/4458504/Incontent/' + match[1];
+    // Em subsecções (ex.: Desporto/centro-jogo), usar a secção principal,
+    // correspondente aos filhos importados para o GAM.
+    return '/4458504/Incontent/' + userType + '/' + section;
   }
 
   // Fonte única: targeting criado UMA vez por getTagBundleConfig() e entregue ao TagBundle.
@@ -1892,6 +1924,7 @@
           shell.setAttribute('data-autoplay', 'true');
           shell.setAttribute('data-muted', 'false'); // TESTE: áudio ativo quando permitido pelo browser.
           shell.setAttribute('data-volume', '0.01'); // 1% do volume, sem mute.
+          shell.setAttribute('data-volume-max', '0.01'); // Ao ativar som manualmente, manter 1% neste teste.
           shell.setAttribute('data-autoplay-muted-fallback', 'true');
           shell.setAttribute('data-ad-floating', String(Boolean(opts.floating)));
           shell.setAttribute('data-sticky', 'false');
@@ -1983,6 +2016,10 @@
           state: x.state,
           displayAdUnit: '/4458504/' + x.placement.getAttribute('adunit'),
           videoAdUnit: vastUrl ? vastUrl.searchParams.get('iu') : getVideoAdUnitPath(x.placement),
+          muted: x.player && typeof x.player.muted === 'function' ? x.player.muted() : null,
+          volume: x.player && typeof x.player.volume === 'function' ? x.player.volume() : null,
+          audioAutoplayStatus: shell && shell.getAttribute('data-audio-autoplay-status'),
+          vastVpmute: vastUrl && vastUrl.searchParams.get('vpmute'),
           playerWidthPx: Math.round(x.stage.getBoundingClientRect().width),
           playerHeightPx: Math.round(x.stage.getBoundingClientRect().height),
           wrapperHeightPx: Math.round(x.wrapper.getBoundingClientRect().height),
@@ -2000,7 +2037,9 @@
       console.info('[PUB VertVideo] Targeting recebido na montagem:', instances[0] && instances[0].targeting);
       console.table(result.map(function (x) {
         return { slot: x.slot, state: x.state, displayAdUnit: x.displayAdUnit,
-          videoAdUnit: x.videoAdUnit, playerWidthPx: x.playerWidthPx, playerHeightPx: x.playerHeightPx,
+          videoAdUnit: x.videoAdUnit, muted: x.muted, volume: x.volume,
+          audioAutoplayStatus: x.audioAutoplayStatus, vastVpmute: x.vastVpmute,
+          playerWidthPx: x.playerWidthPx, playerHeightPx: x.playerHeightPx,
           wrapperHeightPx: x.wrapperHeightPx,
           playerAspectRatio: x.playerAspectRatio,
           adApi: x.currentAdInfo && x.currentAdInfo.apiFramework || '',
