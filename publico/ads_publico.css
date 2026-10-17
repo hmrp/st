@@ -1,4 +1,4 @@
-/*171026*/
+/*131026*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -988,6 +988,43 @@ aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container {
 
     aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
         max-width: min(100%, calc(100vw - var(--pub-vcv-viewport-inset))) !important;
+    }
+}
+
+/* ============================================================
+   REFERÊNCIA PUB DO PLAYER INCONTENT
+   Igual à identificação usada nos anúncios display do VertContent.
+   Aparece desde o início do player (incluindo espera por VAST e
+   reprodução editorial) e desaparece no fallback para display,
+   quando a etiqueta própria do iframe assume o seu lugar.
+   O pseudoelemento fica no aside, fora da área preta do player,
+   evitando clipping e sem modificar o layout do vídeo.
+   ============================================================ */
+aside.ad-slot.ad-slot--in-content[data-publico-vertcontent-video="1"][data-publico-vcv-reserved="1"]::before {
+    content: "PUB" !important;
+    display: block !important;
+    position: absolute;
+    top: -1rem;
+    right: max(0px, calc((100% - min(100%, var(--pub-vcv-max-width))) / 2));
+    left: auto;
+    z-index: 2;
+    color: var(--neutral-50, #8a8a8a);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: right;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 0;
+    pointer-events: none;
+    background: transparent;
+}
+
+@media screen and (max-width: 767px) {
+    aside.ad-slot.ad-slot--in-content[data-publico-vertcontent-video="1"][data-publico-vcv-reserved="1"]::before {
+        right: max(0px, calc((100% - min(100%, calc(100vw - var(--pub-vcv-viewport-inset)))) / 2));
     }
 }
 
