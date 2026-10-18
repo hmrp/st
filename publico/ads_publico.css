@@ -1,4 +1,4 @@
-/*131026*/
+/*131026 css original*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -236,12 +236,55 @@ html:not(.darkmode) .TagBundleStickyBottom .TagBundleStickyBottomInner .TagBundl
     display: flex !important;
 }
 
-/* Seedtag / ordens especiais: ocultar apenas o botão do TagBundle.
-   Não alterar a geometria, o iframe ou a opacidade do anúncio. */
-.TagBundleStickyBottom.footer-special-hidden
-.TagBundleStickyBottomInner .TagBundleStickyBottomCloseButton {
+.TagBundleStickyBottom.footer-special-hidden {
+    width: 1px !important;
+    height: 1px !important;
+    min-width: 1px !important;
+    min-height: 1px !important;
+    max-width: 1px !important;
+    max-height: 1px !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: 0 !important;
+    overflow: hidden !important;
+    opacity: 0.01 !important;
+    pointer-events: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    z-index: 1 !important;
+}
+
+.TagBundleStickyBottom.footer-special-hidden .TagBundleStickyBottomInner {
+    width: 1px !important;
+    height: 1px !important;
+    min-width: 1px !important;
+    min-height: 1px !important;
+    max-width: 1px !important;
+    max-height: 1px !important;
+    overflow: hidden !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+.TagBundleStickyBottom.footer-special-hidden .TagBundleStickyBottomCloseButton {
     display: none !important;
     visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.TagBundleStickyBottom.footer-special-hidden ad-placement#Footer,
+.TagBundleStickyBottom.footer-special-hidden ad-placement#Footer > div,
+.TagBundleStickyBottom.footer-special-hidden ad-placement#Footer iframe {
+    width: 1px !important;
+    height: 1px !important;
+    min-width: 1px !important;
+    min-height: 1px !important;
+    max-width: 1px !important;
+    max-height: 1px !important;
+    margin: 0 !important;
+    overflow: hidden !important;
     pointer-events: none !important;
 }
 
@@ -301,13 +344,13 @@ ad-placement#Footer iframe {
     margin-left: auto !important;
 }
 
-.TagBundleStickyBottom,
-.TagBundleStickyBottom .TagBundleStickyBottomInner,
-.TagBundleStickyBottom ad-placement#Footer {
+.TagBundleStickyBottom:not(.footer-special-hidden),
+.TagBundleStickyBottom:not(.footer-special-hidden) .TagBundleStickyBottomInner,
+.TagBundleStickyBottom:not(.footer-special-hidden) ad-placement#Footer {
     overflow: visible !important;
 }
 
-.TagBundleStickyBottom ad-placement#Footer > div {
+.TagBundleStickyBottom:not(.footer-special-hidden) ad-placement#Footer > div {
     position: static !important;
     left: auto !important;
     right: auto !important;
