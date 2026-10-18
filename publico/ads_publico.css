@@ -819,6 +819,9 @@ aside[data-publico-vertcontent-video="1"] {
     --pub-vcv-max-height: 400px;
     --pub-vcv-max-width: 692px;
     --pub-vcv-viewport-inset: 0px;
+    position: relative !important;
+    z-index: 0 !important;
+    isolation: isolate;
     min-height: 0 !important;
     overflow: visible !important;
 }
