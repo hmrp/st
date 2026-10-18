@@ -1,5 +1,3 @@
-/*181026 v1_ seedtag*/
-
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -654,8 +652,8 @@ ad-placement[format="Botao"] iframe {
 
 @media screen and (max-width: 39.99875em) {
     .story__body .ad-slot.ad-slot--in-content {
-        width: auto;
-        max-width: none;
+        width: auto !important;
+        max-width: none !important;
         margin-right: calc(0px - (var(--p-grid-gutter) / 2));
         margin-left: calc(0px - (var(--p-grid-gutter) / 2));
     }
