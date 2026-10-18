@@ -1,5 +1,4 @@
-/* 131026_teste2 | módulo de vídeo lazy em publisher-video-player.js */
-/*131026_teste2*/
+/*181026 teste seedtagv1*/
 (function (window, document) {
     "use strict";
 
