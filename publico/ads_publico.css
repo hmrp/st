@@ -236,6 +236,8 @@ html:not(.darkmode) .TagBundleStickyBottom .TagBundleStickyBottomInner .TagBundl
     display: flex !important;
 }
 
+/* Seedtag / ordens especiais: ocultar apenas o botão do TagBundle.
+   Não alterar a geometria, o iframe ou a opacidade do anúncio. */
 .TagBundleStickyBottom.footer-special-hidden
 .TagBundleStickyBottomInner .TagBundleStickyBottomCloseButton {
     display: none !important;
@@ -328,7 +330,7 @@ ad-placement[format="Billboard"]:has(> div[id^="google_ads_iframe_"] iframe) {
 .ad-slot.ad-slot--in-content {
     width: 100%;
     max-width: 100%;
-    min-height: 250px;
+    min-height: 0;
     height: auto;
     padding-right: 0;
     padding-left: 0;
@@ -340,7 +342,7 @@ ad-placement:is(.inContent, [format="vertContent"]) {
     display: block;
     width: 100%;
     max-width: 100%;
-    min-height: 250px;
+    min-height: 0;
     height: auto;
     margin-right: auto;
     margin-left: auto;
@@ -407,15 +409,6 @@ ad-placement:is(.inContent, [format="vertContent"]) iframe[width="600"][height="
     aspect-ratio: 1 / 1;
 }
 
-.ad-slot.ad-slot--in-content:has(ad-placement:is(.inContent, [format="vertContent"]) iframe[height="360"]),
-ad-placement:is(.inContent, [format="vertContent"]):has(iframe[height="360"]) {
-    min-height: 360px;
-}
-
-.ad-slot.ad-slot--in-content:has(ad-placement:is(.inContent, [format="vertContent"]) iframe[height="600"]),
-ad-placement:is(.inContent, [format="vertContent"]):has(iframe[height="600"]) {
-    min-height: 600px;
-}
 
 .pubHorz div {
     margin: auto !important;
@@ -827,5 +820,286 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
     #inScreen.st-placement.inScreen .st-display-render.st-reset > [class*="x-to-close"] {
         top: -44px !important;
         right: 0 !important;
+    }
+}
+
+/* ============================================================
+   VIDEO IN-CONTENT: primeiro VertContent (Video.js + Google IMA)
+   Área do player fixa: 400px desktop / 250px mobile.
+   A mídia nativa respeita o próprio rácio com object-fit:contain.
+   Não afeta os VertContent que apresentam display.
+   ============================================================ */
+
+aside[data-publico-vertcontent-video="1"] {
+    --pub-vcv-max-height: 400px;
+    --pub-vcv-max-width: 692px;
+    --pub-vcv-viewport-inset: 0px;
+    min-height: 0 !important;
+    overflow: visible !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: var(--pub-vcv-max-width) !important;
+    height: var(--pub-vcv-max-height) !important;
+    min-height: var(--pub-vcv-max-height) !important;
+    max-height: var(--pub-vcv-max-height) !important;
+    aspect-ratio: auto !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    background: #000;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell {
+    position: relative !important;
+    display: block !important;
+    /* O Video.js ocupa todo o espaço estável. Sem tamanhos dinâmicos por MP4. */
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #000 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fluid,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js.vjs-fill {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: auto !important;
+    padding: 0 !important;
+    padding-top: 0 !important;
+    overflow: hidden !important;
+    background: #000 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::before,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js::after {
+    content: none !important;
+    display: none !important;
+    padding: 0 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js video,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .video-js .vjs-tech,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell video.vjs-tech {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    transform: none !important;
+    background: #000 !important;
+}
+
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster,
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .vjs-poster img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+}
+
+/* O iframe/HTML de VPAID é controlado pelo IMA. O CSS limita o
+   contentor, mas não altera o conteúdo interno de um iframe cross-origin. */
+aside[data-publico-vertcontent-video="1"] .pub-video-shell .ima-ad-container {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+}
+
+@media screen and (max-width: 767px) {
+    aside[data-publico-vertcontent-video="1"] {
+        --pub-vcv-max-height: 250px;
+        --pub-vcv-viewport-inset: 32px;
+    }
+
+    aside[data-publico-vertcontent-video="1"] .pub-vcv-stage {
+        max-width: min(100%, calc(100vw - var(--pub-vcv-viewport-inset))) !important;
+    }
+}
+
+/* ============================================================
+   REFERÊNCIA PUB DO PLAYER INCONTENT
+   Igual à identificação usada nos anúncios display do VertContent.
+   Aparece desde o início do player (incluindo espera por VAST e
+   reprodução editorial) e desaparece no fallback para display,
+   quando a etiqueta própria do iframe assume o seu lugar.
+   O pseudoelemento fica no aside, fora da área preta do player,
+   evitando clipping e sem modificar o layout do vídeo.
+   ============================================================ */
+aside.ad-slot.ad-slot--in-content[data-publico-vertcontent-video="1"][data-publico-vcv-reserved="1"]::before {
+    content: "PUB" !important;
+    display: block !important;
+    position: absolute;
+    top: -1rem;
+    right: max(0px, calc((100% - min(100%, var(--pub-vcv-max-width))) / 2));
+    left: auto;
+    z-index: 2;
+    color: var(--neutral-50, #8a8a8a);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: right;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 0;
+    pointer-events: none;
+    background: transparent;
+}
+
+@media screen and (max-width: 767px) {
+    aside.ad-slot.ad-slot--in-content[data-publico-vertcontent-video="1"][data-publico-vcv-reserved="1"]::before {
+        right: max(0px, calc((100% - min(100%, calc(100vw - var(--pub-vcv-viewport-inset)))) / 2));
+    }
+}
+
+/* ===============================================================
+   ANTI-CLS DOS VERTICAIS (baseado em eventos GPT, sem observação)
+   JS mantém reserva histórica até 600 px, mas permite expansão
+   temporária quando o criativo atual é maior que 600 px.
+   Nenhuma reserva antes de começar o pedido (VertContent inicial:
+   sentinela de 1 px necessário para lazyload).
+   =============================================================== */
+
+/* VertContent: desktop + mobile. Guarda reserva até 600 px e permite criativos maiores. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-publico-vertcontent="1"] {
+    --pub-ad-min-height: 0px;
+    position: relative;
+    width: 100%;
+    height: auto !important;
+    min-height: var(--pub-ad-min-height) !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* O slot ainda não fez pedido: não ocupar uma área publicitária. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="idle"] {
+    height: 1px !important;
+    min-height: 0 !important;
+    max-height: 1px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="idle"] > ad-placement[format="vertContent"] {
+    height: 1px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Desde o pedido: reserva estável até 600 px; expansão temporária se maior. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="requested"],
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="filled"],
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="empty-held"] {
+    min-height: max(250px, var(--pub-ad-min-height)) !important;
+}
+
+/* Não somar padding vertical ao criativo 300x600, que já ocupa 600px. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout > ad-placement[format="vertContent"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Enquanto o player está ativo, reservar espaço apenas após o seu pedido. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="video"] {
+    min-height: max(400px, var(--pub-ad-min-height)) !important;
+}
+@media screen and (max-width: 767px) {
+    aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-phase="video"] {
+        min-height: max(250px, var(--pub-ad-min-height)) !important;
+    }
+}
+
+/* O banner seguinte, quando mais pequeno, acompanha o leitor apenas
+   dentro da área já reservada pelo respetivo VertContent. */
+aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-sticky="true"]:not([data-pub-ad-phase="idle"]):not([data-pub-ad-phase="empty-held"]) > ad-placement[format="vertContent"] {
+    position: sticky !important;
+    top: 104px;
+    z-index: 1;
+    height: fit-content !important;
+    align-self: start;
+}
+@media screen and (max-width: 767px) {
+    aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-pub-ad-sticky="true"]:not([data-pub-ad-phase="idle"]):not([data-pub-ad-phase="empty-held"]) > ad-placement[format="vertContent"] {
+        top: 72px;
+    }
+}
+
+/* Sentinela do primeiro vídeo antes da sua primeira chamada. */
+aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="0"] {
+    height: 1px !important;
+    min-height: 0 !important;
+    max-height: 1px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+}
+aside.ad-slot.ad-slot--in-content[data-publico-vcv-reserved="0"] > .pub-vcv-stage {
+    width: 1px !important;
+    height: 1px !important;
+    max-width: 1px !important;
+    max-height: 1px !important;
+    visibility: hidden !important;
+}
+
+/* VertTop/VertMiddle, inclusive verticais dinâmicos em smartphone. */
+@media screen and (max-width: 767px) {
+    ad-placement.pub-ad-layout[format="vert"]:not(.BtnFixo) {
+        --pub-ad-min-height: 0px;
+        position: relative;
+        min-height: var(--pub-ad-min-height) !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="requested"]:not(.BtnFixo),
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="filled"]:not(.BtnFixo),
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="empty-held"]:not(.BtnFixo) {
+        min-height: max(250px, var(--pub-ad-min-height)) !important;
+    }
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-phase="idle"]:not(.BtnFixo) {
+        min-height: 0 !important;
+        height: auto !important;
+    }
+    ad-placement.pub-ad-layout[format="vert"][data-pub-ad-sticky="true"]:not([data-pub-ad-phase="idle"]):not([data-pub-ad-phase="empty-held"]):not(.BtnFixo) > div[id^="google_ads_iframe_"] {
+        position: sticky !important;
+        top: 72px !important;
+        z-index: 1;
+    }
+    .ad-slot--sticky-wrapper:has(> ad-placement.pub-ad-layout[format="vert"][data-pub-ad-sticky="true"]) {
+        position: static !important;
+        top: auto !important;
     }
 }
