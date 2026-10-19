@@ -379,7 +379,7 @@
                 reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
                 return;
             }
-            script.src = new URL("video/html5ima/publisher-video-player.js", publicoAdsScriptUrl).href;
+            script.src = new URL("video/html5ima/publisher-video-player.js?v=20261019-html5ima-mute-vast-v2", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -1541,7 +1541,7 @@
             clientId: 4458504,
             autoRefresh: {
                 enabled: true,
-                interval: 25
+                interval: 30
             },
             renderMargin: 150,
             refreshThreshold: 0.5,
