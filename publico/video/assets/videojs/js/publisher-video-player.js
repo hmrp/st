@@ -710,9 +710,6 @@
         container.setAttribute('data-ad-vpmute', '1');
       }
       log(container, 'Autoplay com som recusado pelo browser (' + (error && error.name || 'sem-permissao') + '). A continuar muted; o utilizador pode ativar som no botao do player.', true);
-      if (requestAdsCallback) {
-        requestAdsCallback();
-      }
       safePlay(player, container);
     }
     container.setAttribute('data-audio-autoplay-status', shouldMute ? 'starting-muted' : 'trying-unmuted');
@@ -729,6 +726,38 @@
         }
       }).catch(function () {});
     }
+  }
+
+  function resumeIncontentAfterAd(container, player) {
+    if (container.getAttribute('data-publico-vertcontent-video') !== '1' ||
+        !asBool(container.getAttribute('data-autoplay'), false) ||
+        container.getAttribute('data-publico-user-paused') === '1') {
+      return;
+    }
+    if (container._pubResumeTimer) {
+      window.clearTimeout(container._pubResumeTimer);
+    }
+    container._pubResumeTimer = window.setTimeout(function () {
+      container._pubResumeTimer = null;
+      if (!container.isConnected ||
+          (typeof player.isDisposed === 'function' && player.isDisposed()) ||
+          container.getAttribute('data-publico-user-paused') === '1' ||
+          container.classList.contains('is-ad-playing') ||
+          container.classList.contains('is-ad-requesting') ||
+          isInAdMode(player) || !player.paused()) {
+        return;
+      }
+      safePlay(player, container, function (error) {
+        if (!error || error.name !== 'NotAllowedError' || player.muted() ||
+            !asBool(container.getAttribute('data-autoplay-muted-fallback'), true)) {
+          return;
+        }
+        applyAudioState(container, player, true, getVolume(container));
+        container.setAttribute('data-audio-autoplay-status', 'blocked-by-browser');
+        container.setAttribute('data-ad-vpmute', '1');
+        safePlay(player, container);
+      });
+    }, 250);
   }
 
   function setupPlaylist(container, player) {
@@ -770,21 +799,31 @@
       state.index = index;
       log(container, 'A preparar vídeo ' + (state.index + 1) + ' de ' + total + (item.title ? ': ' + item.title : ''));
       player.pause();
-      applyPlaylistItem(container, player, item, state.index);
-      if (player.ads) {
-        player.trigger('contentchanged');
-      }
       player.one('loadedmetadata', function () {
         var adRequested = requestFreshPreroll(container, player, item);
         if (!adRequested) {
           log(container, 'Sem preroll disponível. A iniciar conteúdo.');
         }
-        safePlay(player, container);
+        if (container.getAttribute('data-publico-user-paused') !== '1') {
+          safePlay(player, container, function (error) {
+            if (error && error.name === 'NotAllowedError' && !player.muted() &&
+                asBool(container.getAttribute('data-autoplay-muted-fallback'), true)) {
+              applyAudioState(container, player, true, getVolume(container));
+              container.setAttribute('data-audio-autoplay-status', 'blocked-by-browser');
+              container.setAttribute('data-ad-vpmute', '1');
+              safePlay(player, container);
+            }
+          });
+        }
         unlockSwitching(1200);
       });
       player.one('playing', function () {
         unlockSwitching(400);
       });
+      applyPlaylistItem(container, player, item, state.index);
+      if (player.ads) {
+        player.trigger('contentchanged');
+      }
     }
 
     function advancePlaylist(reason) {
@@ -901,6 +940,7 @@
         container.classList.add('has-content-click-overlay');
       }
       log(container, 'Ad ended');
+      resumeIncontentAfterAd(container, player);
     });
     player.on('adserror', function () {
       clearNoAdTimer();
@@ -915,6 +955,7 @@
         return;
       }
       log(container, 'Ad error. Content playback can continue.', true);
+      resumeIncontentAfterAd(container, player);
     });
     player.on('contentresumed', function () {
       clearNoAdTimer();
@@ -933,6 +974,7 @@
         container.classList.add('has-content-click-overlay');
       }
       log(container, 'Content resumed');
+      resumeIncontentAfterAd(container, player);
     });
     player.on('ended', function () {
       clearNoAdTimer();
@@ -952,6 +994,10 @@
     });
     player.on('dispose', function () {
       clearNoAdTimer();
+      if (container._pubResumeTimer) {
+        window.clearTimeout(container._pubResumeTimer);
+        container._pubResumeTimer = null;
+      }
       instances.delete(container);
       var disposedPlayerId = container.getAttribute('data-player-id') || container.id;
       if (disposedPlayerId && instancesById[disposedPlayerId] === player) {
@@ -1082,8 +1128,10 @@
       stopEvent(event);
       try {
         if (player.paused()) {
+          container.setAttribute('data-publico-user-paused', '0');
           safePlay(player, container);
         } else {
+          container.setAttribute('data-publico-user-paused', '1');
           player.pause();
         }
       } catch (error) {}
@@ -1376,6 +1424,7 @@
       player.ima({
         adTagUrl: adTagUrl,
         showCountdown: false,
+        disableAdControls: true,
         preventLateAdStart: true,
         vastLoadTimeout: Number(container.getAttribute('data-vast-timeout') || 5000),
         adWillAutoPlay: shouldAutoplay,
@@ -1914,7 +1963,7 @@
           var shell = document.createElement('div');
           shell.id = 'pub-vertcontent-video-' + placement.id;
           shell.className = 'pub-video-shell';
-          shell.setAttribute('data-vjs-player', '');
+          shell.setAttribute('data-publisher-video', '');
           shell.setAttribute('data-player-mode', 'content');
           shell.setAttribute('data-publico-vertcontent-video', '1');
           shell.setAttribute('data-player-id', shell.id);
