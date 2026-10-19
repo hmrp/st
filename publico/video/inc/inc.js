@@ -4,7 +4,8 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-inc-v1', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-inc-fallback-v1', MODULE_SCRIPT_URL).href;
+  var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
   var records = [];
@@ -33,11 +34,11 @@
 
   function addCss() {
     var url = PLAYER_CSS;
-    if (document.querySelector('link[data-publico-html5-ima="1"]')) return;
+    if (document.querySelector('link[data-inc="css"]')) return;
     var link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = url;
-    link.setAttribute('data-publico-html5-ima', '1');
+    link.setAttribute('data-inc', 'css');
     document.head.appendChild(link);
   }
 
@@ -50,7 +51,9 @@
       if (!entry || typeof entry.src !== 'string' || !entry.src.trim()) return false;
       try {
         var u = new URL(entry.src, PLAYLIST);
-        return (u.protocol === 'https:' || u.protocol === 'http:') && (!entry.type || entry.type === 'video/mp4');
+        if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+        if (entry.type) return /^video\/mp4(?:\s*;|$)/i.test(entry.type.trim());
+        return /\.mp4$/i.test(u.pathname);
       } catch (e) { return false; }
     });
   }
@@ -85,7 +88,6 @@
   function buildVast(rec, item) {
     var now = String(Date.now() + Math.floor(Math.random() * 10000));
     var duration = Number(rec.video.duration);
-    if (!isFinite(duration) || duration <= 0) duration = Number(item.duration) || 0;
     var isMobile = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
     var params = new URLSearchParams({
       iu: pathFor(rec.placement),
@@ -113,7 +115,7 @@
     });
     var hint = deviceType();
     if (hint) params.set('dth', hint);
-    if (duration > 0) params.set('vid_d', String(Math.ceil(duration)));
+    if (isFinite(duration) && duration > 0) params.set('vid_d', String(Math.ceil(duration)));
     if (item.title) params.set('ct_ti', String(item.title));
     return 'https://pubads.g.doubleclick.net/gampad/ads?' + params.toString();
   }
@@ -121,7 +123,7 @@
   function dom(rec) {
     var shell = document.createElement('div');
     shell.className = 'pub-video-shell pub-html5-shell is-loading';
-    shell.setAttribute('data-html5-ima', '1');
+    shell.setAttribute('data-inc', 'player');
     var media = document.createElement('video');
     media.className = 'pub-html5-media';
     media.playsInline = true;
@@ -396,8 +398,8 @@
     request.nonLinearAdSlotHeight = Math.min(150, size.height);
     request.vastLoadTimeout = 7000;
     request.pageUrl = window.location.href;
-    var duration = Number(rec.video.duration) || Number(item.duration) || 0;
-    if (duration > 0 && isFinite(duration)) request.contentDuration = duration;
+    var duration = Number(rec.video.duration);
+    if (isFinite(duration) && duration > 0) request.contentDuration = duration;
     if (item.title) request.contentTitle = String(item.title);
     if (typeof request.setAdWillAutoPlay === 'function') request.setAdWillAutoPlay(!rec.userStarted);
     if (typeof request.setAdWillPlayMuted === 'function') request.setAdWillPlayMuted(rec.adMuted);
@@ -408,20 +410,40 @@
     catch (error) { finishAds(rec, token, 'request-error'); }
   }
 
+  function fallbackPlaylist(rec, reason) {
+    if (rec.destroyed) return;
+    if (rec.usingFallbackMedia) { rec.fallback('fallback-media-unavailable'); return; }
+    rec.usingFallbackMedia = true;
+    rec.failedMediaIndices = {};
+    rec.playlist = [{ title: 'Fallback', src: FALLBACK_MEDIA, type: 'video/mp4', mediaButton: true }];
+    rec.emptyLoops = 0;
+    rec.playedThisLoop = false;
+    rec.wrapper.setAttribute('data-inc-fallback', '1');
+    rec.wrapper.setAttribute('data-inc-fallback-reason', String(reason));
+    log('Usar fallback.mp4:', reason);
+    if (rec.shell) prepareItem(rec, 0);
+  }
+
   function nextItem(rec) {
     if (rec.destroyed || rec.waitingAds || rec.adPlaying) return;
-    var next = rec.index + 1;
-    if (next >= rec.playlist.length) {
-      rec.completedLoops++;
-      if (rec.playedThisLoop) rec.emptyLoops = 0;
-      else rec.emptyLoops++;
-      rec.playedThisLoop = false;
-      rec.wrapper.setAttribute('data-publico-video-completed-loops', String(rec.completedLoops));
-      rec.wrapper.setAttribute('data-publico-video-empty-loops', String(rec.emptyLoops));
-      log('Loop completo:', rec.completedLoops, 'sem anúncios consecutivos:', rec.emptyLoops);
-      if (rec.emptyLoops >= rec.maxLoops) { rec.fallback('no-vast-after-' + rec.maxLoops + '-playlist-loops'); return; }
-      next = 0;
-    }
+    var next = rec.index;
+    var skipped = 0;
+    do {
+      next++;
+      if (next >= rec.playlist.length) {
+        rec.completedLoops++;
+        if (rec.playedThisLoop) rec.emptyLoops = 0;
+        else rec.emptyLoops++;
+        rec.playedThisLoop = false;
+        rec.wrapper.setAttribute('data-publico-video-completed-loops', String(rec.completedLoops));
+        rec.wrapper.setAttribute('data-publico-video-empty-loops', String(rec.emptyLoops));
+        log('Loop completo:', rec.completedLoops, 'sem anúncios consecutivos:', rec.emptyLoops);
+        if (rec.emptyLoops >= rec.maxLoops) { rec.fallback('no-vast-after-' + rec.maxLoops + '-playlist-loops'); return; }
+        next = 0;
+      }
+      skipped++;
+    } while (rec.failedMediaIndices[next] && skipped < rec.playlist.length);
+    if (rec.failedMediaIndices[next]) { fallbackPlaylist(rec, 'playlist-mp4-unavailable'); return; }
     prepareItem(rec, next);
   }
 
@@ -432,6 +454,7 @@
     var epoch = rec.itemEpoch;
     var item = rec.playlist[index];
     rec.shell.classList.add('is-loading');
+    rec.shell.classList.toggle('has-media-button', item.mediaButton === true);
     var linkUrl = '';
     if (typeof item.url === 'string' && item.url.trim()) {
       try {
@@ -443,18 +466,23 @@
     else rec.contentLink.removeAttribute('href');
     rec.contentLink.classList.toggle('is-disabled', !linkUrl);
     rec.video.pause();
+    function mediaError(reason) {
+      if (rec.destroyed || epoch !== rec.itemEpoch) return;
+      if (rec.mediaTimer) { window.clearTimeout(rec.mediaTimer); rec.mediaTimer = null; }
+      rec.failedMediaIndices[index] = true;
+      if (rec.usingFallbackMedia) { rec.fallback('fallback-media-' + reason); return; }
+      if (rec.playlist.every(function (entry, i) { return rec.failedMediaIndices[i]; })) {
+        fallbackPlaylist(rec, 'playlist-mp4-unavailable');
+      } else nextItem(rec);
+    }
+    rec.mediaTimer = window.setTimeout(function () { mediaError('timeout'); }, 12000);
     rec.video.onloadedmetadata = function () {
       if (rec.destroyed || epoch !== rec.itemEpoch) return;
+      if (rec.mediaTimer) { window.clearTimeout(rec.mediaTimer); rec.mediaTimer = null; }
       rec.shell.classList.remove('is-loading');
-      rec.mediaErrors = 0;
       requestAd(rec, item);
     };
-    rec.video.onerror = function () {
-      if (rec.destroyed || epoch !== rec.itemEpoch) return;
-      rec.mediaErrors++;
-      if (rec.mediaErrors >= 3) rec.fallback('media-error');
-      else nextItem(rec);
-    };
+    rec.video.onerror = function () { mediaError('error'); };
     rec.video.src = new URL(item.src, PLAYLIST).href;
     rec.video.load();
     log('Playlist:', index + 1, '/', rec.playlist.length, item.title || 'MP4');
@@ -464,6 +492,7 @@
     if (rec.destroyed) return;
     rec.destroyed = true;
     if (rec.downloadTimer) window.clearTimeout(rec.downloadTimer);
+    if (rec.mediaTimer) window.clearTimeout(rec.mediaTimer);
     if (rec.adTimer) window.clearTimeout(rec.adTimer);
     if (rec.loader) { try { rec.loader.destroy(); } catch (e) {} }
     if (rec.manager) { try { rec.manager.destroy(); } catch (e) {} }
@@ -487,7 +516,7 @@
       adPlaying: false, waitingAds: false, adStartedForRequest: false, muted: false, adMuted: false, volume: 0.01,
       manualPause: false, userStarted: false, awaitingGesture: false, destroyed: false,
       maxLoops: Math.max(1, Number(window.VertInContentRequest && window.VertInContentRequest.maxPlaylistLoopsWithoutVast) || LIMIT_LOOPS),
-      hadVisibleContent: false, mediaErrors: 0
+      hadVisibleContent: false, mediaTimer: null, failedMediaIndices: {}, usingFallbackMedia: false
     };
     rec.onResize = function () {
       if (!rec.manager || !rec.adPlaying) return;
@@ -517,12 +546,15 @@
       fetch(PLAYLIST, { credentials: 'omit', mode: 'cors', cache: 'no-store', signal: controller ? controller.signal : undefined }).then(function (response) {
         if (!response.ok) throw new Error('Playlist HTTP ' + response.status);
         return response.json();
+      }).catch(function (error) {
+        log('Playlist indisponível:', error.message || String(error));
+        return null;
       }),
       loadIma()
     ]).then(function (results) {
       if (rec.destroyed || !wrapper.isConnected) return;
       rec.playlist = validPlaylist(results[0]);
-      if (!rec.playlist.length) throw new Error('Playlist vazia ou sem MP4 válidos');
+      if (!rec.playlist.length) fallbackPlaylist(rec, 'playlist-missing-or-empty');
       dom(rec);
       setupIma(rec);
       rec.state = 'video';
@@ -544,6 +576,9 @@
         adMuted: rec.adMuted,
         volume: rec.volume,
         currentItem: rec.playlist[rec.index] && rec.playlist[rec.index].title || null,
+        mediaButton: Boolean(rec.playlist[rec.index] && rec.playlist[rec.index].mediaButton === true),
+        fallbackMedia: rec.usingFallbackMedia,
+        fallbackMediaUrl: rec.usingFallbackMedia ? FALLBACK_MEDIA : null,
         attempts: rec.attempts,
         misses: rec.misses,
         completedLoops: rec.completedLoops,
