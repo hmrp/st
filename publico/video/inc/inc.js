@@ -4,7 +4,7 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-media-audio-v7', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-media-controls-v9', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
@@ -42,14 +42,14 @@
     document.head.appendChild(link);
   }
 
-  var lisbonClock = new Intl.DateTimeFormat('en-GB', {
+  var dateCheckFormatter = new Intl.DateTimeFormat('pt-PT', {
     timeZone: 'Europe/Lisbon', year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
   });
 
-  function lisbonNow() {
+  function dateCheck() {
     var parts = {};
-    lisbonClock.formatToParts(new Date()).forEach(function (part) {
+    dateCheckFormatter.formatToParts(new Date()).forEach(function (part) {
       if (part.type !== 'literal') parts[part.type] = part.value;
     });
     return parts.year + '-' + parts.month + '-' + parts.day + 'T' + parts.hour + ':' + parts.minute + ':' + parts.second;
@@ -74,7 +74,7 @@
   function expired(item, stamp) {
     if (!item || item.expiresAt == null || item.expiresAt === '') return false;
     var cutoff = expiresAtStamp(item.expiresAt);
-    return !cutoff || (stamp || lisbonNow()) >= cutoff;
+    return !cutoff || (stamp || dateCheck()) >= cutoff;
   }
 
   function validPlaylist(payload) {
@@ -583,6 +583,7 @@
     if (expired(item)) { nextItem(rec); return; }
     rec.shell.classList.add('is-loading');
     rec.shell.classList.toggle('has-media-button', item.mediaButton === true);
+    rec.shell.classList.toggle('has-media-button-config', typeof item.mediaButton === 'boolean');
     var linkUrl = '';
     if (typeof item.url === 'string' && item.url.trim()) {
       try {
@@ -726,7 +727,7 @@
         volume: rec.volume,
         currentItem: rec.playlist[rec.index] && rec.playlist[rec.index].title || null,
         currentItemExpiresAt: rec.playlist[rec.index] && rec.playlist[rec.index].expiresAt || null,
-        mediaButton: Boolean(rec.playlist[rec.index] && rec.playlist[rec.index].mediaButton === true),
+        mediaButton: rec.playlist[rec.index] && typeof rec.playlist[rec.index].mediaButton === 'boolean' ? rec.playlist[rec.index].mediaButton : null,
         fallbackMedia: rec.usingFallbackMedia,
         fallbackMediaUrl: rec.usingFallbackMedia ? FALLBACK_MEDIA : null,
         attempts: rec.attempts,
