@@ -281,6 +281,7 @@
       if (token !== rec.currentRequest) return;
       rec.video.pause();
       rec.adPlaying = true;
+      rec.waitingAds = false;
       updateUI(rec);
     });
     listen(ima.AdEvent.Type.STARTED, function () {
@@ -290,6 +291,7 @@
       rec.misses = 0;
       rec.playedThisLoop = true;
       rec.adPlaying = true;
+      rec.waitingAds = false;
       rec.wrapper.setAttribute('data-publico-video-result', 'vast-started');
       rec.wrapper.setAttribute('data-publico-video-misses', '0');
       if (rec.adTimer) { window.clearTimeout(rec.adTimer); rec.adTimer = null; }
