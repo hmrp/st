@@ -202,7 +202,8 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
   object-position: center center !important;
 }
 
-.pub-html5-shell.is-ad-playing .pub-html5-media {
+.pub-html5-shell.is-ad-playing .pub-html5-media,
+.pub-html5-shell.is-ad-requesting .pub-html5-media {
   opacity: 0 !important;
 }
 
