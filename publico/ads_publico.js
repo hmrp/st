@@ -379,7 +379,7 @@
                 reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
                 return;
             }
-            script.src = new URL("video/html5ima/publisher-video-player.js?v=20261019-html5ima-mute-vast-v2", publicoAdsScriptUrl).href;
+            script.src = new URL("video/inc/inc.js?v=20261019-inc-v1", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -388,7 +388,7 @@
                     reject(new Error("Módulo VertInContentRequest não foi disponibilizado"));
                 }
             };
-            script.onerror = function () { reject(new Error("Falha ao carregar publisher-video-player.js")); };
+            script.onerror = function () { reject(new Error("Falha ao carregar inc.js")); };
             document.head.appendChild(script);
         }).catch(function (error) {
             vertVideoModulePromise = null;
