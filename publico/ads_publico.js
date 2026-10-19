@@ -379,7 +379,7 @@
                 reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
                 return;
             }
-            script.src = new URL("video/inc/inc.js?v=20261019-inc-fallback-v1", publicoAdsScriptUrl).href;
+            script.src = new URL("video/inc/inc.js?v=20261019-mobile300-vastcontain", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -444,8 +444,8 @@
                                                                            
                                                                         
             var mobileVideo = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
-            var expectedPlayerHeight = mobileVideo ? 250 : 400;
-            var minVisiblePx = Math.ceil(expectedPlayerHeight * 0.30);
+            var expectedPlayerHeight = mobileVideo ? 300 : 389;
+            var minVisiblePx = Math.ceil(expectedPlayerHeight * 0.50);
             observer = new IntersectionObserver(function (entries) {
                 if (entries.some(function (entry) { return entry.isIntersecting; })) start();
             }, { rootMargin: "0px 0px -" + minVisiblePx + "px 0px", threshold: 0 });
