@@ -4,7 +4,7 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-inc-fallback-v1', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-mobile300-vastcontain', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
@@ -282,7 +282,7 @@
   }
 
   function sizeOf(rec) {
-    var rect = rec.shell.getBoundingClientRect();
+    var rect = rec.adLayer.getBoundingClientRect();
     return { width: Math.max(1, Math.round(rect.width)), height: Math.max(1, Math.round(rect.height)) };
   }
 
@@ -403,7 +403,6 @@
     if (item.title) request.contentTitle = String(item.title);
     if (typeof request.setAdWillAutoPlay === 'function') request.setAdWillAutoPlay(!rec.userStarted);
     if (typeof request.setAdWillPlayMuted === 'function') request.setAdWillPlayMuted(rec.adMuted);
-    if (typeof request.setContinuousPlayback === 'function') request.setContinuousPlayback(true);
     rec.adTimer = window.setTimeout(function () { finishAds(rec, token, 'timeout'); }, VAST_TIMEOUT);
     updateUI(rec);
     try { rec.loader.requestAds(request, token); }

@@ -174,3 +174,74 @@
     right: 6px;
   }
 }
+
+.pub-html5-shell:not(.has-media-button) .pub-html5-play {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.pub-html5-shell.has-media-button:not(.is-ad-playing):not(.is-ad-requesting) .pub-html5-play {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+
+aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
+  width: 100% !important;
+  max-width: 692px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: 16 / 9 !important;
+}
+
+.pub-html5-shell .pub-html5-media {
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+.pub-html5-shell.is-ad-playing .pub-html5-media {
+  opacity: 0 !important;
+}
+
+.pub-html5-shell .pub-html5-ad-layer {
+  overflow: hidden;
+  background: #000;
+}
+
+.pub-html5-shell .pub-html5-ad-layer video {
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+
+@media screen and (max-width: 767px) {
+  aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+  }
+
+  .pub-html5-shell .pub-html5-ad-layer {
+    inset: auto !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: min(100%, 533.333px) !important;
+    height: auto !important;
+    max-height: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-publico-vertcontent-video="1"][data-publico-vcv-reserved="1"]::before {
+    right: calc(50% - 50vw + 8px) !important;
+  }
+}
