@@ -4,7 +4,7 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-mp4-contain-v5', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-media-audio-v7', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
@@ -42,6 +42,41 @@
     document.head.appendChild(link);
   }
 
+  var lisbonClock = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Lisbon', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+  });
+
+  function lisbonNow() {
+    var parts = {};
+    lisbonClock.formatToParts(new Date()).forEach(function (part) {
+      if (part.type !== 'literal') parts[part.type] = part.value;
+    });
+    return parts.year + '-' + parts.month + '-' + parts.day + 'T' + parts.hour + ':' + parts.minute + ':' + parts.second;
+  }
+
+  function expiresAtStamp(value) {
+    if (typeof value !== 'string') return null;
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(value.trim());
+    if (!m) return null;
+    var year = Number(m[1]);
+    var month = Number(m[2]);
+    var day = Number(m[3]);
+    var hour = Number(m[4] || 0);
+    var minute = Number(m[5] || 0);
+    var second = Number(m[6] || 0);
+    var date = new Date(0);
+    date.setUTCFullYear(year, month - 1, day);
+    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day || hour > 23 || minute > 59 || second > 59) return null;
+    return m[1] + '-' + m[2] + '-' + m[3] + 'T' + (m[4] || '00') + ':' + (m[5] || '00') + ':' + (m[6] || '00');
+  }
+
+  function expired(item, stamp) {
+    if (!item || item.expiresAt == null || item.expiresAt === '') return false;
+    var cutoff = expiresAtStamp(item.expiresAt);
+    return !cutoff || (stamp || lisbonNow()) >= cutoff;
+  }
+
   function validPlaylist(payload) {
     var list = Array.isArray(payload) ? payload : payload && payload.videos;
     if (!Array.isArray(list)) return [];
@@ -55,7 +90,7 @@
         if (entry.type) return /^video\/mp4(?:\s*;|$)/i.test(entry.type.trim());
         return /\.mp4$/i.test(u.pathname);
       } catch (e) { return false; }
-    });
+    }).filter(function (entry) { return !expired(entry); });
   }
 
   function pathFor(placement) {
@@ -229,7 +264,9 @@
 
   function clearAds(rec) {
     if (rec.adTimer) window.clearTimeout(rec.adTimer);
+    if (rec.resumeFallbackTimer) window.clearTimeout(rec.resumeFallbackTimer);
     rec.adTimer = null;
+    rec.resumeFallbackTimer = null;
     if (rec.manager) {
       try { rec.manager.destroy(); } catch (e) {}
     }
@@ -252,6 +289,10 @@
 
   function resumeContent(rec, fromClick) {
     if (rec.destroyed || rec.adPlaying || rec.waitingAds) return;
+    if (!rec.usingFallbackMedia && rec.playlist[rec.index] && expired(rec.playlist[rec.index])) {
+      nextItem(rec);
+      return;
+    }
     if (fromClick) {
       rec.manualPause = false;
       rec.userStarted = true;
@@ -271,25 +312,52 @@
     rec.contentResumeEpoch = rec.itemEpoch;
     rec.video.muted = rec.muted;
     rec.video.volume = rec.volume;
+    var epoch = rec.itemEpoch;
     var promise;
     try { promise = rec.video.play(); } catch (error) { autoplayError(rec, error); return; }
-    if (promise && promise.catch) promise.catch(function (error) { autoplayError(rec, error); });
+    if (promise && promise.catch) promise.catch(function (error) {
+      if (epoch === rec.itemEpoch) autoplayError(rec, error);
+    });
     updateUI(rec);
   }
 
   function autoplayError(rec, error) {
-    if (rec.destroyed || rec.manualPause || rec.adPlaying) return;
+    if (rec.destroyed || rec.manualPause || rec.adPlaying || rec.waitingAds) return;
+    if (error && error.name === 'AbortError' && rec.resumeRetryCount < 2) {
+      var epoch = rec.itemEpoch;
+      rec.resumeRetryCount++;
+      window.setTimeout(function () {
+        if (rec.destroyed || epoch !== rec.itemEpoch || rec.manualPause || rec.adPlaying || rec.waitingAds) return;
+        resumeContent(rec, false);
+      }, 180);
+      return;
+    }
     if (error && error.name === 'NotAllowedError' && !rec.muted) {
       rec.muted = true;
       rec.video.muted = true;
       rec.shell.setAttribute('data-audio-autoplay-status', 'blocked-by-browser');
       updateUI(rec);
+      var epoch = rec.itemEpoch;
       var attempt = rec.video.play();
-      if (attempt && attempt.catch) attempt.catch(function () { rec.manualPause = true; updateUI(rec); });
+      if (attempt && attempt.catch) attempt.catch(function () {
+        if (epoch !== rec.itemEpoch || rec.destroyed) return;
+        rec.manualPause = true;
+        updateUI(rec);
+      });
       return;
     }
     rec.manualPause = true;
     updateUI(rec);
+  }
+
+  function verifyContentResume(rec) {
+    if (rec.resumeCheckTimer) window.clearTimeout(rec.resumeCheckTimer);
+    var epoch = rec.itemEpoch;
+    rec.resumeCheckTimer = window.setTimeout(function () {
+      rec.resumeCheckTimer = null;
+      if (rec.destroyed || rec.manualPause || rec.adPlaying || rec.waitingAds || epoch !== rec.itemEpoch) return;
+      if (rec.video.paused && isEditorialSource(rec)) resumeContent(rec, false);
+    }, 250);
   }
 
   function finishAds(rec, token, reason) {
@@ -306,6 +374,7 @@
     rec.video.volume = rec.volume;
     updateUI(rec);
     resumeContent(rec, false);
+    verifyContentResume(rec);
   }
 
   function sizeOf(rec) {
@@ -335,6 +404,10 @@
     });
     listen(ima.AdEvent.Type.STARTED, function () {
       if (token !== rec.currentRequest) return;
+      if (rec.resumeFallbackTimer) {
+        window.clearTimeout(rec.resumeFallbackTimer);
+        rec.resumeFallbackTimer = null;
+      }
       rec.adStartedForRequest = true;
       rec.emptyLoops = 0;
       rec.misses = 0;
@@ -354,9 +427,17 @@
       updateUI(rec);
       log('Publicidade VAST iniciou reprodução', token);
     });
-    listen(ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function () { finishAds(rec, token, 'ad-complete'); });
-    listen(ima.AdEvent.Type.ALL_ADS_COMPLETED, function () { finishAds(rec, token, 'all-complete'); });
-    listen(ima.AdEvent.Type.SKIPPED, function () { finishAds(rec, token, 'skipped'); });
+    function scheduleResumeFallback(reason) {
+      if (rec.destroyed || token !== rec.currentRequest || rec.completedRequest === token) return;
+      if (rec.resumeFallbackTimer) window.clearTimeout(rec.resumeFallbackTimer);
+      rec.resumeFallbackTimer = window.setTimeout(function () {
+        rec.resumeFallbackTimer = null;
+        finishAds(rec, token, reason + '-resume-timeout');
+      }, 1600);
+    }
+    listen(ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function () { finishAds(rec, token, 'content-resume'); });
+    listen(ima.AdEvent.Type.ALL_ADS_COMPLETED, function () { scheduleResumeFallback('all-complete'); });
+    listen(ima.AdEvent.Type.SKIPPED, function () { scheduleResumeFallback('skipped'); });
     manager.addEventListener(ima.AdErrorEvent.Type.AD_ERROR, function (event) {
       log('Erro IMA:', event.getError && String(event.getError()));
       finishAds(rec, token, 'ima-error');
@@ -463,6 +544,10 @@
 
   function nextItem(rec) {
     if (rec.destroyed || rec.waitingAds || rec.adPlaying) return;
+    if (!rec.playlist.some(function (entry, i) { return !rec.failedMediaIndices[i] && !expired(entry); })) {
+      fallbackPlaylist(rec, 'playlist-expired-or-unavailable');
+      return;
+    }
     var next = rec.index;
     var skipped = 0;
     do {
@@ -479,8 +564,8 @@
         next = 0;
       }
       skipped++;
-    } while (rec.failedMediaIndices[next] && skipped < rec.playlist.length);
-    if (rec.failedMediaIndices[next]) { fallbackPlaylist(rec, 'playlist-mp4-unavailable'); return; }
+    } while ((rec.failedMediaIndices[next] || expired(rec.playlist[next])) && skipped < rec.playlist.length);
+    if (rec.failedMediaIndices[next] || expired(rec.playlist[next])) { fallbackPlaylist(rec, 'playlist-expired-or-unavailable'); return; }
     prepareItem(rec, next);
   }
 
@@ -491,8 +576,11 @@
     rec.adAttemptEpoch = -1;
     rec.editorialPlayingEpoch = -1;
     rec.contentResumeEpoch = -1;
+    rec.resumeRetryCount = 0;
+    if (rec.resumeCheckTimer) { window.clearTimeout(rec.resumeCheckTimer); rec.resumeCheckTimer = null; }
     var epoch = rec.itemEpoch;
     var item = rec.playlist[index];
+    if (expired(item)) { nextItem(rec); return; }
     rec.shell.classList.add('is-loading');
     rec.shell.classList.toggle('has-media-button', item.mediaButton === true);
     var linkUrl = '';
@@ -536,6 +624,7 @@
       };
       if (rec.mediaTimer) { window.clearTimeout(rec.mediaTimer); rec.mediaTimer = null; }
       rec.shell.classList.remove('is-loading');
+      if (expired(item)) { nextItem(rec); return; }
       requestAd(rec, item);
     };
     rec.video.onerror = function () { mediaError('error'); };
@@ -550,6 +639,8 @@
     if (rec.downloadTimer) window.clearTimeout(rec.downloadTimer);
     if (rec.mediaTimer) window.clearTimeout(rec.mediaTimer);
     if (rec.adTimer) window.clearTimeout(rec.adTimer);
+    if (rec.resumeFallbackTimer) window.clearTimeout(rec.resumeFallbackTimer);
+    if (rec.resumeCheckTimer) window.clearTimeout(rec.resumeCheckTimer);
     if (rec.loader) { try { rec.loader.destroy(); } catch (e) {} }
     if (rec.manager) { try { rec.manager.destroy(); } catch (e) {} }
     window.removeEventListener('resize', rec.onResize);
@@ -573,7 +664,8 @@
       adPlaying: false, waitingAds: false, adStartedForRequest: false, muted: false, adMuted: false, volume: 0.01,
       manualPause: false, userStarted: false, awaitingGesture: false, destroyed: false,
       maxLoops: Math.max(1, Number(window.VertInContentRequest && window.VertInContentRequest.maxPlaylistLoopsWithoutVast) || LIMIT_LOOPS),
-      hadVisibleContent: false, mediaTimer: null, failedMediaIndices: {}, usingFallbackMedia: false
+      hadVisibleContent: false, mediaTimer: null, resumeFallbackTimer: null, resumeCheckTimer: null,
+      resumeRetryCount: 0, failedMediaIndices: {}, usingFallbackMedia: false
     };
     rec.onResize = function () {
       if (!rec.manager || rec.startedManager !== rec.currentRequest || (!rec.adPlaying && !rec.waitingAds)) return;
@@ -633,6 +725,7 @@
         adMuted: rec.adMuted,
         volume: rec.volume,
         currentItem: rec.playlist[rec.index] && rec.playlist[rec.index].title || null,
+        currentItemExpiresAt: rec.playlist[rec.index] && rec.playlist[rec.index].expiresAt || null,
         mediaButton: Boolean(rec.playlist[rec.index] && rec.playlist[rec.index].mediaButton === true),
         fallbackMedia: rec.usingFallbackMedia,
         fallbackMediaUrl: rec.usingFallbackMedia ? FALLBACK_MEDIA : null,
