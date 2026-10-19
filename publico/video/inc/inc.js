@@ -4,7 +4,7 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-primeiro-vast-visivel-v3', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-openauction-mobile-ui-v4', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
@@ -576,7 +576,7 @@
       hadVisibleContent: false, mediaTimer: null, failedMediaIndices: {}, usingFallbackMedia: false
     };
     rec.onResize = function () {
-      if (!rec.manager || !rec.adPlaying) return;
+      if (!rec.manager || rec.startedManager !== rec.currentRequest || (!rec.adPlaying && !rec.waitingAds)) return;
       try { var size = sizeOf(rec); rec.manager.resize(size.width, size.height, window.google.ima.ViewMode.NORMAL); } catch (e) {}
     };
     rec.fallback = function (reason) {

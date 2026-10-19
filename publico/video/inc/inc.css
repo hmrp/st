@@ -142,11 +142,6 @@
   z-index: 40;
 }
 
-.pub-html5-shell .pub-html5-ad-layer > div,
-.pub-html5-shell .pub-html5-ad-layer iframe {
-  max-width: 100%;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .pub-html5-shell:not(.is-content-paused):not(.is-ad-playing):not(.is-ad-requesting) .pub-html5-play {
     opacity: 0;
@@ -253,14 +248,14 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
   }
 
   .pub-html5-shell .pub-html5-ad-layer {
-    inset: auto !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: min(100%, 533.333px) !important;
-    height: auto !important;
-    max-height: 100% !important;
-    aspect-ratio: 16 / 9 !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
   }
 
   aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-publico-vertcontent-video="1"][data-publico-vcv-reserved="1"]::before {
