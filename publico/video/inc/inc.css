@@ -202,9 +202,15 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
   object-position: center center !important;
 }
 
-.pub-html5-shell.is-ad-playing .pub-html5-media,
-.pub-html5-shell.is-ad-requesting .pub-html5-media {
+.pub-html5-shell.is-ad-requesting .pub-html5-media,
+.pub-html5-shell.is-ad-playing:not(.is-ima-custom-playback) .pub-html5-media {
   opacity: 0 !important;
+}
+
+.pub-html5-shell.is-ad-playing.is-ima-custom-playback .pub-html5-media {
+  opacity: 1 !important;
+  object-fit: contain !important;
+  object-position: center center !important;
 }
 
 .pub-html5-shell .pub-html5-ad-layer {
@@ -217,6 +223,10 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
 .pub-html5-shell.is-ad-requesting .pub-html5-ad-layer {
   visibility: visible;
   background: #000;
+}
+
+.pub-html5-shell.is-ad-playing.is-ima-custom-playback .pub-html5-ad-layer {
+  background: transparent !important;
 }
 
 .pub-html5-shell .pub-html5-ad-layer video {

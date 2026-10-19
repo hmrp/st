@@ -4,7 +4,7 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-initial-mobile-band-v2', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-primeiro-vast-visivel-v3', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
@@ -237,7 +237,10 @@
     rec.waitingAds = false;
     rec.adPlaying = false;
     rec.currentRequest = null;
-    if (rec.shell) updateUI(rec);
+    if (rec.shell) {
+      rec.shell.classList.remove('is-ima-custom-playback');
+      updateUI(rec);
+    }
   }
 
   function isEditorialSource(rec) {
@@ -310,6 +313,14 @@
     return { width: Math.max(1, Math.round(rect.width)), height: Math.max(1, Math.round(rect.height)) };
   }
 
+  function syncAdPlaybackMode(rec) {
+    var custom = true;
+    if (rec.manager && typeof rec.manager.isCustomPlaybackUsed === 'function') {
+      try { custom = rec.manager.isCustomPlaybackUsed() !== false; } catch (e) {}
+    }
+    rec.shell.classList.toggle('is-ima-custom-playback', custom);
+  }
+
   function bindManager(rec, manager, token) {
     var ima = window.google.ima;
     function listen(eventName, fn) { manager.addEventListener(eventName, fn); }
@@ -319,6 +330,7 @@
       rec.video.muted = rec.adMuted;
       rec.adPlaying = true;
       rec.waitingAds = false;
+      syncAdPlaybackMode(rec);
       updateUI(rec);
     });
     listen(ima.AdEvent.Type.STARTED, function () {
@@ -329,6 +341,7 @@
       rec.playedThisLoop = true;
       rec.adPlaying = true;
       rec.waitingAds = false;
+      syncAdPlaybackMode(rec);
       rec.wrapper.setAttribute('data-publico-video-result', 'vast-started');
       rec.wrapper.setAttribute('data-publico-video-misses', '0');
       if (rec.adTimer) { window.clearTimeout(rec.adTimer); rec.adTimer = null; }
