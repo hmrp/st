@@ -262,3 +262,8 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
     right: calc(50% - 50vw + 8px) !important;
   }
 }
+
+.pub-html5-shell:not(.has-media-button):not(.is-ad-playing):not(.is-ad-requesting) .pub-html5-mute {
+  display: none !important;
+  pointer-events: none !important;
+}

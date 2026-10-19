@@ -4,7 +4,7 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-media-controls-v9', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-media-controls-v11', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
@@ -583,7 +583,6 @@
     if (expired(item)) { nextItem(rec); return; }
     rec.shell.classList.add('is-loading');
     rec.shell.classList.toggle('has-media-button', item.mediaButton === true);
-    rec.shell.classList.toggle('has-media-button-config', typeof item.mediaButton === 'boolean');
     var linkUrl = '';
     if (typeof item.url === 'string' && item.url.trim()) {
       try {
