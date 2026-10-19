@@ -193,7 +193,7 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
 }
 
 .pub-html5-shell .pub-html5-media {
-  object-fit: cover !important;
+  object-fit: contain !important;
   object-position: center center !important;
 }
 
