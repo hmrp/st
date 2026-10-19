@@ -379,7 +379,7 @@
                 reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
                 return;
             }
-            script.src = new URL("video/inc/inc.js?v=20261019-openauction-mobile-ui-v4", publicoAdsScriptUrl).href;
+            script.src = new URL("video/inc/inc.js?v=20261019-mp4-contain-v5", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
