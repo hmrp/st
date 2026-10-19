@@ -306,10 +306,11 @@
       rec.wrapper.setAttribute('data-publico-video-result', 'vast-started');
       rec.wrapper.setAttribute('data-publico-video-misses', '0');
       if (rec.adTimer) { window.clearTimeout(rec.adTimer); rec.adTimer = null; }
+      rec.adMuted = true;
       if (rec.manager && typeof rec.manager.setVolume === 'function') {
-        try { rec.manager.setVolume(rec.adMuted ? 0 : rec.volume); } catch (e) {}
+        try { rec.manager.setVolume(0); } catch (e) {}
       }
-      rec.video.muted = rec.adMuted;
+      rec.video.muted = true;
       markVisible(rec);
       updateUI(rec);
       log('Publicidade VAST iniciou reprodução', token);
@@ -376,8 +377,8 @@
     rec.completedRequest = null;
     rec.startedManager = null;
     rec.adStartedForRequest = false;
-    rec.adMuted = true;
-    rec.video.muted = true;
+    rec.adMuted = false;
+    rec.video.muted = false;
     rec.awaitingGesture = false;
     rec.currentRequest = token;
     rec.waitingAds = true;
@@ -483,7 +484,7 @@
       state: 'loading', player: null, video: null, manager: null, loader: null, adDisplay: null,
       playlist: [], index: 0, completedLoops: 0, emptyLoops: 0, playedThisLoop: false,
       attempts: 0, misses: 0, itemEpoch: 0, currentRequest: null, completedRequest: null,
-      adPlaying: false, waitingAds: false, adStartedForRequest: false, muted: false, adMuted: true, volume: 0.01,
+      adPlaying: false, waitingAds: false, adStartedForRequest: false, muted: false, adMuted: false, volume: 0.01,
       manualPause: false, userStarted: false, awaitingGesture: false, destroyed: false,
       maxLoops: Math.max(1, Number(window.VertInContentRequest && window.VertInContentRequest.maxPlaylistLoopsWithoutVast) || LIMIT_LOOPS),
       hadVisibleContent: false, mediaErrors: 0
