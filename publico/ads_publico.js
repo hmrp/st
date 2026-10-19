@@ -1,4 +1,4 @@
-/*181026 teste seedtagv1*/
+                          
 (function (window, document) {
     "use strict";
 
@@ -192,14 +192,14 @@
         });
     }
 
-    /* ============================================================
-       LAYOUT VERTICAL — GESTÃO POR EVENTOS GPT, SEM OBSERVERS
-       Só VertContent (desktop+mobile) e Vert (mobile no CSS).
-       A reserva histórica cresce até 600 px e não encolhe.
-       Um criativo fixo >600 px expande temporariamente o wrapper;
-       após refresh para um fixo mais pequeno, regressa a 600 px.
-       1x1/fluid não são medidos nem observados.
-       ============================================================ */
+                                                                   
+                                                              
+                                                              
+                                                           
+                                                                  
+                                                                 
+                                                
+                                                                      
     var pubAdLayout = (function () {
         var MAX_HEIGHT = 600;
         var STICKY_GAP = 80;
@@ -227,8 +227,8 @@
                 holder: target.holder,
                 placement: target.placement,
                 kind: target.kind,
-                held: 0,           // histórico persistente, até 600 px
-                applied: 0,        // reserva atualmente aplicada (pode exceder 600)
+                held: 0,                                               
+                applied: 0,                                                         
                 current: 0,
                 filled: false,
                 phase: 'idle'
@@ -263,10 +263,10 @@
         function hold(state, height) {
             height = Math.max(0, Math.ceil(Number(height) || 0));
             if (!height) return;
-            // Apenas o histórico fica limitado a 600 px.
+                                                         
             state.held = Math.max(state.held, Math.min(MAX_HEIGHT, height));
-            // O criativo atualmente renderizado pode ser maior que 600 px.
-            // Se o seguinte for inferior, regressa à reserva histórica.
+                                                                           
+                                                                        
             setReservedHeight(state, Math.max(state.held, height));
         }
         function forContent(wrapper) {
@@ -280,8 +280,8 @@
         function requested(placement) {
             var state = getState(targetFor(placement));
             if (!state) return;
-            // Não apagar a reserva nem o sticky entre request e render.
-            // A primeira reserva só surge após a primeira chamada real.
+                                                                        
+                                                                        
             setPhase(state, 'requested');
         }
         function rendered(placement, event) {
@@ -292,12 +292,12 @@
                 state.current = 0;
                 setSticky(state, false);
                 if (!state.filled) {
-                    // Nunca existiu publicidade: não deixar espaço vazio.
+                                                                          
                     state.held = 0;
                     setReservedHeight(state, 0);
                     setPhase(state, 'idle');
                 } else {
-                    // No-fill posterior: manter até 600 px, não o eventual pico >600.
+                                                                                      
                     setReservedHeight(state, state.held);
                     setPhase(state, 'empty-held');
                 }
@@ -309,15 +309,15 @@
             var size = event.size;
             var rawHeight = Array.isArray(size) ? Number(size[1]) : 0;
             if (rawHeight > 1 && isFinite(rawHeight)) {
-                // event.size define a altura dos criativos fixos.
-                // Histórico: máximo 600 px. Criativo atual: altura real,
-                // mesmo quando supera 600. Após redução, retém até 600.
+                                                                  
+                                                                         
+                                                                        
                 state.current = rawHeight;
                 hold(state, rawHeight);
                 setSticky(state, state.applied - rawHeight >= STICKY_GAP);
             } else {
-                // 1x1 e fluid podem alterar dimensão depois do render.
-                // Deliberadamente não usar ResizeObserver nem temporizadores.
+                                                                       
+                                                                              
                 state.current = 0;
                 setSticky(state, false);
             }
@@ -331,7 +331,7 @@
             if (!state) return;
             state.filled = true;
             setPhase(state, 'video');
-            // Uma única leitura por evento real do player, sem polling.
+                                                                        
             var stage = wrapper.querySelector('.pub-vcv-stage');
             if (stage) hold(state, stage.getBoundingClientRect().height);
         }
@@ -363,9 +363,10 @@
     })();
     window.PubAdLayout = pubAdLayout;
 
-    // Apenas um carregador leve no ficheiro geral. A lógica VAST/Video.js
-    // vive inteiramente no publisher-video-player.js e é pedida só para o
-    // primeiro VertContent elegível quando se aproxima do viewport.
+                                                                          
+                                                                          
+                                                                    
+    var publicoAdsScriptUrl = document.currentScript && document.currentScript.src || null;
     var vertVideoModulePromise = null;
     function loadVertVideoModule() {
         if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -374,7 +375,11 @@
         if (vertVideoModulePromise) return vertVideoModulePromise;
         vertVideoModulePromise = new Promise(function (resolve, reject) {
             var script = document.createElement("script");
-            script.src = "https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=20261019-skin-dom-v2";
+            if (!publicoAdsScriptUrl) {
+                reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
+                return;
+            }
+            script.src = new URL("video/html5ima/publisher-video-player.js", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -395,14 +400,14 @@
     function scheduleVertVideo(wrapper, placement, targeting) {
         var started = false;
         var observer = null;
-        // A reserva anterior a qualquer chamada continua em 1px.
+                                                                 
         wrapper.setAttribute("data-publico-vcv-reserved", "0");
 
         function fallback(reason) {
             if (!wrapper.isConnected || wrapper.getAttribute("data-publico-video-result") === "display") return;
             wrapper.replaceChildren(placement);
-            // Em falhas antes do arranque, retirar a sentinela de 1px:
-            // caso contrário o fallback display ficaria invisível.
+                                                                       
+                                                                   
             wrapper.removeAttribute("data-publico-vcv-reserved");
             wrapper.removeAttribute("data-publico-vertcontent-video");
             wrapper.setAttribute("data-publico-video-result", "display");
@@ -432,12 +437,12 @@
             });
         }
         if (window.IntersectionObserver) {
-            // O VertContent antes da primeira chamada tem apenas 1 px de altura.
-            // Por isso, threshold: 0.3 mediria 30% de 1 px, e NÃO do player.
-            // Em vez disso, aguardar que o topo do placement esteja dentro
-            // do viewport por pelo menos 30% da altura prevista do player.
-            // A área do player (400px desktop / 250px mobile) continua sem
-            // ser reservada até ao arranque; o TagBundle não é afetado.
+                                                                                 
+                                                                             
+                                                                           
+                                                                           
+                                                                           
+                                                                        
             var mobileVideo = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
             var expectedPlayerHeight = mobileVideo ? 250 : 400;
             var minVisiblePx = Math.ceil(expectedPlayerHeight * 0.30);
@@ -446,7 +451,7 @@
             }, { rootMargin: "0px 0px -" + minVisiblePx + "px 0px", threshold: 0 });
             observer.observe(wrapper);
         } else {
-            // Fallback só para browsers sem IntersectionObserver.
+                                                                  
             window.setTimeout(start, 0);
         }
         return true;
@@ -464,8 +469,8 @@
         placement.setAttribute("format", "vertContent");
         placement.setAttribute("adunit", "Vert_Publico/" + userType + "/" + adUnit + "/VertContent");
 
-        // Primeiro VertContent: a decisão de carregar o módulo é feita por
-        // proximidade do viewport; os restantes ficam exclusivamente em display.
+                                                                           
+                                                                                 
         if (index === 0 && window.pub && window.pub.pageType === "noticia" &&
                 !adsAreDisabled(window.pub) &&
                 !(window.VertInContentRequest && window.VertInContentRequest.enabled === false) &&
@@ -1457,8 +1462,8 @@
     }
 
     function setVertContentVisibility(event, element) {
-        // A reserva de altura do layout comum aplica-se a todos os VertContent.
-        // Nunca ocultar o wrapper por resposta vazia depois de ja haver fill.
+                                                                                
+                                                                              
         if (element) pubAdLayout.rendered(element, event);
     }
 
@@ -1536,7 +1541,7 @@
             clientId: 4458504,
             autoRefresh: {
                 enabled: true,
-                interval: 30
+                interval: 25
             },
             renderMargin: 150,
             refreshThreshold: 0.5,
@@ -2183,9 +2188,9 @@
         runtime.adUnit = adUnit;
         runtime.tagBundleUrl = tagBundleUrl;
 
-        // Fonte única para o targeting do TagBundle e do player Incontent.
-        // O TagBundle legado também consulta a variável global tagBundleConfig
-        // nos comandos GPT; esta propriedade tem de ser mantida para compatibilidade.
+                                                                           
+                                                                               
+                                                                                      
         runtime.tagBundleConfig = getTagBundleConfig(config, userType);
         window.tagBundleConfig = runtime.tagBundleConfig;
 
