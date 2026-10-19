@@ -1,0 +1,174 @@
+.pub-video-shell.pub-html5-shell {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #000 !important;
+  isolation: isolate;
+  overflow: hidden !important;
+}
+
+.pub-html5-shell .pub-html5-media {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  background: #000;
+}
+
+.pub-html5-shell .pub-html5-ad-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pub-html5-shell.is-ad-playing .pub-html5-ad-layer,
+.pub-html5-shell.is-ad-requesting .pub-html5-ad-layer {
+  pointer-events: auto;
+}
+
+.pub-html5-shell .pub-html5-content-link {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.pub-html5-shell .pub-html5-content-link.is-disabled,
+.pub-html5-shell.is-ad-playing .pub-html5-content-link,
+.pub-html5-shell.is-ad-requesting .pub-html5-content-link {
+  pointer-events: none;
+  display: none;
+}
+
+.pub-html5-shell .pub-html5-controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+}
+
+.pub-html5-shell .pub-html5-control {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 4px;
+  background-color: rgba(15, 17, 20, 0.28);
+  color: #fff;
+  box-shadow: none;
+  outline-offset: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 150ms ease;
+}
+
+.pub-html5-shell .pub-html5-control:hover,
+.pub-html5-shell .pub-html5-control:focus-visible {
+  background-color: rgba(15, 17, 20, 0.72);
+}
+
+.pub-html5-shell .pub-html5-mute {
+  left: 10px;
+}
+
+.pub-html5-shell .pub-html5-play {
+  right: 10px;
+}
+
+.pub-html5-shell .pub-html5-control::before {
+  content: '';
+  display: block;
+  width: 23px;
+  height: 23px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.pub-html5-shell .pub-html5-mute::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 9v6h4l5 4V5L8 9H4Z' fill='white'/%3E%3Cpath d='M17 8a6 6 0 0 1 0 8M19.5 5.5a9.5 9.5 0 0 1 0 13' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.pub-html5-shell.is-audio-muted .pub-html5-mute::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 9v6h4l5 4V5L8 9H4Z' fill='white'/%3E%3Cpath d='m17 9 5 6m0-6-5 6' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.pub-html5-shell .pub-html5-play::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='6.5' y='5' width='4.5' height='14' rx='1' fill='white'/%3E%3Crect x='13' y='5' width='4.5' height='14' rx='1' fill='white'/%3E%3C/svg%3E");
+}
+
+.pub-html5-shell.is-content-paused .pub-html5-play::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m8 4.5 12 7.5-12 7.5V4.5Z' fill='white'/%3E%3C/svg%3E");
+}
+
+.pub-html5-shell.is-ad-playing .pub-html5-play,
+.pub-html5-shell.is-ad-requesting .pub-html5-play {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.pub-html5-shell.is-ad-requesting .pub-html5-mute {
+  display: none !important;
+}
+
+.pub-html5-shell.is-ad-playing .pub-html5-mute {
+  z-index: 40;
+}
+
+.pub-html5-shell .pub-html5-ad-layer > div,
+.pub-html5-shell .pub-html5-ad-layer iframe {
+  max-width: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pub-html5-shell:not(.is-content-paused):not(.is-ad-playing):not(.is-ad-requesting) .pub-html5-play {
+    opacity: 0;
+  }
+  .pub-html5-shell:not(.is-ad-playing):not(.is-ad-requesting):hover .pub-html5-play,
+  .pub-html5-shell:not(.is-ad-playing):not(.is-ad-requesting):focus-within .pub-html5-play {
+    opacity: 1;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .pub-html5-shell .pub-html5-play {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .pub-html5-shell .pub-html5-control {
+    bottom: 6px;
+  }
+  .pub-html5-shell .pub-html5-mute {
+    left: 6px;
+  }
+  .pub-html5-shell .pub-html5-play {
+    right: 6px;
+  }
+}
