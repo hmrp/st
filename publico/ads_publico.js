@@ -374,7 +374,7 @@
         if (vertVideoModulePromise) return vertVideoModulePromise;
         vertVideoModulePromise = new Promise(function (resolve, reject) {
             var script = document.createElement("script");
-            script.src = "https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=20261017-incontent-loop5-1";
+            script.src = "https://hugopedroso.com/publico/video/assets/videojs/js/publisher-video-player.js?v=20261018-incontent-pub-autoplay2";
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
