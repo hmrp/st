@@ -208,6 +208,13 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
 
 .pub-html5-shell .pub-html5-ad-layer {
   overflow: hidden;
+  background: transparent;
+  visibility: hidden;
+}
+
+.pub-html5-shell.is-ad-playing .pub-html5-ad-layer,
+.pub-html5-shell.is-ad-requesting .pub-html5-ad-layer {
+  visibility: visible;
   background: #000;
 }
 
@@ -217,6 +224,10 @@ aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
 }
 
 @media screen and (max-width: 767px) {
+  aside.ad-slot.ad-slot--in-content.pub-ad-layout[data-publico-vertcontent-video="1"][data-pub-ad-phase="video"] {
+    min-height: 300px !important;
+  }
+
   aside[data-publico-vertcontent-video="1"] .pub-vcv-stage:has(.pub-html5-shell) {
     position: relative !important;
     left: 50% !important;

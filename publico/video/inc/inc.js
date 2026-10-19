@@ -4,7 +4,7 @@
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
   var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
-  var PLAYER_CSS = new URL('inc.css?v=20261019-mobile300-vastcontain', MODULE_SCRIPT_URL).href;
+  var PLAYER_CSS = new URL('inc.css?v=20261019-overlay-epoch-v1', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
   var LIMIT_LOOPS = 5;
   var VAST_TIMEOUT = 9000;
@@ -192,7 +192,19 @@
     });
     media.addEventListener('play', function () { updateUI(rec); });
     media.addEventListener('pause', function () { updateUI(rec); });
-    media.addEventListener('ended', function () { if (!rec.adPlaying) nextItem(rec); });
+    media.addEventListener('playing', function () {
+      if (rec.destroyed || rec.adPlaying || rec.waitingAds || rec.contentResumeEpoch !== rec.itemEpoch) return;
+      if (!isEditorialSource(rec)) return;
+      rec.editorialPlayingEpoch = rec.itemEpoch;
+      updateUI(rec);
+    });
+    media.addEventListener('ended', function () {
+      if (rec.destroyed || rec.adPlaying || rec.waitingAds || rec.editorialPlayingEpoch !== rec.itemEpoch) return;
+      if (!isEditorialSource(rec)) return;
+      if (isFinite(media.duration) && media.duration > 0 && media.currentTime < media.duration - 0.75) return;
+      rec.editorialPlayingEpoch = -1;
+      nextItem(rec);
+    });
     window.addEventListener('resize', rec.onResize);
     updateUI(rec);
   }
@@ -228,6 +240,13 @@
     if (rec.shell) updateUI(rec);
   }
 
+  function isEditorialSource(rec) {
+    if (!rec.expectedEditorialUrl || !rec.video) return false;
+    var current = rec.video.currentSrc || rec.video.src || '';
+    try { return new URL(current, window.location.href).href === rec.expectedEditorialUrl; }
+    catch (e) { return false; }
+  }
+
   function resumeContent(rec, fromClick) {
     if (rec.destroyed || rec.adPlaying || rec.waitingAds) return;
     if (fromClick) {
@@ -242,6 +261,11 @@
       }
     }
     if (rec.manualPause) { updateUI(rec); return; }
+    if (!isEditorialSource(rec) && rec.expectedEditorialUrl) {
+      rec.video.src = rec.expectedEditorialUrl;
+      rec.video.load();
+    }
+    rec.contentResumeEpoch = rec.itemEpoch;
     rec.video.muted = rec.muted;
     rec.video.volume = rec.volume;
     var promise;
@@ -372,7 +396,8 @@
   }
 
   function requestAd(rec, item) {
-    if (rec.destroyed) return;
+    if (rec.destroyed || rec.adPlaying || rec.waitingAds || rec.adAttemptEpoch === rec.itemEpoch) return;
+    rec.adAttemptEpoch = rec.itemEpoch;
     clearAds(rec);
     rec.attempts++;
     var token = rec.attempts;
@@ -450,6 +475,9 @@
     if (rec.destroyed) return;
     rec.index = index;
     rec.itemEpoch++;
+    rec.adAttemptEpoch = -1;
+    rec.editorialPlayingEpoch = -1;
+    rec.contentResumeEpoch = -1;
     var epoch = rec.itemEpoch;
     var item = rec.playlist[index];
     rec.shell.classList.add('is-loading');
@@ -465,8 +493,14 @@
     else rec.contentLink.removeAttribute('href');
     rec.contentLink.classList.toggle('is-disabled', !linkUrl);
     rec.video.pause();
+    rec.video.onloadedmetadata = null;
+    rec.video.onerror = null;
+    rec.expectedEditorialUrl = new URL(item.src, PLAYLIST).href;
+    var mediaReady = false;
     function mediaError(reason) {
-      if (rec.destroyed || epoch !== rec.itemEpoch) return;
+      if (rec.destroyed || epoch !== rec.itemEpoch || mediaReady) return;
+      rec.video.onloadedmetadata = null;
+      rec.video.onerror = null;
       if (rec.mediaTimer) { window.clearTimeout(rec.mediaTimer); rec.mediaTimer = null; }
       rec.failedMediaIndices[index] = true;
       if (rec.usingFallbackMedia) { rec.fallback('fallback-media-' + reason); return; }
@@ -476,13 +510,23 @@
     }
     rec.mediaTimer = window.setTimeout(function () { mediaError('timeout'); }, 12000);
     rec.video.onloadedmetadata = function () {
-      if (rec.destroyed || epoch !== rec.itemEpoch) return;
+      if (rec.destroyed || epoch !== rec.itemEpoch || mediaReady || !isEditorialSource(rec)) return;
+      mediaReady = true;
+      rec.video.onloadedmetadata = null;
+      rec.video.onerror = function () {
+        if (rec.destroyed || epoch !== rec.itemEpoch || rec.adPlaying || rec.waitingAds || !isEditorialSource(rec)) return;
+        rec.failedMediaIndices[index] = true;
+        if (rec.usingFallbackMedia) { rec.fallback('fallback-media-playback-error'); return; }
+        if (rec.playlist.every(function (entry, i) { return rec.failedMediaIndices[i]; })) {
+          fallbackPlaylist(rec, 'playlist-mp4-unavailable');
+        } else nextItem(rec);
+      };
       if (rec.mediaTimer) { window.clearTimeout(rec.mediaTimer); rec.mediaTimer = null; }
       rec.shell.classList.remove('is-loading');
       requestAd(rec, item);
     };
     rec.video.onerror = function () { mediaError('error'); };
-    rec.video.src = new URL(item.src, PLAYLIST).href;
+    rec.video.src = rec.expectedEditorialUrl;
     rec.video.load();
     log('Playlist:', index + 1, '/', rec.playlist.length, item.title || 'MP4');
   }
@@ -511,7 +555,8 @@
       wrapper: wrapper, placement: placement, stage: stage, targeting: options.targeting,
       state: 'loading', player: null, video: null, manager: null, loader: null, adDisplay: null,
       playlist: [], index: 0, completedLoops: 0, emptyLoops: 0, playedThisLoop: false,
-      attempts: 0, misses: 0, itemEpoch: 0, currentRequest: null, completedRequest: null,
+      attempts: 0, misses: 0, itemEpoch: 0, adAttemptEpoch: -1, editorialPlayingEpoch: -1, contentResumeEpoch: -1,
+      expectedEditorialUrl: null, currentRequest: null, completedRequest: null,
       adPlaying: false, waitingAds: false, adStartedForRequest: false, muted: false, adMuted: false, volume: 0.01,
       manualPause: false, userStarted: false, awaitingGesture: false, destroyed: false,
       maxLoops: Math.max(1, Number(window.VertInContentRequest && window.VertInContentRequest.maxPlaylistLoopsWithoutVast) || LIMIT_LOOPS),
