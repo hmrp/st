@@ -86,7 +86,6 @@
   display: none !important;
 }
 
-
 .pub-video-shell.has-fallback-content {
   background: transparent;
   max-width: 960px;
@@ -384,7 +383,6 @@
   pointer-events: none !important;
 }
 
-
 .pub-video-shell .video-js .vjs-volume-panel,
 .pub-video-shell .video-js .vjs-volume-panel.vjs-hover,
 .pub-video-shell .video-js .vjs-volume-panel:hover,
@@ -488,7 +486,6 @@
 .pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .vjs-mute-control {
   z-index: 70 !important;
 }
-
 
 .pub-video-shell.is-content-ui-hidden .video-js .vjs-play-control,
 .pub-video-shell.is-content-ui-hidden .video-js .vjs-volume-panel,
@@ -651,20 +648,51 @@
   left: auto;
 }
 
-.pub-video-shell.is-content-ui-hidden .pub-video-custom-controls,
-.pub-video-shell.is-ad-playing .pub-video-custom-controls,
-.pub-video-shell.is-ad-requesting .pub-video-custom-controls {
+.pub-video-shell.has-custom-controls .pub-video-custom-controls {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+  z-index: 2147482500 !important;
+}
+
+.pub-video-shell.has-custom-controls .pub-video-custom-control {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.pub-video-shell.has-custom-controls.is-content-ui-hidden:not(.is-ad-playing) .pub-video-custom-controls,
+.pub-video-shell.has-custom-controls.is-ad-requesting .pub-video-custom-controls {
+  display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
 
-.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .pub-video-click-overlay {
-  z-index: 40 !important;
+.pub-video-shell.has-custom-controls.is-ad-playing:not(.is-ad-requesting) .pub-video-custom-controls {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
 }
 
-.pub-video-shell.has-custom-controls .pub-video-custom-controls {
-  z-index: 90 !important;
+.pub-video-shell.has-custom-controls.is-ad-playing .pub-video-custom-play {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.pub-video-shell.has-custom-controls.is-ad-playing:not(.is-ad-requesting) .pub-video-custom-audio {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .pub-video-click-overlay {
+  z-index: 40 !important;
 }
 
 .pub-video-shell .video-js .vjs-big-play-button,
@@ -674,38 +702,6 @@
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
-}
-
-
-.pub-video-shell.has-custom-controls:is(.is-ad-requesting, .is-ad-playing, .is-content-ui-hidden) .pub-video-custom-controls,
-.pub-video-shell.has-custom-controls:is(.is-ad-requesting, .is-ad-playing, .is-content-ui-hidden) .pub-video-custom-control {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.pub-video-shell.has-custom-controls:not(.is-ad-playing):not(.is-ad-requesting):not(.is-content-ui-hidden) .pub-video-custom-controls {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: none !important;
-  z-index: 2147482500 !important;
-}
-
-.pub-video-shell.has-custom-controls:not(.is-ad-playing):not(.is-ad-requesting):not(.is-content-ui-hidden) .pub-video-custom-control {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-.pub-video-shell.has-content-click-overlay:not(.is-ad-playing):not(.is-ad-requesting) .video-js .pub-video-click-overlay {
-  z-index: 40 !important;
-}
-
-.pub-video-shell.has-custom-controls .pub-video-custom-controls {
-  z-index: 90 !important;
 }
 
 .pub-video-shell .pub-video-floating-close {
