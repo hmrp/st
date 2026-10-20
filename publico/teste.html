@@ -1,0 +1,547 @@
+<html lang="pt"><head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=abacda2b-65be-4701-a67e-b1461d8df6c6
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Importação da biblioteca 3D Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  /* Regra crucial para evitar que o padding expanda o painel para fora do ecrã */
+  * {
+    box-sizing: border-box;
+  }
+
+  .galaxy-section {
+    position: relative;
+    width: 100%;
+    height: 85vh;
+    min-height: 600px;
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    cursor: grab;
+  }
+  .galaxy-section:active { cursor: grabbing; }
+
+  #webgl-galaxy {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+
+  /* Badge de Instrução */
+  .instruction-badge {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+    border: 1px solid #eaeaea;
+    white-space: nowrap;
+  }
+
+  .instruction-badge span {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background-color: #0056b3;
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* Tooltip Flutuante (O Radar) */
+  #node-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -150%);
+    transition: opacity 0.2s ease;
+    z-index: 15;
+  }
+
+  /* Painel de Informação (Glassmorphism) */
+  .info-panel {
+    position: absolute;
+    top: 50%;
+    right: -500px;
+    transform: translateY(-50%);
+    width: 400px;
+    max-height: 80vh;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-left: 4px solid #0056b3;
+    border-radius: 12px 0 0 12px;
+    padding: 30px;
+    box-shadow: -5px 10px 40px rgba(0,0,0,0.08);
+    transition: right 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow-y: auto;
+    z-index: 20;
+    cursor: auto;
+  }
+
+  .info-panel.active { right: 0; }
+  .info-panel::-webkit-scrollbar { width: 6px; }
+  .info-panel::-webkit-scrollbar-thumb { background-color: #cccccc; border-radius: 10px; }
+
+  .panel-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: none; border: none;
+    font-size: 1.8rem; cursor: pointer; color: #999;
+    transition: color 0.3s; line-height: 1;
+    z-index: 30;
+  }
+  .panel-close:hover { color: #1a1a1a; }
+
+  .panel-title { font-size: 1.8rem; font-weight: 900; color: #1a1a1a; margin: 0 0 20px 0; padding-right: 30px; }
+
+  .panel-content ul { list-style-type: none; padding: 0; margin: 0 0 25px 0; }
+  .panel-content li {
+    font-size: 1rem; line-height: 1.5; color: #4a4a4a; margin-bottom: 12px; padding-left: 15px; position: relative;
+  }
+  .panel-content li::before {
+    content: "•"; position: absolute; left: 0; color: #0056b3; font-weight: bold; font-size: 1.2rem;
+  }
+
+  .panel-sources { background: rgba(0,0,0,0.03); padding: 15px; border-radius: 8px; font-size: 0.85rem; color: #666; }
+  .panel-sources strong { display: block; margin-bottom: 5px; color: #333; }
+  .panel-sources a { color: #0056b3; text-decoration: none; word-break: break-all; }
+
+  /* Tema Cancro */
+  .info-panel.theme-cancer { border-left-color: #e00073; }
+  .info-panel.theme-cancer .panel-content li::before { color: #e00073; }
+  .info-panel.theme-cancer .panel-sources a { color: #e00073; }
+
+  /* Grid para Cancro */
+  .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
+    background: rgba(255,255,255,0.5); padding: 15px; border-radius: 8px; border: 1px solid #eaeaea;
+  }
+  .stat-box span { display: block; font-size: 0.85rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+  .stat-box strong { font-size: 1.4rem; color: #1a1a1a; }
+  .stat-box.future strong { color: #e00073; }
+  
+  .stat-increase {
+    grid-column: 1 / -1; text-align: center; background: rgba(224, 0, 115, 0.1);
+    color: #e00073; padding: 10px; border-radius: 6px; font-weight: 900; font-size: 1.1rem;
+  }
+
+  /* Ajustes Mobile Extremamente Rigorosos */
+  @media (max-width: 768px) {
+    .info-panel {
+      width: 100vw; /* Força exatamente a largura do ecrã */
+      height: auto; 
+      max-height: 75vh; /* Mais seguro contra barras nativas do browser */
+      bottom: -100%; 
+      top: auto; 
+      left: 0; /* Ancoragem esquerda */
+      right: 0;
+      transform: none; 
+      border-left: none; 
+      border-top: 4px solid #0056b3;
+      border-radius: 20px 20px 0 0; 
+      padding: 25px 20px 40px 20px; /* Margem inferior de 40px protege contra o "home indicator" do iOS */
+      transition: bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .info-panel.active { bottom: 0; }
+    .info-panel.theme-cancer { border-top-color: #e00073; }
+    
+    .panel-title { font-size: 1.5rem; margin: 0 0 15px 0; }
+    .panel-close { top: 15px; right: 20px; font-size: 2rem; }
+    
+    .panel-content li { font-size: 0.95rem; margin-bottom: 10px; }
+    
+    /* Passa para 1 coluna no mobile para não espremer conteúdo */
+    .stat-grid { grid-template-columns: 1fr; gap: 10px; padding: 12px; margin-bottom: 15px; }
+    .stat-increase { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body style="cursor: grab;">
+
+<section class="galaxy-section" id="interactive-galaxy">
+  <div class="instruction-badge"><span></span> Rode a galáxia e clique</div>
+  <div id="node-tooltip" style="opacity: 0; left: 767px; top: 469px;">Doença Oncológica</div>
+  <div id="webgl-galaxy"><canvas width="1898" height="774" style="display: block; width: 1898px; height: 774px;"></canvas></div>
+
+  <div id="info-panel" class="info-panel active theme-cancer">
+    <button class="panel-close" onclick="closePanel()">×</button>
+    <h2 id="panel-title" class="panel-title">Doença Oncológica</h2>
+    <div id="panel-content" class="panel-content">
+        <p style="margin-bottom: 20px; font-size: 1.1rem; color: #333;">O peso global do cancro está a crescer. A OMS projeta um aumento drástico de novos casos entre 2022 e 2045, impulsionando a necessidade urgente da medicina de precisão.</p>
+        <p><em>Explore os continentes em redor para ver o impacto projetado.</em></p>
+      </div>
+  </div>
+</section>
+
+<script>
+  // ==========================================
+  // DADOS EDITORIAIS
+  // ==========================================
+  const nodeData = {
+    "autoimunes": {
+      title: "Doenças Auto-Imunes", theme: "auto",
+      html: `
+        <p style="margin-bottom: 20px; font-size: 1.1rem; color: #333;">São mais de 100 as doenças auto-imunes conhecidas. Com a prevalência a aumentar, as fontes indicam que afectam entre 3% a 5% da população nacional.</p>
+        <p><em>Explore os nós em redor para ver os dados específicos de Portugal.</em></p>
+      `
+    },
+    "diabetes": {
+      title: "Diabetes", theme: "auto",
+      html: `
+        <ul>
+          <li><strong>14,3%</strong> é a prevalência de diabetes em Portugal (corresponde a 1,1 milhão de adultos)</li>
+          <li><strong>930 mil</strong> pessoas registadas no SNS – mas existem muitas por diagnosticar</li>
+          <li><strong>90%</strong> têm diabetes tipo 2</li>
+          <li><strong>5475</strong> pessoas entre os 0 e os 19 anos com diabetes tipo 1</li>
+          <li><strong>260 mil</strong> episódios hospitalares num ano (2023)</li>
+          <li><strong>2,8%</strong> das mortes em 2023 foram causadas pela diabetes</li>
+        </ul>
+        <div class="panel-sources">
+          <strong>FONTES: Programa Nacional para a Diabetes/DGS</strong>
+          - Relatório DESAFIOS E ESTRATÉGIAS 2025<br>
+          <a href="https://www.dgs.pt/em-destaque/80915-novos-casos-de-diabetes-em-2024-pdf.aspx" target="_blank">Link para DGS</a>
+        </div>
+      `
+    },
+    "esclerose": {
+      title: "Esclerose Múltipla", theme: "auto",
+      html: `
+        <ul>
+          <li><strong>8 mil pessoas:</strong> valor estimado da prevalência em Portugal</li>
+          <li><strong>20 a 40 anos:</strong> intervalo de idade em que frequentemente surge a doença</li>
+          <li><strong>13 sintomas</strong> relatados por pessoa (fadiga, dores, défice cognitivo, etc)</li>
+          <li><strong>3 anos</strong> é o tempo médio para diagnóstico</li>
+          <li><strong>1,7 anos</strong> é a média para início do tratamento</li>
+          <li><strong>19%</strong> dos doentes não recebem qualquer tratamento</li>
+        </ul>
+        <div class="panel-sources">
+          <strong>FONTES: SPEM</strong>
+          - Esclerose Múltipla. O que é <a href="https://spem.pt/esclerose-multipla/" target="_blank">Link</a><br>
+          - Estudo “Impacto dos Sintomas” <a href="https://spem.pt/blog/2025/05/22/comunicado-spem-apresenta-dados-do-estudo-impacto-dos-sintomas-da-esclerose-multipla-no-contexto-nacional/" target="_blank">Link</a>
+        </div>
+      `
+    },
+    "psoriase": {
+      title: "Psoríase", theme: "auto",
+      html: `
+        <ul>
+          <li><strong>440 mil</strong> pessoas sofrem de psoríase</li>
+          <li><strong>25%</strong> dos doentes estão por diagnosticar</li>
+          <li><strong>20 a 30%</strong> requerem terapêutica sistémica – mas só 12% estão em tratamento</li>
+          <li><strong>73%</strong> reportam prurido na pele.</li>
+        </ul>
+        <div class="panel-sources">
+          <strong>FONTES: PSOPORTUGAL</strong>
+          - Epidemiologia da Psoríase em Portugal<br>
+          <a href="https://psoportugal.pt/estudos" target="_blank">Link para estudo</a>
+        </div>
+      `
+    },
+    "cancro": {
+      title: "Doença Oncológica", theme: "cancer",
+      html: `
+        <p style="margin-bottom: 20px; font-size: 1.1rem; color: #333;">O peso global do cancro está a crescer. A OMS projeta um aumento drástico de novos casos entre 2022 e 2045, impulsionando a necessidade urgente da medicina de precisão.</p>
+        <p><em>Explore os continentes em redor para ver o impacto projetado.</em></p>
+      `
+    },
+    "africa": { title: "África (Cancro)", theme: "cancer", html: `<div class="stat-grid"><div class="stat-box"><span>Casos 2022</span><strong>1.185.216</strong></div><div class="stat-box future"><span>Casos 2045</span><strong>2.451.614</strong></div><div class="stat-increase">+106.8%</div></div>${getCancerSources()}` },
+    "asia": { title: "Ásia (Cancro)", theme: "cancer", html: `<div class="stat-grid"><div class="stat-box"><span>Casos 2022</span><strong>9.826.539</strong></div><div class="stat-box future"><span>Casos 2045</span><strong>16.162.830</strong></div><div class="stat-increase">+64.5%</div></div>${getCancerSources()}` },
+    "europa": { title: "Europa (Cancro)", theme: "cancer", html: `<div class="stat-grid"><div class="stat-box"><span>Casos 2022</span><strong>4.471.422</strong></div><div class="stat-box future"><span>Casos 2045</span><strong>5.476.168</strong></div><div class="stat-increase">+22.5%</div></div>${getCancerSources()}` },
+    "latam": { title: "América Latina (Cancro)", theme: "cancer", html: `<div class="stat-grid"><div class="stat-box"><span>Casos 2022</span><strong>1.551.060</strong></div><div class="stat-box future"><span>Casos 2045</span><strong>2.623.996</strong></div><div class="stat-increase">+69.2%</div></div>${getCancerSources()}` },
+    "northam": { title: "América do Norte (Cancro)", theme: "cancer", html: `<div class="stat-grid"><div class="stat-box"><span>Casos 2022</span><strong>2.673.174</strong></div><div class="stat-box future"><span>Casos 2045</span><strong>3.828.805</strong></div><div class="stat-increase">+43.2%</div></div>${getCancerSources()}` },
+    "oceania": { title: "Oceânia (Cancro)", theme: "cancer", html: `<div class="stat-grid"><div class="stat-box"><span>Casos 2022</span><strong>269.088</strong></div><div class="stat-box future"><span>Casos 2045</span><strong>427.852</strong></div><div class="stat-increase">+59.0%</div></div>${getCancerSources()}` }
+  };
+
+  function getCancerSources() {
+    return `
+      <div class="panel-sources">
+        <strong>FONTES: OMS</strong>
+        - Dados Globais 2022-2045 <a href="https://gco.iarc.who.int/tomorrow/en/dataviz/tables" target="_blank">Link</a><br>
+        - Global cancer burden growing <a href="https://www.who.int/news/item/01-02-2024-global-cancer-burden-growing--amidst-mounting-need-for-services" target="_blank">Link</a>
+      </div>
+    `;
+  }
+
+  // ==========================================
+  // LÓGICA DO MOTOR 3D (THREE.JS)
+  // ==========================================
+  const container = document.getElementById('webgl-galaxy');
+  const tooltip = document.getElementById('node-tooltip');
+  const panel = document.getElementById('info-panel');
+  
+  const scene = new THREE.Scene();
+  // Fundo branco
+  scene.background = new THREE.Color(0xffffff);
+
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.z = window.innerWidth < 768 ? 20 : 15;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  const galaxyGroup = new THREE.Group();
+  scene.add(galaxyGroup);
+
+  // Luzes
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambientLight);
+  const pointLight = new THREE.PointLight(0xffffff, 1);
+  camera.add(pointLight);
+  scene.add(camera);
+
+  const clickableObjects = [];
+
+  // Função para criar nós
+  function createNode(id, label, colorHex, x, y, z, isMain = false) {
+    const size = isMain ? 0.8 : 0.4;
+    
+    // Core
+    const geo = new THREE.SphereGeometry(size, 32, 32);
+    const mat = new THREE.MeshPhongMaterial({ 
+      color: colorHex, 
+      emissive: colorHex,
+      emissiveIntensity: 0.2,
+      shininess: 100
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, y, z);
+    
+    // Glow/Aura (ligeiramente maior e transparente)
+    const glowGeo = new THREE.SphereGeometry(size * 1.3, 32, 32);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: colorHex, transparent: true, opacity: 0.3
+    });
+    const glow = new THREE.Mesh(glowGeo, glowMat);
+    mesh.add(glow);
+
+    mesh.userData = { id: id, label: label, originalScale: 1 };
+    galaxyGroup.add(mesh);
+    clickableObjects.push(mesh);
+    return mesh;
+  }
+
+  // Função para ligar nós
+  function createLink(node1, node2) {
+    const material = new THREE.LineBasicMaterial({ color: 0xcccccc, transparent: true, opacity: 0.6 });
+    const points = [node1.position, node2.position];
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, material);
+    galaxyGroup.add(line);
+  }
+
+  // --- ESTRUTURA DA GALÁXIA ---
+  // Hub Auto-Imunes (Esquerda)
+  const autoMain = createNode('autoimunes', 'Doenças Auto-Imunes', 0x0056b3, -3, 0, 0, true);
+  const diabetes = createNode('diabetes', 'Diabetes', 0x4da3ff, -5, 2, 1);
+  const esclerose = createNode('esclerose', 'Esclerose Múltipla', 0x4da3ff, -5, -2, -1);
+  const psoriase = createNode('psoriase', 'Psoríase', 0x4da3ff, -2, -3, 1.5);
+  createLink(autoMain, diabetes);
+  createLink(autoMain, esclerose);
+  createLink(autoMain, psoriase);
+
+  // Hub Cancro (Direita)
+  const cancroMain = createNode('cancro', 'Doença Oncológica', 0xe00073, 3, 0, 0, true);
+  const africa = createNode('africa', 'África', 0xff66a3, 5, 3, 0);
+  const europa = createNode('europa', 'Europa', 0xff66a3, 2, 3, -2);
+  const asia = createNode('asia', 'Ásia', 0xff66a3, 6, 1, 2);
+  const oceania = createNode('oceania', 'Oceânia', 0xff66a3, 5, -2, 1.5);
+  const latam = createNode('latam', 'América Latina', 0xff66a3, 4, -3, -1);
+  const northam = createNode('northam', 'América do Norte', 0xff66a3, 1, -2, -1.5);
+  
+  createLink(cancroMain, africa);
+  createLink(cancroMain, europa);
+  createLink(cancroMain, asia);
+  createLink(cancroMain, oceania);
+  createLink(cancroMain, latam);
+  createLink(cancroMain, northam);
+
+  // Ligar os dois mundos
+  createLink(autoMain, cancroMain);
+
+  // Poeira espacial para dar ambiente
+  const dustGeo = new THREE.BufferGeometry();
+  const dustCount = window.innerWidth < 768 ? 100 : 300;
+  const dustPos = new Float32Array(dustCount * 3);
+  for(let i=0; i<dustCount*3; i++) {
+    dustPos[i] = (Math.random() - 0.5) * 20;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({ size: 0.05, color: 0x999999, transparent: true, opacity: 0.5 });
+  const dust = new THREE.Points(dustGeo, dustMat);
+  galaxyGroup.add(dust);
+
+  // ==========================================
+  // INTERAÇÕES E FÍSICA
+  // ==========================================
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let isDragging = false, previousMouse = {x:0, y:0};
+  let targetRotation = {x:0, y:0}, currentRotation = {x:0, y:0};
+  let hoveredNode = null;
+
+  const section = document.getElementById('interactive-galaxy');
+
+  // Movimento da Câmara (Rato)
+  section.addEventListener('mousedown', (e) => {
+    isDragging = true; previousMouse = { x: e.offsetX, y: e.offsetY };
+  });
+  section.addEventListener('mousemove', (e) => {
+    // Interação de Rotação
+    if (isDragging) {
+      const delta = { x: e.offsetX - previousMouse.x, y: e.offsetY - previousMouse.y };
+      targetRotation.y += delta.x * 0.01;
+      targetRotation.x += delta.y * 0.01;
+      previousMouse = { x: e.offsetX, y: e.offsetY };
+    }
+    
+    // Raycaster (Hover) para Tooltip
+    mouse.x = (e.clientX / container.clientWidth) * 2 - 1;
+    mouse.y = -(e.clientY / container.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(clickableObjects);
+    
+    if (intersects.length > 0) {
+      document.body.style.cursor = 'pointer';
+      const obj = intersects[0].object;
+      tooltip.innerText = obj.userData.label;
+      tooltip.style.left = e.clientX + 'px';
+      tooltip.style.top = e.clientY + 'px';
+      tooltip.style.opacity = '1';
+      
+      if(hoveredNode !== obj) {
+        if(hoveredNode) hoveredNode.scale.set(1, 1, 1);
+        hoveredNode = obj;
+        hoveredNode.scale.set(1.4, 1.4, 1.4); // Aumenta ao passar o rato
+      }
+    } else {
+      document.body.style.cursor = isDragging ? 'grabbing' : 'grab';
+      tooltip.style.opacity = '0';
+      if(hoveredNode) {
+        hoveredNode.scale.set(1, 1, 1);
+        hoveredNode = null;
+      }
+    }
+  });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  // Touch (Mobile)
+  section.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    previousMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    
+    mouse.x = (e.touches[0].clientX / container.clientWidth) * 2 - 1;
+    mouse.y = -(e.touches[0].clientY / container.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(clickableObjects);
+    if(intersects.length > 0) openPanel(intersects[0].object.userData.id);
+  }, { passive: true });
+  
+  section.addEventListener('touchmove', (e) => {
+    if (isDragging) {
+      const delta = { x: e.touches[0].clientX - previousMouse.x, y: e.touches[0].clientY - previousMouse.y };
+      targetRotation.y += delta.x * 0.01;
+      targetRotation.x += delta.y * 0.01;
+      previousMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, { passive: true });
+  window.addEventListener('touchend', () => { isDragging = false; });
+
+  // Clique (Desktop)
+  section.addEventListener('click', () => {
+    if(hoveredNode) openPanel(hoveredNode.userData.id);
+  });
+
+  // ==========================================
+  // LÓGICA DO PAINEL
+  // ==========================================
+  function openPanel(id) {
+    const data = nodeData[id];
+    if(!data) return;
+
+    document.getElementById('panel-title').innerText = data.title;
+    document.getElementById('panel-content').innerHTML = data.html;
+
+    if(data.theme === 'cancer') {
+      panel.classList.add('theme-cancer');
+    } else {
+      panel.classList.remove('theme-cancer');
+    }
+    panel.classList.add('active');
+  }
+
+  window.closePanel = function() {
+    panel.classList.remove('active');
+  }
+
+  // ==========================================
+  // LOOP DE ANIMAÇÃO
+  // ==========================================
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Inércia da Rotação
+    currentRotation.x += (targetRotation.x - currentRotation.x) * 0.1;
+    currentRotation.y += (targetRotation.y - currentRotation.y) * 0.1;
+    
+    galaxyGroup.rotation.y = currentRotation.y;
+    galaxyGroup.rotation.x = currentRotation.x;
+
+    // Rotação Autónoma
+    if(!isDragging) {
+      targetRotation.y += 0.002;
+    }
+
+    // Animar as partículas de fundo
+    dust.rotation.y -= 0.001;
+    dust.rotation.x += 0.0005;
+
+    // Fazer os nós e glow pulsarem subtilmente
+    const time = Date.now() * 0.001;
+    clickableObjects.forEach((mesh, index) => {
+      const scaleOffset = Math.sin(time * 2 + index) * 0.05;
+      if(mesh !== hoveredNode) {
+        mesh.scale.set(1 + scaleOffset, 1 + scaleOffset, 1 + scaleOffset);
+      }
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Responsividade
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.position.z = window.innerWidth < 768 ? 20 : 15;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+</script>
+
+
+</body></html>
