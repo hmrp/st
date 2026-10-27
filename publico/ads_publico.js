@@ -1,4 +1,4 @@
-                          
+/*271026*/                          
 (function (window, document) {
     "use strict";
 
@@ -26,6 +26,7 @@
     var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro", "centro-jogo"];
     var OOP_BLOCK = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro","centro-jogo"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
+    var FOOTER_SEEDTAG_CAMPAIGN_ID = 3560930581;
     var FOOTER_BTN_DELAY_MS = 300;
     var OOP_CAP_KEY = "intro_cap";
     var OOP_CAP_MS = 180000;
@@ -231,6 +232,7 @@
                 applied: 0,                                                         
                 current: 0,
                 filled: false,
+                preserveFromVideo: false,
                 phase: 'idle'
             };
             states.set(target.holder, state);
@@ -291,7 +293,7 @@
             if (event.isEmpty) {
                 state.current = 0;
                 setSticky(state, false);
-                if (!state.filled) {
+                if (!state.filled && !state.preserveFromVideo) {
                                                                           
                     state.held = 0;
                     setReservedHeight(state, 0);
@@ -331,9 +333,19 @@
             if (!state) return;
             state.filled = true;
             setPhase(state, 'video');
-                                                                        
             var stage = wrapper.querySelector('.pub-vcv-stage');
             if (stage) hold(state, stage.getBoundingClientRect().height);
+        }
+        function videoToDisplay(wrapper) {
+            var state = forContent(wrapper);
+            if (!state || !wrapper.querySelector('.pub-vcv-stage')) return;
+            var height = Math.ceil(wrapper.getBoundingClientRect().height);
+            if (height > 1) {
+                state.held = Math.max(state.held, height);
+                setReservedHeight(state, state.held);
+                state.preserveFromVideo = true;
+            }
+            setPhase(state, 'requested');
         }
         function inspect() {
             var output = tracked.filter(function (state) { return state.holder.isConnected; })
@@ -358,6 +370,7 @@
             rendered: rendered,
             videoRequested: videoRequested,
             videoVisible: videoVisible,
+            videoToDisplay: videoToDisplay,
             inspect: inspect
         };
     })();
@@ -379,7 +392,7 @@
                 reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
                 return;
             }
-            script.src = new URL("video/inc/inc.js?v=20261019-media-controls-v11", publicoAdsScriptUrl).href;
+            script.src = new URL("video/inc/inc.js?v=20261027-fallback-display-v2", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -405,6 +418,8 @@
 
         function fallback(reason) {
             if (!wrapper.isConnected || wrapper.getAttribute("data-publico-video-result") === "display") return;
+            pubAdLayout.videoToDisplay(wrapper);
+            placement.setAttribute("lazyload", "false");
             wrapper.replaceChildren(placement);
                                                                        
                                                                    
@@ -787,6 +802,7 @@
         oop.id = "oop";
         oop.className = "oop";
         oop.setAttribute("format", "outOfPage");
+        oop.setAttribute("refresh", "false");
         oop.setAttribute("adunit", "OOP_Publico/" + userType + "/" + adUnit + "/OOP");
 
         document.body.insertAdjacentElement("afterbegin", oop);
@@ -947,11 +963,13 @@
     function onOOPRender(event, config, userType, adUnit, runtime) {
         var oop = runtime.oop;
         var templateId;
+        var firstRender;
 
-        if (!oop || !oop.enabled || oop.oopResolved) {
+        if (!oop || !oop.enabled || (oop.slot && oop.slot !== event.slot)) {
             return;
         }
 
+        firstRender = !oop.oopResolved;
         oop.oopResolved = true;
         oop.slot = event.slot;
 
@@ -970,6 +988,11 @@
         }
 
         oop.state = "oop-empty";
+
+        if (!firstRender) {
+            return;
+        }
+
         window.setTimeout(function () {
             if (config.pageType !== "noticia" || !canInitOOP(config)) {
                 return;
@@ -1541,7 +1564,9 @@
             clientId: 4458504,
             autoRefresh: {
                 enabled: true,
-                interval: 30
+                interval: 20,
+                outOfPageTemplateIds: OOP_CAP_BYPASS.slice(),
+                outOfPageVisibilitySelector: "#takeover"
             },
             renderMargin: 150,
             refreshThreshold: 0.5,
@@ -1735,6 +1760,15 @@
                 slotId = event.slot.getSlotElementId();
                 element = slotId ? getSlotElement(slotId) : null;
 
+                if (slotId === "VertContent0" && runtime.vertContentDisplayFallback &&
+                    runtime.vertContentDisplayFallback.placement === element) {
+                    runtime.vertContentDisplayFallback.requested = true;
+                    if (runtime.vertContentDisplayFallback.timer !== null) {
+                        window.clearTimeout(runtime.vertContentDisplayFallback.timer);
+                        runtime.vertContentDisplayFallback.timer = null;
+                    }
+                }
+
                 if (element) pubAdLayout.requested(element);
 
                 if (slotId !== "Footer" || !runtime.footer || !runtime.footer.specialNoRefresh) {
@@ -1743,6 +1777,17 @@
 
                 if (slotId === "Footer") {
                     resetFooterBtn(runtime);
+                }
+
+                if (slotId === "oop" && runtime.oop && runtime.oop.oopResolved &&
+                    runtime.oop.state === "oop-bypass") {
+                    var oldTakeover = document.getElementById("takeover");
+                    if (typeof window.publicoTakeoverCleanup === "function") {
+                        window.publicoTakeoverCleanup();
+                    } else if (oldTakeover) {
+                        oldTakeover.remove();
+                        document.body.classList.remove("billboardxxl--is-open", "billboardxxl--is-close", "has--bottom-bar");
+                    }
                 }
             });
 
@@ -1815,9 +1860,16 @@
 
                 if (FOOTER_NO_BTN.indexOf(campaignId) !== -1) {
                     hideFooterBtn(runtime);
-                    stopPlacementAutoRefresh(element);
-                    if (runtime.footer) {
-                        runtime.footer.specialNoRefresh = true;
+                    if (campaignId === FOOTER_SEEDTAG_CAMPAIGN_ID) {
+                        if (runtime.footer) {
+                            runtime.footer.specialNoRefresh = false;
+                        }
+                        enablePlacementAutoRefresh(element);
+                    } else {
+                        stopPlacementAutoRefresh(element);
+                        if (runtime.footer) {
+                            runtime.footer.specialNoRefresh = true;
+                        }
                     }
                     return;
                 }
@@ -1828,6 +1880,64 @@
                 enablePlacementAutoRefresh(element);
                 showFooterBtn(runtime);
             });
+        });
+    }
+
+    function bindVertContentDisplayFallback(runtime) {
+        if (runtime.vertContentDisplayFallbackBound) {
+            return;
+        }
+
+        runtime.vertContentDisplayFallbackBound = true;
+        document.addEventListener("publico:vertcontent-display-ready", function (event) {
+            var detail = event.detail || {};
+            var placement = detail.placement;
+            var wrapper = detail.wrapper;
+            var state;
+
+            if (!placement || placement.id !== "VertContent0" || !wrapper ||
+                !placement.isConnected || !wrapper.isConnected ||
+                adsAreDisabled(window.pub) ||
+                (runtime.vertContentDisplayFallback && runtime.vertContentDisplayFallback.placement === placement)) {
+                return;
+            }
+
+            state = {
+                placement: placement,
+                wrapper: wrapper,
+                requested: false,
+                invoked: false,
+                since: Date.now(),
+                timer: null
+            };
+            runtime.vertContentDisplayFallback = state;
+
+            function requestDisplay() {
+                state.timer = null;
+
+                if (state.requested || state.invoked || !placement.isConnected || !wrapper.isConnected ||
+                    wrapper.getAttribute("data-publico-video-result") !== "display" ||
+                    adsAreDisabled(window.pub)) {
+                    return;
+                }
+
+                if (runtime.tagBundleInitialized && typeof placement.refresh === "function") {
+                    try {
+                        if (placement.refresh() !== false) {
+                            state.invoked = true;
+                            return;
+                        }
+                    } catch (error) {
+                    }
+                }
+
+                if (Date.now() - state.since < 15000) {
+                    state.timer = window.setTimeout(requestDisplay, 150);
+                }
+            }
+
+            placement.setAttribute("lazyload", "false");
+            state.timer = window.setTimeout(requestDisplay, 600);
         });
     }
 
@@ -2194,6 +2304,7 @@
         runtime.tagBundleConfig = getTagBundleConfig(config, userType);
         window.tagBundleConfig = runtime.tagBundleConfig;
 
+        bindVertContentDisplayFallback(runtime);
         initCreativeAdControl(runtime);
         initHeavyAdObserver(runtime);
         suppressListingSidebarVerts(config);
