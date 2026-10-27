@@ -1,4 +1,4 @@
-                          
+/*271026*/                     
 (function (window, document) {
     "use strict";
 
@@ -773,6 +773,8 @@
             blocked: false,
             oopResolved: false,
             slot: null,
+            refreshTimer: null,
+            refreshPending: false,
             rewardedInit: false,
             rewardedReady: false,
             rewardedTimedOut: false,
@@ -960,16 +962,79 @@
         });
     }
 
-    function onOOPRender(event, config, userType, adUnit, runtime) {
-        var oop = runtime.oop;
-        var templateId;
-
-        if (!oop || !oop.enabled || oop.oopResolved) {
+    function clearOOPRefresh(runtime) {
+        if (!runtime.oop || runtime.oop.refreshTimer === null) {
             return;
         }
 
+        window.clearTimeout(runtime.oop.refreshTimer);
+        runtime.oop.refreshTimer = null;
+    }
+
+    function scheduleOOPRefresh(runtime) {
+        var oop = runtime.oop;
+        var autoRefresh = runtime.tagBundleConfig && runtime.tagBundleConfig.autoRefresh;
+        var slot = oop && oop.slot;
+        var interval;
+
+        clearOOPRefresh(runtime);
+
+        if (!oop || !oop.enabled || oop.state !== "oop-bypass" || !oop.slot || !autoRefresh ||
+            autoRefresh.enabled !== true || adsAreDisabled(window.pub)) {
+            return;
+        }
+
+        interval = Number(autoRefresh.interval) * 1000;
+
+        if (!isFinite(interval) || interval <= 0) {
+            return;
+        }
+
+        oop.refreshTimer = window.setTimeout(function () {
+            var current = runtime.oop;
+            var placement = document.getElementById("oop");
+
+            if (current) current.refreshTimer = null;
+
+            if (!current || !current.enabled || current.state !== "oop-bypass" ||
+                current.slot !== slot || !placement || !placement.isConnected ||
+                current.refreshPending || adsAreDisabled(window.pub)) {
+                return;
+            }
+
+            if (document.visibilityState === "hidden") {
+                scheduleOOPRefresh(runtime);
+                return;
+            }
+
+            if (!window.googletag || typeof window.googletag.pubads !== "function" ||
+                typeof window.googletag.pubads().refresh !== "function") {
+                return;
+            }
+
+            current.refreshPending = true;
+            try {
+                window.googletag.pubads().refresh([current.slot]);
+            } catch (error) {
+                current.refreshPending = false;
+            }
+        }, interval + 250);
+    }
+
+    function onOOPRender(event, config, userType, adUnit, runtime) {
+        var oop = runtime.oop;
+        var templateId;
+        var firstRender;
+
+        if (!oop || !oop.enabled || (oop.slot && oop.slot !== event.slot)) {
+            return;
+        }
+
+        firstRender = !oop.oopResolved;
         oop.oopResolved = true;
         oop.slot = event.slot;
+        oop.refreshPending = false;
+        clearOOPRefresh(runtime);
 
         if (!event.isEmpty) {
             templateId = getTemplateId(event);
@@ -977,6 +1042,7 @@
             if (templateId && OOP_CAP_BYPASS.indexOf(templateId) !== -1) {
                 clearOOPCap();
                 oop.state = "oop-bypass";
+                scheduleOOPRefresh(runtime);
                 return;
             }
 
@@ -986,6 +1052,11 @@
         }
 
         oop.state = "oop-empty";
+
+        if (!firstRender) {
+            return;
+        }
+
         window.setTimeout(function () {
             if (config.pageType !== "noticia" || !canInitOOP(config)) {
                 return;
@@ -1236,6 +1307,9 @@
             oop.frameObserver.disconnect();
             oop.frameObserver = null;
         }
+
+        clearOOPRefresh(runtime);
+        oop.refreshPending = false;
 
         if (oop.slot && window.googletag && typeof window.googletag.destroySlots === "function") {
             window.googletag.destroySlots([oop.slot]);
@@ -1788,6 +1862,12 @@
 
                 slotId = event.slot.getSlotElementId();
                 element = slotId ? getSlotElement(slotId) : null;
+
+                if (slotId === "oop" && runtime.oop && runtime.oop.enabled &&
+                    (!runtime.oop.slot || runtime.oop.slot === event.slot)) {
+                    clearOOPRefresh(runtime);
+                    runtime.oop.refreshPending = true;
+                }
 
                 if (slotId === "VertContent0" && runtime.vertContentDisplayFallback &&
                     runtime.vertContentDisplayFallback.placement === element) {
