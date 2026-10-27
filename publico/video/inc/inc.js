@@ -3,13 +3,14 @@
 
   var MODULE_SCRIPT_URL = document.currentScript && document.currentScript.src || null;
   if (!MODULE_SCRIPT_URL) throw new Error('Não foi possível identificar a localização do módulo HTML5 IMA');
-  var PLAYLIST = new URL('../playlist.json', MODULE_SCRIPT_URL).href;
+  var PLAYLIST = new URL('../playlist.js', MODULE_SCRIPT_URL).href;
   var PLAYER_CSS = new URL('inc.css?v=20261019-media-controls-v11', MODULE_SCRIPT_URL).href;
   var FALLBACK_MEDIA = new URL('fallback.mp4', MODULE_SCRIPT_URL).href;
-  var LIMIT_LOOPS = 5;
+  var DEFAULT_EXTRA_LOOPS = 0;
   var VAST_TIMEOUT = 9000;
   var records = [];
   var imaPromise = null;
+  var playlistPromise = null;
 
   function log() {
     if (window.console && console.info) console.info.apply(console, ['[PUB HTML5 IMA]'].concat(Array.prototype.slice.call(arguments)));
@@ -30,6 +31,60 @@
       document.head.appendChild(script);
     }).catch(function (error) { imaPromise = null; throw error; });
     return imaPromise;
+  }
+
+  function loadPlaylist() {
+    if (playlistPromise) return playlistPromise;
+    playlistPromise = new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      var settled = false;
+      var timeout = window.setTimeout(function () { finish(new Error('Tempo de carregamento de playlist.js excedido')); }, 6000);
+      function finish(error) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        script.onload = null;
+        script.onerror = null;
+        if (error) {
+          script.remove();
+          reject(error);
+        } else {
+          var config = window.pub && window.pub.incontent;
+          if (!config || typeof config !== 'object' || !Array.isArray(config.videos)) reject(new Error('window.pub.incontent.videos inválido'));
+          else resolve(config);
+        }
+      }
+      script.src = PLAYLIST + '?v=' + Date.now();
+      script.async = true;
+      script.onload = function () { finish(null); };
+      script.onerror = function () { finish(new Error('Não foi possível carregar playlist.js')); };
+      document.head.appendChild(script);
+    }).catch(function (error) { playlistPromise = null; throw error; });
+    return playlistPromise;
+  }
+
+  function extraLoopsOf(config) {
+    var value = config && config.loops;
+    if (value === undefined || value === null || value === '') return DEFAULT_EXTRA_LOOPS;
+    var number = Number(value);
+    return Number.isInteger(number) && number >= 0 ? Math.min(number, 100) : DEFAULT_EXTRA_LOOPS;
+  }
+
+  function orderOf(config) {
+    return config && config.order === 'random' ? 'random' : 'sequential';
+  }
+
+  function buildOrder(rec) {
+    var result = rec.playlist.map(function (item, index) { return index; });
+    if (rec.playbackOrder === 'random') {
+      for (var i = result.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var previous = result[i];
+        result[i] = result[j];
+        result[j] = previous;
+      }
+    }
+    return result;
   }
 
   function addCss() {
@@ -534,6 +589,8 @@
     rec.usingFallbackMedia = true;
     rec.failedMediaIndices = {};
     rec.playlist = [{ title: 'Fallback', src: FALLBACK_MEDIA, type: 'video/mp4', mediaButton: true }];
+    rec.playOrder = [0];
+    rec.orderPos = 0;
     rec.emptyLoops = 0;
     rec.playedThisLoop = false;
     rec.wrapper.setAttribute('data-inc-fallback', '1');
@@ -548,25 +605,31 @@
       fallbackPlaylist(rec, 'playlist-expired-or-unavailable');
       return;
     }
-    var next = rec.index;
-    var skipped = 0;
-    do {
-      next++;
-      if (next >= rec.playlist.length) {
+    for (var skipped = 0; skipped < rec.playlist.length; skipped++) {
+      var position = rec.orderPos + 1;
+      if (position >= rec.playOrder.length) {
         rec.completedLoops++;
         if (rec.playedThisLoop) rec.emptyLoops = 0;
         else rec.emptyLoops++;
         rec.playedThisLoop = false;
         rec.wrapper.setAttribute('data-publico-video-completed-loops', String(rec.completedLoops));
         rec.wrapper.setAttribute('data-publico-video-empty-loops', String(rec.emptyLoops));
-        log('Loop completo:', rec.completedLoops, 'sem anúncios consecutivos:', rec.emptyLoops);
-        if (rec.emptyLoops >= rec.maxLoops) { rec.fallback('no-vast-after-' + rec.maxLoops + '-playlist-loops'); return; }
-        next = 0;
+        log('Passagem completa:', rec.completedLoops, 'sem anúncios consecutivos:', rec.emptyLoops);
+        if (rec.emptyLoops >= rec.maxLoops) {
+          rec.fallback('no-vast-after-' + rec.maxLoops + '-playlist-passes');
+          return;
+        }
+        rec.playOrder = buildOrder(rec);
+        position = 0;
       }
-      skipped++;
-    } while ((rec.failedMediaIndices[next] || expired(rec.playlist[next])) && skipped < rec.playlist.length);
-    if (rec.failedMediaIndices[next] || expired(rec.playlist[next])) { fallbackPlaylist(rec, 'playlist-expired-or-unavailable'); return; }
-    prepareItem(rec, next);
+      rec.orderPos = position;
+      var index = rec.playOrder[position];
+      if (!rec.failedMediaIndices[index] && !expired(rec.playlist[index])) {
+        prepareItem(rec, index);
+        return;
+      }
+    }
+    fallbackPlaylist(rec, 'playlist-expired-or-unavailable');
   }
 
   function prepareItem(rec, index) {
@@ -658,12 +721,12 @@
     var rec = {
       wrapper: wrapper, placement: placement, stage: stage, targeting: options.targeting,
       state: 'loading', player: null, video: null, manager: null, loader: null, adDisplay: null,
-      playlist: [], index: 0, completedLoops: 0, emptyLoops: 0, playedThisLoop: false,
+      playlist: [], index: 0, playOrder: [], orderPos: 0, playbackOrder: 'sequential', extraLoops: 0, completedLoops: 0, emptyLoops: 0, playedThisLoop: false,
       attempts: 0, misses: 0, itemEpoch: 0, adAttemptEpoch: -1, editorialPlayingEpoch: -1, contentResumeEpoch: -1,
       expectedEditorialUrl: null, currentRequest: null, completedRequest: null,
       adPlaying: false, waitingAds: false, adStartedForRequest: false, muted: false, adMuted: false, volume: 0.01,
       manualPause: false, userStarted: false, awaitingGesture: false, destroyed: false,
-      maxLoops: Math.max(1, Number(window.VertInContentRequest && window.VertInContentRequest.maxPlaylistLoopsWithoutVast) || LIMIT_LOOPS),
+      maxLoops: DEFAULT_EXTRA_LOOPS + 1,
       hadVisibleContent: false, mediaTimer: null, resumeFallbackTimer: null, resumeCheckTimer: null,
       resumeRetryCount: 0, failedMediaIndices: {}, usingFallbackMedia: false
     };
@@ -689,28 +752,29 @@
     wrapper.setAttribute('data-publico-vcv-reserved', '1');
     if (window.PubAdLayout && window.PubAdLayout.videoRequested) window.PubAdLayout.videoRequested(wrapper);
     addCss();
-    var controller = typeof AbortController === 'function' ? new AbortController() : null;
-    rec.downloadTimer = window.setTimeout(function () { if (controller) controller.abort(); }, 6000);
     Promise.all([
-      fetch(PLAYLIST, { credentials: 'omit', mode: 'cors', cache: 'no-store', signal: controller ? controller.signal : undefined }).then(function (response) {
-        if (!response.ok) throw new Error('Playlist HTTP ' + response.status);
-        return response.json();
-      }).catch(function (error) {
+      loadPlaylist().catch(function (error) {
         log('Playlist indisponível:', error.message || String(error));
         return null;
       }),
       loadIma()
     ]).then(function (results) {
       if (rec.destroyed || !wrapper.isConnected) return;
-      rec.playlist = validPlaylist(results[0]);
+      var config = results[0];
+      rec.extraLoops = extraLoopsOf(config);
+      rec.maxLoops = rec.extraLoops + 1;
+      rec.playbackOrder = orderOf(config);
+      rec.playlist = validPlaylist(config);
       if (!rec.playlist.length) fallbackPlaylist(rec, 'playlist-missing-or-empty');
+      rec.playOrder = buildOrder(rec);
+      rec.orderPos = 0;
       dom(rec);
       setupIma(rec);
       rec.state = 'video';
-      prepareItem(rec, 0);
+      prepareItem(rec, rec.playOrder[0]);
     }).catch(function (error) {
       if (!rec.destroyed) rec.fallback(error.message || 'init-error');
-    }).finally(function () { window.clearTimeout(rec.downloadTimer); });
+    });
     return true;
   }
 
@@ -727,6 +791,9 @@
         currentItem: rec.playlist[rec.index] && rec.playlist[rec.index].title || null,
         currentItemExpiresAt: rec.playlist[rec.index] && rec.playlist[rec.index].expiresAt || null,
         mediaButton: rec.playlist[rec.index] && typeof rec.playlist[rec.index].mediaButton === 'boolean' ? rec.playlist[rec.index].mediaButton : null,
+        playbackOrder: rec.playbackOrder,
+        extraLoops: rec.extraLoops,
+        maxPlaylistPassesWithoutVast: rec.maxLoops,
         fallbackMedia: rec.usingFallbackMedia,
         fallbackMediaUrl: rec.usingFallbackMedia ? FALLBACK_MEDIA : null,
         attempts: rec.attempts,
@@ -747,7 +814,6 @@
     mount: mount,
     eligible: function () { return Boolean(window.pub && window.pub.pageType === 'noticia'); },
     enabled: true,
-    maxPlaylistLoopsWithoutVast: LIMIT_LOOPS,
     instances: records,
     inspect: inspect,
     forceDisplay: function () { if (records.length) records[0].fallback('manual'); }
