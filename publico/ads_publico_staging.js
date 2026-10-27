@@ -26,6 +26,8 @@
     var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro", "centro-jogo"];
     var OOP_BLOCK = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro","centro-jogo"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
+    var FOOTER_SEEDTAG_CAMPAIGN_ID = 3560930581;
+    var FOOTER_SEEDTAG_REFRESH_MS = 15000;
     var FOOTER_BTN_DELAY_MS = 300;
     var OOP_CAP_KEY = "intro_cap";
     var OOP_CAP_MS = 180000;
@@ -231,6 +233,7 @@
                 applied: 0,                                                         
                 current: 0,
                 filled: false,
+                preserveFromVideo: false,
                 phase: 'idle'
             };
             states.set(target.holder, state);
@@ -291,7 +294,7 @@
             if (event.isEmpty) {
                 state.current = 0;
                 setSticky(state, false);
-                if (!state.filled) {
+                if (!state.filled && !state.preserveFromVideo) {
                                                                           
                     state.held = 0;
                     setReservedHeight(state, 0);
@@ -331,9 +334,19 @@
             if (!state) return;
             state.filled = true;
             setPhase(state, 'video');
-                                                                        
             var stage = wrapper.querySelector('.pub-vcv-stage');
             if (stage) hold(state, stage.getBoundingClientRect().height);
+        }
+        function videoToDisplay(wrapper) {
+            var state = forContent(wrapper);
+            if (!state || !wrapper.querySelector('.pub-vcv-stage')) return;
+            var height = Math.ceil(wrapper.getBoundingClientRect().height);
+            if (height > 1) {
+                state.held = Math.max(state.held, height);
+                setReservedHeight(state, state.held);
+                state.preserveFromVideo = true;
+            }
+            setPhase(state, 'requested');
         }
         function inspect() {
             var output = tracked.filter(function (state) { return state.holder.isConnected; })
@@ -358,6 +371,7 @@
             rendered: rendered,
             videoRequested: videoRequested,
             videoVisible: videoVisible,
+            videoToDisplay: videoToDisplay,
             inspect: inspect
         };
     })();
@@ -379,7 +393,7 @@
                 reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
                 return;
             }
-            script.src = new URL("video/inc/inc.js?v=20261027-playlist-js-v1", publicoAdsScriptUrl).href;
+            script.src = new URL("video/inc/inc.js?v=20261027-anticls-display-v1", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -405,6 +419,7 @@
 
         function fallback(reason) {
             if (!wrapper.isConnected || wrapper.getAttribute("data-publico-video-result") === "display") return;
+            pubAdLayout.videoToDisplay(wrapper);
             wrapper.replaceChildren(placement);
                                                                        
                                                                    
@@ -1541,7 +1556,7 @@
             clientId: 4458504,
             autoRefresh: {
                 enabled: true,
-                interval: 30
+                interval: 20
             },
             renderMargin: 150,
             refreshThreshold: 0.5,
@@ -1611,6 +1626,44 @@
         }
 
         return null;
+    }
+
+    function clearFooterSeedtagRefresh(runtime) {
+        if (!runtime.footer || !runtime.footer.seedtagRefreshTimer) {
+            return;
+        }
+
+        window.clearTimeout(runtime.footer.seedtagRefreshTimer);
+        runtime.footer.seedtagRefreshTimer = null;
+    }
+
+    function scheduleFooterSeedtagRefresh(runtime, slot) {
+        if (!runtime.footer || !runtime.footer.specialNoRefresh || !runtime.footer.seedtagActive || !slot) {
+            return;
+        }
+
+        clearFooterSeedtagRefresh(runtime);
+        runtime.footer.seedtagRefreshTimer = window.setTimeout(function () {
+            runtime.footer.seedtagRefreshTimer = null;
+
+            if (!runtime.footer.specialNoRefresh || !runtime.footer.seedtagActive || !document.getElementById("Footer")) {
+                return;
+            }
+
+            if (document.hidden) {
+                scheduleFooterSeedtagRefresh(runtime, slot);
+                return;
+            }
+
+            window.googletag.cmd.push(function () {
+                if (!runtime.footer.specialNoRefresh || !runtime.footer.seedtagActive || !document.getElementById("Footer") ||
+                    !window.googletag.pubads || typeof window.googletag.pubads().refresh !== "function") {
+                    return;
+                }
+
+                window.googletag.pubads().refresh([slot]);
+            });
+        }, FOOTER_SEEDTAG_REFRESH_MS);
     }
 
     function stopPlacementAutoRefresh(placement) {
@@ -1742,6 +1795,8 @@
                 }
 
                 if (slotId === "Footer") {
+                    clearFooterSeedtagRefresh(runtime);
+                    if (runtime.footer) runtime.footer.seedtagActive = false;
                     resetFooterBtn(runtime);
                 }
             });
@@ -1795,6 +1850,8 @@
                     return;
                 }
 
+                clearFooterSeedtagRefresh(runtime);
+                if (runtime.footer) runtime.footer.seedtagActive = false;
                 resetFooterBtn(runtime);
 
                 if (event.isEmpty) {
@@ -1818,6 +1875,10 @@
                     stopPlacementAutoRefresh(element);
                     if (runtime.footer) {
                         runtime.footer.specialNoRefresh = true;
+                    }
+                    if (campaignId === FOOTER_SEEDTAG_CAMPAIGN_ID) {
+                        if (runtime.footer) runtime.footer.seedtagActive = true;
+                        scheduleFooterSeedtagRefresh(runtime, event.slot);
                     }
                     return;
                 }
