@@ -12,10 +12,6 @@
   var imaPromise = null;
   var playlistPromise = null;
 
-  function log() {
-    if (window.console && console.info) console.info.apply(console, ['[PUB HTML5 IMA]'].concat(Array.prototype.slice.call(arguments)));
-  }
-
   function loadIma() {
     if (window.google && window.google.ima) return Promise.resolve(window.google.ima);
     if (imaPromise) return imaPromise;
@@ -420,8 +416,7 @@
     rec.completedRequest = token;
     if (!rec.adStartedForRequest) {
       rec.misses++;
-      rec.wrapper.setAttribute('data-publico-video-misses', String(rec.misses));
-      log('VAST sem reprodução:', reason, 'pedido', rec.attempts);
+
     }
     clearAds(rec);
     rec.muted = false;
@@ -471,7 +466,6 @@
       rec.waitingAds = false;
       syncAdPlaybackMode(rec);
       rec.wrapper.setAttribute('data-publico-video-result', 'vast-started');
-      rec.wrapper.setAttribute('data-publico-video-misses', '0');
       if (rec.adTimer) { window.clearTimeout(rec.adTimer); rec.adTimer = null; }
       rec.adMuted = true;
       if (rec.manager && typeof rec.manager.setVolume === 'function') {
@@ -480,7 +474,7 @@
       rec.video.muted = true;
       markVisible(rec);
       updateUI(rec);
-      log('Publicidade VAST iniciou reprodução', token);
+
     });
     function scheduleResumeFallback(reason) {
       if (rec.destroyed || token !== rec.currentRequest || rec.completedRequest === token) return;
@@ -494,7 +488,7 @@
     listen(ima.AdEvent.Type.ALL_ADS_COMPLETED, function () { scheduleResumeFallback('all-complete'); });
     listen(ima.AdEvent.Type.SKIPPED, function () { scheduleResumeFallback('skipped'); });
     manager.addEventListener(ima.AdErrorEvent.Type.AD_ERROR, function (event) {
-      log('Erro IMA:', event.getError && String(event.getError()));
+
       finishAds(rec, token, 'ima-error');
     });
   }
@@ -510,7 +504,7 @@
       rec.startedManager = token;
       rec.manager.start();
     } catch (error) {
-      log('O IMA não conseguiu iniciar:', error.message || String(error));
+
       if (!byUser && /user|gesture|interact|initialize/i.test(String(error.message || error))) {
         rec.awaitingGesture = true;
         rec.manualPause = true;
@@ -539,7 +533,7 @@
       startManager(rec, token, false);
     });
     rec.loader.addEventListener(ima.AdErrorEvent.Type.AD_ERROR, function (event) {
-      log('Falha ao receber VAST:', event.getError && String(event.getError()));
+
       finishAds(rec, rec.currentRequest, 'no-fill');
     });
   }
@@ -558,11 +552,7 @@
     rec.awaitingGesture = false;
     rec.currentRequest = token;
     rec.waitingAds = true;
-    rec.wrapper.setAttribute('data-publico-video-attempt', String(token));
-    rec.wrapper.setAttribute('data-publico-video-misses', String(rec.misses));
     var url = buildVast(rec, item);
-    rec.lastUrl = url;
-    rec.shell.setAttribute('data-last-ad-tag-url', url);
     var request = new window.google.ima.AdsRequest();
     request.adTagUrl = url;
     var size = sizeOf(rec);
@@ -595,7 +585,7 @@
     rec.playedThisLoop = false;
     rec.wrapper.setAttribute('data-inc-fallback', '1');
     rec.wrapper.setAttribute('data-inc-fallback-reason', String(reason));
-    log('Usar fallback.mp4:', reason);
+
     if (rec.shell) prepareItem(rec, 0);
   }
 
@@ -612,9 +602,7 @@
         if (rec.playedThisLoop) rec.emptyLoops = 0;
         else rec.emptyLoops++;
         rec.playedThisLoop = false;
-        rec.wrapper.setAttribute('data-publico-video-completed-loops', String(rec.completedLoops));
-        rec.wrapper.setAttribute('data-publico-video-empty-loops', String(rec.emptyLoops));
-        log('Passagem completa:', rec.completedLoops, 'sem anúncios consecutivos:', rec.emptyLoops);
+
         if (rec.emptyLoops >= rec.maxLoops) {
           rec.fallback('no-vast-after-' + rec.maxLoops + '-playlist-passes');
           return;
@@ -693,7 +681,7 @@
     rec.video.onerror = function () { mediaError('error'); };
     rec.video.src = rec.expectedEditorialUrl;
     rec.video.load();
-    log('Playlist:', index + 1, '/', rec.playlist.length, item.title || 'MP4');
+
   }
 
   function destroy(rec) {
@@ -739,12 +727,13 @@
       rec.state = 'display';
       if (window.PubAdLayout && typeof window.PubAdLayout.videoToDisplay === 'function') window.PubAdLayout.videoToDisplay(wrapper);
       destroy(rec);
+      placement.setAttribute('lazyload', 'false');
       wrapper.replaceChildren(placement);
       wrapper.removeAttribute('data-publico-vertcontent-video');
       wrapper.setAttribute('data-publico-video-result', 'display');
       wrapper.setAttribute('data-publico-video-fallback-reason', String(reason || 'unknown'));
       document.dispatchEvent(new CustomEvent('publico:vertcontent-display-ready', { detail: { placement: placement, wrapper: wrapper, reason: reason } }));
-      log('Fallback para VertContent display:', reason);
+
     };
     records.push(rec);
     wrapper.setAttribute('data-publico-vertcontent-video', '1');
@@ -755,7 +744,7 @@
     addCss();
     Promise.all([
       loadPlaylist().catch(function (error) {
-        log('Playlist indisponível:', error.message || String(error));
+
         return null;
       }),
       loadIma()
@@ -779,44 +768,10 @@
     return true;
   }
 
-  function inspect() {
-    var result = records.map(function (rec) {
-      return {
-        slot: rec.placement.id,
-        state: rec.state,
-        videoAdUnit: '/4458504/Incontent/' + (String(rec.placement.getAttribute('adunit')).split('/')[1] || '') + '/' + (String(rec.placement.getAttribute('adunit')).split('/')[2] || ''),
-        player: 'HTML5 + Google IMA',
-        muted: rec.muted,
-        adMuted: rec.adMuted,
-        volume: rec.volume,
-        currentItem: rec.playlist[rec.index] && rec.playlist[rec.index].title || null,
-        currentItemExpiresAt: rec.playlist[rec.index] && rec.playlist[rec.index].expiresAt || null,
-        mediaButton: rec.playlist[rec.index] && typeof rec.playlist[rec.index].mediaButton === 'boolean' ? rec.playlist[rec.index].mediaButton : null,
-        playbackOrder: rec.playbackOrder,
-        extraLoops: rec.extraLoops,
-        maxPlaylistPassesWithoutVast: rec.maxLoops,
-        fallbackMedia: rec.usingFallbackMedia,
-        fallbackMediaUrl: rec.usingFallbackMedia ? FALLBACK_MEDIA : null,
-        attempts: rec.attempts,
-        misses: rec.misses,
-        completedLoops: rec.completedLoops,
-        emptyLoops: rec.emptyLoops,
-        adPlaying: rec.adPlaying,
-        waitingAds: rec.waitingAds,
-        lastVastUrl: rec.lastUrl || null,
-        fallbackReason: rec.wrapper.getAttribute('data-publico-video-fallback-reason')
-      };
-    });
-    console.table(result);
-    return result;
-  }
-
   window.VertInContentRequest = Object.assign(window.VertInContentRequest || {}, {
     mount: mount,
     eligible: function () { return Boolean(window.pub && window.pub.pageType === 'noticia'); },
     enabled: true,
-    instances: records,
-    inspect: inspect,
     forceDisplay: function () { if (records.length) records[0].fallback('manual'); }
   });
 })(window, document);

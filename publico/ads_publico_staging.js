@@ -393,7 +393,7 @@
                 reject(new Error("Não foi possível identificar o endereço de ads_publico.js"));
                 return;
             }
-            script.src = new URL("video/inc/inc.js?v=20261027-anticls-display-v1", publicoAdsScriptUrl).href;
+            script.src = new URL("video/inc/inc.js?v=20261027-fallback-display-v2", publicoAdsScriptUrl).href;
             script.async = true;
             script.onload = function () {
                 if (window.VertInContentRequest && typeof window.VertInContentRequest.mount === "function") {
@@ -420,6 +420,7 @@
         function fallback(reason) {
             if (!wrapper.isConnected || wrapper.getAttribute("data-publico-video-result") === "display") return;
             pubAdLayout.videoToDisplay(wrapper);
+            placement.setAttribute("lazyload", "false");
             wrapper.replaceChildren(placement);
                                                                        
                                                                    
@@ -1788,6 +1789,15 @@
                 slotId = event.slot.getSlotElementId();
                 element = slotId ? getSlotElement(slotId) : null;
 
+                if (slotId === "VertContent0" && runtime.vertContentDisplayFallback &&
+                    runtime.vertContentDisplayFallback.placement === element) {
+                    runtime.vertContentDisplayFallback.requested = true;
+                    if (runtime.vertContentDisplayFallback.timer !== null) {
+                        window.clearTimeout(runtime.vertContentDisplayFallback.timer);
+                        runtime.vertContentDisplayFallback.timer = null;
+                    }
+                }
+
                 if (element) pubAdLayout.requested(element);
 
                 if (slotId !== "Footer" || !runtime.footer || !runtime.footer.specialNoRefresh) {
@@ -1889,6 +1899,64 @@
                 enablePlacementAutoRefresh(element);
                 showFooterBtn(runtime);
             });
+        });
+    }
+
+    function bindVertContentDisplayFallback(runtime) {
+        if (runtime.vertContentDisplayFallbackBound) {
+            return;
+        }
+
+        runtime.vertContentDisplayFallbackBound = true;
+        document.addEventListener("publico:vertcontent-display-ready", function (event) {
+            var detail = event.detail || {};
+            var placement = detail.placement;
+            var wrapper = detail.wrapper;
+            var state;
+
+            if (!placement || placement.id !== "VertContent0" || !wrapper ||
+                !placement.isConnected || !wrapper.isConnected ||
+                adsAreDisabled(window.pub) ||
+                (runtime.vertContentDisplayFallback && runtime.vertContentDisplayFallback.placement === placement)) {
+                return;
+            }
+
+            state = {
+                placement: placement,
+                wrapper: wrapper,
+                requested: false,
+                invoked: false,
+                since: Date.now(),
+                timer: null
+            };
+            runtime.vertContentDisplayFallback = state;
+
+            function requestDisplay() {
+                state.timer = null;
+
+                if (state.requested || state.invoked || !placement.isConnected || !wrapper.isConnected ||
+                    wrapper.getAttribute("data-publico-video-result") !== "display" ||
+                    adsAreDisabled(window.pub)) {
+                    return;
+                }
+
+                if (runtime.tagBundleInitialized && typeof placement.refresh === "function") {
+                    try {
+                        if (placement.refresh() !== false) {
+                            state.invoked = true;
+                            return;
+                        }
+                    } catch (error) {
+                    }
+                }
+
+                if (Date.now() - state.since < 15000) {
+                    state.timer = window.setTimeout(requestDisplay, 150);
+                }
+            }
+
+            placement.setAttribute("lazyload", "false");
+            state.timer = window.setTimeout(requestDisplay, 600);
         });
     }
 
@@ -2255,6 +2323,7 @@
         runtime.tagBundleConfig = getTagBundleConfig(config, userType);
         window.tagBundleConfig = runtime.tagBundleConfig;
 
+        bindVertContentDisplayFallback(runtime);
         initCreativeAdControl(runtime);
         initHeavyAdObserver(runtime);
         suppressListingSidebarVerts(config);
