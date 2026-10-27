@@ -737,6 +737,7 @@
     rec.fallback = function (reason) {
       if (rec.state === 'display') return;
       rec.state = 'display';
+      if (window.PubAdLayout && typeof window.PubAdLayout.videoToDisplay === 'function') window.PubAdLayout.videoToDisplay(wrapper);
       destroy(rec);
       wrapper.replaceChildren(placement);
       wrapper.removeAttribute('data-publico-vertcontent-video');
