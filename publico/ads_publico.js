@@ -1,4 +1,4 @@
-/*271026*/                          
+/*281026_1*/
 (function (window, document) {
     "use strict";
 
@@ -136,6 +136,16 @@
         return segments.join("/");
     }
 
+    function ensureAdUnitNoticiaTag(config, adUnit) {
+        var tag = String(adUnit || "").trim().toLowerCase();
+
+        if (tag && !config.tags.some(function (existingTag) {
+            return String(existingTag || "").trim().toLowerCase() === tag;
+        })) {
+            config.tags.push(tag);
+        }
+    }
+
     function setupHorz(userType, adUnit) {
         Array.prototype.slice.call(document.querySelectorAll("ad-placement.pubHorz")).forEach(function (element, index) {
             if (!element.id) {
@@ -193,14 +203,14 @@
         });
     }
 
-                                                                   
-                                                              
-                                                              
-                                                           
-                                                                  
-                                                                 
-                                                
-                                                                      
+
+
+
+
+
+
+
+
     var pubAdLayout = (function () {
         var MAX_HEIGHT = 600;
         var STICKY_GAP = 80;
@@ -228,8 +238,8 @@
                 holder: target.holder,
                 placement: target.placement,
                 kind: target.kind,
-                held: 0,                                               
-                applied: 0,                                                         
+                held: 0,
+                applied: 0,
                 current: 0,
                 filled: false,
                 preserveFromVideo: false,
@@ -265,10 +275,10 @@
         function hold(state, height) {
             height = Math.max(0, Math.ceil(Number(height) || 0));
             if (!height) return;
-                                                         
+
             state.held = Math.max(state.held, Math.min(MAX_HEIGHT, height));
-                                                                           
-                                                                        
+
+
             setReservedHeight(state, Math.max(state.held, height));
         }
         function forContent(wrapper) {
@@ -282,8 +292,8 @@
         function requested(placement) {
             var state = getState(targetFor(placement));
             if (!state) return;
-                                                                        
-                                                                        
+
+
             setPhase(state, 'requested');
         }
         function rendered(placement, event) {
@@ -294,12 +304,12 @@
                 state.current = 0;
                 setSticky(state, false);
                 if (!state.filled && !state.preserveFromVideo) {
-                                                                          
+
                     state.held = 0;
                     setReservedHeight(state, 0);
                     setPhase(state, 'idle');
                 } else {
-                                                                                      
+
                     setReservedHeight(state, state.held);
                     setPhase(state, 'empty-held');
                 }
@@ -311,15 +321,15 @@
             var size = event.size;
             var rawHeight = Array.isArray(size) ? Number(size[1]) : 0;
             if (rawHeight > 1 && isFinite(rawHeight)) {
-                                                                  
-                                                                         
-                                                                        
+
+
+
                 state.current = rawHeight;
                 hold(state, rawHeight);
                 setSticky(state, state.applied - rawHeight >= STICKY_GAP);
             } else {
-                                                                       
-                                                                              
+
+
                 state.current = 0;
                 setSticky(state, false);
             }
@@ -376,9 +386,9 @@
     })();
     window.PubAdLayout = pubAdLayout;
 
-                                                                          
-                                                                          
-                                                                    
+
+
+
     var publicoAdsScriptUrl = document.currentScript && document.currentScript.src || null;
     var vertVideoModulePromise = null;
     function loadVertVideoModule() {
@@ -413,7 +423,7 @@
     function scheduleVertVideo(wrapper, placement, targeting) {
         var started = false;
         var observer = null;
-                                                                 
+
         wrapper.setAttribute("data-publico-vcv-reserved", "0");
 
         function fallback(reason) {
@@ -421,8 +431,8 @@
             pubAdLayout.videoToDisplay(wrapper);
             placement.setAttribute("lazyload", "false");
             wrapper.replaceChildren(placement);
-                                                                       
-                                                                   
+
+
             wrapper.removeAttribute("data-publico-vcv-reserved");
             wrapper.removeAttribute("data-publico-vertcontent-video");
             wrapper.setAttribute("data-publico-video-result", "display");
@@ -452,12 +462,12 @@
             });
         }
         if (window.IntersectionObserver) {
-                                                                                 
-                                                                             
-                                                                           
-                                                                           
-                                                                           
-                                                                        
+
+
+
+
+
+
             var mobileVideo = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
             var expectedPlayerHeight = mobileVideo ? 300 : 389;
             var minVisiblePx = Math.ceil(expectedPlayerHeight * 0.50);
@@ -466,7 +476,7 @@
             }, { rootMargin: "0px 0px -" + minVisiblePx + "px 0px", threshold: 0 });
             observer.observe(wrapper);
         } else {
-                                                                  
+
             window.setTimeout(start, 0);
         }
         return true;
@@ -484,8 +494,8 @@
         placement.setAttribute("format", "vertContent");
         placement.setAttribute("adunit", "Vert_Publico/" + userType + "/" + adUnit + "/VertContent");
 
-                                                                           
-                                                                                 
+
+
         if (index === 0 && window.pub && window.pub.pageType === "noticia" &&
                 !adsAreDisabled(window.pub) &&
                 !(window.VertInContentRequest && window.VertInContentRequest.enabled === false) &&
@@ -698,7 +708,7 @@
 
     function isTagBlocked(config, blockedTags) {
         return config.tags.some(function (tag) {
-            return blockedTags.indexOf(tag) !== -1;
+            return blockedTags.indexOf(String(tag || "").trim().toLowerCase()) !== -1;
         });
     }
 
@@ -1401,10 +1411,6 @@
             specialNoRefresh: false
         };
 
-        if (config.pageType !== "noticia") {
-            return;
-        }
-
         if (config.userType === "subscriber") {
             return;
         }
@@ -1485,8 +1491,8 @@
     }
 
     function setVertContentVisibility(event, element) {
-                                                                                
-                                                                              
+
+
         if (element) pubAdLayout.rendered(element, event);
     }
 
@@ -2293,14 +2299,16 @@
             return;
         }
 
+        ensureAdUnitNoticiaTag(config, adUnit);
+
         runtime.initialized = true;
         runtime.userType = userType;
         runtime.adUnit = adUnit;
         runtime.tagBundleUrl = tagBundleUrl;
 
-                                                                           
-                                                                               
-                                                                                      
+
+
+
         runtime.tagBundleConfig = getTagBundleConfig(config, userType);
         window.tagBundleConfig = runtime.tagBundleConfig;
 
