@@ -1,3 +1,4 @@
+/*021126*/
 (function (window, document) {
   'use strict';
 
@@ -174,7 +175,6 @@
   function buildVast(rec, item) {
     var now = String(Date.now() + Math.floor(Math.random() * 10000));
     var duration = Number(rec.video.duration);
-    var isMobile = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
     var params = new URLSearchParams({
       iu: pathFor(rec.placement),
       ad_rule: '0',
@@ -189,7 +189,7 @@
       tfcd: '0',
       ad_type: 'video',
       vad_type: 'linear',
-      sz: isMobile ? '320x180' : '640x360',
+      sz: '1x1|1x1|300x1|320x180|640x360|640x360',
       gdfp_req: '1',
       output: 'vast',
       unviewed_position_start: '1',
