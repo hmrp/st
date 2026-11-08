@@ -1,4 +1,4 @@
-/*281026_1*/
+/*081126*/
 (function (window, document) {
     "use strict";
 
@@ -23,13 +23,13 @@
         }
     };
     var DYNAMIC_SLOT_SELECTOR = '[data-publico-ad-placeholder="horz"], [data-publico-ad-placeholder="vert"], [data-publico-ad-placeholder="botao"], [data-publico-ad-placeholder="gallery"]';
-    var FOOTER_BLOCK_NOTICIATAG = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro", "centro-jogo"];
+    var FOOTER_BLOCK_NOTICIATAG = ["home", "mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro", "centro-jogo"];
     var OOP_BLOCK = ["mundial-2026", "leituras", "livros", "explicadores", "primeira-hora", "podcast-no-escuro","centro-jogo"];
     var FOOTER_NO_BTN = [3560930581, 3077683810, 3698619285];
     var FOOTER_SEEDTAG_CAMPAIGN_ID = 3560930581;
     var FOOTER_BTN_DELAY_MS = 300;
     var OOP_CAP_KEY = "intro_cap";
-    var OOP_CAP_MS = 180000;
+    var OOP_CAP_MS = 60000;
     var OOP_CAP_BYPASS = ["11826917"];
     var OOP_FALLBACK_MS = 800;
     var REWARDED_TIMEOUT_MS = 10000;
@@ -1521,22 +1521,32 @@
 
     function showFooterBtn(runtime) {
         var wrapper = getFooterWrapper();
+        var attempts = 0;
 
         resetFooterBtn(runtime);
 
-        if (!wrapper) {
-            return;
+        if (wrapper) {
+            wrapper.classList.remove("footer-special-hidden");
         }
 
-        wrapper.classList.remove("footer-special-hidden");
-
-        runtime.footerBtnTimer = window.setTimeout(function () {
+        function revealFooterBtn() {
             var currentWrapper = getFooterWrapper();
 
-            if (currentWrapper && !currentWrapper.classList.contains("footer-special-hidden")) {
-                currentWrapper.classList.add("footer-close-ready");
+            if (!currentWrapper) {
+                if (attempts++ < 12) {
+                    runtime.footerBtnTimer = window.setTimeout(revealFooterBtn, 100);
+                } else {
+                    runtime.footerBtnTimer = null;
+                }
+                return;
             }
-        }, FOOTER_BTN_DELAY_MS);
+
+            runtime.footerBtnTimer = null;
+            currentWrapper.classList.remove("footer-special-hidden");
+            currentWrapper.classList.add("footer-close-ready");
+        }
+
+        runtime.footerBtnTimer = window.setTimeout(revealFooterBtn, FOOTER_BTN_DELAY_MS);
     }
 
     function getTagBundleConfig(config, userType) {
@@ -1574,7 +1584,7 @@
                 outOfPageTemplateIds: OOP_CAP_BYPASS.slice(),
                 outOfPageVisibilitySelector: "#takeover"
             },
-            renderMargin: 150,
+            renderMargin: 90, /*150*/
             refreshThreshold: 0.5,
             stickyBottomThreshold: 0,
             sizes: {
@@ -1797,7 +1807,7 @@
                 }
             });
 
-            window.googletag.pubads().addEventListener("impressionViewable", function (event) {
+         /*   window.googletag.pubads().addEventListener("impressionViewable", function (event) {
                 var slotId;
                 var element;
                 var iframe;
@@ -1816,7 +1826,7 @@
                     iframe.classList.add("\u2714");
                 }
             });
-
+*/
             window.googletag.pubads().addEventListener("slotRenderEnded", function (event) {
                 var slotId;
                 var element;
@@ -1864,19 +1874,20 @@
 
                 campaignId = getCampaignId(event);
 
-                if (FOOTER_NO_BTN.indexOf(campaignId) !== -1) {
+                if (campaignId === FOOTER_SEEDTAG_CAMPAIGN_ID || FOOTER_NO_BTN.indexOf(campaignId) !== -1) {
                     hideFooterBtn(runtime);
+                    stopPlacementAutoRefresh(element);
+                    if (runtime.footer) {
+                        runtime.footer.specialNoRefresh = true;
+                    }
+                    /*
                     if (campaignId === FOOTER_SEEDTAG_CAMPAIGN_ID) {
                         if (runtime.footer) {
                             runtime.footer.specialNoRefresh = false;
                         }
                         enablePlacementAutoRefresh(element);
-                    } else {
-                        stopPlacementAutoRefresh(element);
-                        if (runtime.footer) {
-                            runtime.footer.specialNoRefresh = true;
-                        }
                     }
+                    */
                     return;
                 }
 

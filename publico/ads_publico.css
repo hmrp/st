@@ -1,4 +1,4 @@
-/*271026*/
+/*021126*/
 .TagBundleStickyBottom {
     z-index: 998 !important;
     width: 100vw !important;
@@ -23,6 +23,10 @@ body:has(.decider-overlay.decider-bar-bottom) .TagBundleStickyBottom.active {
 
 body:has(.decider-overlay.decider-bar-bottom) #inScreen.st-placement.inScreen .st-adunit-ad.st-reset {
     bottom: 62px !important;
+}
+
+.masthead--thin {
+    z-index: 99997 !important;
 }
 
 #inScreen.st-placement.inScreen,
@@ -67,6 +71,7 @@ body:has(.decider-overlay.decider-bar-bottom) #inScreen.st-placement.inScreen .s
     overflow: visible !important;
 }
 
+/*
 #inScreen.st-placement.inScreen .x-to-close,
 .st-placement.inScreen#inScreen .x-to-close,
 #inScreen.st-placement.inScreen [class*="x-to-close"],
@@ -180,6 +185,17 @@ html:not(.darkmode) .st-placement.inScreen#inScreen [class*="x-to-close"] {
         border-color: currentColor !important;
     }
 }
+
+*/
+
+/*
+#inScreen.st-placement.inScreen .x-to-close,
+.st-placement.inScreen#inScreen .x-to-close,
+#inScreen.st-placement.inScreen [class*="x-to-close"],
+.st-placement.inScreen#inScreen [class*="x-to-close"] {
+    display: none !important;
+}
+*/
 
 .TagBundleStickyBottomInner {
     position: relative !important;
@@ -808,6 +824,7 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
     }
 }
 
+/*
 @media screen and (max-width: 767px) {
     #inScreen.st-placement.inScreen .st-display-render.st-reset > .x-to-close,
     #inScreen.st-placement.inScreen .st-display-render.st-reset > [class*="x-to-close"] {
@@ -815,6 +832,7 @@ html:not(.user--subscriber) .page--listing .ad-slot--sticky.hide-for-large > .ad
         right: 0 !important;
     }
 }
+*/
 
 aside[data-publico-vertcontent-video="1"] {
     --pub-vcv-max-height: 400px;
