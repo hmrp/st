@@ -43,15 +43,18 @@
     <a id="downloadLink" class="download-btn">Baixar Vídeo MP4</a>
 </div>
 
-<!-- Importação das bibliotecas via jsDelivr (CDN otimizado para CORS e sem limites do GitHub) -->
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+<!-- Importação da versão estável 0.11.6 que não sofre com bloqueio de Worker por CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 
 <script>
-    const { FFmpeg } = FFmpegWASM;
-    const { fetchFile, toBlobURL } = FFmpegUtil;
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    
+    // Inicializa o FFmpeg apontando para o CDN oficial da versão 0.11
+    const ffmpeg = createFFmpeg({ 
+        corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
+        log: true 
+    });
 
-    let ffmpeg = null;
     const statusDiv = document.getElementById('status');
     const processBtn = document.getElementById('processBtn');
     const imageInput = document.getElementById('imageInput');
@@ -61,15 +64,8 @@
 
     async function loadFFmpeg() {
         try {
-            ffmpeg = new FFmpeg();
-            
-            // Aponta para o jsDelivr, que serve os ficheiros pesados (.wasm e .js) sem travar o Worker por CORS
-            const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
-            await ffmpeg.load({
-                coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-                wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-            });
-
+            statusDiv.textContent = "A carregar o motor do FFmpeg (pode demorar alguns segundos na primeira vez)...";
+            await ffmpeg.load();
             statusDiv.textContent = "Pronto! Selecione uma imagem e clique em converter.";
             processBtn.disabled = false;
         } catch (error) {
@@ -97,9 +93,11 @@
             const fileExt = file.name.split('.').pop().toLowerCase() === 'png' ? 'png' : 'jpg';
             const inputFileName = `input.${fileExt}`;
 
-            await ffmpeg.writeFile(inputFileName, await fetchFile(file));
+            // Escreve o ficheiro na memória virtual
+            ffmpeg.FS('writeFile', inputFileName, await fetchFile(file));
 
-            await ffmpeg.exec([
+            // Executa o comando de conversão
+            await ffmpeg.run(
                 '-loop', '1',
                 '-framerate', '1',
                 '-i', inputFileName,
@@ -107,11 +105,12 @@
                 '-c:v', 'libx264',
                 '-pix_fmt', 'yuv420p',
                 'output.mp4'
-            ]);
+            );
 
             statusDiv.textContent = "Vídeo gerado com sucesso!";
 
-            const data = await ffmpeg.readFile('output.mp4');
+            // Lê o ficheiro resultante da memória virtual
+            const data = ffmpeg.FS('readFile', 'output.mp4');
             const videoUrl = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
             
             outputVideo.src = videoUrl;
