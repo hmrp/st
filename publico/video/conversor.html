@@ -43,9 +43,9 @@
     <a id="downloadLink" class="download-btn">Baixar Vídeo MP4</a>
 </div>
 
-<!-- Importação das bibliotecas do FFmpeg via CDN -->
-<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
-<script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/util.js"></script>
+<!-- Importação das bibliotecas via jsDelivr (CDN otimizado para CORS e sem limites do GitHub) -->
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
 
 <script>
     const { FFmpeg } = FFmpegWASM;
@@ -63,7 +63,8 @@
         try {
             ffmpeg = new FFmpeg();
             
-            const baseURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd';
+            // Aponta para o jsDelivr, que serve os ficheiros pesados (.wasm e .js) sem travar o Worker por CORS
+            const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
             await ffmpeg.load({
                 coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
                 wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
@@ -93,18 +94,11 @@
         statusDiv.textContent = "A processar o vídeo...";
 
         try {
-            // Descobre a extensão original do arquivo enviado para manter compatibilidade
             const fileExt = file.name.split('.').pop().toLowerCase() === 'png' ? 'png' : 'jpg';
             const inputFileName = `input.${fileExt}`;
 
-            // Grava o ficheiro na memória virtual do FFmpeg
             await ffmpeg.writeFile(inputFileName, await fetchFile(file));
 
-            // Comando FFmpeg: 
-            // -loop 1 (faz loop na imagem)
-            // -framerate 1 (define 1 frame por segundo)
-            // -t [duration] (tempo máximo definido pelo utilizador)
-            // -c:v libx264 -pix_fmt yuv420p (H.264 universal para navegadores)
             await ffmpeg.exec([
                 '-loop', '1',
                 '-framerate', '1',
@@ -117,7 +111,6 @@
 
             statusDiv.textContent = "Vídeo gerado com sucesso!";
 
-            // Lê o resultado gerado
             const data = await ffmpeg.readFile('output.mp4');
             const videoUrl = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
             
